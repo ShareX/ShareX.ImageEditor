@@ -516,6 +516,12 @@ namespace ShareX.Editor.Views
             {
                 return;
             }
+            
+            // Skip handles for SpotlightControl - it's a full-canvas overlay that shouldn't be resized via handles
+            if (_selectedShape is ShareX.Editor.Controls.SpotlightControl)
+            {
+                return;
+            }
 
             // Skip handles for shapes without measurable bounds (e.g., other lines)
             if (_selectedShape.Bounds.Width <= 0 || _selectedShape.Bounds.Height <= 0) return;
@@ -1298,15 +1304,8 @@ namespace ShareX.Editor.Views
                     var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
                     {
                         Annotation = spotlightAnnotation,
-                        IsHitTestVisible = true,
-                        // Explicitly set size to cover entire canvas (Canvas doesn't stretch children)
-                        Width = canvas.Bounds.Width,
-                        Height = canvas.Bounds.Height
+                        IsHitTestVisible = true
                     };
-                    
-                    // Position at origin to cover full canvas
-                    Canvas.SetLeft(spotlightControl, 0);
-                    Canvas.SetTop(spotlightControl, 0);
                     
                     _currentShape = spotlightControl;
                     break;
@@ -1687,9 +1686,6 @@ namespace ShareX.Editor.Views
                     if (parentCanvas != null)
                     {
                         spotlight.CanvasSize = ToSKSize(new Size(parentCanvas.Bounds.Width, parentCanvas.Bounds.Height));
-                        // Keep spotlight control sized to full canvas
-                        spotlightControl.Width = parentCanvas.Bounds.Width;
-                        spotlightControl.Height = parentCanvas.Bounds.Height;
                     }
                     
                     spotlightControl.InvalidateVisual();

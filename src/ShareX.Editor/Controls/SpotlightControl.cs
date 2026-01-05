@@ -40,7 +40,12 @@ namespace ShareX.Editor.Controls
             if (annotation != null)
             {
                 // Create the hole geometry
-                var bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
+                // Use Annotation.CanvasSize for the outer bounds to ensure full coverage
+                // regardless of the control's actual bounds (which might be 0 in Canvas)
+                var canvasW = (double)annotation.CanvasSize.Width;
+                var canvasH = (double)annotation.CanvasSize.Height;
+                var bounds = new Rect(0, 0, canvasW, canvasH);
+                
                 var annotatedBounds = annotation.GetBounds();
                 var spotlightRect = new Rect(annotatedBounds.Left, annotatedBounds.Top, annotatedBounds.Width, annotatedBounds.Height);
 
