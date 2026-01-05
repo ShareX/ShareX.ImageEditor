@@ -1298,8 +1298,15 @@ namespace ShareX.Editor.Views
                     var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
                     {
                         Annotation = spotlightAnnotation,
-                        IsHitTestVisible = true
+                        IsHitTestVisible = true,
+                        // Explicitly set size to cover entire canvas (Canvas doesn't stretch children)
+                        Width = canvas.Bounds.Width,
+                        Height = canvas.Bounds.Height
                     };
+                    
+                    // Position at origin to cover full canvas
+                    Canvas.SetLeft(spotlightControl, 0);
+                    Canvas.SetTop(spotlightControl, 0);
                     
                     _currentShape = spotlightControl;
                     break;
@@ -1680,6 +1687,9 @@ namespace ShareX.Editor.Views
                     if (parentCanvas != null)
                     {
                         spotlight.CanvasSize = ToSKSize(new Size(parentCanvas.Bounds.Width, parentCanvas.Bounds.Height));
+                        // Keep spotlight control sized to full canvas
+                        spotlightControl.Width = parentCanvas.Bounds.Width;
+                        spotlightControl.Height = parentCanvas.Bounds.Height;
                     }
                     
                     spotlightControl.InvalidateVisual();

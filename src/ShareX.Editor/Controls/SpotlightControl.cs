@@ -10,7 +10,6 @@ namespace ShareX.Editor.Controls
     /// </summary>
     public class SpotlightControl : Control
     {
-        private SpotlightAnnotation? _annotation;
 
         public static readonly StyledProperty<SpotlightAnnotation?> AnnotationProperty =
             AvaloniaProperty.Register<SpotlightControl, SpotlightAnnotation?>(nameof(Annotation));
