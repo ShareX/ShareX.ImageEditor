@@ -12,7 +12,15 @@ public class SpeechBalloonAnnotation : Annotation
     /// </summary>
     public SKPoint TailPoint { get; set; }
     
+    /// <summary>
+    /// Optional text content inside the balloon
+    /// </summary>
     public string Text { get; set; } = "";
+
+    /// <summary>
+    /// Font size for the balloon text
+    /// </summary>
+    public float FontSize { get; set; } = 20;
     
     /// <summary>
     /// Background color (hex)
@@ -34,7 +42,7 @@ public class SpeechBalloonAnnotation : Annotation
         // Default tail point if not set
         if (TailPoint == default)
         {
-            TailPoint = new SKPoint(rect.Right, rect.Bottom + 20);
+            TailPoint = new SKPoint(rect.MidX, rect.Bottom + 20);
         }
 
         using var path = new SKPath();
@@ -83,6 +91,29 @@ public class SpeechBalloonAnnotation : Annotation
         // Stroke
         using var strokePaint = CreateStrokePaint();
         canvas.DrawPath(path, strokePaint);
+
+        if (!string.IsNullOrEmpty(Text))
+        {
+            using var textPaint = new SKPaint
+            {
+                Color = ParseColor(StrokeColor),
+                TextSize = FontSize,
+                IsAntialias = true
+            };
+
+            var metrics = textPaint.FontMetrics;
+            float textWidth = textPaint.MeasureText(Text);
+            float textHeight = metrics.Descent - metrics.Ascent;
+
+            float padding = 8f;
+            float textX = rect.MidX - textWidth / 2;
+            float textY = rect.MidY - textHeight / 2 - metrics.Ascent;
+
+            textX = Math.Max(rect.Left + padding, Math.Min(textX, rect.Right - padding - textWidth));
+            textY = Math.Max(rect.Top + padding - metrics.Ascent, Math.Min(textY, rect.Bottom - padding - metrics.Descent));
+
+            canvas.DrawText(Text, textX, textY, textPaint);
+        }
     }
     
     public override SKRect GetBounds()
@@ -97,6 +128,8 @@ public class SpeechBalloonAnnotation : Annotation
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var bounds = GetBounds();
+        // Include tail in hit area by expanding to cover the tail point
+        bounds = bounds.Join(new SKRect(TailPoint.X - tolerance, TailPoint.Y - tolerance, TailPoint.X + tolerance, TailPoint.Y + tolerance));
         var inflated = SKRect.Inflate(bounds, tolerance, tolerance);
         return inflated.Contains(point);
     }

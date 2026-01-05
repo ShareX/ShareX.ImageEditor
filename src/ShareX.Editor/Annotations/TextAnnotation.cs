@@ -78,7 +78,12 @@ public class TextAnnotation : Annotation
                 IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright)
         };
 
-        canvas.DrawText(Text, StartPoint.X, StartPoint.Y + FontSize, paint);
+        // Treat StartPoint as the top-left of the text box with a small padding like the Avalonia TextBox.
+        const float padding = 4f;
+        var metrics = paint.FontMetrics;
+        float baseline = StartPoint.Y + padding - metrics.Ascent; // ascent is negative
+
+        canvas.DrawText(Text, StartPoint.X + padding, baseline, paint);
     }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
@@ -92,7 +97,10 @@ public class TextAnnotation : Annotation
 
     public override SKRect GetBounds()
     {
-        if (string.IsNullOrEmpty(Text)) return new SKRect(StartPoint.X, StartPoint.Y, StartPoint.X + 10, StartPoint.Y + 10);
+        if (string.IsNullOrEmpty(Text))
+        {
+            return new SKRect(StartPoint.X, StartPoint.Y, StartPoint.X + 10, StartPoint.Y + 10);
+        }
 
         using var paint = new SKPaint
         {
@@ -101,6 +109,14 @@ public class TextAnnotation : Annotation
         };
 
         var textWidth = paint.MeasureText(Text);
-        return new SKRect(StartPoint.X, StartPoint.Y, StartPoint.X + textWidth, StartPoint.Y + FontSize);
+        var metrics = paint.FontMetrics;
+        var textHeight = metrics.Descent - metrics.Ascent;
+
+        const float padding = 4f;
+        return new SKRect(
+            StartPoint.X,
+            StartPoint.Y,
+            StartPoint.X + textWidth + padding * 2,
+            StartPoint.Y + textHeight + padding * 2);
     }
 }

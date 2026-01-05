@@ -196,6 +196,14 @@ public class EditorCore
         _startPoint = point;
         _redoStack.Clear();
 
+        string? sampledSmartEraserColor = null;
+
+        // Sample rendered color for Smart Eraser to mirror Avalonia behavior
+        if (ActiveTool == EditorTool.SmartEraser)
+        {
+            sampledSmartEraserColor = SampleCanvasColor(point);
+        }
+
         // Interact with currently selected annotation first so users can resize/move immediately after drawing
         if (_selectedAnnotation != null)
         {
@@ -246,6 +254,26 @@ public class EditorCore
             if (_currentAnnotation is FreehandAnnotation freehand)
             {
                 freehand.Points.Add(point);
+            }
+            else if (_currentAnnotation is SmartEraserAnnotation smartEraser)
+            {
+                // Match Avalonia: always use thicker stroke and sampled color if available
+                smartEraser.StrokeWidth = 10;
+                if (!string.IsNullOrEmpty(sampledSmartEraserColor))
+                {
+                    smartEraser.StrokeColor = sampledSmartEraserColor;
+                }
+                else
+                {
+                    smartEraser.StrokeColor = "#80FF0000";
+                }
+
+                // Also seed the freehand point list
+                smartEraser.Points.Add(point);
+            }
+            else if (_currentAnnotation is TextAnnotation textAnn)
+            {
+                textAnn.FontSize = Math.Max(12, StrokeWidth * 4);
             }
             else if (_currentAnnotation is NumberAnnotation num)
             {
@@ -358,6 +386,14 @@ public class EditorCore
 
         // Finalize annotation
         _currentAnnotation.EndPoint = point;
+
+        // Crop executes immediately like the Avalonia master behavior
+        if (_currentAnnotation is CropAnnotation)
+        {
+            PerformCrop();
+            _currentAnnotation = null;
+            return;
+        }
 
         // Add to undo stack
         _undoStack.Push(_currentAnnotation);
@@ -498,6 +534,23 @@ public class EditorCore
         {
             effect.UpdateEffect(SourceImage);
         }
+    }
+
+    private string? SampleCanvasColor(SKPoint point)
+    {
+        using var snapshot = GetSnapshot();
+        if (snapshot == null) return null;
+
+        int x = (int)Math.Round(point.X);
+        int y = (int)Math.Round(point.Y);
+
+        if (x < 0 || y < 0 || x >= snapshot.Width || y >= snapshot.Height)
+        {
+            return null;
+        }
+
+        var color = snapshot.GetPixel(x, y);
+        return $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
     }
 
     #endregion

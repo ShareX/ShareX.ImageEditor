@@ -17,9 +17,14 @@ public class HighlightAnnotation : BaseEffectAnnotation
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
+
+        // Apply consistent highlight alpha regardless of incoming color alpha (matches Avalonia behavior)
+        var baseColor = ParseColor(StrokeColor);
+        var highlightColor = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, 0x55);
+
         using var paint = new SKPaint
         {
-            Color = ParseColor(StrokeColor),
+            Color = highlightColor,
             Style = SKPaintStyle.Fill,
             IsAntialias = true
         };
