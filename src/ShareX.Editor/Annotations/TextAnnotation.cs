@@ -64,7 +64,24 @@ public class TextAnnotation : Annotation
 
     public override void Render(SKCanvas canvas)
     {
-        if (string.IsNullOrEmpty(Text)) return;
+        var rect = GetBounds();
+        const float padding = 4f;
+
+        // Always draw a visible placeholder/border when text is empty
+        if (string.IsNullOrEmpty(Text))
+        {
+            // Draw a dashed border placeholder to show where text will go
+            using var borderPaint = new SKPaint
+            {
+                Color = ParseColor(StrokeColor),
+                StrokeWidth = 1,
+                Style = SKPaintStyle.Stroke,
+                PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0),
+                IsAntialias = true
+            };
+            canvas.DrawRect(rect, borderPaint);
+            return;
+        }
 
         using var paint = new SKPaint
         {
@@ -79,17 +96,14 @@ public class TextAnnotation : Annotation
         };
 
         // Treat StartPoint as the top-left of the text box with a small padding like the Avalonia TextBox.
-        const float padding = 4f;
         var metrics = paint.FontMetrics;
-        float baseline = StartPoint.Y + padding - metrics.Ascent; // ascent is negative
+        float baseline = rect.Top + padding - metrics.Ascent; // ascent is negative
 
-        canvas.DrawText(Text, StartPoint.X + padding, baseline, paint);
+        canvas.DrawText(Text, rect.Left + padding, baseline, paint);
     }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
-        if (string.IsNullOrEmpty(Text)) return false;
-
         var textBounds = GetBounds();
         var inflatedBounds = SKRect.Inflate(textBounds, tolerance, tolerance);
         return inflatedBounds.Contains(point);
@@ -97,26 +111,38 @@ public class TextAnnotation : Annotation
 
     public override SKRect GetBounds()
     {
-        if (string.IsNullOrEmpty(Text))
+        // Use StartPoint and EndPoint like other rectangle-based annotations
+        float left = Math.Min(StartPoint.X, EndPoint.X);
+        float top = Math.Min(StartPoint.Y, EndPoint.Y);
+        float right = Math.Max(StartPoint.X, EndPoint.X);
+        float bottom = Math.Max(StartPoint.Y, EndPoint.Y);
+
+        // Ensure minimum size for visibility
+        const float minSize = 50f;
+        if (right - left < minSize) right = left + minSize;
+        if (bottom - top < minSize) bottom = top + minSize;
+
+        // If text exists, calculate based on text metrics instead
+        if (!string.IsNullOrEmpty(Text))
         {
-            return new SKRect(StartPoint.X, StartPoint.Y, StartPoint.X + 10, StartPoint.Y + 10);
+            using var paint = new SKPaint
+            {
+                TextSize = FontSize,
+                Typeface = SKTypeface.FromFamilyName(FontFamily)
+            };
+
+            var textWidth = paint.MeasureText(Text);
+            var metrics = paint.FontMetrics;
+            var textHeight = metrics.Descent - metrics.Ascent;
+
+            const float padding = 4f;
+            return new SKRect(
+                StartPoint.X,
+                StartPoint.Y,
+                StartPoint.X + textWidth + padding * 2,
+                StartPoint.Y + textHeight + padding * 2);
         }
 
-        using var paint = new SKPaint
-        {
-            TextSize = FontSize,
-            Typeface = SKTypeface.FromFamilyName(FontFamily)
-        };
-
-        var textWidth = paint.MeasureText(Text);
-        var metrics = paint.FontMetrics;
-        var textHeight = metrics.Descent - metrics.Ascent;
-
-        const float padding = 4f;
-        return new SKRect(
-            StartPoint.X,
-            StartPoint.Y,
-            StartPoint.X + textWidth + padding * 2,
-            StartPoint.Y + textHeight + padding * 2);
+        return new SKRect(left, top, right, bottom);
     }
 }

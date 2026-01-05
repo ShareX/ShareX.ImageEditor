@@ -53,6 +53,8 @@ public class EditorCore
     /// Raised when the status text should be updated
     /// </summary>
     public event Action<string>? StatusTextChanged;
+    public event Action? ImageChanged;
+    public event Action<Annotation>? EditAnnotationRequested;
 
     #endregion
 
@@ -397,6 +399,12 @@ public class EditorCore
 
         // Add to undo stack
         _undoStack.Push(_currentAnnotation);
+
+        // Request edit for text/speech annotations
+        if (_currentAnnotation is TextAnnotation || _currentAnnotation is SpeechBalloonAnnotation)
+        {
+            EditAnnotationRequested?.Invoke(_currentAnnotation);
+        }
 
         // Auto-select the created annotation (skip freehand/eraser which are not resizable)
         if (_currentAnnotation is not FreehandAnnotation && _currentAnnotation is not SmartEraserAnnotation)
@@ -808,6 +816,7 @@ public class EditorCore
         CanvasSize = new SKSize(width, height);
 
         StatusTextChanged?.Invoke("Image cropped");
+        ImageChanged?.Invoke();
         InvalidateRequested?.Invoke();
     }
 

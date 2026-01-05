@@ -37,12 +37,20 @@ public class SpeechBalloonAnnotation : Annotation
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        if (rect.Width < 5 || rect.Height < 5) return;
+        
+        // Ensure minimum size for visibility
+        const float minSize = 20f;
+        float width = Math.Max(rect.Width, minSize);
+        float height = Math.Max(rect.Height, minSize);
+        if (rect.Width < minSize || rect.Height < minSize)
+        {
+            rect = new SKRect(rect.Left, rect.Top, rect.Left + width, rect.Top + height);
+        }
 
-        // Default tail point if not set
+        // Default tail point if not set - match reference: rect.Right, rect.Bottom + 20
         if (TailPoint == default)
         {
-            TailPoint = new SKPoint(rect.MidX, rect.Bottom + 20);
+            TailPoint = new SKPoint(rect.Right, rect.Bottom + 20);
         }
 
         using var path = new SKPath();
