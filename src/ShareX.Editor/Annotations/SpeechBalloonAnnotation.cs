@@ -129,7 +129,11 @@ public class SpeechBalloonAnnotation : Annotation
     {
         var bounds = GetBounds();
         // Include tail in hit area by expanding to cover the tail point
-        bounds = bounds.Join(new SKRect(TailPoint.X - tolerance, TailPoint.Y - tolerance, TailPoint.X + tolerance, TailPoint.Y + tolerance));
+        bounds = SKRect.Union(bounds, new SKRect(
+            TailPoint.X - tolerance,
+            TailPoint.Y - tolerance,
+            TailPoint.X + tolerance,
+            TailPoint.Y + tolerance));
         var inflated = SKRect.Inflate(bounds, tolerance, tolerance);
         return inflated.Contains(point);
     }
