@@ -1167,19 +1167,24 @@ namespace ShareX.Editor.Views
                 // Reset cut direction when starting a new cut
                 _cutOutDirection = null;
                 
-                // Create a line to show where the cut will be made
-                var cutLine = new global::Avalonia.Controls.Shapes.Line
+                // Create a rectangle to show the area that will be cut out (darkened overlay)
+                var cutOutOverlay = new global::Avalonia.Controls.Shapes.Rectangle
                 {
+                    Fill = new SolidColorBrush(Color.FromArgb(128, 255, 0, 0)), // Semi-transparent red
                     Stroke = Brushes.Red,
-                    StrokeThickness = 3,
-                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 5, 3 }, // Dashed line
-                    StartPoint = _startPoint,
-                    EndPoint = _startPoint,
-                    Name = "CutOutLine"
+                    StrokeThickness = 2,
+                    StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 5, 3 },
+                    Name = "CutOutOverlay",
+                    IsVisible = false // Hidden until direction is determined
                 };
                 
-                canvas.Children.Add(cutLine);
-                _currentShape = cutLine;
+                Canvas.SetLeft(cutOutOverlay, _startPoint.X);
+                Canvas.SetTop(cutOutOverlay, _startPoint.Y);
+                cutOutOverlay.Width = 0;
+                cutOutOverlay.Height = 0;
+                
+                canvas.Children.Add(cutOutOverlay);
+                _currentShape = cutOutOverlay;
                 return;
             }
 
@@ -1650,57 +1655,7 @@ namespace ShareX.Editor.Views
 
             if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
             {
-                // Special handling for CutOut tool - constrain to horizontal or vertical
-                if (line.Name == "CutOutLine")
-                {
-                    var deltaX = Math.Abs(currentPoint.X - _startPoint.X);
-                    var deltaY = Math.Abs(currentPoint.Y - _startPoint.Y);
-                    
-                    // Threshold for determining direction (in pixels)
-                    const double directionThreshold = 15;
-                    
-                    // Reset direction if user moves back close to start point
-                    if (deltaX < directionThreshold && deltaY < directionThreshold)
-                    {
-                        _cutOutDirection = null;
-                        line.EndPoint = _startPoint;
-                        return;
-                    }
-                    
-                    // Determine direction based on current movement
-                    bool currentIsVertical = deltaX > deltaY;
-                    
-                    // Update direction (can change if user changes drag direction)
-                    if (deltaX > directionThreshold || deltaY > directionThreshold)
-                    {
-                        _cutOutDirection = currentIsVertical;
-                    }
-                    
-                    // Constrain the line to the determined direction
-                    if (_cutOutDirection.HasValue)
-                    {
-                        if (_cutOutDirection.Value)
-                        {
-                            // Vertical cut - lock Y coordinate
-                            line.EndPoint = new Point(currentPoint.X, _startPoint.Y);
-                        }
-                        else
-                        {
-                            // Horizontal cut - lock X coordinate
-                            line.EndPoint = new Point(_startPoint.X, currentPoint.Y);
-                        }
-                    }
-                    else
-                    {
-                        // Direction not determined yet, keep line at start point
-                        line.EndPoint = _startPoint;
-                    }
-                }
-                else
-                {
-                    // Regular line - allow any direction
-                    line.EndPoint = currentPoint;
-                }
+                line.EndPoint = currentPoint;
             }
             else if (_currentShape is Polyline polyline)
             {
@@ -1719,12 +1674,72 @@ namespace ShareX.Editor.Views
                     freehand.Points.Add(ToSKPoint(currentPoint));
                 }
             }
-            else if (_currentShape is global::Avalonia.Controls.Shapes.Path arrowPath && DataContext is MainViewModel vm)
+            else if (_currentShape is global::Avalonia.Controls.Shapes.Path arrowPath && DataContext is MainViewModel vm3)
             {
                 // Update Arrow Geometry
-                arrowPath.Data = CreateArrowGeometry(_startPoint, currentPoint, vm.StrokeWidth * 3);
+                arrowPath.Data = CreateArrowGeometry(_startPoint, currentPoint, vm3.StrokeWidth * 3);
                 // Store endpoints for later editing
                 _shapeEndpoints[arrowPath] = (_startPoint, currentPoint);
+            }
+            else if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle cutOutRect && cutOutRect.Name == "CutOutOverlay")
+            {
+                // Special handling for CutOut tool - show darkened area that will be cut
+                if (DataContext is not MainViewModel vm) return;
+                
+                var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+                if (parentCanvas == null) return;
+                
+                var deltaX = Math.Abs(currentPoint.X - _startPoint.X);
+                var deltaY = Math.Abs(currentPoint.Y - _startPoint.Y);
+                
+                // Threshold for determining direction (in pixels)
+                const double directionThreshold = 15;
+                
+                // Reset direction if user moves back close to start point
+                if (deltaX < directionThreshold && deltaY < directionThreshold)
+                {
+                    _cutOutDirection = null;
+                    cutOutRect.IsVisible = false;
+                    return;
+                }
+                
+                // Determine direction based on current movement
+                bool currentIsVertical = deltaX > deltaY;
+                
+                // Update direction (can change if user changes drag direction)
+                if (deltaX > directionThreshold || deltaY > directionThreshold)
+                {
+                    _cutOutDirection = currentIsVertical;
+                }
+                
+                // Show and position the cut-out overlay rectangle
+                if (_cutOutDirection.HasValue)
+                {
+                    cutOutRect.IsVisible = true;
+                    
+                    if (_cutOutDirection.Value)
+                    {
+                        // Vertical cut - show full-height rectangle between start and current X
+                        var left = Math.Min(_startPoint.X, currentPoint.X);
+                        var width = Math.Abs(currentPoint.X - _startPoint.X);
+                        
+                        Canvas.SetLeft(cutOutRect, left);
+                        Canvas.SetTop(cutOutRect, 0); // Full height from top
+                        cutOutRect.Width = width;
+                        cutOutRect.Height = parentCanvas.Bounds.Height; // Full canvas height
+                    }
+                    else
+                    {
+                        // Horizontal cut - show full-width rectangle between start and current Y
+                        var top = Math.Min(_startPoint.Y, currentPoint.Y);
+                        var height = Math.Abs(currentPoint.Y - _startPoint.Y);
+                        
+                        Canvas.SetLeft(cutOutRect, 0); // Full width from left
+                        Canvas.SetTop(cutOutRect, top);
+                        cutOutRect.Width = parentCanvas.Bounds.Width; // Full canvas width
+                        cutOutRect.Height = height;
+                    }
+                }
             }
             else
             {
@@ -1733,7 +1748,7 @@ namespace ShareX.Editor.Views
                 var width = Math.Abs(_startPoint.X - currentPoint.X);
                 var height = Math.Abs(_startPoint.Y - currentPoint.Y);
 
-                if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle rect)
+                if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle rect && rect.Name != "CutOutOverlay")
                 {
                     // Existing logic
                     rect.Width = width;
@@ -1769,6 +1784,143 @@ namespace ShareX.Editor.Views
                     
                     spotlightControl.InvalidateVisual();
                 }
+            }
+        }
+
+        private void OnCanvasPointerReleased(object sender, PointerReleasedEventArgs e)
+        {
+            if (_isDraggingHandle)
+            {
+                _isDraggingHandle = false;
+                _draggedHandle = null;
+                e.Pointer.Capture(null);
+                return;
+            }
+
+            if (_isDraggingShape)
+            {
+                _isDraggingShape = false;
+                e.Pointer.Capture(null);
+                return;
+            }
+
+            if (_isDrawing)
+            {
+                _isDrawing = false;
+                if (_currentShape != null)
+                {
+                    var createdShape = _currentShape;
+                    
+                    // Special handling for crop tool - execute crop immediately on mouse release
+                    if (DataContext is MainViewModel vm && vm.ActiveTool == EditorTool.Crop && createdShape.Name == "CropOverlay")
+                    {
+                        // Execute the crop operation
+                        PerformCrop();
+                        
+                        // Clear the current shape and don't add to undo stack
+                        _currentShape = null;
+                        e.Pointer.Capture(null);
+                        return;
+                    }
+                    
+                    // Special handling for cut-out tool - execute cutout immediately on mouse release
+                    if (DataContext is MainViewModel vm2 && vm2.ActiveTool == EditorTool.CutOut && createdShape is global::Avalonia.Controls.Shapes.Rectangle cutOutRect && cutOutRect.Name == "CutOutOverlay")
+                    {
+                        // Execute the cut-out operation
+                        PerformCutOut(cutOutRect);
+                        
+                        // Remove the visual overlay and don't add to undo stack
+                        var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                        canvas?.Children.Remove(cutOutRect);
+                        _currentShape = null;
+                        e.Pointer.Capture(null);
+                        return;
+                    }
+                    
+                    _undoStack.Push(createdShape);
+
+                    // Auto-select newly created shape so resize handles appear immediately,
+                    // but skip selection for freehand pen/eraser strokes (Polyline) which
+                    // are not resizable with our current handle logic.
+                    if (createdShape is not Polyline)
+                    {
+                        // Apply final effect for effect tools
+                        if (createdShape.Tag is BaseEffectAnnotation)
+                        {
+                            UpdateEffectVisual(createdShape);
+                        }
+                        
+                        _selectedShape = createdShape;
+                        UpdateSelectionHandles();
+                    }
+
+                    // _currentShape is now managed by the canvas/undo stack
+                    _currentShape = null;
+                }
+                e.Pointer.Capture(null);
+            }
+        }
+
+        // Public method to be called from MainWindow if key is pressed, 
+        // OR better: we handle keys in EditorView separately? 
+        // UserControls can handle keys if focused, but Window handles global keys better.
+        // We will expose this method or command.
+        public void PerformCrop()
+        {
+            var cropOverlay = this.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+            if (cropOverlay == null || !cropOverlay.IsVisible || DataContext is not MainViewModel vm) return;
+
+            var x = Canvas.GetLeft(cropOverlay);
+            var y = Canvas.GetTop(cropOverlay);
+            var w = cropOverlay.Width;
+            var h = cropOverlay.Height;
+
+            var scaling = 1.0;
+            if (VisualRoot is TopLevel tl) scaling = tl.RenderScaling;
+
+            var physX = (int)(x * scaling);
+            var physY = (int)(y * scaling);
+            var physW = (int)(w * scaling);
+            var physH = (int)(h * scaling);
+
+            vm.CropImage(physX, physY, physW, physH);
+
+            cropOverlay.IsVisible = false;
+            vm.StatusText = "Image cropped";
+        }
+
+        public void PerformCutOut(global::Avalonia.Controls.Shapes.Rectangle cutOutRect)
+        {
+            if (cutOutRect == null || DataContext is not MainViewModel vm) return;
+            if (!_cutOutDirection.HasValue) return; // Direction must be determined
+
+            var scaling = 1.0;
+            if (VisualRoot is TopLevel tl) scaling = tl.RenderScaling;
+
+            var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (parentCanvas == null) return;
+
+            if (_cutOutDirection.Value)
+            {
+                // Vertical cut - use the rectangle's left and right edges
+                var left = Canvas.GetLeft(cutOutRect);
+                var width = cutOutRect.Width;
+                
+                int startX = (int)(left * scaling);
+                int endX = (int)((left + width) * scaling);
+                
+                vm.CutOutImage(startX, endX, true);
+            }
+            else
+            {
+                // Horizontal cut - use the rectangle's top and bottom edges
+                var top = Canvas.GetTop(cutOutRect);
+                var height = cutOutRect.Height;
+                
+                int startY = (int)(top * scaling);
+                int endY = (int)((top + height) * scaling);
+                
+                vm.CutOutImage(startY, endY, false);
             }
         }
 
@@ -1888,143 +2040,6 @@ namespace ShareX.Editor.Views
                 }
             }
             return geometry;
-        }
-
-        private void OnCanvasPointerReleased(object sender, PointerReleasedEventArgs e)
-        {
-            if (_isDraggingHandle)
-            {
-                _isDraggingHandle = false;
-                _draggedHandle = null;
-                e.Pointer.Capture(null);
-                return;
-            }
-
-            if (_isDraggingShape)
-            {
-                _isDraggingShape = false;
-                e.Pointer.Capture(null);
-                return;
-            }
-
-            if (_isDrawing)
-            {
-                _isDrawing = false;
-                if (_currentShape != null)
-                {
-                    var createdShape = _currentShape;
-                    
-                    // Special handling for crop tool - execute crop immediately on mouse release
-                    if (DataContext is MainViewModel vm && vm.ActiveTool == EditorTool.Crop && createdShape.Name == "CropOverlay")
-                    {
-                        // Execute the crop operation
-                        PerformCrop();
-                        
-                        // Clear the current shape and don't add to undo stack
-                        _currentShape = null;
-                        e.Pointer.Capture(null);
-                        return;
-                    }
-                    
-                    // Special handling for cut-out tool - execute cutout immediately on mouse release
-                    if (DataContext is MainViewModel vm2 && vm2.ActiveTool == EditorTool.CutOut && createdShape is global::Avalonia.Controls.Shapes.Line cutLine && cutLine.Name == "CutOutLine")
-                    {
-                        // Execute the cut-out operation
-                        PerformCutOut(cutLine);
-                        
-                        // Remove the visual line and don't add to undo stack
-                        var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                        canvas?.Children.Remove(cutLine);
-                        _currentShape = null;
-                        e.Pointer.Capture(null);
-                        return;
-                    }
-                    
-                    _undoStack.Push(createdShape);
-
-                    // Auto-select newly created shape so resize handles appear immediately,
-                    // but skip selection for freehand pen/eraser strokes (Polyline) which
-                    // are not resizable with our current handle logic.
-                    if (createdShape is not Polyline)
-                    {
-                        // Apply final effect for effect tools
-                        if (createdShape.Tag is BaseEffectAnnotation)
-                        {
-                            UpdateEffectVisual(createdShape);
-                        }
-                        
-                        _selectedShape = createdShape;
-                        UpdateSelectionHandles();
-                    }
-
-                    // _currentShape is now managed by the canvas/undo stack
-                    _currentShape = null;
-                }
-                e.Pointer.Capture(null);
-            }
-        }
-
-        // Public method to be called from MainWindow if key is pressed, 
-        // OR better: we handle keys in EditorView separately? 
-        // UserControls can handle keys if focused, but Window handles global keys better.
-        // We will expose this method or command.
-        public void PerformCrop()
-        {
-            var cropOverlay = this.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
-            if (cropOverlay == null || !cropOverlay.IsVisible || DataContext is not MainViewModel vm) return;
-
-            var x = Canvas.GetLeft(cropOverlay);
-            var y = Canvas.GetTop(cropOverlay);
-            var w = cropOverlay.Width;
-            var h = cropOverlay.Height;
-
-            var scaling = 1.0;
-            if (VisualRoot is TopLevel tl) scaling = tl.RenderScaling;
-
-            var physX = (int)(x * scaling);
-            var physY = (int)(y * scaling);
-            var physW = (int)(w * scaling);
-            var physH = (int)(h * scaling);
-
-            vm.CropImage(physX, physY, physW, physH);
-
-            cropOverlay.IsVisible = false;
-            vm.StatusText = "Image cropped";
-        }
-
-        public void PerformCutOut(global::Avalonia.Controls.Shapes.Line cutLine)
-        {
-            if (cutLine == null || DataContext is not MainViewModel vm) return;
-
-            var scaling = 1.0;
-            if (VisualRoot is TopLevel tl) scaling = tl.RenderScaling;
-
-            // Convert line coordinates to physical pixels
-            var startX = (int)(cutLine.StartPoint.X * scaling);
-            var startY = (int)(cutLine.StartPoint.Y * scaling);
-            var endX = (int)(cutLine.EndPoint.X * scaling);
-            var endY = (int)(cutLine.EndPoint.Y * scaling);
-
-            // Determine if this is a vertical or horizontal cut
-            var deltaX = Math.Abs(endX - startX);
-            var deltaY = Math.Abs(endY - startY);
-
-            bool isVertical = deltaX > deltaY;
-            
-            if (isVertical)
-            {
-                // Vertical cut - use X coordinates
-                int start = Math.Min(startX, endX);
-                int end = Math.Max(startX, endX);
-                vm.CutOutImage(start, end, true);
-            }
-            else
-            {
-                // Horizontal cut - use Y coordinates
-                int start = Math.Min(startY, endY);
-                int end = Math.Max(startY, endY);
-                vm.CutOutImage(start, end, false);
-            }
         }
 
         private void OnEffectsPanelApplyRequested(object? sender, RoutedEventArgs e)
