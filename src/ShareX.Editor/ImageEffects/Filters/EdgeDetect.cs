@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects
 {
     [Description("Edge detect")]
-    internal class EdgeDetect : ImageEffect
+    public class EdgeDetect : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -43,4 +43,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

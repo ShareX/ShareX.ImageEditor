@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Manipulations
 {
     [Description("Rounded corners")]
-    internal class RoundedCorners : ImageEffect
+    public class RoundedCorners : ImageEffect
     {
         [DefaultValue(20)]
         public int CornerRadius { get; set; }
@@ -72,4 +72,5 @@ namespace ShareX.Editor.ImageEffects.Manipulations
         }
     }
 }
+
 

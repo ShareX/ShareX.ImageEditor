@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects
 {
     [Description("Convolution matrix")]
-    internal class MatrixConvolution : ImageEffect
+    public class MatrixConvolution : ImageEffect
     {
         [DefaultValue(0)]
         public int X0Y0 { get; set; }
@@ -81,3 +81,4 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+

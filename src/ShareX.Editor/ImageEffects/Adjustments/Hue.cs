@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Hue")]
-    internal class Hue : ImageEffect
+    public class Hue : ImageEffect
     {
         private int hue;
 
@@ -62,4 +62,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 

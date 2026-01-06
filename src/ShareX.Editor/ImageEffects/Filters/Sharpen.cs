@@ -32,7 +32,7 @@ using System.ComponentModel;
 
 namespace ShareX.Editor.ImageEffects
 {
-    internal class Sharpen : ImageEffect
+    public class Sharpen : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -41,4 +41,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

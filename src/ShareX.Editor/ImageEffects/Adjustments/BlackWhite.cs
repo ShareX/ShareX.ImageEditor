@@ -39,7 +39,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Black & White")]
-    internal class BlackWhite : ImageEffect
+    public class BlackWhite : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -53,3 +53,4 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+

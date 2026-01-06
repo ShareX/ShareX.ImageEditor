@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Polaroid")]
-    internal class Polaroid : ImageEffect
+    public class Polaroid : ImageEffect
     {
         [DefaultValue(5)]
         public int Margin { get; set; }
@@ -54,3 +54,4 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+

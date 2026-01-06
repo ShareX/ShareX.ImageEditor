@@ -33,7 +33,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects
 {
-    internal class Blur : ImageEffect
+    public class Blur : ImageEffect
     {
         private int radius;
 
@@ -67,4 +67,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

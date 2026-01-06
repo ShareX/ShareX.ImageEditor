@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects
 {
     [Description("Gaussian blur")]
-    internal class GaussianBlur : ImageEffect
+    public class GaussianBlur : ImageEffect
     {
         private int radius;
 
@@ -68,4 +68,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

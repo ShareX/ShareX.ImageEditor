@@ -32,7 +32,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects
 {
-    internal class Shadow : ImageEffect
+    public class Shadow : ImageEffect
     {
         private float opacity;
 
@@ -96,4 +96,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

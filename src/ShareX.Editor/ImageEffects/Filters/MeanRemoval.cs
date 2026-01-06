@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects
 {
     [Description("Mean removal")]
-    internal class MeanRemoval : ImageEffect
+    public class MeanRemoval : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -42,4 +42,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

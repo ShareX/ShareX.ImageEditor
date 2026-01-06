@@ -32,7 +32,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects
 {
-    internal class Pixelate : ImageEffect
+    public class Pixelate : ImageEffect
     {
         [DefaultValue(16)]
         public int Size { get; set; }
@@ -62,4 +62,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Saturation")]
-    internal class Saturation : ImageEffect
+    public class Saturation : ImageEffect
     {
         private float saturation;
 
@@ -63,4 +63,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 

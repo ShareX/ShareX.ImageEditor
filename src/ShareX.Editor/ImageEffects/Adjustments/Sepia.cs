@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Sepia")]
-    internal class Sepia : ImageEffect
+    public class Sepia : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -42,4 +42,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 

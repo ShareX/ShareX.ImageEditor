@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Drawings
 {
     [Description("Draw checkerboard")]
-    internal class DrawCheckerboard : ImageEffect
+    public class DrawCheckerboard : ImageEffect
     {
         [DefaultValue(10)]
         public int Size { get; set; }
@@ -64,4 +64,5 @@ namespace ShareX.Editor.ImageEffects.Drawings
         }
     }
 }
+
 

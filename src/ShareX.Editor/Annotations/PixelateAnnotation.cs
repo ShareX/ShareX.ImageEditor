@@ -65,10 +65,10 @@ public class PixelateAnnotation : BaseEffectAnnotation
         int h = Math.Max(1, crop.Height / pixelSize);
 
         var info = new SKImageInfo(w, h);
-        using var small = crop.Resize(info, SKSamplingOptions.Default);
+        using var small = crop.Resize(info, SKFilterQuality.Low);
         
         info = new SKImageInfo(crop.Width, crop.Height);
-        using var result = small.Resize(info, new SKSamplingOptions(SKFilterMode.Nearest)); // Nearest neighbor upscale
+        using var result = small.Resize(info, SKFilterQuality.None); // Nearest neighbor upscale
 
         EffectBitmap?.Dispose();
         EffectBitmap = result.Copy();

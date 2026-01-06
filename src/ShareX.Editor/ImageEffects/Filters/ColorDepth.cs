@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects
 {
     [Description("Color depth")]
-    internal class ColorDepth : ImageEffect
+    public class ColorDepth : ImageEffect
     {
         private int bitsPerChannel;
 
@@ -76,4 +76,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

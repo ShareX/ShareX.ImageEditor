@@ -33,7 +33,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects.Manipulations
 {
-    internal class Crop : ImageEffect
+    public class Crop : ImageEffect
     {
         [DefaultValue(0)]
         public int Left { get; set; }
@@ -73,4 +73,5 @@ namespace ShareX.Editor.ImageEffects.Manipulations
         }
     }
 }
+
 

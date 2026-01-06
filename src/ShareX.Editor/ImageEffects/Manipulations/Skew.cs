@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Manipulations
 {
     [Description("Skew")]
-    internal class Skew : ImageEffect
+    public class Skew : ImageEffect
     {
         [DefaultValue(0f)]
         public float X { get; set; }
@@ -62,4 +62,5 @@ namespace ShareX.Editor.ImageEffects.Manipulations
         }
     }
 }
+
 

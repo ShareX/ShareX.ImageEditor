@@ -33,7 +33,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Colorize")]
-    internal class Colorize : ImageEffect
+    public class Colorize : ImageEffect
     {
         // [DefaultValue(typeof(Color), "Red")]
         public SKColor Color { get; set; }
@@ -51,4 +51,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 

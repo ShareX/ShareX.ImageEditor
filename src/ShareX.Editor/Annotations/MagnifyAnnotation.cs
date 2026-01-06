@@ -81,7 +81,7 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         
         // Scale up to fill the full rect
         var info = new SKImageInfo((int)rect.Width, (int)rect.Height);
-        using var scaled = crop.Resize(info, SKSamplingOptions.Default);
+        using var scaled = crop.Resize(info, SKFilterQuality.Medium);
 
         EffectBitmap?.Dispose();
         EffectBitmap = scaled.Copy();

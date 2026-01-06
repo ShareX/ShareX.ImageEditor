@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Brightness")]
-    internal class Brightness : ImageEffect
+    public class Brightness : ImageEffect
     {
         private int brightness;
 
@@ -62,4 +62,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 

@@ -31,7 +31,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects
 {
-    internal class Smooth : ImageEffect
+    public class Smooth : ImageEffect
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
@@ -40,4 +40,5 @@ namespace ShareX.Editor.ImageEffects
         }
     }
 }
+
 

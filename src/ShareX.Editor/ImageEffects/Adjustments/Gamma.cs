@@ -34,7 +34,7 @@ using SkiaSharp;
 namespace ShareX.Editor.ImageEffects.Adjustments
 {
     [Description("Gamma")]
-    internal class Gamma : ImageEffect
+    public class Gamma : ImageEffect
     {
         private float gamma;
 
@@ -63,4 +63,5 @@ namespace ShareX.Editor.ImageEffects.Adjustments
         }
     }
 }
+
 
