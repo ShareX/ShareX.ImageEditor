@@ -2104,6 +2104,20 @@ namespace ShareX.Editor.Views
 
                         _selectedShape = createdShape;
                         UpdateSelectionHandles();
+
+                        // Auto-enter text edit mode for speech balloon
+                        if (createdShape is SpeechBalloonControl balloonControl)
+                        {
+                            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                            if (canvas != null)
+                            {
+                                // Use Dispatcher to ensure the shape is fully rendered before showing editor
+                                Dispatcher.UIThread.Post(() =>
+                                {
+                                    ShowSpeechBalloonTextEditor(balloonControl, canvas);
+                                }, DispatcherPriority.Normal);
+                            }
+                        }
                     }
 
                     // _currentShape is now managed by the canvas/undo stack
