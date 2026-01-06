@@ -74,6 +74,9 @@ namespace ShareX.Editor.Views
         // Store speech balloon tail points for editing
         private Dictionary<Control, Point> _speechBalloonTailPoints = new();
 
+        // Text editor overlay for speech balloons
+        private TextBox? _balloonTextEditor;
+
         // Cached SKBitmap for effect updates (avoid repeated conversions)
         private SkiaSharp.SKBitmap? _cachedSkBitmap;
 
@@ -930,6 +933,13 @@ namespace ShareX.Editor.Views
                 cropOverlay.Height = 0;
             }
 
+            // Clean up speech balloon text editor if active
+            if (_balloonTextEditor != null)
+            {
+                canvas?.Children.Remove(_balloonTextEditor);
+                _balloonTextEditor = null;
+            }
+
             _selectedShape = null;
             _currentShape = null;
             _isDrawing = false;
@@ -1023,6 +1033,80 @@ namespace ShareX.Editor.Views
             return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
         }
 
+        private void ShowSpeechBalloonTextEditor(SpeechBalloonControl balloonControl, Canvas canvas)
+        {
+            if (balloonControl.Annotation == null) return;
+
+            // Remove existing editor if any
+            if (_balloonTextEditor != null)
+            {
+                canvas.Children.Remove(_balloonTextEditor);
+                _balloonTextEditor = null;
+            }
+
+            var annotation = balloonControl.Annotation;
+            
+            // Get balloon position and size
+            var balloonLeft = Canvas.GetLeft(balloonControl);
+            var balloonTop = Canvas.GetTop(balloonControl);
+            var balloonWidth = balloonControl.Width;
+            var balloonHeight = balloonControl.Height;
+
+            // Create text editor
+            var textBox = new TextBox
+            {
+                Text = annotation.Text,
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(1),
+                BorderBrush = new SolidColorBrush(Color.Parse(annotation.StrokeColor)),
+                Foreground = new SolidColorBrush(Color.Parse(annotation.StrokeColor)),
+                FontSize = annotation.FontSize,
+                Padding = new Thickness(8),
+                TextAlignment = TextAlignment.Center,
+                VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
+                AcceptsReturn = false, // Enter key will finish editing instead of adding new line
+                TextWrapping = TextWrapping.Wrap,
+                MinWidth = 100,
+                MinHeight = 40
+            };
+
+            // Position in center of balloon
+            var editorWidth = Math.Max(100, balloonWidth * 0.8);
+            var editorHeight = Math.Max(40, balloonHeight * 0.6);
+            
+            Canvas.SetLeft(textBox, balloonLeft + (balloonWidth - editorWidth) / 2);
+            Canvas.SetTop(textBox, balloonTop + (balloonHeight - editorHeight) / 2);
+            textBox.Width = editorWidth;
+            textBox.Height = editorHeight;
+
+            // Handle text changes
+            textBox.LostFocus += (s, args) =>
+            {
+                if (s is TextBox tb)
+                {
+                    annotation.Text = tb.Text;
+                    balloonControl.InvalidateVisual();
+                    canvas.Children.Remove(tb);
+                    _balloonTextEditor = null;
+                }
+            };
+
+            // Handle Enter and Escape keys to finish editing
+            textBox.KeyDown += (s, args) =>
+            {
+                if (args.Key == Key.Enter || args.Key == Key.Escape)
+                {
+                    args.Handled = true;
+                    this.Focus(); // This will trigger LostFocus
+                }
+            };
+
+            canvas.Children.Add(textBox);
+            _balloonTextEditor = textBox;
+            textBox.Focus();
+            textBox.SelectAll();
+        }
+
         private async void OnCanvasPointerPressed(object sender, PointerPressedEventArgs e)
         {
             if (DataContext is not MainViewModel vm) return;
@@ -1113,6 +1197,14 @@ namespace ShareX.Editor.Views
                 }
             }
 
+            // Special handling for double-click on speech balloon to edit text
+            if (e.ClickCount == 2 && _selectedShape is SpeechBalloonControl balloonControl)
+            {
+                ShowSpeechBalloonTextEditor(balloonControl, canvas);
+                e.Handled = true;
+                return;
+            }
+
             // Allow dragging selected shapes even when not in Select tool mode
             // This enables immediate repositioning after creating an annotation
             if (_selectedShape != null && vm.ActiveTool != EditorTool.Select)
@@ -1147,7 +1239,7 @@ namespace ShareX.Editor.Views
                 }
             }
 
-            if (vm.ActiveTool == EditorTool.Select)
+            if (_selectedShape != null && vm.ActiveTool == EditorTool.Select)
             {
                 // Hit test - find the direct child of the canvas
                 var hitSource = e.Source as global::Avalonia.Visual;
@@ -1426,7 +1518,7 @@ namespace ShareX.Editor.Views
 
                 case EditorTool.SpeechBalloon:
                     // Create proper speech balloon control with tail
-                    var balloonAnnotation = new SpeechBalloonAnnotation
+                    var newBalloonAnnotation = new SpeechBalloonAnnotation
                     {
                         StrokeColor = vm.SelectedColor,
                         StrokeWidth = vm.StrokeWidth,
@@ -1435,18 +1527,18 @@ namespace ShareX.Editor.Views
                         EndPoint = ToSKPoint(_startPoint)
                     };
 
-                    var balloonControl = new SpeechBalloonControl
+                    var newBalloonControl = new SpeechBalloonControl
                     {
-                        Annotation = balloonAnnotation,
+                        Annotation = newBalloonAnnotation,
                         IsHitTestVisible = true,
                         Width = 0,  // Initial size - will be updated in OnPointerMoved
                         Height = 0
                     };
 
-                    Canvas.SetLeft(balloonControl, _startPoint.X);
-                    Canvas.SetTop(balloonControl, _startPoint.Y);
+                    Canvas.SetLeft(newBalloonControl, _startPoint.X);
+                    Canvas.SetTop(newBalloonControl, _startPoint.Y);
 
-                    _currentShape = balloonControl;
+                    _currentShape = newBalloonControl;
                     break;
 
                 case EditorTool.Pen:
@@ -1914,7 +2006,7 @@ namespace ShareX.Editor.Views
                 {
                     // Update spotlight annotation bounds
                     spotlight.StartPoint = ToSKPoint(_startPoint);
-                    spotlight.EndPoint = ToSKPoint(currentPoint);
+                    spotlight.EndPoint = ToSKPoint(_startPoint);
 
                     // Update canvas size for the entire image (needed for darkening overlay)
                     var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");

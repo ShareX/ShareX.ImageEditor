@@ -96,8 +96,14 @@ namespace ShareX.Editor.Controls
                     new SolidColorBrush(strokeColor)
                 );
 
-                var textX = (width - formattedText.Width) / 2;
-                var textY = (height - formattedText.Height) / 2;
+                // Calculate centered text position with padding
+                var padding = 8;
+                var textX = Math.Max(padding, (width - formattedText.Width) / 2);
+                var textY = Math.Max(padding, (height - formattedText.Height) / 2);
+
+                // Ensure text stays within bounds
+                textX = Math.Min(textX, width - formattedText.Width - padding);
+                textY = Math.Min(textY, height - formattedText.Height - padding);
 
                 context.DrawText(formattedText, new Point(textX, textY));
             }
@@ -117,7 +123,7 @@ namespace ShareX.Editor.Controls
 
                 // Default tail point if not set - place it below and centered
                 var absoluteTailPoint = tailPoint == default
-                    ? new SKPoint(Annotation!.StartPoint.X + width / 2, Annotation!.StartPoint.Y + height + 20)
+                    ? new SKPoint(Annotation!.StartPoint.X + width / 2, Annotation!.StartPoint.Y + height + 30)
                     : tailPoint;
 
                 // Convert tail point to relative coordinates (relative to the balloon's top-left corner)
@@ -126,97 +132,72 @@ namespace ShareX.Editor.Controls
                     absoluteTailPoint.Y - Annotation!.StartPoint.Y
                 );
 
-                // Determine which edge the tail should connect to
-                // Calculate the center of the balloon
-                float centerX = width / 2;
-                float centerY = height / 2;
-
-                // Determine which quadrant/edge the tail is in relative to the balloon center
                 float tailX = (float)renderTailPoint.X;
                 float tailY = (float)renderTailPoint.Y;
 
-                // Calculate angles to determine which edge
-                // If tail is outside the balloon bounds, use its position relative to center
-                bool tailOnBottom = tailY > bottom;
-                bool tailOnTop = tailY < top;
-                bool tailOnLeft = tailX < left;
-                bool tailOnRight = tailX > right;
+                // Determine which edge the tail should connect to based on tail position
+                // Strategy: Find which edge is closest to the tail point
+                float centerX = width / 2;
+                float centerY = height / 2;
 
-                // If tail is inside bounds, determine by which side is closer
-                if (!tailOnBottom && !tailOnTop && !tailOnLeft && !tailOnRight)
+                // Calculate distances to each edge
+                float distToTop = Math.Abs(tailY - top);
+                float distToBottom = Math.Abs(tailY - bottom);
+                float distToLeft = Math.Abs(tailX - left);
+                float distToRight = Math.Abs(tailX - right);
+
+                // Determine primary direction: use angle from center to tail
+                float dx = tailX - centerX;
+                float dy = tailY - centerY;
+                
+                // Determine which edge to connect to based on angle
+                // Use a simplified approach: check if tail is more horizontal or vertical
+                bool isMoreHorizontal = Math.Abs(dx) > Math.Abs(dy);
+                
+                bool tailOnTop = false;
+                bool tailOnBottom = false;
+                bool tailOnLeft = false;
+                bool tailOnRight = false;
+
+                if (isMoreHorizontal)
                 {
-                    // Tail is inside - determine closest edge
-                    float distToBottom = bottom - tailY;
-                    float distToTop = tailY - top;
-                    float distToLeft = tailX - left;
-                    float distToRight = right - tailX;
-
-                    float minDist = Math.Min(Math.Min(distToBottom, distToTop), Math.Min(distToLeft, distToRight));
-
-                    tailOnBottom = minDist == distToBottom;
-                    tailOnTop = !tailOnBottom && minDist == distToTop;
-                    tailOnLeft = !tailOnBottom && !tailOnTop && minDist == distToLeft;
-                    tailOnRight = !tailOnBottom && !tailOnTop && !tailOnLeft && minDist == distToRight;
+                    // Horizontal - choose left or right
+                    if (dx < 0)
+                        tailOnLeft = true;
+                    else
+                        tailOnRight = true;
                 }
                 else
                 {
-                    // Tail is outside - need to determine primary direction
-                    // Use angle-based approach for corners
-                    float dx = tailX - centerX;
-                    float dy = tailY - centerY;
-
-                    // Determine primary direction based on which component is larger
-                    if (Math.Abs(dx) > Math.Abs(dy))
-                    {
-                        // Horizontal direction dominates
-                        tailOnLeft = dx < 0;
-                        tailOnRight = dx > 0;
-                        tailOnTop = false;
-                        tailOnBottom = false;
-                    }
+                    // Vertical - choose top or bottom
+                    if (dy < 0)
+                        tailOnTop = true;
                     else
-                    {
-                        // Vertical direction dominates
-                        tailOnTop = dy < 0;
-                        tailOnBottom = dy > 0;
-                        tailOnLeft = false;
-                        tailOnRight = false;
-                    }
+                        tailOnBottom = true;
                 }
 
-                float baseTailWidth = 30;
-
-                // Ensure we have valid ranges for clamping
+                float baseTailWidth = 20;
                 float minConnectionMargin = radius + 5;
-
-                // Calculate connection points for the tail
-                // These are the two points where the tail connects to the balloon edge
-                Point tailStart, tailEnd;
 
                 // Start at top-left after the rounded corner
                 ctx.BeginFigure(new Point(left + radius, top), true);
 
-                // Top edge
+                // Top edge - check if tail connects here
                 if (tailOnTop)
                 {
                     float minX = left + minConnectionMargin;
                     float maxX = right - minConnectionMargin;
-                    // Ensure min is not greater than max
                     if (minX > maxX) minX = maxX = (left + right) / 2;
 
                     float connectionX = Math.Clamp(tailX, minX, maxX);
-
-                    // Ensure tail base doesn't extend beyond the valid edge range
                     float halfTailWidth = baseTailWidth / 2;
                     float tailStartX = Math.Max(minX, connectionX - halfTailWidth);
                     float tailEndX = Math.Min(maxX, connectionX + halfTailWidth);
 
-                    tailStart = new Point(tailStartX, top);
-                    tailEnd = new Point(tailEndX, top);
-
-                    ctx.LineTo(tailStart);
-                    ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(tailEnd);
+                    // Draw to tail start, then to tail point (outside), then to tail end
+                    ctx.LineTo(new Point(tailStartX, top));
+                    ctx.LineTo(renderTailPoint); // Tail point is outside
+                    ctx.LineTo(new Point(tailEndX, top));
                     ctx.LineTo(new Point(right - radius, top));
                 }
                 else
@@ -233,27 +214,21 @@ namespace ShareX.Editor.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Right edge
+                // Right edge - check if tail connects here
                 if (tailOnRight)
                 {
                     float minY = top + minConnectionMargin;
                     float maxY = bottom - minConnectionMargin;
-                    // Ensure min is not greater than max
                     if (minY > maxY) minY = maxY = (top + bottom) / 2;
 
                     float connectionY = Math.Clamp(tailY, minY, maxY);
-
-                    // Ensure tail base doesn't extend beyond the valid edge range
                     float halfTailWidth = baseTailWidth / 2;
                     float tailStartY = Math.Max(minY, connectionY - halfTailWidth);
                     float tailEndY = Math.Min(maxY, connectionY + halfTailWidth);
 
-                    tailStart = new Point(right, tailStartY);
-                    tailEnd = new Point(right, tailEndY);
-
-                    ctx.LineTo(tailStart);
+                    ctx.LineTo(new Point(right, tailStartY));
                     ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(tailEnd);
+                    ctx.LineTo(new Point(right, tailEndY));
                     ctx.LineTo(new Point(right, bottom - radius));
                 }
                 else
@@ -270,27 +245,23 @@ namespace ShareX.Editor.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Bottom edge
+                // Bottom edge - check if tail connects here
                 if (tailOnBottom)
                 {
                     float minX = left + minConnectionMargin;
                     float maxX = right - minConnectionMargin;
-                    // Ensure min is not greater than max
                     if (minX > maxX) minX = maxX = (left + right) / 2;
 
                     float connectionX = Math.Clamp(tailX, minX, maxX);
-
-                    // Ensure tail base doesn't extend beyond the valid edge range
                     float halfTailWidth = baseTailWidth / 2;
+                    
+                    // For bottom edge, draw from right to left, so reverse order
                     float tailStartX = Math.Min(maxX, connectionX + halfTailWidth);
                     float tailEndX = Math.Max(minX, connectionX - halfTailWidth);
 
-                    tailStart = new Point(tailStartX, bottom);
-                    tailEnd = new Point(tailEndX, bottom);
-
-                    ctx.LineTo(tailStart);
+                    ctx.LineTo(new Point(tailStartX, bottom));
                     ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(tailEnd);
+                    ctx.LineTo(new Point(tailEndX, bottom));
                     ctx.LineTo(new Point(left + radius, bottom));
                 }
                 else
@@ -307,27 +278,23 @@ namespace ShareX.Editor.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Left edge
+                // Left edge - check if tail connects here
                 if (tailOnLeft)
                 {
                     float minY = top + minConnectionMargin;
                     float maxY = bottom - minConnectionMargin;
-                    // Ensure min is not greater than max
                     if (minY > maxY) minY = maxY = (top + bottom) / 2;
 
                     float connectionY = Math.Clamp(tailY, minY, maxY);
-
-                    // Ensure tail base doesn't extend beyond the valid edge range
                     float halfTailWidth = baseTailWidth / 2;
+                    
+                    // For left edge, draw from bottom to top, so reverse order
                     float tailStartY = Math.Min(maxY, connectionY + halfTailWidth);
                     float tailEndY = Math.Max(minY, connectionY - halfTailWidth);
 
-                    tailStart = new Point(left, tailStartY);
-                    tailEnd = new Point(left, tailEndY);
-
-                    ctx.LineTo(tailStart);
+                    ctx.LineTo(new Point(left, tailStartY));
                     ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(tailEnd);
+                    ctx.LineTo(new Point(left, tailEndY));
                     ctx.LineTo(new Point(left, top + radius));
                 }
                 else
