@@ -261,7 +261,7 @@
         </Border>
 
         <!-- Row 1: Main Content Area with Preview and Sidebar -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,288">
+        <Grid Grid.Row="1" ColumnDefinitions="*,300">
             
             <!-- Central Preview Canvas -->
             <Grid Grid.Column="0" Margin="20">
@@ -405,43 +405,43 @@
                         <!-- Output Ratio -->
                         <StackPanel Spacing="8">
                             <TextBlock Text="Output Ratio" Foreground="#9CA3AF"/>
-                            <UniformGrid Columns="3" Rows="3">
+                            <UniformGrid Columns="3" Rows="3" HorizontalAlignment="Stretch">
                                 <Button Content="Auto" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="Auto"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=Auto}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="1:1" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="1:1"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=1:1}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="4:3" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="4:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=4:3}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="3:2" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:2"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:2}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="16:9" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="16:9"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=16:9}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="5:3" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="5:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=5:3}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="9:16" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="9:16"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=9:16}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="3:4" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:4"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:4}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Content="2:3" Margin="2" Classes="DarkButton"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="2:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=2:3}"
-                                        Padding="8"/>
+                                        Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                  </UniformGrid>
                              </StackPanel>
 
@@ -451,15 +451,15 @@
                             <ItemsControl ItemsSource="{Binding GradientPresets}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="4" Rows="6" />
+                                        <WrapPanel Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Padding="0" BorderThickness="0" Background="Transparent"
+                                        <Button Padding="0" BorderThickness="0" Background="Transparent" Margin="2"
                                                 Command="{Binding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}">
-                                            <Border Width="50" Height="50" Margin="4" CornerRadius="10" Background="{Binding Brush}" ToolTip.Tip="{Binding Name}"/>
+                                            <Border Width="50" Height="50" CornerRadius="10" Background="{Binding Brush}" ToolTip.Tip="{Binding Name}"/>
                                         </Button>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -496,7 +496,7 @@
                     <Button Command="{Binding QuickSaveCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="{StaticResource IconDownload}" FontSize="14" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                            <TextBlock Text="Quick Save" FontSize="12"/>
+                            <TextBlock Text="Save" FontSize="12"/>
                         </StackPanel>
                         <Button.Styles>
                             <Style Selector="Button">
