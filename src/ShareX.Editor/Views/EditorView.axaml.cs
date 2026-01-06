@@ -1,3 +1,4 @@
+#nullable disable
 #region License Information (GPL v3)
 
 /*
@@ -772,8 +773,7 @@ namespace ShareX.Editor.Views
                 {
                     Title = "Save Image",
                     DefaultExtension = "png",
-                    FileTypeChoices = new[]
-                    {
+                    FileTypeChoices = new[] {
                         new FilePickerFileType("PNG Image") { Patterns = new[] { "*.png" } },
                         new FilePickerFileType("JPEG Image") { Patterns = new[] { "*.jpg", "*.jpeg" } },
                         new FilePickerFileType("Bitmap Image") { Patterns = new[] { "*.bmp" } }
@@ -1000,6 +1000,13 @@ namespace ShareX.Editor.Views
                         }
                     }
                     break;
+                case SpeechBalloonControl balloonControl:
+                    if (balloonControl.Annotation != null)
+                    {
+                        balloonControl.Annotation.StrokeColor = colorHex;
+                        balloonControl.InvalidateVisual();
+                    }
+                    break;
             }
         }
 
@@ -1025,6 +1032,15 @@ namespace ShareX.Editor.Views
                         }
                     }
                     break;
+                case SpeechBalloonControl balloonControl:
+                    if (balloonControl.Annotation != null)
+                    {
+                        balloonControl.Annotation.StrokeWidth = width;
+                        // Also update font size proportionally
+                        balloonControl.Annotation.FontSize = Math.Max(12, width * 4);
+                        balloonControl.InvalidateVisual();
+                    }
+                    break;
             }
         }
 
@@ -1046,38 +1062,32 @@ namespace ShareX.Editor.Views
 
             var annotation = balloonControl.Annotation;
             
-            // Get balloon position and size
+            // Get balloon position and size - match the full rectangle
             var balloonLeft = Canvas.GetLeft(balloonControl);
             var balloonTop = Canvas.GetTop(balloonControl);
             var balloonWidth = balloonControl.Width;
             var balloonHeight = balloonControl.Height;
 
-            // Create text editor
+            // Create text editor that matches the speech balloon rectangle
             var textBox = new TextBox
             {
                 Text = annotation.Text,
                 Background = Brushes.Transparent,
-                BorderThickness = new Thickness(1),
-                BorderBrush = new SolidColorBrush(Color.Parse(annotation.StrokeColor)),
+                BorderThickness = new Thickness(0), // No border, let the balloon's border show through
                 Foreground = new SolidColorBrush(Color.Parse(annotation.StrokeColor)),
                 FontSize = annotation.FontSize,
-                Padding = new Thickness(8),
+                Padding = new Thickness(12), // Padding to keep text inside the balloon edges
                 TextAlignment = TextAlignment.Center,
                 VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
                 AcceptsReturn = false, // Enter key will finish editing instead of adding new line
-                TextWrapping = TextWrapping.Wrap,
-                MinWidth = 100,
-                MinHeight = 40
+                TextWrapping = TextWrapping.Wrap
             };
 
-            // Position in center of balloon
-            var editorWidth = Math.Max(100, balloonWidth * 0.8);
-            var editorHeight = Math.Max(40, balloonHeight * 0.6);
-            
-            Canvas.SetLeft(textBox, balloonLeft + (balloonWidth - editorWidth) / 2);
-            Canvas.SetTop(textBox, balloonTop + (balloonHeight - editorHeight) / 2);
-            textBox.Width = editorWidth;
-            textBox.Height = editorHeight;
+            // Position and size to match the balloon rectangle exactly
+            Canvas.SetLeft(textBox, balloonLeft);
+            Canvas.SetTop(textBox, balloonTop);
+            textBox.Width = balloonWidth;
+            textBox.Height = balloonHeight;
 
             // Handle text changes
             textBox.LostFocus += (s, args) =>
