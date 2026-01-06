@@ -476,34 +476,34 @@
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <!-- Left: Export Actions -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                    <Button Command="{Binding CopyCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="{StaticResource IconCopy}" FontSize="14" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                            <TextBlock Text="Copy" FontSize="12"/>
+                    <Button Command="{Binding CopyCommand}" Height="36" Padding="16,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                            <TextBlock Text="Copy" FontSize="14"/>
                         </StackPanel>
 
                     </Button>
                     
-                    <Button Command="{Binding QuickSaveCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="{StaticResource IconDownload}" FontSize="14" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                            <TextBlock Text="Save" FontSize="12"/>
+                    <Button Command="{Binding QuickSaveCommand}" Height="36" Padding="16,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{StaticResource IconDownload}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                            <TextBlock Text="Save" FontSize="14"/>
                         </StackPanel>
 
                     </Button>
                     
-                    <Button Command="{Binding SaveAsCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="{StaticResource IconSave}" FontSize="14" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                            <TextBlock Text="Save As..." FontSize="12"/>
+                    <Button Command="{Binding SaveAsCommand}" Height="36" Padding="16,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{StaticResource IconSave}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                            <TextBlock Text="Save As..." FontSize="14"/>
                         </StackPanel>
 
                     </Button>
                     
-                    <Button Command="{Binding UploadCommand}">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <TextBlock Text="&#xf093;" FontSize="14" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                            <TextBlock Text="Upload" FontSize="12"/>
+                    <Button Command="{Binding UploadCommand}" Height="36" Padding="16,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xf093;" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                            <TextBlock Text="Upload" FontSize="14"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
