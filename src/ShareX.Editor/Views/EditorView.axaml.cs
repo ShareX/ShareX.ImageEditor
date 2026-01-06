@@ -1249,7 +1249,7 @@ namespace ShareX.Editor.Views
                 }
             }
 
-            if (_selectedShape != null && vm.ActiveTool == EditorTool.Select)
+            if (vm.ActiveTool == EditorTool.Select)
             {
                 // Hit test - find the direct child of the canvas
                 var hitSource = e.Source as global::Avalonia.Visual;
