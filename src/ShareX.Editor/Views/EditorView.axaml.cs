@@ -1061,7 +1061,7 @@ namespace ShareX.Editor.Views
             }
 
             var annotation = balloonControl.Annotation;
-            
+
             // Get balloon position and size - match the full rectangle
             var balloonLeft = Canvas.GetLeft(balloonControl);
             var balloonTop = Canvas.GetTop(balloonControl);
@@ -1475,10 +1475,10 @@ namespace ShareX.Editor.Views
                 case EditorTool.Spotlight:
                     // Create a spotlight control that will render the darkening effect
                     var spotlightAnnotation = new SpotlightAnnotation();
-                    
+
                     // Set canvas size for the darkening overlay (convert from Avalonia.Size to SKSize)
                     spotlightAnnotation.CanvasSize = new SkiaSharp.SKSize((float)canvas.Bounds.Width, (float)canvas.Bounds.Height);
-                    
+
                     var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
                     {
                         Annotation = spotlightAnnotation,
@@ -1487,11 +1487,11 @@ namespace ShareX.Editor.Views
                         Width = canvas.Bounds.Width,
                         Height = canvas.Bounds.Height
                     };
-                    
+
                     // Position at canvas origin (0, 0) - not at click point!
                     Canvas.SetLeft(spotlightControl, 0);
                     Canvas.SetTop(spotlightControl, 0);
-                    
+
                     _currentShape = spotlightControl;
                     break;
 
@@ -2024,18 +2024,18 @@ namespace ShareX.Editor.Views
                     // Update spotlight annotation bounds (the highlighted area) - convert Avalonia.Point to SKPoint
                     spotlight.StartPoint = new SkiaSharp.SKPoint((float)_startPoint.X, (float)_startPoint.Y);
                     spotlight.EndPoint = new SkiaSharp.SKPoint((float)currentPoint.X, (float)currentPoint.Y);
-                    
+
                     // Ensure canvas size is always up to date
                     var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
                     if (parentCanvas != null)
                     {
                         spotlight.CanvasSize = new SkiaSharp.SKSize((float)parentCanvas.Bounds.Width, (float)parentCanvas.Bounds.Height);
-                        
+
                         // CRITICAL FIX: Ensure control always covers full canvas
                         spotlightControl.Width = parentCanvas.Bounds.Width;
                         spotlightControl.Height = parentCanvas.Bounds.Height;
                     }
-                    
+
                     spotlightControl.InvalidateVisual();
                 }
                 else if (_currentShape is SpeechBalloonControl createBalloonControl && createBalloonControl.Annotation is SpeechBalloonAnnotation createBalloon)
@@ -2280,38 +2280,77 @@ namespace ShareX.Editor.Views
             var geometry = new StreamGeometry();
             using (var ctx = geometry.Open())
             {
-                // Calculate arrow head
+                // Calculate arrow direction vector
                 var d = end - start;
                 var length = Math.Sqrt(d.X * d.X + d.Y * d.Y);
 
                 if (length > 0)
                 {
+                    // Normalized direction vector
                     var ux = d.X / length;
                     var uy = d.Y / length;
 
-                    // Modern arrow: narrower angle (20 degrees instead of 30)
-                    var arrowAngle = Math.PI / 9; // 20 degrees for sleeker look
+                    // Perpendicular vector (for creating the tapered shaft)
+                    var perpX = -uy;
+                    var perpY = ux;
 
-                    // Calculate arrowhead base point (where arrow meets the line)
+                    // IMPROVED ARROW WITH TAPERED SHAFT AND LARGER ARROWHEAD:
+                    // 1. Bigger arrowhead (1.5x larger) to balance the thicker shaft
+                    // 2. Wider angle (35 degrees) for more prominent cap
+                    // 3. Tapered shaft that starts thin and widens toward the arrowhead
+
+                    // Make the arrowhead 1.5x larger to balance the thicker shaft
+                    var enlargedHeadSize = headSize * 1.5;
+
+                    var arrowAngle = Math.PI / 5.14; // 35 degrees for wider, more prominent arrowhead
+                    var headAngle = Math.Atan2(uy, ux);
+
+                    // Calculate arrowhead base point (where shaft meets the head)
                     var arrowBase = new Point(
-                        end.X - headSize * ux,
-                        end.Y - headSize * uy);
+                        end.X - enlargedHeadSize * ux,
+                        end.Y - enlargedHeadSize * uy);
 
-                    // Arrow head wing points
+                    // Calculate the two wing points of the arrowhead triangle
                     var p1 = new Point(
-                        end.X - headSize * Math.Cos(Math.Atan2(uy, ux) - arrowAngle),
-                        end.Y - headSize * Math.Sin(Math.Atan2(uy, ux) - arrowAngle));
+                        end.X - enlargedHeadSize * Math.Cos(headAngle - arrowAngle),
+                        end.Y - enlargedHeadSize * Math.Sin(headAngle - arrowAngle));
 
                     var p2 = new Point(
-                        end.X - headSize * Math.Cos(Math.Atan2(uy, ux) + arrowAngle),
-                        end.Y - headSize * Math.Sin(Math.Atan2(uy, ux) + arrowAngle));
+                        end.X - enlargedHeadSize * Math.Cos(headAngle + arrowAngle),
+                        end.Y - enlargedHeadSize * Math.Sin(headAngle + arrowAngle));
 
-                    // Draw line from start to arrow base (not to endpoint)
-                    ctx.BeginFigure(start, false);
-                    ctx.LineTo(arrowBase);
-                    ctx.EndFigure(false);
+                    // TAPERED SHAFT: Draw a filled trapezoid that widens toward the arrowhead
+                    // The shaft width at the start (thin end) is 20% of the full stroke thickness
+                    // The shaft width at the base (thick end) matches the arrowhead base width
+                    var strokeThickness = DataContext is MainViewModel vm ? vm.StrokeWidth : 4;
+                    var shaftStartWidth = strokeThickness * 0.3; // Thin back (30% of stroke)
+                    var shaftEndWidth = enlargedHeadSize * 0.42; // Wider front to match larger arrowhead
 
-                    // Draw filled arrowhead triangle
+                    // Calculate the four corners of the tapered shaft trapezoid
+                    var shaftStartLeft = new Point(
+                        start.X + perpX * shaftStartWidth,
+                        start.Y + perpY * shaftStartWidth);
+
+                    var shaftStartRight = new Point(
+                        start.X - perpX * shaftStartWidth,
+                        start.Y - perpY * shaftStartWidth);
+
+                    var shaftEndLeft = new Point(
+                        arrowBase.X + perpX * shaftEndWidth,
+                        arrowBase.Y + perpY * shaftEndWidth);
+
+                    var shaftEndRight = new Point(
+                        arrowBase.X - perpX * shaftEndWidth,
+                        arrowBase.Y - perpY * shaftEndWidth);
+
+                    // Draw the filled tapered shaft as a trapezoid
+                    ctx.BeginFigure(shaftStartLeft, true);
+                    ctx.LineTo(shaftEndLeft);
+                    ctx.LineTo(shaftEndRight);
+                    ctx.LineTo(shaftStartRight);
+                    ctx.EndFigure(true);
+
+                    // Draw filled arrowhead triangle (now 1.5x larger and wider)
                     ctx.BeginFigure(end, true);
                     ctx.LineTo(p1);
                     ctx.LineTo(p2);
@@ -2319,10 +2358,12 @@ namespace ShareX.Editor.Views
                 }
                 else
                 {
-                    // Fallback for zero-length arrow
-                    ctx.BeginFigure(start, false);
-                    ctx.LineTo(end);
-                    ctx.EndFigure(false);
+                    // Fallback for zero-length arrow - draw a simple dot
+                    var radius = 2.0;
+                    ctx.BeginFigure(new Point(start.X - radius, start.Y), true);
+                    ctx.ArcTo(new Point(start.X + radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
+                    ctx.ArcTo(new Point(start.X - radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
+                    ctx.EndFigure(true);
                 }
             }
             return geometry;
