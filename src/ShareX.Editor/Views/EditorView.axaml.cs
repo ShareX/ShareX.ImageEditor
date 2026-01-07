@@ -1125,6 +1125,27 @@ namespace ShareX.Editor.Views
             textBox.SelectAll();
         }
 
+        private void CancelActiveRegionDrawing(Canvas canvas, MainViewModel vm)
+        {
+            if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle rect)
+            {
+                if (rect.Name == "CropOverlay")
+                {
+                    rect.IsVisible = false;
+                    rect.Width = 0;
+                    rect.Height = 0;
+                }
+                else if (rect.Name == "CutOutOverlay")
+                {
+                    canvas.Children.Remove(rect);
+                }
+            }
+
+            _currentShape = null;
+            _cutOutDirection = null;
+            _isDrawing = false;
+        }
+
         private async void OnCanvasPointerPressed(object sender, PointerPressedEventArgs e)
         {
             if (DataContext is not MainViewModel vm) return;
@@ -1135,6 +1156,16 @@ namespace ShareX.Editor.Views
             // Ignore middle mouse to avoid creating annotations while panning
             var props = e.GetCurrentPoint(canvas).Properties;
             if (props.IsMiddleButtonPressed) return;
+
+            // Allow right-click cancellation while dragging crop or cut-out selection
+            if (_isDrawing && props.IsRightButtonPressed && (vm.ActiveTool == EditorTool.Crop || vm.ActiveTool == EditorTool.CutOut))
+            {
+                CancelActiveRegionDrawing(canvas, vm);
+                e.Pointer.Capture(null);
+                vm.StatusText = "Selection cancelled";
+                e.Handled = true;
+                return;
+            }
 
             var point = GetCanvasPosition(e, canvas);
 
@@ -1670,6 +1701,19 @@ namespace ShareX.Editor.Views
             var canvas = this.FindControl<Canvas>("AnnotationCanvas") ?? sender as Canvas;
             if (canvas == null) return;
             var currentPoint = GetCanvasPosition(e, canvas);
+
+            if (_isDrawing && _currentShape != null && DataContext is MainViewModel vmMove)
+            {
+                var propsMove = e.GetCurrentPoint(canvas).Properties;
+                if (propsMove.IsRightButtonPressed && (vmMove.ActiveTool == EditorTool.Crop || vmMove.ActiveTool == EditorTool.CutOut))
+                {
+                    CancelActiveRegionDrawing(canvas, vmMove);
+                    e.Pointer.Capture(null);
+                    vmMove.StatusText = "Selection cancelled";
+                    e.Handled = true;
+                    return;
+                }
+            }
 
             if (_isDraggingHandle && _draggedHandle != null && _selectedShape != null)
             {
