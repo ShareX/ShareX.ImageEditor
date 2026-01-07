@@ -8,7 +8,7 @@ namespace ShareX.Editor.Annotations;
 public class FreehandAnnotation : Annotation
 {
     public List<SKPoint> Points { get; set; } = new List<SKPoint>();
-    
+
     /// <summary>
     /// Simplification tolerance for smoothing
     /// </summary>
@@ -25,13 +25,13 @@ public class FreehandAnnotation : Annotation
 
         using var paint = CreateStrokePaint();
         using var path = new SKPath();
-        
+
         path.MoveTo(Points[0]);
         for (int i = 1; i < Points.Count; i++)
         {
             path.LineTo(Points[i]);
         }
-        
+
         canvas.DrawPath(path, paint);
     }
 
@@ -55,7 +55,7 @@ public class FreehandAnnotation : Annotation
     public override SKRect GetBounds()
     {
         if (Points.Count == 0) return SKRect.Empty;
-        
+
         float minX = Points.Min(p => p.X);
         float minY = Points.Min(p => p.Y);
         float maxX = Points.Max(p => p.X);

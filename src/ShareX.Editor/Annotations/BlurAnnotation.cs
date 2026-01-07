@@ -56,16 +56,16 @@ public class BlurAnnotation : BaseEffectAnnotation
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
-        
+
         var rect = GetBounds();
         if (rect.Width <= 0 || rect.Height <= 0) return;
 
         // Convert to integer bounds
         var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
-        
+
         // Ensure bounds are valid
         skRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
-        
+
         if (skRect.Width <= 0 || skRect.Height <= 0) return;
 
         // Crop the region
@@ -74,16 +74,16 @@ public class BlurAnnotation : BaseEffectAnnotation
 
         // Apply Blur
         var blurRadius = (int)Amount;
-        
+
         using var surface = SKSurface.Create(new SKImageInfo(crop.Width, crop.Height));
         var canvas = surface.Canvas;
         using var paint = new SKPaint();
         paint.ImageFilter = SKImageFilter.CreateBlur(blurRadius, blurRadius);
-        
+
         canvas.DrawBitmap(crop, 0, 0, paint);
-        
+
         using var blurredImage = surface.Snapshot();
-        
+
         // Store as SKBitmap
         EffectBitmap?.Dispose();
         EffectBitmap = SKBitmap.FromImage(blurredImage);

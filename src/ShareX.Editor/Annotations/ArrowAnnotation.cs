@@ -46,45 +46,45 @@ public class ArrowAnnotation : Annotation
     {
         using var strokePaint = CreateStrokePaint();
         using var fillPaint = CreateFillPaint();
-        
+
         // Calculate arrow head
         var dx = EndPoint.X - StartPoint.X;
         var dy = EndPoint.Y - StartPoint.Y;
         var length = (float)Math.Sqrt(dx * dx + dy * dy);
-        
+
         if (length > 0)
         {
             var ux = dx / length;
             var uy = dy / length;
-            
+
             // Modern arrow: narrower angle (20 degrees instead of 30)
             var arrowAngle = Math.PI / 9; // 20 degrees for sleeker look
             var angle = Math.Atan2(dy, dx);
-            
+
             // Calculate arrowhead base point
             var arrowBase = new SKPoint(
                 EndPoint.X - ArrowHeadSize * ux,
                 EndPoint.Y - ArrowHeadSize * uy);
-            
+
             // Draw line from start to arrow base
             canvas.DrawLine(StartPoint, arrowBase, strokePaint);
-            
+
             // Arrow head wing points
             var point1 = new SKPoint(
                 (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle - arrowAngle)),
                 (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle - arrowAngle)));
-            
+
             var point2 = new SKPoint(
                 (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle + arrowAngle)),
                 (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle + arrowAngle)));
-            
+
             // Draw filled arrow head triangle
             using var path = new SKPath();
             path.MoveTo(EndPoint);
             path.LineTo(point1);
             path.LineTo(point2);
             path.Close();
-            
+
             canvas.DrawPath(path, fillPaint);
             canvas.DrawPath(path, strokePaint);
         }
@@ -102,15 +102,15 @@ public class ArrowAnnotation : Annotation
         var dy = EndPoint.Y - StartPoint.Y;
         var lineLength = (float)Math.Sqrt(dx * dx + dy * dy);
         if (lineLength < 0.001f) return false;
-        
-        var t = Math.Max(0, Math.Min(1, 
-            ((point.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + 
+
+        var t = Math.Max(0, Math.Min(1,
+            ((point.X - StartPoint.X) * (EndPoint.X - StartPoint.X) +
              (point.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y)) / (lineLength * lineLength)));
-        
+
         var projection = new SKPoint(
             StartPoint.X + (float)t * (EndPoint.X - StartPoint.X),
             StartPoint.Y + (float)t * (EndPoint.Y - StartPoint.Y));
-        
+
         var pdx = point.X - projection.X;
         var pdy = point.Y - projection.Y;
         var distance = (float)Math.Sqrt(pdx * pdx + pdy * pdy);

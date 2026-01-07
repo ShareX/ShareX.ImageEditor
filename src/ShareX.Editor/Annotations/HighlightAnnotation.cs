@@ -28,7 +28,7 @@ public class HighlightAnnotation : BaseEffectAnnotation
             Style = SKPaintStyle.Fill,
             IsAntialias = true
         };
-        
+
         canvas.DrawRect(rect, paint);
     }
 }

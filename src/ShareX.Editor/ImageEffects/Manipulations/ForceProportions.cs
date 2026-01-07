@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 // using ShareX.Editor.ImageEffects.Enums;
 
 namespace ShareX.Editor.ImageEffects.Manipulations
@@ -63,8 +59,8 @@ namespace ShareX.Editor.ImageEffects.Manipulations
 
         public override SKBitmap Apply(SKBitmap bmp)
         {
-             // TODO: Implementation
-             return bmp;
+            // TODO: Implementation
+            return bmp;
         }
 
         protected override string? GetSummary()

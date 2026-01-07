@@ -23,8 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
 using System.ComponentModel;
 
 namespace ShareX.Editor.ImageEffects

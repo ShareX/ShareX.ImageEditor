@@ -251,7 +251,7 @@ public class EditorCore
             _currentAnnotation.EndPoint = point;
             _currentAnnotation.StrokeColor = StrokeColor;
             _currentAnnotation.StrokeWidth = StrokeWidth;
-            
+
             // Handle special tools
             if (_currentAnnotation is FreehandAnnotation freehand)
             {
@@ -324,20 +324,20 @@ public class EditorCore
         if (_isDragging && _selectedAnnotation != null)
         {
             var delta = new SKPoint(point.X - _lastDragPoint.X, point.Y - _lastDragPoint.Y);
-            
+
             if (_selectedAnnotation is FreehandAnnotation freehand)
             {
-                 for(int i=0; i<freehand.Points.Count; i++)
+                for (int i = 0; i < freehand.Points.Count; i++)
                 {
-                     freehand.Points[i] = new SKPoint(freehand.Points[i].X + delta.X, freehand.Points[i].Y + delta.Y);
-                 }
+                    freehand.Points[i] = new SKPoint(freehand.Points[i].X + delta.X, freehand.Points[i].Y + delta.Y);
+                }
             }
-            
+
             _selectedAnnotation.StartPoint = new SKPoint(_selectedAnnotation.StartPoint.X + delta.X, _selectedAnnotation.StartPoint.Y + delta.Y);
             _selectedAnnotation.EndPoint = new SKPoint(_selectedAnnotation.EndPoint.X + delta.X, _selectedAnnotation.EndPoint.Y + delta.Y);
 
             UpdateAnnotationState(_selectedAnnotation);
-            
+
             _lastDragPoint = point;
             InvalidateRequested?.Invoke();
             return;
@@ -437,7 +437,7 @@ public class EditorCore
                 handle.Position.Y - halfSize,
                 handle.Position.X + halfSize,
                 handle.Position.Y + halfSize);
-                
+
             if (r.Contains(point)) return handle.Type;
         }
 
@@ -679,7 +679,7 @@ public class EditorCore
 
         var bitmap = new SKBitmap(SourceImage.Width, SourceImage.Height);
         using var canvas = new SKCanvas(bitmap);
-        
+
         // Draw without selection handles
         canvas.DrawBitmap(SourceImage, 0, 0);
         foreach (var annotation in _annotations)
@@ -809,7 +809,7 @@ public class EditorCore
 
         // Remove crop annotation
         _annotations.Remove(cropAnnotation);
-        
+
         // Replace source image
         SourceImage.Dispose();
         SourceImage = croppedBitmap;

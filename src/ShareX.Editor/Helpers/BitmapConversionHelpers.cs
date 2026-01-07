@@ -1,7 +1,5 @@
 using Avalonia.Media.Imaging;
 using SkiaSharp;
-using System;
-using System.IO;
 
 namespace ShareX.Editor.Helpers
 {
@@ -36,7 +34,7 @@ namespace ShareX.Editor.Helpers
             using var image = SKImage.FromBitmap(skBitmap);
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
             using var memoryStream = new MemoryStream();
-            
+
             data.SaveTo(memoryStream);
             memoryStream.Position = 0;
 

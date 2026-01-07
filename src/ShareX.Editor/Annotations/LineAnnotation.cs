@@ -50,15 +50,15 @@ public class LineAnnotation : Annotation
         var dy = EndPoint.Y - StartPoint.Y;
         var lineLength = (float)Math.Sqrt(dx * dx + dy * dy);
         if (lineLength < 0.001f) return false;
-        
-        var t = Math.Max(0, Math.Min(1, 
-            ((point.X - StartPoint.X) * (EndPoint.X - StartPoint.X) + 
+
+        var t = Math.Max(0, Math.Min(1,
+            ((point.X - StartPoint.X) * (EndPoint.X - StartPoint.X) +
              (point.Y - StartPoint.Y) * (EndPoint.Y - StartPoint.Y)) / (lineLength * lineLength)));
-        
+
         var projection = new SKPoint(
             StartPoint.X + (float)t * (EndPoint.X - StartPoint.X),
             StartPoint.Y + (float)t * (EndPoint.Y - StartPoint.Y));
-        
+
         var pdx = point.X - projection.X;
         var pdy = point.Y - projection.Y;
         var distance = (float)Math.Sqrt(pdx * pdx + pdy * pdy);

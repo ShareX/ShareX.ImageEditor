@@ -48,20 +48,20 @@ public class EllipseAnnotation : Annotation
     {
         var rect = GetBounds();
         var expanded = SKRect.Inflate(rect, tolerance, tolerance);
-        
+
         if (!expanded.Contains(point)) return false;
 
         var centerX = rect.MidX;
         var centerY = rect.MidY;
         var radiusX = expanded.Width / 2;
         var radiusY = expanded.Height / 2;
-        
+
         if (radiusX <= 0 || radiusY <= 0) return false;
-        
+
         // Normalize point relative to expanded ellipse center
         var dx = (point.X - centerX) / radiusX;
         var dy = (point.Y - centerY) / radiusY;
-        
+
         // Check if point is inside unit circle
         return (dx * dx + dy * dy) <= 1.0f;
     }

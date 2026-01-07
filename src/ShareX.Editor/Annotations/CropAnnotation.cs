@@ -41,7 +41,7 @@ public class CropAnnotation : Annotation
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        
+
         // Draw dashed border
         using var dashPaint = new SKPaint
         {
@@ -52,7 +52,7 @@ public class CropAnnotation : Annotation
             IsAntialias = true
         };
         canvas.DrawRect(rect, dashPaint);
-        
+
         // Draw resize handles at corners and edges
         DrawHandle(canvas, new SKPoint(rect.Left, rect.Top));
         DrawHandle(canvas, new SKPoint(rect.Right, rect.Top));
@@ -72,7 +72,7 @@ public class CropAnnotation : Annotation
             center.Y - handleSize / 2,
             center.X + handleSize / 2,
             center.Y + handleSize / 2);
-        
+
         using var fillPaint = new SKPaint
         {
             Color = SKColors.White,
@@ -80,7 +80,7 @@ public class CropAnnotation : Annotation
             IsAntialias = true
         };
         canvas.DrawRect(rect, fillPaint);
-        
+
         using var strokePaint = new SKPaint
         {
             Color = SKColors.Black,
@@ -94,11 +94,11 @@ public class CropAnnotation : Annotation
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var rect = GetBounds();
-        
+
         // Check if point is on the crop rectangle border (within tolerance)
         var outerRect = SKRect.Inflate(rect, tolerance, tolerance);
         var innerRect = SKRect.Inflate(rect, -tolerance, -tolerance);
-        
+
         return outerRect.Contains(point) && !innerRect.Contains(point);
     }
 }

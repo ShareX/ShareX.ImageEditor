@@ -23,7 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using System;
 using System.Diagnostics;
 
 namespace ShareX.Editor.Helpers;
@@ -56,7 +55,7 @@ public static class DebugHelper
         string output = string.IsNullOrEmpty(message)
             ? $"Exception: {ex.Message}"
             : $"{message}: {ex.Message}";
-        
+
         WriteLine(output);
         Debug.WriteLine(ex.StackTrace);
     }

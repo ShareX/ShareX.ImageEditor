@@ -1,5 +1,3 @@
-using SkiaSharp;
-
 namespace ShareX.Editor.Annotations;
 
 /// <summary>

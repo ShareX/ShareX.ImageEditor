@@ -4,9 +4,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ShareX.Editor.Controls
 {

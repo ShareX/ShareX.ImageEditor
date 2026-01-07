@@ -49,11 +49,11 @@ public class PixelateAnnotation : BaseEffectAnnotation
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
-        
+
         var rect = GetBounds();
         var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
         skRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
-        
+
         if (skRect.Width <= 0 || skRect.Height <= 0) return;
 
         using var crop = new SKBitmap(skRect.Width, skRect.Height);
@@ -66,7 +66,7 @@ public class PixelateAnnotation : BaseEffectAnnotation
 
         var info = new SKImageInfo(w, h);
         using var small = crop.Resize(info, SKFilterQuality.Low);
-        
+
         info = new SKImageInfo(crop.Width, crop.Height);
         using var result = small.Resize(info, SKFilterQuality.None); // Nearest neighbor upscale
 

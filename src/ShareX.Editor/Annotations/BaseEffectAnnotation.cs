@@ -16,7 +16,7 @@ public abstract class BaseEffectAnnotation : Annotation
     /// Whether the effect is applied as a region (rectangle) or freehand
     /// </summary>
     public bool IsFreehand { get; set; }
-    
+
     /// <summary>
     /// The generated bitmap for the effect (pre-rendered effect result)
     /// </summary>
@@ -37,12 +37,12 @@ public abstract class BaseEffectAnnotation : Annotation
         var inflatedBounds = SKRect.Inflate(bounds, tolerance, tolerance);
         return inflatedBounds.Contains(point);
     }
-    
+
     /// <summary>
     /// Updates the effect bitmap based on the source image
     /// </summary>
     public virtual void UpdateEffect(SKBitmap source) { }
-    
+
     /// <summary>
     /// Disposes the effect bitmap
     /// </summary>

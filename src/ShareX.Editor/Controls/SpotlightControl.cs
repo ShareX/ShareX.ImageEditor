@@ -43,13 +43,13 @@ namespace ShareX.Editor.Controls
                 var canvasW = (double)annotation.CanvasSize.Width;
                 var canvasH = (double)annotation.CanvasSize.Height;
                 var fullCanvasBounds = new Rect(0, 0, canvasW, canvasH);
-                
+
                 var annotatedBounds = annotation.GetBounds();
                 var spotlightRect = new Rect(annotatedBounds.Left, annotatedBounds.Top, annotatedBounds.Width, annotatedBounds.Height);
 
                 // Create path geometry with EvenOdd fill rule to punch a hole
                 var geometry = new PathGeometry { FillRule = FillRule.EvenOdd };
-                
+
                 // Outer rectangle - full canvas (darkened area)
                 var outerFigure = new PathFigure { StartPoint = fullCanvasBounds.TopLeft, IsClosed = true };
                 outerFigure.Segments?.Add(new LineSegment { Point = fullCanvasBounds.TopRight });

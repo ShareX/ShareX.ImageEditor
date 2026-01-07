@@ -8,7 +8,7 @@ namespace ShareX.Editor.Annotations;
 public class ImageAnnotation : Annotation
 {
     private SKBitmap? _imageBitmap;
-    
+
     /// <summary>
     /// File path to the image (if external)
     /// </summary>
@@ -43,7 +43,7 @@ public class ImageAnnotation : Annotation
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        
+
         if (_imageBitmap != null)
         {
             canvas.DrawBitmap(_imageBitmap, rect);
@@ -59,7 +59,7 @@ public class ImageAnnotation : Annotation
                 PathEffect = SKPathEffect.CreateDash(new float[] { 5, 5 }, 0)
             };
             canvas.DrawRect(rect, dashPaint);
-            
+
             // Draw "Image" text placeholder
             using var textPaint = new SKPaint
             {

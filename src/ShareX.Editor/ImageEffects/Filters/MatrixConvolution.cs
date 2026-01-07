@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace ShareX.Editor.ImageEffects
 {
@@ -76,7 +72,7 @@ namespace ShareX.Editor.ImageEffects
                 X0Y1, X1Y1, X2Y1,
                 X0Y2, X1Y2, X2Y2
             };
-            
+
             return ImageEffectsProcessing.ApplyConvolutionMatrix(bmp, kernel, 3, (float)Factor, Offset);
         }
     }

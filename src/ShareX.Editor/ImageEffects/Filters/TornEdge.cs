@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 // using AnchorSides = ShareX.Ava.ImageEffects.Helpers.ImgeEffectsProcessing.AnchorSides;
 
 namespace ShareX.Editor.ImageEffects
@@ -59,7 +55,7 @@ namespace ShareX.Editor.ImageEffects
 
         public override SKBitmap Apply(SKBitmap bmp)
         {
-             return ImageEffectsProcessing.DrawTornEdge(bmp, Depth, Range, Sides, CurvedEdges);
+            return ImageEffectsProcessing.DrawTornEdge(bmp, Depth, Range, Sides, CurvedEdges);
         }
 
         protected override string? GetSummary()

@@ -55,15 +55,15 @@ public class NumberAnnotation : Annotation
     public override void Render(SKCanvas canvas)
     {
         var center = StartPoint;
-        
+
         // Draw filled circle
         using var fillPaint = CreateFillPaint();
         canvas.DrawCircle(center, Radius, fillPaint);
-        
+
         // Draw circle border
         using var strokePaint = CreateStrokePaint();
         canvas.DrawCircle(center, Radius, strokePaint);
-        
+
         // Draw number text
         using var textPaint = new SKPaint
         {
@@ -75,12 +75,12 @@ public class NumberAnnotation : Annotation
         };
 
         var text = Number.ToString();
-        
+
         // Center text vertically
         var textBounds = new SKRect();
         textPaint.MeasureText(text, ref textBounds);
         var textY = center.Y + textBounds.Height / 2 - textBounds.Bottom;
-        
+
         canvas.DrawText(text, center.X, textY, textPaint);
     }
 

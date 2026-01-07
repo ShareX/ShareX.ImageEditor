@@ -36,7 +36,7 @@ public interface IClipboardService
     /// Sets an image to the clipboard.
     /// </summary>
     void SetImage(SKBitmap bitmap);
-    
+
     /// <summary>
     /// Gets an image from the clipboard.
     /// </summary>

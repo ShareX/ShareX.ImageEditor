@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-using ShareX.Editor.ImageEffects;
-using System;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 // using Drawing; // Check if GradientInfo exists
 
@@ -73,7 +69,7 @@ namespace ShareX.Editor.ImageEffects
             Size = 20;
             Strength = 1f;
             Color = SKColors.White;
-            Offset = new SKPoint(0,0);
+            Offset = new SKPoint(0, 0);
         }
 
         public override SKBitmap Apply(SKBitmap bmp)

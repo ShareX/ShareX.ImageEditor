@@ -23,8 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using System;
-using System.IO;
 using SkiaSharp;
 
 namespace ShareX.Editor.Helpers;

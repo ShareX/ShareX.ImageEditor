@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.Editor.Services;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace ShareX.Editor.ViewModels;
 

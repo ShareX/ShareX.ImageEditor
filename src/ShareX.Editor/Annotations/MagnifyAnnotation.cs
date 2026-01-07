@@ -53,7 +53,7 @@ public class MagnifyAnnotation : BaseEffectAnnotation
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
-        
+
         var rect = GetBounds();
         if (rect.Width <= 0 || rect.Height <= 0) return;
 
@@ -61,24 +61,24 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         float zoom = Math.Max(1.0f, Amount);
         float captureWidth = rect.Width / zoom;
         float captureHeight = rect.Height / zoom;
-        
+
         float centerX = rect.MidX;
         float centerY = rect.MidY;
-        
+
         float captureX = centerX - (captureWidth / 2);
         float captureY = centerY - (captureHeight / 2);
-        
+
         var captureRect = new SKRectI((int)captureX, (int)captureY, (int)(captureX + captureWidth), (int)(captureY + captureHeight));
-        
+
         // Ensure bounds validation
         var sourceBounds = new SKRectI(0, 0, source.Width, source.Height);
         captureRect.Intersect(sourceBounds);
-        
+
         if (captureRect.Width <= 0 || captureRect.Height <= 0) return;
 
         using var crop = new SKBitmap(captureRect.Width, captureRect.Height);
         source.ExtractSubset(crop, captureRect);
-        
+
         // Scale up to fill the full rect
         var info = new SKImageInfo((int)rect.Width, (int)rect.Height);
         using var scaled = crop.Resize(info, SKFilterQuality.Medium);

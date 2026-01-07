@@ -31,7 +31,6 @@ using CommunityToolkit.Mvvm.Input;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace ShareX.Editor.ViewModels
 {
@@ -77,7 +76,7 @@ namespace ShareX.Editor.ViewModels
                 ImageHeight = value.Size.Height;
                 HasPreviewImage = true;
                 OnPropertyChanged(nameof(SmartPaddingColor));
-                
+
                 // Apply smart padding crop if enabled (but not if we're already applying it)
                 if (UseSmartPadding && !_isApplyingSmartPadding)
                 {
@@ -349,7 +348,7 @@ namespace ShareX.Editor.ViewModels
             {
                 // Start from the original image backup
                 var skBitmap = _originalSourceImage;
-                
+
                 if (skBitmap == null) return;
 
                 // Get top-left pixel color as reference
@@ -367,7 +366,7 @@ namespace ShareX.Editor.ViewModels
                     for (int x = 0; x < skBitmap.Width; x++)
                     {
                         var pixel = skBitmap.GetPixel(x, y);
-                        
+
                         // Check if pixel is different from target color (within tolerance)
                         if (Math.Abs(pixel.Red - targetColor.Red) > tolerance ||
                             Math.Abs(pixel.Green - targetColor.Green) > tolerance ||
@@ -893,18 +892,18 @@ namespace ShareX.Editor.ViewModels
             {
                 StatusText = "Uploading...";
                 ExportState = "Uploading";
-                
+
                 // TODO: Implement actual upload logic
                 // This will be integrated with the upload system later
                 // For now, just provide a placeholder that saves to temp and shows a message
-                
+
                 var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"ShareX_Upload_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
                 imageToUpload.Save(tempPath);
-                
+
                 StatusText = "Upload complete (placeholder - integration needed)";
                 ExportState = "Uploaded";
                 DebugHelper.WriteLine($"Upload placeholder: Image saved to {tempPath}");
-                
+
                 // TODO: Replace with actual upload call:
                 // var uploadResult = await UploadManager.UploadImageAsync(tempPath);
                 // if (uploadResult.IsSuccess) StatusText = $"Uploaded: {uploadResult.URL}";
@@ -962,7 +961,7 @@ namespace ShareX.Editor.ViewModels
         public void CutOutImage(int startPos, int endPos, bool isVertical)
         {
             if (_currentSourceImage == null) return;
-            
+
             // Ensure valid range
             if (isVertical)
             {
@@ -977,8 +976,8 @@ namespace ShareX.Editor.ViewModels
 
             var result = ImageHelpers.CutOut(_currentSourceImage, startPos, endPos, isVertical);
             UpdatePreview(result);
-            
-            StatusText = isVertical 
+
+            StatusText = isVertical
                 ? $"Cut out vertical section ({endPos - startPos}px wide)"
                 : $"Cut out horizontal section ({endPos - startPos}px tall)";
         }

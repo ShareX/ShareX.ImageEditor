@@ -1,6 +1,5 @@
 using Avalonia.Data.Converters;
 using Avalonia.Media;
-using System;
 using System.Globalization;
 
 namespace ShareX.Editor.Converters

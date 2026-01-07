@@ -22,13 +22,10 @@
 */
 
 #endregion License Information (GPL v3)
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 using ShareX.Editor.Annotations;
-using ShareX.Editor.ViewModels;
+using System.Globalization;
 
 namespace ShareX.Editor.Converters
 {
@@ -41,7 +38,7 @@ namespace ShareX.Editor.Converters
 
         // Active tool button color (violet gradient)
         private static readonly IBrush ActiveBrush = new SolidColorBrush(Color.Parse("#8B5CF6"));
-        
+
         // Inactive tool button color (gray)
         private static readonly IBrush InactiveBrush = new SolidColorBrush(Color.Parse("#374151"));
 
@@ -78,8 +75,8 @@ namespace ShareX.Editor.Converters
         {
             if (value is string selectedColor && parameter is string swatchColor)
             {
-                return string.Equals(selectedColor, swatchColor, StringComparison.OrdinalIgnoreCase) 
-                    ? SelectedBrush 
+                return string.Equals(selectedColor, swatchColor, StringComparison.OrdinalIgnoreCase)
+                    ? SelectedBrush
                     : UnselectedBrush;
             }
             return UnselectedBrush;

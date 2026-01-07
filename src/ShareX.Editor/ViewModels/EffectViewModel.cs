@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShareX.Editor.ImageEffects;
 using SkiaSharp;
-using System;
 using System.Reflection;
 
 namespace ShareX.Editor.ViewModels;

@@ -23,13 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace ShareX.Editor.ImageEffects
 {
@@ -53,8 +48,8 @@ namespace ShareX.Editor.ImageEffects
 
         public GaussianBlur()
         {
-             // this.ApplyDefaultPropertyValues();
-             Radius = 15;
+            // this.ApplyDefaultPropertyValues();
+            Radius = 15;
         }
 
         public override SKBitmap Apply(SKBitmap bmp)

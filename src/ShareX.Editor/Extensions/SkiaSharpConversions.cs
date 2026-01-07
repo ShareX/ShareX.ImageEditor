@@ -26,7 +26,6 @@
 using Avalonia;
 using Avalonia.Media.Imaging;
 using SkiaSharp;
-using System.IO;
 
 namespace ShareX.Editor.Extensions;
 

@@ -11,7 +11,7 @@ public class SpeechBalloonAnnotation : Annotation
     /// Tail point (absolute position)
     /// </summary>
     public SKPoint TailPoint { get; set; }
-    
+
     /// <summary>
     /// Optional text content inside the balloon
     /// </summary>
@@ -21,12 +21,12 @@ public class SpeechBalloonAnnotation : Annotation
     /// Font size for the balloon text
     /// </summary>
     public float FontSize { get; set; } = 20;
-    
+
     /// <summary>
     /// Background color (hex)
     /// </summary>
     public string FillColor { get; set; } = "#FFFFFFFF"; // White
-    
+
     public SpeechBalloonAnnotation()
     {
         ToolType = EditorTool.SpeechBalloon;
@@ -37,7 +37,7 @@ public class SpeechBalloonAnnotation : Annotation
     public override void Render(SKCanvas canvas)
     {
         var rect = GetBounds();
-        
+
         // Ensure minimum size for visibility
         const float minSize = 20f;
         float width = Math.Max(rect.Width, minSize);
@@ -56,10 +56,10 @@ public class SpeechBalloonAnnotation : Annotation
         // When rendering in a control, translate to render relative to (0,0)
         // Check if we need to translate by looking at the rect position
         bool needsTranslation = rect.Left != 0 || rect.Top != 0;
-        
+
         SKRect renderRect = rect;
         SKPoint renderTailPoint = TailPoint;
-        
+
         if (needsTranslation)
         {
             // Translate to relative coordinates
@@ -71,20 +71,20 @@ public class SpeechBalloonAnnotation : Annotation
         }
 
         using var path = new SKPath();
-        
+
         float radius = 10;
-        
+
         // Start Top-Left
         path.MoveTo(renderRect.Left + radius, renderRect.Top);
-        
+
         // Top edge
         path.LineTo(renderRect.Right - radius, renderRect.Top);
         path.ArcTo(new SKRect(renderRect.Right - radius * 2, renderRect.Top, renderRect.Right, renderRect.Top + radius * 2), 270, 90, false);
-        
+
         // Right edge
         path.LineTo(renderRect.Right, renderRect.Bottom - radius);
         path.ArcTo(new SKRect(renderRect.Right - radius * 2, renderRect.Bottom - radius * 2, renderRect.Right, renderRect.Bottom), 0, 90, false);
-        
+
         // Bottom edge (with tail)
         float midBottom = renderRect.Left + renderRect.Width / 2;
         float tailBaseWidth = 20;
@@ -97,11 +97,11 @@ public class SpeechBalloonAnnotation : Annotation
         // To Left
         path.LineTo(renderRect.Left + radius, renderRect.Bottom);
         path.ArcTo(new SKRect(renderRect.Left, renderRect.Bottom - radius * 2, renderRect.Left + radius * 2, renderRect.Bottom), 90, 90, false);
-        
+
         // Left edge
         path.LineTo(renderRect.Left, renderRect.Top + radius);
         path.ArcTo(new SKRect(renderRect.Left, renderRect.Top, renderRect.Left + radius * 2, renderRect.Top + radius * 2), 180, 90, false);
-        
+
         path.Close();
 
         // Fill
@@ -112,7 +112,7 @@ public class SpeechBalloonAnnotation : Annotation
             IsAntialias = true
         };
         canvas.DrawPath(path, fillPaint);
-        
+
         // Stroke
         using var strokePaint = CreateStrokePaint();
         canvas.DrawPath(path, strokePaint);
@@ -140,7 +140,7 @@ public class SpeechBalloonAnnotation : Annotation
             canvas.DrawText(Text, textX, textY, textPaint);
         }
     }
-    
+
     public override SKRect GetBounds()
     {
         return new SKRect(

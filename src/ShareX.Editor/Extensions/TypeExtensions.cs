@@ -74,12 +74,12 @@ public static class StringExtensions
     public static string Truncate(this string str, int maxLength, string suffix = "")
     {
         if (string.IsNullOrEmpty(str)) return str;
-        
+
         if (str.Length <= maxLength) return str;
-        
+
         int truncateLength = maxLength - suffix.Length;
         if (truncateLength <= 0) return suffix.Substring(0, maxLength);
-        
+
         return str.Substring(0, truncateLength) + suffix;
     }
 }

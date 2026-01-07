@@ -26,9 +26,8 @@
 
 using Newtonsoft.Json;
 using ShareX.Editor.Extensions;
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 namespace ShareX.Editor.ImageEffects
 {

@@ -23,10 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
 using SkiaSharp;
 
 namespace ShareX.Editor.ImageEffects
@@ -35,9 +31,9 @@ namespace ShareX.Editor.ImageEffects
     {
         public override SKBitmap Apply(SKBitmap bmp)
         {
-             // ConvolutionMatrixManager not migrated yet
-             // return ConvolutionMatrixManager.Emboss().Apply(bmp);
-             return bmp;
+            // ConvolutionMatrixManager not migrated yet
+            // return ConvolutionMatrixManager.Emboss().Apply(bmp);
+            return bmp;
         }
     }
 }

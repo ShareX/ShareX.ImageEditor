@@ -27,7 +27,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using ShareX.Editor.Annotations;
 using SkiaSharp;
 
 namespace ShareX.Editor.Views.Controls;

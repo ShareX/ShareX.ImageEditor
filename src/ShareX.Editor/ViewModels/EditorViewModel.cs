@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Extensions;
-using System;
 using System.Collections.ObjectModel;
 
 namespace ShareX.Editor.ViewModels;

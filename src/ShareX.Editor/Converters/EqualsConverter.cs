@@ -23,9 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using System;
-using System.Globalization;
 using Avalonia.Data.Converters;
+using System.Globalization;
 
 namespace ShareX.Editor.Converters
 {

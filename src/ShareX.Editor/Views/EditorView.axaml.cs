@@ -2338,7 +2338,7 @@ namespace ShareX.Editor.Views
                     var shaftEndLeft = new Point(
                         arrowBase.X + perpX * shaftEndWidth,
                         arrowBase.Y + perpY * shaftEndWidth);
-                    
+
                     var shaftEndRight = new Point(
                         arrowBase.X - perpX * shaftEndWidth,
                         arrowBase.Y - perpY * shaftEndWidth);

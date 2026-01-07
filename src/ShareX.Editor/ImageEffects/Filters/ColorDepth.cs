@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 
 namespace ShareX.Editor.ImageEffects
@@ -59,8 +55,8 @@ namespace ShareX.Editor.ImageEffects
 
         public override SKBitmap Apply(SKBitmap bmp)
         {
-             ImageEffectsProcessing.ColorDepth(bmp, BitsPerChannel);
-             return bmp;
+            ImageEffectsProcessing.ColorDepth(bmp, BitsPerChannel);
+            return bmp;
         }
 
         protected override string? GetSummary()

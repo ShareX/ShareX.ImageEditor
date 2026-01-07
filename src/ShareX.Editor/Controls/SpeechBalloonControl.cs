@@ -149,11 +149,11 @@ namespace ShareX.Editor.Controls
                 // Determine primary direction: use angle from center to tail
                 float dx = tailX - centerX;
                 float dy = tailY - centerY;
-                
+
                 // Determine which edge to connect to based on angle
                 // Use a simplified approach: check if tail is more horizontal or vertical
                 bool isMoreHorizontal = Math.Abs(dx) > Math.Abs(dy);
-                
+
                 bool tailOnTop = false;
                 bool tailOnBottom = false;
                 bool tailOnLeft = false;
@@ -254,7 +254,7 @@ namespace ShareX.Editor.Controls
 
                     float connectionX = Math.Clamp(tailX, minX, maxX);
                     float halfTailWidth = baseTailWidth / 2;
-                    
+
                     // For bottom edge, draw from right to left, so reverse order
                     float tailStartX = Math.Min(maxX, connectionX + halfTailWidth);
                     float tailEndX = Math.Max(minX, connectionX - halfTailWidth);
@@ -287,7 +287,7 @@ namespace ShareX.Editor.Controls
 
                     float connectionY = Math.Clamp(tailY, minY, maxY);
                     float halfTailWidth = baseTailWidth / 2;
-                    
+
                     // For left edge, draw from bottom to top, so reverse order
                     float tailStartY = Math.Min(maxY, connectionY + halfTailWidth);
                     float tailEndY = Math.Max(minY, connectionY - halfTailWidth);

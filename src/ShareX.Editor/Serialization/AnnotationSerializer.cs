@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
-using System.Threading.Tasks;
 using ShareX.Editor.Annotations;
+using System.Text.Json;
 
 namespace ShareX.Editor.Serialization
 {

@@ -23,12 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.Editor.Extensions;
-
-
-using ShareX.Editor.ImageEffects;
-using System.ComponentModel;
 using SkiaSharp;
+using System.ComponentModel;
 
 
 namespace ShareX.Editor.ImageEffects.Manipulations
@@ -61,7 +57,7 @@ namespace ShareX.Editor.ImageEffects.Manipulations
             {
                 return bmp;
             }
-            
+
             // SKRect rect = new SKRect(Left, Top, Left + width, Top + height);
             // return ImageEffectsProcessing.CropBitmap(bmp, rect);
             return bmp;
