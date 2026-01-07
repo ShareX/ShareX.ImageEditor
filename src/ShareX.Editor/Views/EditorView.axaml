@@ -7,6 +7,7 @@
              xmlns:models="using:ShareX.Editor.Annotations"
              xmlns:converters="using:ShareX.Editor.Converters"
              xmlns:helpers="using:ShareX.Editor.Helpers"
+             xmlns:controls="using:ShareX.Editor.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.Editor.Views.EditorView"
              Focusable="True"
@@ -194,97 +195,18 @@
 
                 <!-- Row 2: Tool options -->
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <!-- Color Picker-->
+                    <!-- Color Picker Dropdown -->
                     <Border BorderThickness="0,0,1,0" BorderBrush="#3B3B52" Padding="0,0,12,0">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="Color" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <ItemsControl ItemsSource="{x:Static vm:MainViewModel.ColorPalette}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" Spacing="4"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Width="28" Height="28" Padding="0"
-                                                Command="{Binding DataContext.SetColorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding .}"
-                                                Background="Transparent"
-                                                BorderThickness="0">
-                                            <Border Width="24" Height="24"
-                                                    Background="{Binding .}"
-                                                    CornerRadius="4"
-                                                    BorderThickness="2">
-                                                <Border.BorderBrush>
-                                                    <MultiBinding Converter="{StaticResource SelectedColorToBorder}">
-                                                        <Binding Path="DataContext.SelectedColor" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
-                                                        <Binding />
-                                                    </MultiBinding>
-                                                </Border.BorderBrush>
-                                            </Border>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
+                        <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
+                            SelectedColor="{Binding SelectedColorBrush}"
+                            ColorChanged="OnColorChanged"/>
                     </Border>
                     
-                    <!-- Stroke Width -->
+                    <!-- Stroke Width Dropdown -->
                     <Border BorderThickness="0,0,1,0" BorderBrush="#3B3B52" Padding="0,0,12,0">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="Width" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <!-- Manual buttons for each width to enable ConverterParameter -->
-                            <Button Classes="ratio-button"
-                                    Classes.active="{Binding StrokeWidth, Converter={StaticResource EqualsConverter}, ConverterParameter=2}"
-                                    Width="32" Height="32"
-                                    Command="{Binding SetStrokeWidthCommand}"
-                                    ToolTip.Tip="2px">
-                                <Button.CommandParameter>
-                                    <x:Int32>2</x:Int32>
-                                </Button.CommandParameter>
-                                <Ellipse Width="2" Height="2" Fill="#94A3B8"/>
-                            </Button>
-                            <Button Classes="ratio-button"
-                                    Classes.active="{Binding StrokeWidth, Converter={StaticResource EqualsConverter}, ConverterParameter=4}"
-                                    Width="32" Height="32"
-                                    Command="{Binding SetStrokeWidthCommand}"
-                                    ToolTip.Tip="4px">
-                                <Button.CommandParameter>
-                                    <x:Int32>4</x:Int32>
-                                </Button.CommandParameter>
-                                <Ellipse Width="4" Height="4" Fill="#94A3B8"/>
-                            </Button>
-                            <Button Classes="ratio-button"
-                                    Classes.active="{Binding StrokeWidth, Converter={StaticResource EqualsConverter}, ConverterParameter=6}"
-                                    Width="32" Height="32"
-                                    Command="{Binding SetStrokeWidthCommand}"
-                                    ToolTip.Tip="6px">
-                                <Button.CommandParameter>
-                                    <x:Int32>6</x:Int32>
-                                </Button.CommandParameter>
-                                <Ellipse Width="6" Height="6" Fill="#94A3B8"/>
-                            </Button>
-                            <Button Classes="ratio-button"
-                                    Classes.active="{Binding StrokeWidth, Converter={StaticResource EqualsConverter}, ConverterParameter=8}"
-                                    Width="32" Height="32"
-                                    Command="{Binding SetStrokeWidthCommand}"
-                                    ToolTip.Tip="8px">
-                                <Button.CommandParameter>
-                                    <x:Int32>8</x:Int32>
-                                </Button.CommandParameter>
-                                <Ellipse Width="8" Height="8" Fill="#94A3B8"/>
-                            </Button>
-                            <Button Classes="ratio-button"
-                                    Classes.active="{Binding StrokeWidth, Converter={StaticResource EqualsConverter}, ConverterParameter=10}"
-                                    Width="32" Height="32"
-                                    Command="{Binding SetStrokeWidthCommand}"
-                                    ToolTip.Tip="10px">
-                                <Button.CommandParameter>
-                                    <x:Int32>10</x:Int32>
-                                </Button.CommandParameter>
-                                <Ellipse Width="10" Height="10" Fill="#94A3B8"/>
-                            </Button>
-                        </StackPanel>
+                        <controls:WidthPickerDropdown
+                            SelectedWidth="{Binding StrokeWidth}"
+                            WidthChanged="OnWidthChanged"/>
                     </Border>
                     
                     <!-- Undo/Redo -->

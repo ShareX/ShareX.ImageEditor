@@ -654,6 +654,14 @@ namespace ShareX.Editor.Views
         {
             base.OnLoaded(e);
 
+            // Initialize ColorPickerDropdown palette
+            var colorPicker = this.FindControl<ColorPickerDropdown>("ColorPickerDropdown");
+            if (colorPicker != null && DataContext is MainViewModel)
+            {
+                // Convert string array to brush array for the dropdown
+                colorPicker.ColorPalette = MainViewModel.ColorPalette.Select(c => (IBrush)new SolidColorBrush(Color.Parse(c))).ToList();
+            }
+
             if (DataContext is MainViewModel vm)
             {
                 vm.UndoRequested += (s, args) => PerformUndo();
@@ -1933,7 +1941,7 @@ namespace ShareX.Editor.Views
             }
             else if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle cutOutRect && cutOutRect.Name == "CutOutOverlay")
             {
-                // Special handling for CutOut tool - show darkened area that will be cut
+                // Special handling for CutOut tool - show a darkened area that will be cut
                 if (DataContext is not MainViewModel vm) return;
 
                 var parentCanvas = this.FindControl<Canvas>("AnnotationCanvas");
@@ -2363,6 +2371,23 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.ApplyEffectCommand.Execute(null);
+            }
+        }
+
+        private void OnColorChanged(object? sender, IBrush color)
+        {
+            if (DataContext is MainViewModel vm && color is SolidColorBrush solidBrush)
+            {
+                var hexColor = $"#{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                vm.SetColorCommand.Execute(hexColor);
+            }
+        }
+
+        private void OnWidthChanged(object? sender, int width)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.SetStrokeWidthCommand.Execute(width);
             }
         }
     }

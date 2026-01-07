@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
+             x:Class="ShareX.Editor.Controls.ColorPickerDropdown"
+             x:Name="ColorPickerDropdownRoot">
+
+    <UserControl.Styles>
+        <Style Selector="Button.dropdown-button">
+            <Setter Property="Background" Value="#2D2D3F"/>
+            <Setter Property="BorderBrush" Value="#3B3B52"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Padding" Value="6,6"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinWidth" Value="60"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.dropdown-button:pointerover">
+            <Setter Property="Background" Value="#3B3B52"/>
+        </Style>
+        
+        <Style Selector="Border.popup-border">
+            <Setter Property="Background" Value="#2D2D3F"/>
+            <Setter Property="BorderBrush" Value="#3B3B52"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 4 16 #40000000"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <!-- Dropdown Button -->
+        <Button x:Name="DropdownButton"
+                Classes="dropdown-button"
+                Click="OnDropdownButtonClick"
+                HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Color Preview -->
+                <Border Grid.Column="0" 
+                        Width="24" 
+                        Height="24" 
+                        Background="{Binding SelectedColor, ElementName=ColorPickerDropdownRoot}"
+                        CornerRadius="4"
+                        BorderBrush="#FFFFFF40"
+                        BorderThickness="1"
+                        VerticalAlignment="Center"
+                        Margin="0,0,6,0"/>
+                
+                <!-- Spacer -->
+                <Border Grid.Column="1"/>
+                
+                <!-- Chevron Icon (FontAwesome ChevronDown) -->
+                <TextBlock Grid.Column="2" 
+                           Text="&#xf078;" 
+                           FontFamily="avares://ShareX.Editor/Assets#Font Awesome 7 Free"
+                           FontWeight="Black"
+                           FontSize="10"
+                           Foreground="#94A3B8"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Button>
+
+        <!-- Popup -->
+        <Popup x:Name="ColorPopup"
+               PlacementTarget="{Binding #DropdownButton}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True"
+               VerticalOffset="4">
+            <Border Classes="popup-border">
+                <ItemsControl ItemsSource="{Binding ColorPalette, ElementName=ColorPickerDropdownRoot}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" MaxWidth="320"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Width="32" 
+                                    Height="32" 
+                                    Padding="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Margin="2"
+                                    Click="OnColorSelected"
+                                    CommandParameter="{Binding .}">
+                                <Border Width="28" 
+                                        Height="28"
+                                        Background="{Binding .}"
+                                        CornerRadius="4"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="2"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

@@ -31,6 +31,7 @@ using CommunityToolkit.Mvvm.Input;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ShareX.Editor.ViewModels
 {
@@ -152,6 +153,24 @@ namespace ShareX.Editor.ViewModels
 
         [ObservableProperty]
         private string _selectedColor = "#EF4444";
+
+        // Add a brush version for the dropdown control
+        public IBrush SelectedColorBrush
+        {
+            get => new SolidColorBrush(Color.Parse(_selectedColor));
+            set
+            {
+                if (value is SolidColorBrush solidBrush)
+                {
+                    SelectedColor = $"#{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                }
+            }
+        }
+
+        partial void OnSelectedColorChanged(string value)
+        {
+            OnPropertyChanged(nameof(SelectedColorBrush));
+        }
 
         [ObservableProperty]
         private int _strokeWidth = 4;
