@@ -47,7 +47,7 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <Style Selector="Button.ratio-button">
+        <Style Selector="Button.editor-button">
             <Setter Property="Background" Value="#2E2E2E"/>
             <Setter Property="BorderBrush" Value="#1F1F1F"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -57,7 +57,7 @@
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Height" Value="32"/>
         </Style>
-        <Style Selector="Button.ratio-button.active">
+        <Style Selector="Button.editor-button.active">
             <Setter Property="Background">
                 <Setter.Value>
                     <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -77,109 +77,109 @@
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <!-- Drawing Tools -->
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Select}"
                             ToolTip.Tip="Select (V)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSelect}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Rectangle}"
                             ToolTip.Tip="Rectangle (R)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRectangle}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Ellipse}"
                             ToolTip.Tip="Ellipse (E)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEllipse}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Line}"
                             ToolTip.Tip="Line (L)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconLine}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Arrow}"
                             ToolTip.Tip="Arrow (A)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pen}"
                             ToolTip.Tip="Freehand (P)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlighter}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlighter}"
                             ToolTip.Tip="Highlighter (H)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Text}"
                             ToolTip.Tip="Text (T)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconText}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
                             ToolTip.Tip="Speech Balloon (B)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Number}"
                             ToolTip.Tip="Step/Number (N)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
                             ToolTip.Tip="Blur Region"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBlur}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
                             ToolTip.Tip="Pixelate Region"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPixelate}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
                             ToolTip.Tip="Magnifier (M)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
                             ToolTip.Tip="Spotlight (S)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpotlight}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
                             ToolTip.Tip="Smart Eraser"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
                             ToolTip.Tip="Crop (C)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCrop}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
                             Width="40" Height="40"
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
                             ToolTip.Tip="Cut Out (U)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCutOut}"/>
-                    <Button Classes="ratio-button"
+                    <Button Classes="editor-button"
                             Classes.active="{Binding IsEffectsPanelOpen}"
                             Width="40" Height="40"
                             Command="{Binding ToggleEffectsPanelCommand}"
@@ -187,7 +187,7 @@
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEffects}"/>
                     
                     <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#3B3B52" Margin="4,0"/>
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
                     
                     <!-- Color Picker Dropdown -->
                     <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
@@ -204,28 +204,28 @@
                         ToolTip.Tip="Width"/>
                     
                     <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#3B3B52" Margin="4,0"/>
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
                     
                     <!-- Undo Button -->
-                    <Button Classes="ratio-button" Width="40" Height="40"
+                    <Button Classes="editor-button" Width="40" Height="40"
                             Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUndo}"/>
                     
                     <!-- Redo Button -->
-                    <Button Classes="ratio-button" Width="40" Height="40"
+                    <Button Classes="editor-button" Width="40" Height="40"
                             Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRedo}"/>
                     
                     <!-- Separator -->
-                    <Border Width="1" Height="40" Background="#3B3B52" Margin="4,0"/>
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
                     
                     <!-- Delete Button -->
-                    <Button Classes="ratio-button" Width="40" Height="40"
+                    <Button Classes="editor-button" Width="40" Height="40"
                             Command="{Binding DeleteSelectedCommand}" ToolTip.Tip="Delete Selected (Del)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconDelete}"/>
                     
                     <!-- Clear Button -->
-                    <Button Classes="ratio-button" Width="40" Height="40"
+                    <Button Classes="editor-button" Width="40" Height="40"
                             Command="{Binding ClearAnnotationsCommand}" ToolTip.Tip="Clear all annotations"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconClear}"/>
                 </StackPanel>
@@ -388,51 +388,51 @@
                                 
                                 <!-- Row 0 -->
                                 <Button Grid.Row="0" Grid.Column="0" Content="Auto"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="Auto"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=Auto}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="0" Grid.Column="1" Content="1:1"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="1:1"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=1:1}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="0" Grid.Column="2" Content="4:3"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="4:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=4:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 
                                 <!-- Row 1 -->
                                 <Button Grid.Row="1" Grid.Column="0" Content="3:2"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:2"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:2}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="1" Grid.Column="1" Content="16:9"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="16:9"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=16:9}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="1" Grid.Column="2" Content="5:3"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="5:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=5:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 
                                 <!-- Row 2 -->
                                 <Button Grid.Row="2" Grid.Column="0" Content="9:16"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="9:16"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=9:16}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="2" Grid.Column="1" Content="3:4"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="3:4"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:4}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                 <Button Grid.Row="2" Grid.Column="2" Content="2:3"
-                                        Classes="ratio-button"
+                                        Classes="editor-button"
                                         Command="{Binding SetOutputRatioCommand}" CommandParameter="2:3"
                                         Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=2:3}"
                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -470,7 +470,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <!-- Left: Export Actions -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="ratio-button" Command="{Binding CopyCommand}" Height="36" Padding="16,0">
+                    <Button Classes="editor-button" Command="{Binding CopyCommand}" Height="36" Padding="16,0">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                             <TextBlock Text="Copy" FontSize="14"/>
@@ -478,7 +478,7 @@
 
                     </Button>
                     
-                    <Button Classes="ratio-button" Command="{Binding QuickSaveCommand}" Height="36" Padding="16,0">
+                    <Button Classes="editor-button" Command="{Binding QuickSaveCommand}" Height="36" Padding="16,0">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock Text="{StaticResource IconDownload}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                             <TextBlock Text="Save" FontSize="14"/>
@@ -486,7 +486,7 @@
 
                     </Button>
                     
-                    <Button Classes="ratio-button" Command="{Binding SaveAsCommand}" Height="36" Padding="16,0">
+                    <Button Classes="editor-button" Command="{Binding SaveAsCommand}" Height="36" Padding="16,0">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock Text="{StaticResource IconSave}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                             <TextBlock Text="Save As..." FontSize="14"/>
@@ -494,7 +494,7 @@
 
                     </Button>
                     
-                    <Button Classes="ratio-button" Command="{Binding UploadCommand}" Height="36" Padding="16,0">
+                    <Button Classes="editor-button" Command="{Binding UploadCommand}" Height="36" Padding="16,0">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock Text="&#xf093;" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                             <TextBlock Text="Upload" FontSize="14"/>
@@ -507,7 +507,7 @@
                 
                 <!-- Right: Zoom Controls -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <Button Classes="ratio-button" Height="36"
+                    <Button Classes="editor-button" Height="36"
                             Padding="12,0"
                             Command="{Binding ZoomOutCommand}" ToolTip.Tip="Zoom out (Ctrl + Wheel)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="14" Content="{StaticResource IconZoomOut}"/>
@@ -516,11 +516,11 @@
                             SmallChange="0.1" LargeChange="0.25"
                             Value="{Binding Zoom}"
                             VerticalAlignment="Center"/>
-                    <Button Classes="ratio-button" Height="36"
+                    <Button Classes="editor-button" Height="36"
                             Padding="12,0"
                             Command="{Binding ZoomInCommand}" ToolTip.Tip="Zoom in (Ctrl + Wheel)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="14" Content="{StaticResource IconZoomIn}"/>
-                    <Button Classes="ratio-button" Height="36"
+                    <Button Classes="editor-button" Height="36"
                             Padding="12,0"
                             Command="{Binding ResetZoomCommand}" ToolTip.Tip="Reset zoom">
                         <TextBlock Text="100%" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
