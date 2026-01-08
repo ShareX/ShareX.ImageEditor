@@ -306,18 +306,28 @@ namespace ShareX.Editor.ViewModels
 
         private Color SamplePixelColor(Bitmap bitmap, int x, int y)
         {
-            using var stream = new System.IO.MemoryStream();
-            bitmap.Save(stream);
-            stream.Position = 0;
+            // Optimization: If we have the source SKBitmap (which we usually do for the main image),
+            // use it directly instead of round-tripping.
+            if (_currentSourceImage != null && 
+                _currentSourceImage.Width == bitmap.Size.Width && 
+                _currentSourceImage.Height == bitmap.Size.Height)
+            {
+                if (x < 0 || y < 0 || x >= _currentSourceImage.Width || y >= _currentSourceImage.Height)
+                    return Colors.Transparent;
 
-            using var skBitmap = SkiaSharp.SKBitmap.Decode(stream);
-            if (skBitmap == null || x >= skBitmap.Width || y >= skBitmap.Height)
+                var skColor = _currentSourceImage.GetPixel(x, y);
+                return Color.FromArgb(skColor.Alpha, skColor.Red, skColor.Green, skColor.Blue);
+            }
+
+            // Fallback to fast conversion if we don't have the source match
+            using var skBitmap = BitmapConversionHelpers.ToSKBitmap(bitmap);
+            if (skBitmap == null || x < 0 || y < 0 || x >= skBitmap.Width || y >= skBitmap.Height)
             {
                 return Colors.Transparent;
             }
 
-            var skColor = skBitmap.GetPixel(x, y);
-            return Color.FromArgb(skColor.Alpha, skColor.Red, skColor.Green, skColor.Blue);
+            var pixel = skBitmap.GetPixel(x, y);
+            return Color.FromArgb(pixel.Alpha, pixel.Red, pixel.Green, pixel.Blue);
         }
 
         private void ApplySmartPaddingCrop()
@@ -690,7 +700,7 @@ namespace ShareX.Editor.ViewModels
                 return;
             }
 
-            if (PreviewImage == null)
+            if (_currentSourceImage == null)
             {
                 StatusText = "No image to apply effect to";
                 return;
@@ -700,14 +710,12 @@ namespace ShareX.Editor.ViewModels
             {
                 StatusText = $"Applying {EffectsPanel.SelectedEffect.Name}...";
 
-                // Convert Avalonia Bitmap to SKBitmap
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(PreviewImage);
+                // Use the source SKBitmap directly - no conversion needed!
+                // Apply returns a new SKBitmap
+                var resultBitmap = EffectsPanel.SelectedEffect.Apply(_currentSourceImage);
 
-                // Apply effect
-                using var resultBitmap = EffectsPanel.SelectedEffect.Apply(skBitmap);
-
-                // Convert back to Avalonia Bitmap
-                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(resultBitmap);
+                // Update the preview (this handles updating _currentSourceImage and the View)
+                UpdatePreview(resultBitmap);
 
                 StatusText = $"Applied {EffectsPanel.SelectedEffect.Name}";
             }
