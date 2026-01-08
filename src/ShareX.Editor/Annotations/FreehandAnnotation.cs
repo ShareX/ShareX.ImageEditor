@@ -1,3 +1,7 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
+using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -17,6 +21,22 @@ public class FreehandAnnotation : Annotation
     public FreehandAnnotation()
     {
         ToolType = EditorTool.Pen;
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation
+    /// </summary>
+    public Control CreateVisual()
+    {
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        return new Polyline
+        {
+            Stroke = brush,
+            StrokeThickness = StrokeWidth,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
+            Tag = this
+        };
     }
 
     public override void Render(SKCanvas canvas)

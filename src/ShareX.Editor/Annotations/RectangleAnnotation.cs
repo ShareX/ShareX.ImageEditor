@@ -23,6 +23,8 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia.Controls;
+using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -35,6 +37,21 @@ public class RectangleAnnotation : Annotation
     public RectangleAnnotation()
     {
         ToolType = EditorTool.Rectangle;
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation
+    /// </summary>
+    public Control CreateVisual()
+    {
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        return new Avalonia.Controls.Shapes.Rectangle
+        {
+            Stroke = brush,
+            StrokeThickness = StrokeWidth,
+            Fill = Brushes.Transparent,
+            Tag = this
+        };
     }
 
     public override void Render(SKCanvas canvas)
@@ -51,3 +68,4 @@ public class RectangleAnnotation : Annotation
         return expanded.Contains(point);
     }
 }
+
