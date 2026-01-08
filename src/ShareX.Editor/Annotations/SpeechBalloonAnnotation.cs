@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using ShareX.Editor.Controls;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -32,6 +34,19 @@ public class SpeechBalloonAnnotation : Annotation
         ToolType = EditorTool.SpeechBalloon;
         StrokeWidth = 2;
         StrokeColor = "#FF000000";
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation (SpeechBalloonControl)
+    /// </summary>
+    public Control CreateVisual()
+    {
+        return new SpeechBalloonControl
+        {
+            Annotation = this,
+            IsHitTestVisible = true,
+            Tag = this
+        };
     }
 
     public override void Render(SKCanvas canvas)

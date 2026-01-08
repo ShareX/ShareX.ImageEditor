@@ -23,6 +23,8 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia.Controls;
+using ShareX.Editor.Controls;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -45,6 +47,19 @@ public class SpotlightAnnotation : Annotation
     public SpotlightAnnotation()
     {
         ToolType = EditorTool.Spotlight;
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation (SpotlightControl)
+    /// </summary>
+    public Control CreateVisual()
+    {
+        return new SpotlightControl
+        {
+            Annotation = this,
+            IsHitTestVisible = true,
+            Tag = this
+        };
     }
 
     public override void Render(SKCanvas canvas)
