@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -13,6 +15,21 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         StrokeColor = "#FF000000"; // Black border
         StrokeWidth = 2;
         Amount = 2.0f; // Zoom level (2x)
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation
+    /// </summary>
+    public Control CreateVisual()
+    {
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        return new Avalonia.Controls.Shapes.Rectangle
+        {
+            Stroke = brush,
+            StrokeThickness = StrokeWidth,
+            Fill = Brushes.Transparent,
+            Tag = this
+        };
     }
 
     public override void Render(SKCanvas canvas)

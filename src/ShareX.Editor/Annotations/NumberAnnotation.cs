@@ -23,6 +23,9 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia.Controls;
+using Avalonia.Layout;
+using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.Editor.Annotations;
@@ -50,6 +53,42 @@ public class NumberAnnotation : Annotation
     public NumberAnnotation()
     {
         ToolType = EditorTool.Number;
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation (Grid with Ellipse and TextBlock)
+    /// </summary>
+    public Control CreateVisual()
+    {
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        var grid = new Grid
+        {
+            Width = Radius * 2,
+            Height = Radius * 2,
+            Tag = this
+        };
+
+        var bg = new Avalonia.Controls.Shapes.Ellipse
+        {
+            Fill = brush,
+            Stroke = Brushes.White,
+            StrokeThickness = 2
+        };
+
+        var numText = new TextBlock
+        {
+            Text = Number.ToString(),
+            Foreground = Brushes.White,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontWeight = FontWeight.Bold,
+            FontSize = FontSize / 2 // Scale font to fit in circle
+        };
+
+        grid.Children.Add(bg);
+        grid.Children.Add(numText);
+
+        return grid;
     }
 
     public override void Render(SKCanvas canvas)
