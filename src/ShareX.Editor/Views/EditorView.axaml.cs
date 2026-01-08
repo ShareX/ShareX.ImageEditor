@@ -1549,20 +1549,22 @@ namespace ShareX.Editor.Views
                     return;
 
                 case EditorTool.Spotlight:
-                    // Create a spotlight control that will render the darkening effect
-                    var spotlightAnnotation = new SpotlightAnnotation();
-
-                    // Set canvas size for the darkening overlay (convert from Avalonia.Size to SKSize)
-                    spotlightAnnotation.CanvasSize = new SkiaSharp.SKSize((float)canvas.Bounds.Width, (float)canvas.Bounds.Height);
-
-                    var spotlightControl = new ShareX.Editor.Controls.SpotlightControl
+                    // Create a spotlight annotation
+                    var spotlightAnnotation = new SpotlightAnnotation
                     {
-                        Annotation = spotlightAnnotation,
-                        IsHitTestVisible = true,
-                        // CRITICAL FIX: Make the control cover the entire canvas
-                        Width = canvas.Bounds.Width,
-                        Height = canvas.Bounds.Height
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint),
+                        // Set canvas size for the darkening overlay
+                        CanvasSize = new SkiaSharp.SKSize((float)canvas.Bounds.Width, (float)canvas.Bounds.Height)
                     };
+
+                    var spotlightControl = spotlightAnnotation.CreateVisual() as ShareX.Editor.Controls.SpotlightControl;
+                    if (spotlightControl != null)
+                    {
+                        // CRITICAL FIX: Make the control cover the entire canvas
+                        spotlightControl.Width = canvas.Bounds.Width;
+                        spotlightControl.Height = canvas.Bounds.Height;
+                    }
 
                     // Position at canvas origin (0, 0) - not at click point!
                     Canvas.SetLeft(spotlightControl, 0);
@@ -1574,43 +1576,51 @@ namespace ShareX.Editor.Views
                 // --- NEW TOOLS ---
 
                 case EditorTool.Blur:
-                case EditorTool.Pixelate:
-                case EditorTool.Magnify:
-                case EditorTool.Highlighter:
-                    // For these region-based effects, we primarily draw a rectangle as a visual container
-                    // The "Actual" rendering would ideally be done by a custom control or custom drawing visual.
-                    // For MVP, since we implemented BaseEffectAnnotation as logical models, 
-                    // we can't directly add them to a Canvas unless they are Avalonia Controls or we wrap them.
-
-                    // QUICK FIX STRATEGY: 
-                    // Use a standardized Avalonia Border/Rectangle for the UI representation 
-                    // and attaching the logic via attached properties or Tag or ViewModel synchronization.
-
-                    // Better approach for Avalonia: 
-                    // Create an 'AnnotationControl' wrapper that takes the 'Annotation' model and renders it.
-                    // But we don't have that yet.
-
-                    // Fallback to simple shapes representing the logical annotation:
-
-                    var effectRect = new global::Avalonia.Controls.Shapes.Rectangle
+                    var blurAnnotation = new BlurAnnotation
                     {
-                        Stroke = (vm.ActiveTool == EditorTool.Magnify) ? brush : Brushes.Transparent,
-                        StrokeThickness = vm.StrokeWidth,
-                        Fill = (vm.ActiveTool == EditorTool.Highlighter) ? new SolidColorBrush(ApplyHighlightAlpha(Color.Parse(vm.SelectedColor))) : Brushes.Transparent,
-                        Tag = CreateEffectAnnotation(vm.ActiveTool) // Create and attach logic model
+                        StrokeColor = vm.SelectedColor,
+                        StrokeWidth = vm.StrokeWidth,
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint)
                     };
+                    _currentShape = blurAnnotation.CreateVisual();
+                    break;
 
-                    // For Blur/Pixelate, we might want a translucent overlay to show where it is
-                    if (vm.ActiveTool == EditorTool.Blur)
-                        effectRect.Fill = new SolidColorBrush(Color.Parse("#200000FF")); // Faint blue
-                    else if (vm.ActiveTool == EditorTool.Pixelate)
-                        effectRect.Fill = new SolidColorBrush(Color.Parse("#2000FF00")); // Faint green
+                case EditorTool.Pixelate:
+                    var pixelateAnnotation = new PixelateAnnotation
+                    {
+                        StrokeColor = vm.SelectedColor,
+                        StrokeWidth = vm.StrokeWidth,
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint)
+                    };
+                    _currentShape = pixelateAnnotation.CreateVisual();
+                    break;
 
-                    _currentShape = effectRect;
+                case EditorTool.Magnify:
+                    var magnifyAnnotation = new MagnifyAnnotation
+                    {
+                        StrokeColor = vm.SelectedColor,
+                        StrokeWidth = vm.StrokeWidth,
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint)
+                    };
+                    _currentShape = magnifyAnnotation.CreateVisual();
+                    break;
+
+                case EditorTool.Highlighter:
+                    var highlightAnnotation = new HighlightAnnotation
+                    {
+                        StrokeColor = vm.SelectedColor,
+                        StrokeWidth = vm.StrokeWidth,
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint)
+                    };
+                    _currentShape = highlightAnnotation.CreateVisual();
                     break;
 
                 case EditorTool.SpeechBalloon:
-                    // Create proper speech balloon control with tail
+                    // Create proper speech balloon annotation with tail
                     var newBalloonAnnotation = new SpeechBalloonAnnotation
                     {
                         StrokeColor = vm.SelectedColor,
@@ -1620,13 +1630,12 @@ namespace ShareX.Editor.Views
                         EndPoint = ToSKPoint(_startPoint)
                     };
 
-                    var newBalloonControl = new SpeechBalloonControl
+                    var newBalloonControl = newBalloonAnnotation.CreateVisual() as SpeechBalloonControl;
+                    if (newBalloonControl != null)
                     {
-                        Annotation = newBalloonAnnotation,
-                        IsHitTestVisible = true,
-                        Width = 0,  // Initial size - will be updated in OnPointerMoved
-                        Height = 0
-                    };
+                        newBalloonControl.Width = 0;  // Initial size - will be updated in OnPointerMoved
+                        newBalloonControl.Height = 0;
+                    }
 
                     Canvas.SetLeft(newBalloonControl, _startPoint.X);
                     Canvas.SetTop(newBalloonControl, _startPoint.Y);
@@ -1674,38 +1683,22 @@ namespace ShareX.Editor.Views
 
                 case EditorTool.Number:
                     // Create number annotation
-                    var numberGrid = new Grid
+                    var numberAnnotation = new NumberAnnotation
                     {
-                        Width = 30,
-                        Height = 30
+                        StrokeColor = vm.SelectedColor,
+                        StrokeWidth = vm.StrokeWidth,
+                        Number = vm.NumberCounter,
+                        StartPoint = ToSKPoint(_startPoint),
+                        EndPoint = ToSKPoint(_startPoint)
                     };
+                    _currentShape = numberAnnotation.CreateVisual();
 
-                    var bg = new global::Avalonia.Controls.Shapes.Ellipse
-                    {
-                        Fill = brush,
-                        Stroke = Brushes.White,
-                        StrokeThickness = 2
-                    };
+                    Canvas.SetLeft(_currentShape, _startPoint.X - 15);
+                    Canvas.SetTop(_currentShape, _startPoint.Y - 15);
 
-                    var numText = new TextBlock
-                    {
-                        Text = vm.NumberCounter.ToString(),
-                        Foreground = Brushes.White,
-                        HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center,
-                        VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
-                        FontWeight = FontWeight.Bold
-                    };
-
-                    numberGrid.Children.Add(bg);
-                    numberGrid.Children.Add(numText);
-
-                    Canvas.SetLeft(numberGrid, _startPoint.X - 15);
-                    Canvas.SetTop(numberGrid, _startPoint.Y - 15);
-
-                    _currentShape = numberGrid;
                     vm.NumberCounter++;
 
-                    canvas.Children.Add(numberGrid);
+                    canvas.Children.Add(_currentShape);
                     // Number is positioned and added to canvas, so don't add it again
                     // Keep _isDrawing true so it goes through OnCanvasPointerReleased for auto-selection
                     break;
