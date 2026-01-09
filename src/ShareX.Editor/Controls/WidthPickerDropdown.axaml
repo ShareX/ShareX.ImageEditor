@@ -52,12 +52,16 @@
                 <ItemsControl ItemsSource="{Binding WidthOptions, ElementName=WidthPickerDropdownRoot}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" MaxWidth="230"/>
+                            <UniformGrid Columns="5"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Classes="width-option"
+                            <Button Width="32"
+                                    Height="32"
+                                    Padding="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
                                     Click="OnWidthSelected"
                                     CommandParameter="{Binding .}"
                                     ToolTip.Tip="{Binding ., StringFormat='{}{0}px'}">
