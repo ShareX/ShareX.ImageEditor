@@ -421,7 +421,6 @@ public class EditorSelectionController
 
         if (_selectedShape is Grid || _selectedShape is ShareX.Editor.Controls.SpotlightControl) return;
 
-<<<<<<< Updated upstream
         // Fallback to explicit Width/Height if Bounds are not yet calculated (e.g. before layout pass)
         var width = _selectedShape.Bounds.Width;
         var height = _selectedShape.Bounds.Height;
@@ -435,14 +434,6 @@ public class EditorSelectionController
 
         var shapeLeft = Canvas.GetLeft(_selectedShape);
         var shapeTop = Canvas.GetTop(_selectedShape);
-=======
-        if (_selectedShape.Bounds.Width <= 0 || _selectedShape.Bounds.Height <= 0) return;
-
-        var shapeLeft = Canvas.GetLeft(_selectedShape);
-        var shapeTop = Canvas.GetTop(_selectedShape);
-        var width = _selectedShape.Bounds.Width;
-        var height = _selectedShape.Bounds.Height;
->>>>>>> Stashed changes
         if (double.IsNaN(width)) width = _selectedShape.Width;
         if (double.IsNaN(height)) height = _selectedShape.Height;
 
