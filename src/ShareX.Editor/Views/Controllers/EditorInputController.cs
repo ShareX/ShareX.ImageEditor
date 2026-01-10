@@ -397,7 +397,7 @@ public class EditorInputController
                      {
                          _selectionController.SetSelectedShape(shapeToSelect);
                      });
-
+                     
                      // Auto-switch to Select tool for single-shot shapes to allow immediate manipulation
                      if (vm.ActiveTool != EditorTool.Pen && 
                          vm.ActiveTool != EditorTool.SmartEraser && 
