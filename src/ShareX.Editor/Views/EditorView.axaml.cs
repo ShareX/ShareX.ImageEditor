@@ -2149,6 +2149,13 @@ namespace ShareX.Editor.Views
                 _isDraggingHandle = false;
                 _draggedHandle = null;
                 e.Pointer.Capture(null);
+
+                // FIX: Update effect visual after resize via handle
+                if (_selectedShape?.Tag is BaseEffectAnnotation)
+                {
+                    UpdateEffectVisual(_selectedShape);
+                }
+
                 return;
             }
 
@@ -2156,6 +2163,13 @@ namespace ShareX.Editor.Views
             {
                 _isDraggingShape = false;
                 e.Pointer.Capture(null);
+
+                // FIX: Update effect visual after move
+                if (_selectedShape?.Tag is BaseEffectAnnotation)
+                {
+                    UpdateEffectVisual(_selectedShape);
+                }
+
                 return;
             }
 

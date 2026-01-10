@@ -184,7 +184,7 @@ namespace ShareX.Editor.ViewModels
         private bool _isEffectsPanelOpen;
 
         [ObservableProperty]
-        private bool _isSettingsPanelOpen = true;
+        private bool _isSettingsPanelOpen;
 
         [ObservableProperty]
         private int _numberCounter = 1;
@@ -308,8 +308,8 @@ namespace ShareX.Editor.ViewModels
         {
             // Optimization: If we have the source SKBitmap (which we usually do for the main image),
             // use it directly instead of round-tripping.
-            if (_currentSourceImage != null && 
-                _currentSourceImage.Width == bitmap.Size.Width && 
+            if (_currentSourceImage != null &&
+                _currentSourceImage.Width == bitmap.Size.Width &&
                 _currentSourceImage.Height == bitmap.Size.Height)
             {
                 if (x < 0 || y < 0 || x >= _currentSourceImage.Width || y >= _currentSourceImage.Height)
