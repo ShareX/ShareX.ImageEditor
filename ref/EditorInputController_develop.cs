@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
@@ -67,6 +67,11 @@ public class EditorInputController
             return;
         }
 
+        if (_selectionController.OnPointerPressed(sender, e))
+        {
+            return;
+        }
+
         if (props.IsRightButtonPressed)
         {
              var hitSource = e.Source as global::Avalonia.Visual;
@@ -94,11 +99,6 @@ public class EditorInputController
                  return;
              }
              return;
-        }
-
-        if (_selectionController.OnPointerPressed(sender, e))
-        {
-            return;
         }
 
         _view.ClearRedoStack();
@@ -198,6 +198,7 @@ public class EditorInputController
                 break;
             case EditorTool.Highlighter:
                 _currentShape = new HighlightAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _isCreatingEffect = true;
                 break;
             case EditorTool.SpeechBalloon:
                  var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = "#FFFFFFFF", StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
@@ -208,25 +209,6 @@ public class EditorInputController
                  Canvas.SetTop(balloonControl, _startPoint.Y);
                  _currentShape = balloonControl;
                  break;
-            case EditorTool.Number:
-                var numberAnnotation = new NumberAnnotation
-                {
-                    StrokeColor = vm.SelectedColor,
-                    StrokeWidth = vm.StrokeWidth,
-                    StartPoint = ToSKPoint(_startPoint),
-                    Number = vm.NumberCounter
-                };
-                
-                _currentShape = numberAnnotation.CreateVisual();
-                
-                // Center the number on the click point (approximate center for 30x30 default)
-                Canvas.SetLeft(_currentShape, _startPoint.X - 15);
-                Canvas.SetTop(_currentShape, _startPoint.Y - 15);
-                
-                vm.NumberCounter++;
-                _isDrawing = true; // Keep true so released handler can select it (or we explicitly select it)?
-                // Legacy said: "Keep _isDrawing true so it goes through OnCanvasPointerReleased for auto-selection"
-                break;
             case EditorTool.Pen:
             case EditorTool.SmartEraser:
                 var polyline = new Polyline
@@ -282,16 +264,7 @@ public class EditorInputController
 
          if (_currentShape is Polyline polyline)
          {
-             // Freehand drawing: create a new Points collection to force property change and redraw.
-             var updated = new Points();
-             foreach (var p in polyline.Points)
-             {
-                 updated.Add(p);
-             }
-             updated.Add(currentPoint);
-             polyline.Points = updated;
-             polyline.InvalidateVisual();
-             
+             polyline.Points.Add(currentPoint);
              if (polyline.Tag is FreehandAnnotation freehand) freehand.Points.Add(ToSKPoint(currentPoint));
              else if (polyline.Tag is SmartEraserAnnotation eraser) eraser.Points.Add(ToSKPoint(currentPoint));
              return;
@@ -411,12 +384,10 @@ public class EditorInputController
                 if (vm.ActiveTool == EditorTool.Crop)
                 {
                     PerformCrop();
-                    return;
                 }
                 else if (vm.ActiveTool == EditorTool.CutOut)
                 {
                     PerformCutOut(canvas);
-                    return;
                 }
                 else if (_currentShape != null)
                 {
@@ -428,7 +399,15 @@ public class EditorInputController
                          _selectionController.SetSelectedShape(shapeToSelect);
                      });
                      
-                     // Auto-switch to Select tool removed to restore legacy continuous drawing.
+                     // Auto-switch to Select tool for single-shot shapes to allow immediate manipulation
+                     if (vm.ActiveTool != EditorTool.Pen && 
+                         vm.ActiveTool != EditorTool.SmartEraser && 
+                         vm.ActiveTool != EditorTool.Highlighter &&
+                         vm.ActiveTool != EditorTool.Number &&
+                         vm.ActiveTool != EditorTool.Step)
+                     {
+                         vm.ActiveTool = EditorTool.Select;
+                     }
                 }
             }
             

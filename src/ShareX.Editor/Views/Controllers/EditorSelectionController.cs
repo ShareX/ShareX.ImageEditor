@@ -99,37 +99,68 @@ public class EditorSelectionController
         // But logic in EditorView.axaml.cs had: 
         // if (vm.ActiveTool == EditorTool.Select ...) -> Try select.
         
-        if (_view.DataContext is MainViewModel vm && vm.ActiveTool == EditorTool.Select)
+        if (_view.DataContext is MainViewModel vm)
         {
-             // Hit test
-             var hitSource = e.Source as global::Avalonia.Visual;
-             Control? hitTarget = null;
-             while (hitSource != null && hitSource != canvas)
-             {
-                 if (canvas.Children.Contains(hitSource as Control))
-                 {
-                     hitTarget = hitSource as Control;
-                     break;
-                 }
-                 hitSource = hitSource.GetVisualParent();
-             }
+            // Allow dragging selected shapes even when not in Select tool mode
+            // This enables immediate repositioning after creating an annotation
+            if (_selectedShape != null && vm.ActiveTool != EditorTool.Select)
+            {
+                // Hit test - find the direct child of the canvas
+                var hitSource = e.Source as global::Avalonia.Visual;
+                Control? hitTarget = null;
+                while (hitSource != null && hitSource != canvas)
+                {
+                    if (canvas.Children.Contains(hitSource as Control))
+                    {
+                        hitTarget = hitSource as Control;
+                        break;
+                    }
+                    hitSource = hitSource.GetVisualParent();
+                }
 
-             if (hitTarget != null)
-             {
-                 _selectedShape = hitTarget;
-                 _isDraggingShape = true;
-                 _lastDragPoint = point;
-                 UpdateSelectionHandles();
-                 e.Pointer.Capture(hitTarget);
-                 e.Handled = true;
-                 return true;
-             }
-             else
-             {
-                 ClearSelection();
-                 // Don't return true, allowing rubber band selection (if implemented) or just clearing
-                 return false;
-             }
+                if (hitTarget == _selectedShape)
+                {
+                    _isDraggingShape = true;
+                    _lastDragPoint = point;
+                    UpdateSelectionHandles();
+                    e.Pointer.Capture(hitTarget);
+                    e.Handled = true;
+                    return true;
+                }
+            }
+
+            if (vm.ActiveTool == EditorTool.Select)
+            {
+                 // Hit test
+                 var hitSource = e.Source as global::Avalonia.Visual;
+                 Control? hitTarget = null;
+                 while (hitSource != null && hitSource != canvas)
+                 {
+                     if (canvas.Children.Contains(hitSource as Control))
+                     {
+                         hitTarget = hitSource as Control;
+                         break;
+                     }
+                     hitSource = hitSource.GetVisualParent();
+                 }
+
+                 if (hitTarget != null)
+                 {
+                     _selectedShape = hitTarget;
+                     _isDraggingShape = true;
+                     _lastDragPoint = point;
+                     UpdateSelectionHandles();
+                     e.Pointer.Capture(hitTarget);
+                     e.Handled = true;
+                     return true;
+                 }
+                 else
+                 {
+                     ClearSelection();
+                     // Don't return true, allowing rubber band selection (if implemented) or just clearing
+                     return false;
+                 }
+            }
         }
 
         return false;
