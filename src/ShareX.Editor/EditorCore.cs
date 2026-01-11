@@ -692,7 +692,9 @@ public class EditorCore : IDisposable
     /// <summary>
     /// Render the entire editor canvas to an SKCanvas
     /// </summary>
-    public void Render(SKCanvas canvas)
+    /// <param name="canvas">Target canvas</param>
+    /// <param name="renderVectorAnnotations">If true, renders all annotations. If false, skips vector annotations (for hybrid rendering).</param>
+    public void Render(SKCanvas canvas, bool renderVectorAnnotations = true)
     {
         canvas.Clear(SKColors.Transparent);
 
@@ -702,17 +704,40 @@ public class EditorCore : IDisposable
             canvas.DrawBitmap(SourceImage, 0, 0);
         }
 
-        // Draw all annotations
+        // Draw annotations
         foreach (var annotation in _annotations)
         {
+            // In hybrid mode, we skip vector annotations as they are handled by Avalonia
+            if (!renderVectorAnnotations && IsVectorAnnotation(annotation))
+            {
+                continue;
+            }
+
             annotation.Render(canvas);
         }
 
-        // Draw selection handles for selected annotation
-        if (_selectedAnnotation != null)
+        // Draw selection handles only if we are rendering everything (or strictly debugging)
+        // Usually handles are vectors in the hybrid view
+        if (renderVectorAnnotations && _selectedAnnotation != null)
         {
             DrawSelectionHandles(canvas, _selectedAnnotation);
         }
+    }
+
+    private bool IsVectorAnnotation(Annotation annotation)
+    {
+        // Define what counts as a 'Vector' annotation that Avalonia handles
+        return annotation is RectangleAnnotation ||
+               annotation is EllipseAnnotation ||
+               annotation is LineAnnotation ||
+               annotation is ArrowAnnotation ||
+               annotation is TextAnnotation ||
+               annotation is SpeechBalloonAnnotation ||
+               annotation is NumberAnnotation;
+        // Raster annotations (handled by Skia): Blur, Pixelate, Spotlight, Highlighter (maybe?), Freehand (maybe?)
+        // Freehand is currently vector points but might be better as raster for performance?
+        // For now, let's keep Freehand as raster if it has many points.
+        // Actually FreehandAnnotation renders via SKPath, it is vector-like.
     }
 
     /// <summary>

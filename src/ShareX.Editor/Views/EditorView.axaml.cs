@@ -33,6 +33,7 @@ using Avalonia.Media;
 using ShareX.Editor.Annotations;
 using ShareX.Editor.Helpers;
 using ShareX.Editor.ViewModels;
+using ShareX.Editor.Controls;
 using ShareX.Editor.Views.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
@@ -44,6 +45,10 @@ namespace ShareX.Editor.Views
         private readonly EditorZoomController _zoomController;
         private readonly EditorSelectionController _selectionController;
         private readonly EditorInputController _inputController;
+        
+        // SIP0018: Hybrid Rendering
+        private SKCanvasControl? _canvasControl;
+        private readonly EditorCore _editorCore;
 
         private Stack<Control> _undoStack = new();
         private Stack<Control> _redoStack = new();
@@ -52,12 +57,24 @@ namespace ShareX.Editor.Views
         {
             InitializeComponent();
 
+            _editorCore = new EditorCore();
+
             _zoomController = new EditorZoomController(this);
             _selectionController = new EditorSelectionController(this);
             _inputController = new EditorInputController(this, _selectionController, _zoomController);
 
             // Subscribe to selection controller events
             _selectionController.RequestUpdateEffect += OnRequestUpdateEffect;
+
+            // SIP0018: Subscribe to Core events
+            _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
+            _editorCore.ImageChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                if (_canvasControl != null)
+                {
+                    _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
+                    RenderCore();
+                }
+            });
         }
 
         protected override void OnLoaded(RoutedEventArgs e)
@@ -81,6 +98,12 @@ namespace ShareX.Editor.Views
 
                 // Initialize zoom
                 _zoomController.InitLastZoom(vm.Zoom);
+                
+                // Initial load
+                if (vm.PreviewImage != null)
+                {
+                    LoadImageFromViewModel(vm);
+                }
             }
         }
 
@@ -111,6 +134,7 @@ namespace ShareX.Editor.Views
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
+                    LoadImageFromViewModel(vm);
                 }
                 else if (e.PropertyName == nameof(MainViewModel.Zoom))
                 {
@@ -133,6 +157,37 @@ namespace ShareX.Editor.Views
         internal void ClearRedoStack()
         {
             _redoStack.Clear();
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            _canvasControl = this.FindControl<SKCanvasControl>("CanvasControl");
+        }
+
+        private void LoadImageFromViewModel(MainViewModel vm)
+        {
+            if (vm.PreviewImage == null || _canvasControl == null) return;
+
+            // One-time conversion from Avalonia Bitmap to SKBitmap for the Core
+            // In a full refactor, VM would hold SKBitmap source of truth
+            using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+            if (skBitmap != null)
+            {
+                // We must copy because ToSKBitmap might return a disposable wrapper or we need ownership
+                _editorCore.LoadImage(skBitmap.Copy());
+                
+                _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
+                RenderCore();
+            }
+        }
+
+        private void RenderCore()
+        {
+            if (_canvasControl == null) return;
+            // Hybrid rendering: Render only background + raster effects from Core
+            // Vector annotations are handled by Avalonia Canvas
+            _canvasControl.Draw(canvas => _editorCore.Render(canvas, false));
         }
 
         /// <summary>

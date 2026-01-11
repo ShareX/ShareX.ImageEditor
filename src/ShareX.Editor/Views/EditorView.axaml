@@ -462,12 +462,10 @@
                                               Width="{Binding ImageWidth}"
                                               Height="{Binding ImageHeight}">
 
-                                            <!-- Image Layer -->
-                                            <Image Name="PreviewImageControl"
-                                                   Source="{Binding PreviewImage}"
-                                                   Stretch="Uniform"
-                                                   HorizontalAlignment="Stretch"
-                                                   VerticalAlignment="Stretch"/>
+                                            <!-- Image Layer (Hybrid Rendering: SkiaSharp Native) -->
+                                            <controls:SKCanvasControl Name="CanvasControl"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    VerticalAlignment="Stretch"/>
 
                                             <!-- Annotation Layer (Saved content) -->
                                             <Canvas Name="AnnotationCanvas"
