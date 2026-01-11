@@ -88,24 +88,24 @@ If editing extremely large screenshots (e.g., 8K scrolling captures), rendering 
 
 ```mermaid
 graph TD
-    UserInput[User Input (Mouse/Key)] -->|Events| AvaloniaView[EditorView (Avalonia)]
+    UserInput["User Input (Mouse/Key)"] -->|Events| AvaloniaView["EditorView (Avalonia)"]
     
     subgraph "Visual Layer (Avalonia)"
-        AvaloniaView -->|Updates| OverlayCanvas[Overlay Canvas]
-        OverlayCanvas -->|Contains| Handles[Selection Handles]
-        OverlayCanvas -->|Contains| ActiveShape[Active Drawing Shape]
-        ActiveShape -->|Vector Rendering| GPU[GPU Composition]
+        AvaloniaView -->|Updates| OverlayCanvas["Overlay Canvas"]
+        OverlayCanvas -->|Contains| Handles["Selection Handles"]
+        OverlayCanvas -->|Contains| ActiveShape["Active Drawing Shape"]
+        ActiveShape -->|Vector Rendering| GPU["GPU Composition"]
     end
 
     subgraph "Content Layer (SkiaSharp)"
-        AvaloniaView -->|Commands (Crop/Cut)| EditorCore[EditorCore]
-        EditorCore -->|Manipulates| MasterBitmap[Master SKBitmap]
-        MasterBitmap -->|Draws to| SKSurface[SKCanvasControl / WriteableBitmap]
+        AvaloniaView -->|Commands (Crop/Cut)| EditorCore["EditorCore"]
+        EditorCore -->|Manipulates| MasterBitmap["Master SKBitmap"]
+        MasterBitmap -->|Draws to| SKSurface["SKCanvasControl / WriteableBitmap"]
         SKSurface -->|Composites| AvaloniaView
     end
 
-    EditorCore -->|Uses| PerformCutOut[Optimized PerformCutOut]
-    EditorCore -->|Uses| ImageEffects[Skia ImageEffects]
+    EditorCore -->|Uses| PerformCutOut["Optimized PerformCutOut"]
+    EditorCore -->|Uses| ImageEffects["Skia ImageEffects"]
 ```
 
 ### 4.4 Summary of Recommendations
