@@ -26,7 +26,6 @@ public static class FontAwesomeIcons
     public const string CutOut = "\uf0c4";        // scissors
 
     // Utility icons - Solid variant
-    public const string Effects = "\uf0d0";       // magic
     public const string Undo = "\uf0e2";          // arrow-rotate-left
     public const string Redo = "\uf01e";          // arrow-rotate-right
     public const string Clear = "\uf12d";         // eraser

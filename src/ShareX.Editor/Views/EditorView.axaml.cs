@@ -30,18 +30,12 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using Avalonia.VisualTree;
 using ShareX.Editor.Annotations;
-using ShareX.Editor.Controls;
 using ShareX.Editor.Helpers;
-using ShareX.Editor.Services;
 using ShareX.Editor.ViewModels;
 using ShareX.Editor.Views.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
-using System.Collections.Generic;
 
 namespace ShareX.Editor.Views
 {
@@ -57,7 +51,7 @@ namespace ShareX.Editor.Views
         public EditorView()
         {
             InitializeComponent();
-            
+
             _zoomController = new EditorZoomController(this);
             _selectionController = new EditorSelectionController(this);
             _inputController = new EditorInputController(this, _selectionController, _zoomController);
@@ -81,10 +75,10 @@ namespace ShareX.Editor.Views
                     var skBitmap = GetSnapshot();
                     return Task.FromResult<Avalonia.Media.Imaging.Bitmap?>(BitmapConversionHelpers.ToAvaloniBitmap(skBitmap));
                 };
-                
+
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
-                
+
                 // Initialize zoom
                 _zoomController.InitLastZoom(vm.Zoom);
             }
@@ -93,12 +87,12 @@ namespace ShareX.Editor.Views
         protected override void OnUnloaded(RoutedEventArgs e)
         {
             base.OnUnloaded(e);
-            
+
             if (DataContext is MainViewModel vm)
             {
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
             }
-            
+
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
         }
 
@@ -128,7 +122,7 @@ namespace ShareX.Editor.Views
                 }
             }
         }
-        
+
         // --- Public/Internal Methods for Controllers ---
 
         internal void PushUndo(Control shape)
@@ -140,7 +134,7 @@ namespace ShareX.Editor.Views
         {
             _redoStack.Clear();
         }
-        
+
         /// <summary>
         /// Sample pixel color from the rendered canvas (including annotations) at the specified canvas coordinates
         /// </summary>
@@ -244,30 +238,30 @@ namespace ShareX.Editor.Views
                 }
                 else if (e.KeyModifiers == KeyModifiers.None)
                 {
-                     // Tool shortcuts
-                     switch (e.Key)
-                     {
-                         case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
-                         case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
-                         case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
-                         case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
-                         case Key.L: vm.SelectToolCommand.Execute(EditorTool.Line); e.Handled = true; break;
-                         case Key.T: vm.SelectToolCommand.Execute(EditorTool.Text); e.Handled = true; break;
-                         case Key.S: vm.SelectToolCommand.Execute(EditorTool.Spotlight); e.Handled = true; break;
-                         case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
-                         case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
-                         case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
-                         case Key.F: vm.SelectToolCommand.Execute(EditorTool.Pen); e.Handled = true; break; // Freehand
-                         case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlighter); e.Handled = true; break;
-                         case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
-                         case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
-                     }
+                    // Tool shortcuts
+                    switch (e.Key)
+                    {
+                        case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
+                        case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
+                        case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
+                        case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
+                        case Key.L: vm.SelectToolCommand.Execute(EditorTool.Line); e.Handled = true; break;
+                        case Key.T: vm.SelectToolCommand.Execute(EditorTool.Text); e.Handled = true; break;
+                        case Key.S: vm.SelectToolCommand.Execute(EditorTool.Spotlight); e.Handled = true; break;
+                        case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
+                        case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
+                        case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
+                        case Key.F: vm.SelectToolCommand.Execute(EditorTool.Pen); e.Handled = true; break; // Freehand
+                        case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlighter); e.Handled = true; break;
+                        case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
+                        case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
+                    }
                 }
             }
         }
-        
+
         // --- Private Helpers (Undo/Redo, Delete, etc that involve view state) ---
-        
+
         private void PerformUndo()
         {
             if (_undoStack.Count > 0)
@@ -306,7 +300,7 @@ namespace ShareX.Editor.Views
                 if (canvas != null && canvas.Children.Contains(selected))
                 {
                     canvas.Children.Remove(selected);
-                    
+
                     // Push to Redo stack to allow undoing the delete?
                     // Actually standard undo logic implies we should be able to Undo a delete.
                     // This means "Undo" should restore the deleted item.
@@ -321,7 +315,7 @@ namespace ShareX.Editor.Views
                     // I didn't see the body of PerformDelete in original code.
                     // I'll assume basic behavior: Delete removes it. Undo might not restore it unless implemented.
                     // I will stick to removing it.
-                    
+
                     _selectionController.ClearSelection();
                 }
             }
@@ -338,67 +332,59 @@ namespace ShareX.Editor.Views
                 _selectionController.ClearSelection();
             }
         }
-        
+
         private SkiaSharp.SKBitmap GetSnapshot()
         {
             // Snapshot logic
-             var container = this.FindControl<Grid>("CanvasContainer");
-             if (container == null || container.Width <= 0 || container.Height <= 0) return null;
+            var container = this.FindControl<Grid>("CanvasContainer");
+            if (container == null || container.Width <= 0 || container.Height <= 0) return null;
 
-             var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
-                 new PixelSize((int)container.Width, (int)container.Height),
-                 new Vector(96, 96));
+            var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
+                new PixelSize((int)container.Width, (int)container.Height),
+                new Vector(96, 96));
 
-             rtb.Render(container);
-             return BitmapConversionHelpers.ToSKBitmap(rtb);
+            rtb.Render(container);
+            return BitmapConversionHelpers.ToSKBitmap(rtb);
         }
-        
+
         // This is called by SelectionController/InputController via event when an effect logic needs update
         // We replicate the UpdateEffectVisual logic here or expose it
         private void OnRequestUpdateEffect(Control shape)
         {
-             if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
-             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
-             
-             // Logic to update effect bitmap
-             try
-             {
-                 double left = Canvas.GetLeft(shape);
-                 double top = Canvas.GetTop(shape);
-                 double width = shape.Bounds.Width;
-                 double height = shape.Bounds.Height;
-                 if (width <= 0 || height <= 0) return;
+            if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
-                 // Map to SKPoint
-                 annotation.StartPoint = new SKPoint((float)left, (float)top);
-                 annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
-                 
-                 // We don't have the cached bitmap here, create fresh or pass from controller?
-                 // Original logic cached it. InputController caches it.
-                 // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
-                 // SelectionController doesn't have the cached bitmap.
-                 using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                 annotation.UpdateEffect(skBitmap);
-                 
-                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
-                 {
-                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
-                     {
-                         Stretch = Stretch.None,
-                         SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
-                     };
-                 }
-             }
-             catch { }
-        }
-
-        private void OnEffectsPanelApplyRequested(object? sender, RoutedEventArgs e)
-        {
-            if (DataContext is MainViewModel vm)
+            // Logic to update effect bitmap
+            try
             {
-                vm.ApplyEffectCommand.Execute(null);
+                double left = Canvas.GetLeft(shape);
+                double top = Canvas.GetTop(shape);
+                double width = shape.Bounds.Width;
+                double height = shape.Bounds.Height;
+                if (width <= 0 || height <= 0) return;
+
+                // Map to SKPoint
+                annotation.StartPoint = new SKPoint((float)left, (float)top);
+                annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
+
+                // We don't have the cached bitmap here, create fresh or pass from controller?
+                // Original logic cached it. InputController caches it.
+                // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
+                // SelectionController doesn't have the cached bitmap.
+                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                annotation.UpdateEffect(skBitmap);
+
+                if (annotation.EffectBitmap != null && shape is Shape shapeControl)
+                {
+                    var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
+                    shapeControl.Fill = new ImageBrush(avaloniaBitmap)
+                    {
+                        Stretch = Stretch.None,
+                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                    };
+                }
             }
+            catch { }
         }
 
         private void OnColorChanged(object? sender, IBrush color)
@@ -415,27 +401,27 @@ namespace ShareX.Editor.Views
             var cropOverlay = this.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
             if (cropOverlay != null && cropOverlay.IsVisible && DataContext is MainViewModel vm)
             {
-                 var rect = new SkiaSharp.SKRect(
-                     (float)Canvas.GetLeft(cropOverlay),
-                     (float)Canvas.GetTop(cropOverlay),
-                     (float)(Canvas.GetLeft(cropOverlay) + cropOverlay.Width),
-                     (float)(Canvas.GetTop(cropOverlay) + cropOverlay.Height));
-                 
-                 if (rect.Width > 0 && rect.Height > 0)
-                 {
-                     var scaling = 1.0;
-                     var topLevel = TopLevel.GetTopLevel(this);
-                     if (topLevel != null) scaling = topLevel.RenderScaling;
+                var rect = new SkiaSharp.SKRect(
+                    (float)Canvas.GetLeft(cropOverlay),
+                    (float)Canvas.GetTop(cropOverlay),
+                    (float)(Canvas.GetLeft(cropOverlay) + cropOverlay.Width),
+                    (float)(Canvas.GetTop(cropOverlay) + cropOverlay.Height));
 
-                     var physX = (int)(rect.Left * scaling);
-                     var physY = (int)(rect.Top * scaling);
-                     var physW = (int)(rect.Width * scaling);
-                     var physH = (int)(rect.Height * scaling);
+                if (rect.Width > 0 && rect.Height > 0)
+                {
+                    var scaling = 1.0;
+                    var topLevel = TopLevel.GetTopLevel(this);
+                    if (topLevel != null) scaling = topLevel.RenderScaling;
 
-                     vm.CropImage(physX, physY, physW, physH);
-                     vm.StatusText = "Image cropped";
-                 }
-                 cropOverlay.IsVisible = false;
+                    var physX = (int)(rect.Left * scaling);
+                    var physY = (int)(rect.Top * scaling);
+                    var physW = (int)(rect.Width * scaling);
+                    var physH = (int)(rect.Height * scaling);
+
+                    vm.CropImage(physX, physY, physW, physH);
+                    vm.StatusText = "Image cropped";
+                }
+                cropOverlay.IsVisible = false;
             }
         }
 

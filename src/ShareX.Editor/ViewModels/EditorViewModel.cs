@@ -150,12 +150,6 @@ public partial class EditorViewModel : ObservableObject
     private EditorTool _activeTool = EditorTool.Rectangle;
 
     [ObservableProperty]
-    private EffectsPanelViewModel _effectsPanel = new();
-
-    [ObservableProperty]
-    private bool _isEffectsPanelOpen;
-
-    [ObservableProperty]
     private int _numberCounter = 1;
 
     [ObservableProperty]
@@ -209,9 +203,6 @@ public partial class EditorViewModel : ObservableObject
 
     [RelayCommand]
     private void SetStrokeWidth(int width) => StrokeWidth = width;
-
-    [RelayCommand]
-    private void ToggleEffectsPanel() => IsEffectsPanelOpen = !IsEffectsPanelOpen;
 
     [RelayCommand]
     private void ZoomIn() => Zoom = Math.Clamp(Zoom + ZoomStep, MinZoom, MaxZoom);

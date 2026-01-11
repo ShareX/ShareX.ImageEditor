@@ -178,12 +178,6 @@ namespace ShareX.Editor.ViewModels
         private EditorTool _activeTool = EditorTool.Rectangle;
 
         [ObservableProperty]
-        private EffectsPanelViewModel _effectsPanel = new();
-
-        [ObservableProperty]
-        private bool _isEffectsPanelOpen;
-
-        [ObservableProperty]
         private bool _isSettingsPanelOpen;
 
         [ObservableProperty]
@@ -660,13 +654,6 @@ namespace ShareX.Editor.ViewModels
         }
 
         [RelayCommand]
-        private void ToggleEffectsPanel()
-        {
-            IsEffectsPanelOpen = !IsEffectsPanelOpen;
-            StatusText = IsEffectsPanelOpen ? "Effects panel opened" : "Effects panel closed";
-        }
-
-        [RelayCommand]
         private void ToggleSettingsPanel()
         {
             IsSettingsPanelOpen = !IsSettingsPanelOpen;
@@ -689,40 +676,6 @@ namespace ShareX.Editor.ViewModels
         private void ResetZoom()
         {
             Zoom = 1.0;
-        }
-
-        [RelayCommand]
-        private void ApplyEffect()
-        {
-            if (EffectsPanel.SelectedEffect == null)
-            {
-                StatusText = "No effect selected";
-                return;
-            }
-
-            if (_currentSourceImage == null)
-            {
-                StatusText = "No image to apply effect to";
-                return;
-            }
-
-            try
-            {
-                StatusText = $"Applying {EffectsPanel.SelectedEffect.Name}...";
-
-                // Use the source SKBitmap directly - no conversion needed!
-                // Apply returns a new SKBitmap
-                var resultBitmap = EffectsPanel.SelectedEffect.Apply(_currentSourceImage);
-
-                // Update the preview (this handles updating _currentSourceImage and the View)
-                UpdatePreview(resultBitmap);
-
-                StatusText = $"Applied {EffectsPanel.SelectedEffect.Name}";
-            }
-            catch (Exception ex)
-            {
-                StatusText = $"Error applying effect: {ex.Message}";
-            }
         }
 
         [RelayCommand]

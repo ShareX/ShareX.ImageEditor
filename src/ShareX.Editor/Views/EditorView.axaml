@@ -34,7 +34,6 @@
         <x:String x:Key="IconSmartEraser">&#xf12d;</x:String>
         <x:String x:Key="IconCrop">&#xf125;</x:String>
         <x:String x:Key="IconCutOut">&#xf0c4;</x:String>
-        <x:String x:Key="IconEffects">&#xf0d0;</x:String>
         <x:String x:Key="IconBackground">&#xf03e;</x:String>
         <x:String x:Key="IconUndo">&#xf0e2;</x:String>
         <x:String x:Key="IconRedo">&#xf01e;</x:String>
@@ -190,12 +189,6 @@
                             Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
                             ToolTip.Tip="Cut Out (U)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCutOut}"/>
-                    <Button Classes="editor-button"
-                            Classes.active="{Binding IsEffectsPanelOpen}"
-                            Width="40" Height="40"
-                            Command="{Binding ToggleEffectsPanelCommand}"
-                            ToolTip.Tip="Image Effects (F)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEffects}"/>
                     <Button Classes="editor-button"
                             Classes.active="{Binding IsSettingsPanelOpen}"
                             Width="40" Height="40"
@@ -546,18 +539,6 @@
                                Margin="4,0,8,0"/>
                 </StackPanel>
             </Grid>
-        </Border>
-
-        <!-- Effects Panel Overlay (Grid.RowSpan=3 to cover entire view) -->
-        <Border Grid.Row="0" Grid.RowSpan="3"
-                IsVisible="{Binding IsEffectsPanelOpen}"
-                Background="#80000000"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Stretch"
-                Width="400"
-                Padding="16">
-            <views:EffectsPanelView DataContext="{Binding EffectsPanel}"
-                                    ApplyRequested="OnEffectsPanelApplyRequested"/>
         </Border>
     </Grid>
 </UserControl>
