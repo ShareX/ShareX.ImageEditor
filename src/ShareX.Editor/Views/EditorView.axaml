@@ -45,15 +45,24 @@
         <x:String x:Key="IconZoomIn">&#xf00e;</x:String>
         <x:String x:Key="IconZoomOut">&#xf010;</x:String>
 
+        <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
+        <x:Double x:Key="AppFontSize">14</x:Double>
         <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
+        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
     </UserControl.Resources>
 
     <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
+            <Setter Property="FontSize" Value="{StaticResource AppFontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
         <Style Selector="Button.editor-button">
             <Setter Property="Background" Value="#2E2E2E"/>
             <Setter Property="BorderBrush" Value="#1F1F1F"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="FontSize" Value="12"/>
@@ -92,7 +101,7 @@
         <Style Selector="Slider:horizontal">
             <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
 
-		    <Style Selector="^ /template/ Thumb">
+            <Style Selector="^ /template/ Thumb">
                 <Setter Property="Background" Value="{StaticResource AccentColor}"/>
                 <Setter Property="BorderBrush" Value="#2E2E2E"/>
                 <Setter Property="BorderThickness" Value="4"/>
@@ -107,6 +116,16 @@
             <Style Selector="^:checked /template/ Border#NormalRectangle">
                 <Setter Property="Background" Value="{StaticResource AccentColor}"/>
                 <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Border.capsule">
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
             </Style>
         </Style>
     </UserControl.Styles>
@@ -286,7 +305,9 @@
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Margin" Foreground="#9CA3AF"/>
-                                <TextBlock Grid.Column="1" Text="{Binding PreviewPadding, StringFormat='{}{0:F0}px'}" Foreground="White"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding PreviewPadding, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
                             </Grid>
                             <Slider Minimum="0"
                                     Maximum="200"
@@ -298,7 +319,9 @@
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Padding" Foreground="#9CA3AF"/>
-                                <TextBlock Grid.Column="1" Text="{Binding SmartPadding, StringFormat='{}{0:F0}px'}" Foreground="White"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding SmartPadding, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
                             </Grid>
                             <Slider Minimum="0"
                                     Maximum="200"
@@ -315,7 +338,9 @@
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="#9CA3AF"/>
-                                <TextBlock Grid.Column="1" Text="{Binding PreviewCornerRadius, StringFormat='{}{0:F0}px'}" Foreground="White"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding PreviewCornerRadius, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
                             </Grid>
                             <Slider Minimum="0"
                                     Maximum="50"
@@ -327,7 +352,9 @@
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Shadow" Foreground="#9CA3AF"/>
-                                <TextBlock Grid.Column="1" Text="{Binding ShadowBlur, StringFormat='{}{0:F0}px'}" Foreground="White"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding ShadowBlur, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
                             </Grid>
                             <Slider Minimum="0"
                                     Maximum="100"
