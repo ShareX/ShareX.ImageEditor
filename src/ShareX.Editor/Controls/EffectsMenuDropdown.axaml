@@ -104,7 +104,7 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
-            <Border Classes="popup-border" MinWidth="220" MaxHeight="500">
+            <Border Classes="popup-border" MinWidth="220">
                 <ScrollViewer>
                 <StackPanel Orientation="Vertical" Spacing="0">
 
@@ -153,6 +153,20 @@
                         </StackPanel>
                     </Button>
 
+                    <Button Classes="menu-item" Click="OnColorizeClick">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
+                            <TextBlock Classes="menu-text" Text="Colorize…"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Classes="menu-item" Click="OnSelectiveColorClick">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="menu-icon" Text="{StaticResource IconHighlighter}"/>
+                            <TextBlock Classes="menu-text" Text="Selective Color…"/>
+                        </StackPanel>
+                    </Button>
+
                     <!-- Separator -->
                     <Border Classes="menu-separator"/>
 
@@ -186,11 +200,6 @@
                             <TextBlock Classes="menu-text" Text="Polaroid"/>
                         </StackPanel>
                     </Button>
-
-                    <!-- Colorize/Advanced Group (Placeholders for now, or just disabled if not implementing yet) -->
-                    <!-- Since I haven't implemented ColorizeDialog, I'll omit or disable these for now or just add them as placeholders -->
-                    <!-- User request is clear, I should implement them. The plan says I will. But for now I will comment them out or map them to TODOs -->
-                    
                 </StackPanel>
                 </ScrollViewer>
             </Border>

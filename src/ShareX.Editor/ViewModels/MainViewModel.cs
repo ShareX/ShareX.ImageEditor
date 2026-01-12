@@ -1290,7 +1290,8 @@ namespace ShareX.Editor.ViewModels
             if (_preEffectImage != null)
             {
                 UpdatePreview(_preEffectImage, clearAnnotations: false);
-                _preEffectImage.Dispose();
+                // Do NOT dispose _preEffectImage here, because UpdatePreview takes ownership 
+                // and sets it as _currentSourceImage.
                 _preEffectImage = null;
             }
         }

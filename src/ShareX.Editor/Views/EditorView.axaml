@@ -272,7 +272,9 @@
                         InvertRequested="OnInvertRequested"
                         BlackAndWhiteRequested="OnBlackAndWhiteRequested"
                         SepiaRequested="OnSepiaRequested"
-                        PolaroidRequested="OnPolaroidRequested"/>
+                        PolaroidRequested="OnPolaroidRequested"
+                        ColorizeRequested="OnColorizeRequested"
+                        SelectiveColorRequested="OnSelectiveColorRequested"/>
 
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>

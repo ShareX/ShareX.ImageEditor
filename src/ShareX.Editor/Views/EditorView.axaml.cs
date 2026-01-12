@@ -969,6 +969,16 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
         }
 
+        private void OnColorizeRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new ColorizeDialog());
+        }
+
+        private void OnSelectiveColorRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new SelectiveColorDialog());
+        }
+
         private void ShowEffectDialog<T>(T dialog) where T : UserControl
         {
             var vm = DataContext as MainViewModel;

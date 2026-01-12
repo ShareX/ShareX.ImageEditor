@@ -392,7 +392,7 @@ public static class ImageHelpers
         // [ 0 0 1 0 amount ]
         // [ 0 0 0 1 0 ]
 
-        float value = amount * 2.55f; // Scale to -255..255 range roughly
+        float value = amount / 100f; // Scale to -1..1 range
         float[] matrix = {
             1, 0, 0, 0, value,
             0, 1, 0, 0, value,
@@ -414,7 +414,7 @@ public static class ImageHelpers
         float scale = (100f + amount) / 100f;
         scale = scale * scale; // Curve it a bit for better feel
 
-        float shift = 127f * (1f - scale);
+        float shift = 0.5f * (1f - scale);
 
         float[] matrix = {
             scale, 0, 0, 0, shift,
@@ -519,10 +519,10 @@ public static class ImageHelpers
     public static SKBitmap ApplyInvert(SKBitmap source)
     {
         float[] matrix = {
-            -1,  0,  0, 0, 255,
-             0, -1,  0, 0, 255,
-             0,  0, -1, 0, 255,
-             0,  0,  0, 1,   0
+            -1,  0,  0, 0, 1,
+             0, -1,  0, 0, 1,
+             0,  0, -1, 0, 1,
+             0,  0,  0, 1, 0
         };
         return ApplyColorMatrix(source, matrix);
     }
@@ -577,33 +577,133 @@ public static class ImageHelpers
 
     public static SKBitmap ApplyColorize(SKBitmap source, SKColor color, float strength)
     {
-        // Desaturate then tint
-        // Ideally: convert to grayscale, then multiply by color
+        // strength 0 to 100
+        if (strength <= 0) return source.Copy();
+        if (strength > 100) strength = 100;
 
-        float amount = strength / 100f;
+        using var paint = new SKPaint();
 
-        using var cmd = new SKPaint();
-
-        // 1. Grayscale filter
-        var grayscale = SKColorFilter.CreateColorMatrix(new float[] {
+        // 1. Grayscale matrix
+        var grayscaleMatrix = new float[] {
             0.2126f, 0.7152f, 0.0722f, 0, 0,
             0.2126f, 0.7152f, 0.0722f, 0, 0,
             0.2126f, 0.7152f, 0.0722f, 0, 0,
             0,       0,       0,       1, 0
+        };
+        using var grayscale = SKColorFilter.CreateColorMatrix(grayscaleMatrix);
+
+        // 2. Tint using BlendMode (Modulate or Color?)
+        // Modulate multiplies, which works well if we start with grayscale (white becomes color, black stays black).
+        // SKBlendMode.Color is better for preserving luminosity but changing hue/sat.
+        // Let's use Modulate for "Colorize" behavior typically expected (tinting everything).
+        using var tint = SKColorFilter.CreateBlendMode(color, SKBlendMode.Modulate);
+
+        // Compose
+        using var composed = SKColorFilter.CreateCompose(tint, grayscale);
+
+        // If strength < 100, we blend with original
+        paint.ColorFilter = composed;
+        
+        // Create result
+        SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
+        using (SKCanvas canvas = new SKCanvas(result))
+        {
+            canvas.Clear(SKColors.Transparent);
+            
+            if (strength >= 100)
+            {
+                // Draw only modified
+                canvas.DrawBitmap(source, 0, 0, paint);
+            }
+            else
+            {
+                // Draw original
+                canvas.DrawBitmap(source, 0, 0);
+                
+                // Draw modified on top with opacity
+                paint.Color = new SKColor(255, 255, 255, (byte)(255 * (strength / 100f)));
+                canvas.DrawBitmap(source, 0, 0, paint);
+            }
+        }
+        return result;
+    }
+
+    public enum SelectiveColorRange
+    {
+        Reds,
+        Yellows,
+        Greens,
+        Cyans,
+        Blues,
+        Magentas,
+        Whites,
+        Neutrals,
+        Blacks
+    }
+
+    public static SKBitmap ApplySelectiveColor(SKBitmap source, SelectiveColorRange range, float hueShift, float satShift, float lightShift)
+    {
+        // Hue shift: -180 to 180
+        // Sat/Light shift: -100 to 100
+
+        return ApplyPixelOperation(source, (c) =>
+        {
+            c.ToHsl(out float h, out float s, out float l); // h:0-360, s:0-100, l:0-100 usually in Skia extensions or 0-1?
+            // SKColor.ToHsl returns h=0..360, s=0..100, l=0..100.
+            
+            bool match = false;
+
+            switch (range)
+            {
+                case SelectiveColorRange.Reds:     match = (h >= 330 || h <= 30); break;
+                case SelectiveColorRange.Yellows:  match = (h >= 30 && h < 90); break;
+                case SelectiveColorRange.Greens:   match = (h >= 90 && h < 150); break;
+                case SelectiveColorRange.Cyans:    match = (h >= 150 && h < 210); break;
+                case SelectiveColorRange.Blues:    match = (h >= 210 && h < 270); break;
+                case SelectiveColorRange.Magentas: match = (h >= 270 && h < 330); break;
+                case SelectiveColorRange.Whites:   match = (l > 80); break; // Simplified
+                case SelectiveColorRange.Blacks:   match = (l < 20); break; // Simplified
+                case SelectiveColorRange.Neutrals: match = (s < 10 && l >= 20 && l <= 80); break; // Simplified
+            }
+
+            if (match)
+            {
+                h = (h + hueShift) % 360;
+                if (h < 0) h += 360;
+
+                s = Math.Clamp(s + s * (satShift / 100f), 0, 100); // Scale relative? or absolute add? User usually expects add.
+                // Let's effectively add percentage of S. 
+                // Or simplistic: S = S + shift.
+                // Better: S = S + shift (clamped 0-100).
+                s = Math.Clamp(s + satShift, 0, 100);
+
+                l = Math.Clamp(l + lightShift, 0, 100);
+            }
+
+            return SKColor.FromHsl(h, s, l, c.Alpha);
         });
+    }
 
-        // 2. Color blend filter (Modulate)
-        var colorize = SKColorFilter.CreateBlendMode(color, SKBlendMode.Modulate);
+    public static SKBitmap ApplyReplaceColor(SKBitmap source, SKColor targetColor, SKColor replaceColor, float tolerance)
+    {
+        // tolerance 0-100 usually. Convert to byte range 0-255.
+        int tol = (int)(tolerance * 2.55f);
 
-        // Compose: Grayscale -> Colorize
-        var composed = SKColorFilter.CreateCompose(colorize, grayscale);
-
-        // 3. Blend original with colorized based on strength? 
-        // The simple approach is just return colorized. 
-        // If strength is needed, we might need a pixel shader or just lerp in pixel loop.
-        // For efficiency, let's assume fully colorized for now, or just simple tint.
-
-        return ApplyColorFilter(source, composed);
+        return ApplyPixelOperation(source, (c) =>
+        {
+            if (ColorsMatch(c, targetColor, tol))
+            {
+                // Apply replacement logic
+                // Should we preserve Alpha of original pixel or use replacement alpha?
+                // Usually replace usage implies full replacement, but maybe preserve alpha if target was transparent?
+                // Let's use replaceColor directly but respect original alpha if needed?
+                // Standard bucket fill logic: replace.
+                
+                // Optional: Blend edges? For now, hard replace.
+                return replaceColor;
+            }
+            return c;
+        });
     }
 
     // --- Helpers ---
@@ -629,6 +729,49 @@ public static class ImageHelpers
             }
         }
         return result;
+    }
+
+    public static SKBitmap ApplySelectiveColorAdvanced(SKBitmap source, Dictionary<SelectiveColorRange, (float h, float s, float l)> adjustments)
+    {
+        return ApplyPixelOperation(source, (c) =>
+        {
+            c.ToHsl(out float h, out float s, out float l); 
+            
+            // Determine range preference: Whites/Blacks/Neutrals first
+            SelectiveColorRange? range = null;
+
+            // Simplified HSL range detection
+            if (l > 80) range = SelectiveColorRange.Whites;
+            else if (l < 20) range = SelectiveColorRange.Blacks;
+            else if (s < 10) range = SelectiveColorRange.Neutrals;
+            else
+            {
+                // Hue based
+                float hDeg = h;
+                if (hDeg >= 330 || hDeg <= 30) range = SelectiveColorRange.Reds;
+                else if (hDeg >= 30 && hDeg < 90) range = SelectiveColorRange.Yellows;
+                else if (hDeg >= 90 && hDeg < 150) range = SelectiveColorRange.Greens;
+                else if (hDeg >= 150 && hDeg < 210) range = SelectiveColorRange.Cyans;
+                else if (hDeg >= 210 && hDeg < 270) range = SelectiveColorRange.Blues;
+                else if (hDeg >= 270 && hDeg < 330) range = SelectiveColorRange.Magentas;
+            }
+
+            if (range.HasValue && adjustments.TryGetValue(range.Value, out var adj))
+            {
+                if (adj.h != 0 || adj.s != 0 || adj.l != 0)
+                {
+                    h = (h + adj.h) % 360;
+                    if (h < 0) h += 360;
+
+                    s = Math.Clamp(s + adj.s, 0, 100);
+                    l = Math.Clamp(l + adj.l, 0, 100);
+                    
+                    return SKColor.FromHsl(h, s, l, c.Alpha);
+                }
+            }
+
+            return c;
+        });
     }
 
     private static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)

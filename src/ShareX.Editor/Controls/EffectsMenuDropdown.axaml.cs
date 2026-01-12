@@ -19,6 +19,8 @@ namespace ShareX.Editor.Controls
         public event EventHandler? BlackAndWhiteRequested;
         public event EventHandler? SepiaRequested;
         public event EventHandler? PolaroidRequested;
+        public event EventHandler? ColorizeRequested;
+        public event EventHandler? SelectiveColorRequested;
 
         public EffectsMenuDropdown()
         {
@@ -101,6 +103,18 @@ namespace ShareX.Editor.Controls
         {
             ClosePopup();
             PolaroidRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnColorizeClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            ColorizeRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnSelectiveColorClick(object? sender, RoutedEventArgs e)
+        {
+            ClosePopup();
+            SelectiveColorRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }
