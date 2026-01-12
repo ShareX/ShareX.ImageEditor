@@ -14,6 +14,11 @@ public class ImageAnnotation : Annotation
     /// </summary>
     public string ImagePath { get; set; } = "";
 
+    /// <summary>
+    /// The loaded image bitmap
+    /// </summary>
+    public SKBitmap? ImageBitmap => _imageBitmap;
+
     public ImageAnnotation()
     {
         ToolType = EditorTool.Image;
