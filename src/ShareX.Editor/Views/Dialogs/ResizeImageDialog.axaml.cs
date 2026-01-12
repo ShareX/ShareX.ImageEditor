@@ -8,25 +8,25 @@ namespace ShareX.Editor.Views.Dialogs
 {
     public partial class ResizeImageDialog : UserControl
     {
-        public static readonly StyledProperty<int> WidthProperty =
-            AvaloniaProperty.Register<ResizeImageDialog, int>(nameof(Width), 800);
+        public static readonly StyledProperty<int> ResizeWidthProperty =
+            AvaloniaProperty.Register<ResizeImageDialog, int>(nameof(ResizeWidth), 800);
 
-        public static readonly StyledProperty<int> HeightProperty =
-            AvaloniaProperty.Register<ResizeImageDialog, int>(nameof(Height), 600);
+        public static readonly StyledProperty<int> ResizeHeightProperty =
+            AvaloniaProperty.Register<ResizeImageDialog, int>(nameof(ResizeHeight), 600);
 
         public static readonly StyledProperty<bool> MaintainAspectRatioProperty =
-            AvaloniaProperty.Register<ResizeImageDialog, bool>(nameof(MaintainAspectRatio), true);
+            AvaloniaProperty.Register<ResizeImageDialog, bool>(nameof(MaintainAspectRatio), false);
 
-        public new int Width
+        public int ResizeWidth
         {
-            get => GetValue(WidthProperty);
-            set => SetValue(WidthProperty, value);
+            get => GetValue(ResizeWidthProperty);
+            set => SetValue(ResizeWidthProperty, value);
         }
 
-        public new int Height
+        public int ResizeHeight
         {
-            get => GetValue(HeightProperty);
-            set => SetValue(HeightProperty, value);
+            get => GetValue(ResizeHeightProperty);
+            set => SetValue(ResizeHeightProperty, value);
         }
 
         public bool MaintainAspectRatio
@@ -48,8 +48,8 @@ namespace ShareX.Editor.Views.Dialogs
 
         public void Initialize(int currentWidth, int currentHeight)
         {
-            Width = currentWidth;
-            Height = currentHeight;
+            ResizeWidth = currentWidth;
+            ResizeHeight = currentHeight;
             _aspectRatio = (double)currentWidth / currentHeight;
         }
 
@@ -59,7 +59,7 @@ namespace ShareX.Editor.Views.Dialogs
             if (e.NewValue == null) return;
 
             _isUpdating = true;
-            Height = (int)Math.Round((double)e.NewValue / _aspectRatio);
+            ResizeHeight = (int)Math.Round((double)e.NewValue / _aspectRatio);
             _isUpdating = false;
         }
 
@@ -69,7 +69,7 @@ namespace ShareX.Editor.Views.Dialogs
             if (e.NewValue == null) return;
 
             _isUpdating = true;
-            Width = (int)Math.Round((double)e.NewValue * _aspectRatio);
+            ResizeWidth = (int)Math.Round((double)e.NewValue * _aspectRatio);
             _isUpdating = false;
         }
 
@@ -85,7 +85,7 @@ namespace ShareX.Editor.Views.Dialogs
                 _ => SKFilterQuality.High
             };
 
-            ApplyRequested?.Invoke(this, new ResizeImageEventArgs(Width, Height, quality));
+            ApplyRequested?.Invoke(this, new ResizeImageEventArgs(ResizeWidth, ResizeHeight, quality));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

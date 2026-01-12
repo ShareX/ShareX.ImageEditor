@@ -53,7 +53,7 @@
             <StackPanel Spacing="4">
                 <TextBlock Classes="label" Text="Width (px)"/>
                 <NumericUpDown x:Name="WidthInput" 
-                               Value="{Binding Width, ElementName=ResizeImageDialogRoot}"
+                               Value="{Binding ResizeWidth, ElementName=ResizeImageDialogRoot}"
                                ValueChanged="OnWidthChanged"/>
             </StackPanel>
 
@@ -61,7 +61,7 @@
             <StackPanel Spacing="4">
                 <TextBlock Classes="label" Text="Height (px)"/>
                 <NumericUpDown x:Name="HeightInput" 
-                               Value="{Binding Height, ElementName=ResizeImageDialogRoot}"
+                               Value="{Binding ResizeHeight, ElementName=ResizeImageDialogRoot}"
                                ValueChanged="OnHeightChanged"/>
             </StackPanel>
 
