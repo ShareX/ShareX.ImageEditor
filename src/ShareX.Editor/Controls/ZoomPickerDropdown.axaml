@@ -41,7 +41,7 @@
                PlacementTarget="{Binding #DropdownButton}"
                Placement="Bottom"
                IsLightDismissEnabled="True"
-               VerticalOffset="4">
+               VerticalOffset="-4">
             <Border Classes="popup-border">
                 <ItemsControl ItemsSource="{Binding ZoomLevels, ElementName=ZoomPickerDropdownRoot}">
                     <ItemsControl.ItemsPanel>
@@ -51,10 +51,11 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Classes="editor-button"
-                                    Height="32"
-                                    MinWidth="80"
+                            <Button Height="32"
+                                    MinWidth="60"
                                     Margin="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
                                     Click="OnZoomSelected"
                                     CommandParameter="{Binding .}">
                                 <TextBlock Text="{Binding ., StringFormat='{}{0:P0}'}"
