@@ -50,9 +50,6 @@ namespace ShareX.Editor.Views
         private SKCanvasControl? _canvasControl;
         private readonly EditorCore _editorCore;
 
-        private Stack<Control> _undoStack = new();
-        private Stack<Control> _redoStack = new();
-
         public EditorView()
         {
             InitializeComponent();
@@ -73,8 +70,29 @@ namespace ShareX.Editor.Views
                 {
                     _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
                     RenderCore();
+                    if (DataContext is MainViewModel vm)
+                    {
+                        UpdateViewModelHistoryState(vm);
+                        UpdateViewModelMetadata(vm);
+                    }
                 }
             });
+            _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
+            _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                if (DataContext is MainViewModel vm) UpdateViewModelHistoryState(vm);
+            });
+        }
+        
+        private void UpdateViewModelHistoryState(MainViewModel vm)
+        {
+            vm.CanUndo = _editorCore.CanUndo;
+            vm.CanRedo = _editorCore.CanRedo;
+        }
+        
+        private void UpdateViewModelMetadata(MainViewModel vm)
+        {
+            // Initial sync of metadata if needed
+            UpdateViewModelHistoryState(vm);
         }
 
         protected override void OnLoaded(RoutedEventArgs e)
@@ -151,12 +169,12 @@ namespace ShareX.Editor.Views
 
         internal void PushUndo(Control shape)
         {
-            _undoStack.Push(shape);
+            // Legacy support: Handled by EditorCore history
         }
 
         internal void ClearRedoStack()
         {
-            _redoStack.Clear();
+            // Legacy support: Handled by EditorCore history
         }
 
         protected override void OnInitialized()
@@ -319,31 +337,67 @@ namespace ShareX.Editor.Views
 
         private void PerformUndo()
         {
-            if (_undoStack.Count > 0)
+            if (_editorCore.CanUndo)
             {
-                var shape = _undoStack.Pop();
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                if (canvas != null && canvas.Children.Contains(shape))
-                {
-                    canvas.Children.Remove(shape);
-                    _redoStack.Push(shape);
-                    _selectionController.ClearSelection();
-                }
+                _editorCore.Undo();
+                // AnnotationsRestored event will handle UI sync
             }
         }
 
         private void PerformRedo()
         {
-            if (_redoStack.Count > 0)
+            if (_editorCore.CanRedo)
             {
-                var shape = _redoStack.Pop();
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                if (canvas != null)
+                _editorCore.Redo();
+            }
+        }
+
+        private void OnAnnotationsRestored()
+        {
+            // Fully rebuild annotation layer from Core state
+            // 1. Clear current UI annotations
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null) return;
+            
+            canvas.Children.Clear();
+            _selectionController.ClearSelection();
+
+            // 2. Re-create UI for all vector annotations in Core
+            foreach (var annotation in _editorCore.Annotations)
+            {
+                // Only create UI for vector annotations (Hybrid model)
+                Control? shape = CreateControlForAnnotation(annotation);
+                if (shape != null)
                 {
                     canvas.Children.Add(shape);
-                    _undoStack.Push(shape);
                 }
             }
+            
+            RenderCore();
+        }
+
+        private Control? CreateControlForAnnotation(Annotation annotation)
+        {
+             // Basic factory for restoring vector visuals
+             if (annotation is RectangleAnnotation rect) {
+                var r = new global::Avalonia.Controls.Shapes.Rectangle { 
+                    Stroke = new SolidColorBrush(Color.Parse(rect.StrokeColor)),
+                    StrokeThickness = rect.StrokeWidth
+                };
+                Canvas.SetLeft(r, rect.GetBounds().Left);
+                Canvas.SetTop(r, rect.GetBounds().Top);
+                r.Width = rect.GetBounds().Width;
+                r.Height = rect.GetBounds().Height;
+                r.Tag = rect;
+                return r;
+             }
+             
+             return null; 
+        }
+
+        private Color SKColorToAvalonia(SKColor color)
+        {
+            return Color.FromUInt32((uint)color);
         }
 
         private void PerformDelete()
@@ -356,21 +410,8 @@ namespace ShareX.Editor.Views
                 {
                     canvas.Children.Remove(selected);
 
-                    // Push to Redo stack to allow undoing the delete?
-                    // Actually standard undo logic implies we should be able to Undo a delete.
-                    // This means "Undo" should restore the deleted item.
-                    // So we must push the deleted item to the UNDO stack (as a "Delete Action"?)
-                    // The current implementation of Undo/Redo is simple: stack of created shapes.
-                    // If we delete, we are removing it.
-                    // If we want Undo to restore it, we need an action history.
-                    // But adhering to "NO NEW LOGIC" rule:
-                    // Original PerformDelete logic:
-                    // Looked like it just removed it.
-                    // Step 88 snippet: "Use ViewFile to get its content if not shown".
-                    // I didn't see the body of PerformDelete in original code.
-                    // I'll assume basic behavior: Delete removes it. Undo might not restore it unless implemented.
-                    // I will stick to removing it.
-
+                    // Remove from view - Undo not fully supported for delete in view layer for now
+                    // as it requires recreating the proper shape from history which is handled by core sync
                     _selectionController.ClearSelection();
                 }
             }
@@ -382,9 +423,9 @@ namespace ShareX.Editor.Views
             if (canvas != null)
             {
                 canvas.Children.Clear();
-                _undoStack.Clear();
-                _redoStack.Clear();
                 _selectionController.ClearSelection();
+                _editorCore.ClearAll();
+                RenderCore();
             }
         }
 

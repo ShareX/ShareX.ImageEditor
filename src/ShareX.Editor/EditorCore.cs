@@ -56,6 +56,16 @@ public class EditorCore : IDisposable
     public event Action? ImageChanged;
     public event Action<Annotation>? EditAnnotationRequested;
 
+    /// <summary>
+    /// Raised when annotations are restored from history and the UI needs to fully sync
+    /// </summary>
+    public event Action? AnnotationsRestored;
+
+    /// <summary>
+    /// Raised when undo/redo history state changes
+    /// </summary>
+    public event Action? HistoryChanged;
+
     #endregion
 
     #region State
@@ -174,6 +184,7 @@ public class EditorCore : IDisposable
         _isDrawing = false;
         NumberCounter = 1;
         InvalidateRequested?.Invoke();
+        HistoryChanged?.Invoke();
     }
 
     #endregion
@@ -411,6 +422,7 @@ public class EditorCore : IDisposable
         {
             PerformCrop();
             _currentAnnotation = null;
+            HistoryChanged?.Invoke(); 
             return;
         }
 
@@ -419,11 +431,13 @@ public class EditorCore : IDisposable
         {
             PerformCutOut();
             _currentAnnotation = null;
+            HistoryChanged?.Invoke();
             return;
         }
 
         // Create annotation memento for undo/redo
         _history.CreateAnnotationsMemento();
+        HistoryChanged?.Invoke();
 
         // Request edit for text/speech annotations
         if (_currentAnnotation is TextAnnotation || _currentAnnotation is SpeechBalloonAnnotation)
@@ -644,11 +658,13 @@ public class EditorCore : IDisposable
     public void Undo()
     {
         _history?.Undo();
+        HistoryChanged?.Invoke();
     }
 
     public void Redo()
     {
         _history?.Redo();
+        HistoryChanged?.Invoke();
     }
 
     /// <summary>
@@ -683,6 +699,7 @@ public class EditorCore : IDisposable
 
         // Trigger redraw
         InvalidateRequested?.Invoke();
+        AnnotationsRestored?.Invoke();
     }
 
     #endregion
@@ -734,10 +751,6 @@ public class EditorCore : IDisposable
                annotation is TextAnnotation ||
                annotation is SpeechBalloonAnnotation ||
                annotation is NumberAnnotation;
-        // Raster annotations (handled by Skia): Blur, Pixelate, Spotlight, Highlighter (maybe?), Freehand (maybe?)
-        // Freehand is currently vector points but might be better as raster for performance?
-        // For now, let's keep Freehand as raster if it has many points.
-        // Actually FreehandAnnotation renders via SKPath, it is vector-like.
     }
 
     /// <summary>

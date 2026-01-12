@@ -184,6 +184,14 @@ namespace ShareX.Editor.ViewModels
         private int _numberCounter = 1;
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(UndoCommand))]
+        private bool _canUndo;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(RedoCommand))]
+        private bool _canRedo;
+
+        [ObservableProperty]
         private string _selectedOutputRatio = OutputRatioAuto;
 
         [ObservableProperty]
@@ -624,7 +632,7 @@ namespace ShareX.Editor.ViewModels
             StrokeWidth = width;
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanUndo))]
         private void Undo()
         {
             // First check if we have image-level undo (crop/cutout operations)
@@ -648,7 +656,7 @@ namespace ShareX.Editor.ViewModels
             StatusText = "Undo requested";
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanRedo))]
         private void Redo()
         {
             // First check if we have image-level redo (crop/cutout operations)
