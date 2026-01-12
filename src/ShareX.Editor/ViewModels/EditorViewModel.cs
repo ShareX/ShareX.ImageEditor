@@ -62,11 +62,25 @@ public partial class EditorViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty]
     private Bitmap? _previewImage;
+    public Bitmap? PreviewImage
+    {
+        get => _previewImage;
+        set
+        {
+            if (SetProperty(ref _previewImage, value))
+            {
+                OnPreviewImageChanged(value);
+            }
+        }
+    }
 
-    [ObservableProperty]
     private bool _hasPreviewImage;
+    public bool HasPreviewImage
+    {
+        get => _hasPreviewImage;
+        set => SetProperty(ref _hasPreviewImage, value);
+    }
 
     [ObservableProperty]
     private double _imageWidth;
@@ -74,7 +88,7 @@ public partial class EditorViewModel : ObservableObject
     [ObservableProperty]
     private double _imageHeight;
 
-    partial void OnPreviewImageChanged(Bitmap? value)
+    private void OnPreviewImageChanged(Bitmap? value)
     {
         if (value != null)
         {
@@ -107,14 +121,14 @@ public partial class EditorViewModel : ObservableObject
     {
         get
         {
-            if (_previewImage == null || _smartPadding <= 0)
+            if (PreviewImage == null || SmartPadding <= 0)
             {
                 return Brushes.Transparent;
             }
 
             try
             {
-                var skBitmap = _previewImage.ToSKBitmap();
+                var skBitmap = PreviewImage.ToSKBitmap();
                 if (skBitmap == null) return Brushes.Transparent;
 
                 var color = skBitmap.GetPixel(0, 0);
@@ -184,7 +198,7 @@ public partial class EditorViewModel : ObservableObject
     private void SetOutputRatio(string ratioKey)
     {
         SelectedOutputRatio = string.IsNullOrWhiteSpace(ratioKey) ? OutputRatioAuto : ratioKey;
-        _targetOutputAspectRatio = ParseAspectRatio(ratioKey);
+        TargetOutputAspectRatio = ParseAspectRatio(ratioKey);
         UpdateCanvasProperties();
     }
 
@@ -254,7 +268,7 @@ public partial class EditorViewModel : ObservableObject
 
     private void UpdateCanvasProperties()
     {
-        CanvasPadding = CalculateOutputPadding(PreviewPadding, _targetOutputAspectRatio);
+        CanvasPadding = CalculateOutputPadding(PreviewPadding, TargetOutputAspectRatio);
         CanvasShadow = new BoxShadows(new BoxShadow
         {
             Blur = ShadowBlur,

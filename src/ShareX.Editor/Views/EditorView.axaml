@@ -259,6 +259,21 @@
                         FlipHorizontalRequested="OnFlipHorizontalRequested"
                         FlipVerticalRequested="OnFlipVerticalRequested"/>
 
+                    <!-- Effects Menu Dropdown -->
+                    <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
+                        Height="40"
+                        ToolTip.Tip="Effects"
+                        BrightnessRequested="OnBrightnessRequested"
+                        ContrastRequested="OnContrastRequested"
+                        HueRequested="OnHueRequested"
+                        SaturationRequested="OnSaturationRequested"
+                        GammaRequested="OnGammaRequested"
+                        AlphaRequested="OnAlphaRequested"
+                        InvertRequested="OnInvertRequested"
+                        BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                        SepiaRequested="OnSepiaRequested"
+                        PolaroidRequested="OnPolaroidRequested"/>
+
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
 

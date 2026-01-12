@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+             x:Class="ShareX.Editor.Views.Dialogs.HueDialog"
+             x:Name="HueDialogRoot">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
+        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
+        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
+    </UserControl.Resources>
+    
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+             <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
+             <Setter Property="FontSize" Value="13"/>
+             <Setter Property="FontWeight" Value="SemiBold"/>
+             <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#3E3E3E"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
+        <StackPanel Spacing="16">
+            <!-- Header -->
+            <TextBlock Text="Hue" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource TextColor}"/>
+            
+            <!-- Slider -->
+            <StackPanel Spacing="8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="label" Text="Rotation (degrees)" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" 
+                               Text="{Binding ElementName=AmountSlider, Path=Value, StringFormat='{}{0:0}°'}" 
+                               Foreground="{StaticResource TextColor}"
+                               FontWeight="Bold"/>
+                </Grid>
+                
+                <Slider x:Name="AmountSlider"
+                        Minimum="-180" Maximum="180" Value="0"
+                        TickFrequency="15" IsSnapToTickEnabled="True"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
+
+            <!-- Buttons -->
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
+                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

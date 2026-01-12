@@ -917,6 +917,91 @@ namespace ShareX.Editor.Views
             }
         }
 
+        // --- Effects Menu Handlers ---
+
+        private void OnBrightnessRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new BrightnessDialog());
+        }
+
+        private void OnContrastRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new ContrastDialog());
+        }
+
+        private void OnHueRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new HueDialog());
+        }
+
+        private void OnSaturationRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new SaturationDialog());
+        }
+
+        private void OnGammaRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new GammaDialog());
+        }
+
+        private void OnAlphaRequested(object? sender, EventArgs e)
+        {
+            ShowEffectDialog(new AlphaDialog());
+        }
+
+        private void OnInvertRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null);
+        }
+
+        private void OnBlackAndWhiteRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null);
+        }
+
+        private void OnSepiaRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.SepiaCommand.Execute(null);
+        }
+
+        private void OnPolaroidRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
+        }
+
+        private void ShowEffectDialog<T>(T dialog) where T : UserControl
+        {
+            var vm = DataContext as MainViewModel;
+            if (vm == null) return;
+
+            // Initialize logic
+            vm.StartEffectPreview();
+
+            // Reflection-based event wiring since we didn't use an interface
+            // Just kidding, let's use dynamic or hard casting if we know types.
+            // Since we have multiple types, reflection is easiest to avoid boilerplate, 
+            // OR proper pattern matching if they share a common base.
+            // Usage of `dynamic` in simple scenarios:
+            
+            dynamic d = dialog;
+            
+            // Wire events
+            d.PreviewRequested += new EventHandler<EffectEventArgs>((s, e) => vm.PreviewEffect(e.EffectOperation));
+            d.ApplyRequested += new EventHandler<EffectEventArgs>((s, e) => 
+            { 
+                vm.ApplyEffect(e.EffectOperation, e.StatusMessage); 
+                vm.CloseModalCommand.Execute(null);
+            });
+            d.CancelRequested += new EventHandler((s, e) => 
+            { 
+                vm.CancelEffectPreview(); 
+                vm.CloseModalCommand.Execute(null);
+            });
+
+            vm.ModalContent = dialog;
+            vm.IsModalOpen = true;
+        }
+
         private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
             // Only close if clicking on the background, not the dialog content

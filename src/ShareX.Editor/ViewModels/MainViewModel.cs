@@ -56,11 +56,25 @@ namespace ShareX.Editor.ViewModels
         public event EventHandler? DeleteRequested;
         public event EventHandler? ClearAnnotationsRequested;
 
-        [ObservableProperty]
         private Bitmap? _previewImage;
+        public Bitmap? PreviewImage
+        {
+            get => _previewImage;
+            set
+            {
+                if (SetProperty(ref _previewImage, value))
+                {
+                    OnPreviewImageChanged(value);
+                }
+            }
+        }
 
-        [ObservableProperty]
         private bool _hasPreviewImage;
+        public bool HasPreviewImage
+        {
+            get => _hasPreviewImage;
+            set => SetProperty(ref _hasPreviewImage, value);
+        }
 
         [ObservableProperty]
         private double _imageWidth;
@@ -68,7 +82,7 @@ namespace ShareX.Editor.ViewModels
         [ObservableProperty]
         private double _imageHeight;
 
-        partial void OnPreviewImageChanged(Bitmap? value)
+        private void OnPreviewImageChanged(Bitmap? value)
         {
             if (value != null)
             {
@@ -108,7 +122,7 @@ namespace ShareX.Editor.ViewModels
         {
             get
             {
-                if (_previewImage == null || _smartPadding <= 0)
+                if (PreviewImage == null || SmartPadding <= 0)
                 {
                     return Brushes.Transparent;
                 }
@@ -289,9 +303,9 @@ namespace ShareX.Editor.ViewModels
 
         partial void OnSelectedOutputRatioChanged(string value)
         {
-            _targetOutputAspectRatio = ParseAspectRatio(value);
+            TargetOutputAspectRatio = ParseAspectRatio(value);
             UpdateCanvasProperties();
-            StatusText = _targetOutputAspectRatio.HasValue
+            StatusText = TargetOutputAspectRatio.HasValue
                 ? $"Output ratio set to {value}"
                 : "Output ratio auto";
         }
@@ -467,7 +481,7 @@ namespace ShareX.Editor.ViewModels
 
         private void UpdateCanvasProperties()
         {
-            CanvasPadding = CalculateOutputPadding(PreviewPadding, _targetOutputAspectRatio);
+            CanvasPadding = CalculateOutputPadding(PreviewPadding, TargetOutputAspectRatio);
             CanvasShadow = new BoxShadows(new BoxShadow
             {
                 Blur = ShadowBlur,
@@ -481,13 +495,13 @@ namespace ShareX.Editor.ViewModels
 
         private Thickness CalculateOutputPadding(double basePadding, double? targetAspectRatio)
         {
-            if (_previewImage == null || _previewImage.Size.Width <= 0 || _previewImage.Size.Height <= 0 || !targetAspectRatio.HasValue)
+            if (PreviewImage == null || PreviewImage.Size.Width <= 0 || PreviewImage.Size.Height <= 0 || !targetAspectRatio.HasValue)
             {
                 return new Thickness(basePadding);
             }
 
-            double imageWidth = _previewImage.Size.Width;
-            double imageHeight = _previewImage.Size.Height;
+            double imageWidth = PreviewImage.Size.Width;
+            double imageHeight = PreviewImage.Size.Height;
 
             double totalWidth = imageWidth + (basePadding * 2);
             double totalHeight = imageHeight + (basePadding * 2);
@@ -1172,6 +1186,165 @@ namespace ShareX.Editor.ViewModels
             int newWidth = _currentSourceImage.Width + left + right;
             int newHeight = _currentSourceImage.Height + top + bottom;
             StatusText = $"Canvas resized to {newWidth}x{newHeight}";
+        }
+
+        // --- Effects Menu Commands ---
+
+        [RelayCommand]
+        private void InvertColors()
+        {
+            ApplyOneShotEffect(ImageHelpers.ApplyInvert, "Inverted colors");
+        }
+
+        [RelayCommand]
+        private void BlackAndWhite()
+        {
+            ApplyOneShotEffect(ImageHelpers.ApplyBlackAndWhite, "Applied Black & White filter");
+        }
+
+        [RelayCommand]
+        private void Sepia()
+        {
+            ApplyOneShotEffect(ImageHelpers.ApplySepia, "Applied Sepia filter");
+        }
+
+        [RelayCommand]
+        private void Polaroid()
+        {
+            ApplyOneShotEffect(ImageHelpers.ApplyPolaroid, "Applied Polaroid filter");
+        }
+
+        private void ApplyOneShotEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)
+        {
+            if (_currentSourceImage == null) return;
+
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            var result = effect(_currentSourceImage);
+            UpdatePreview(result, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = statusMessage;
+        }
+
+        // --- Effect Live Preview Logic ---
+
+        private SkiaSharp.SKBitmap _preEffectImage;
+
+        /// <summary>
+        /// Called when an effect dialog opens to store the state before previewing.
+        /// </summary>
+        public void StartEffectPreview()
+        {
+            if (_currentSourceImage == null) return;
+            _preEffectImage = _currentSourceImage.Copy();
+        }
+
+        /// <summary>
+        /// Updates the displayed preview without committing changes to the source image or undo stack.
+        /// </summary>
+        public void UpdatePreviewImageOnly(SkiaSharp.SKBitmap preview)
+        {
+            if (preview == null) return;
+            
+            // Dispose previous preview bitmap if it exists and isn't the source
+            // Note: UpdatePreview creates a new Avalonia bitmap, so we are fine.
+            // We just need to update the binding properly.
+            
+            // We don't call UpdatePreview() here because that resets annotations and other state too aggressively?
+            // Actually UpdatePreview() does:
+            // 1. Sets _currentSourceImage (WE DO NOT WANT THIS yet)
+            // 2. Backs up original (WE DO NOT WANT THIS)
+            // 3. Converts to Avalonia Bitmap (WE WANT THIS)
+            
+            PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
+        }
+
+        /// <summary>
+        /// Commits the effect to the undo stack and updates the source image.
+        /// </summary>
+        public void ApplyEffect(SkiaSharp.SKBitmap result, string statusMessage)
+        {
+            if (_preEffectImage == null) return; // Should have been started
+            
+            // Restore _currentSourceImage to pre-effect state so Push works correctly?
+            // Actually, we haven't changed _currentSourceImage yet, only PreviewImage.
+            // So _currentSourceImage is still the "Before" state.
+            
+            _imageUndoStack.Push(_currentSourceImage.Copy());
+            _imageRedoStack.Clear();
+
+            UpdatePreview(result, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = statusMessage;
+
+            _preEffectImage?.Dispose();
+            _preEffectImage = null;
+        }
+
+        /// <summary>
+        /// Cancels the preview and restores the original image view.
+        /// </summary>
+        public void CancelEffectPreview()
+        {
+            if (_preEffectImage != null)
+            {
+                UpdatePreview(_preEffectImage, clearAnnotations: false);
+                _preEffectImage.Dispose();
+                _preEffectImage = null;
+            }
+        }
+
+        /// <summary>
+        /// Applies the effect function to the pre-effect image and updates the preview.
+        /// </summary>
+        public void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
+        {
+            if (_preEffectImage == null || effect == null) return;
+            
+            // Run effect on copy of pre-effect image? 
+            // Or if effect is non-destructive (returns new), pass pre-effect directly.
+            // ImageHelpers methods return NEW bitmap.
+            try 
+            {
+                var result = effect(_preEffectImage);
+                // UpdatePreviewImageOnly takes ownership or we verify disposal?
+                // ToAvaloniBitmap creates a copy/wrapper. result needs disposal eventually?
+                // UpdatePreviewImageOnly converts it. We should dispose 'result' after conversion if it's not needed.
+                // But PreviewImage might depend on it if it wraps it directly?
+                // ToAvaloniaBitmap usually creates a WriteableBitmap copy.
+                // Let's assume we need to dispose result if ToAvaloniaBitmap copies.
+                
+                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(result);
+                result.Dispose(); 
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Preview Error: {ex}");
+            }
+        }
+
+        /// <summary>
+        /// Applies the effect to the source image and commits to undo stack.
+        /// </summary>
+        public void ApplyEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)
+        {
+            if (_preEffectImage == null) return;
+
+             _imageUndoStack.Push(_currentSourceImage.Copy()); // _currentSourceImage matches _preEffectImage roughly
+            _imageRedoStack.Clear();
+            
+            // _currentSourceImage IS the _preEffectImage content basically (before preview changes).
+            // So we apply effect to _currentSourceImage or _preEffectImage?
+            // Safer to apply to _preEffectImage (original state) and set as new _currentSourceImage.
+            
+            var result = effect(_preEffectImage);
+            UpdatePreview(result, clearAnnotations: true);
+            UpdateUndoRedoProperties();
+            StatusText = statusMessage;
+
+            _preEffectImage?.Dispose();
+            _preEffectImage = null;
         }
     }
 }

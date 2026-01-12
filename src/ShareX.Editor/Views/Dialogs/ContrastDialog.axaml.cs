@@ -1,0 +1,51 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
+using ShareX.Editor.Helpers;
+using SkiaSharp;
+using System;
+
+namespace ShareX.Editor.Views.Dialogs
+{
+    public partial class ContrastDialog : UserControl
+    {
+        public event EventHandler<EffectEventArgs>? ApplyRequested;
+        public event EventHandler<EffectEventArgs>? PreviewRequested;
+        public event EventHandler? CancelRequested;
+
+        private bool _suppressPreview = false;
+
+        public ContrastDialog()
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
+
+        private void OnValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        {
+            if (_suppressPreview) return;
+            RequestPreview();
+        }
+
+        private void RequestPreview()
+        {
+             var slider = this.FindControl<Slider>("AmountSlider");
+             float amount = (float)(slider?.Value ?? 0);
+
+             PreviewRequested?.Invoke(this, new EffectEventArgs(img => ImageHelpers.ApplyContrast(img, amount), $"Contrast: {amount:0}"));
+        }
+
+        private void OnApplyClick(object? sender, RoutedEventArgs e)
+        {
+            var slider = this.FindControl<Slider>("AmountSlider");
+            float amount = (float)(slider?.Value ?? 0);
+            
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => ImageHelpers.ApplyContrast(img, amount), $"Adjusted contrast by {amount:0}"));
+        }
+
+        private void OnCancelClick(object? sender, RoutedEventArgs e)
+        {
+            CancelRequested?.Invoke(this, EventArgs.Empty);
+        }
+    }
+}
