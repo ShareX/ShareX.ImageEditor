@@ -22,6 +22,8 @@
         <x:String x:Key="IconCameraRetro">&#xf083;</x:String>
         <x:String x:Key="IconHighlighter">&#xf591;</x:String>
         <x:String x:Key="IconRandom">&#xf074;</x:String>
+        <x:String x:Key="IconSync">&#xf021;</x:String>
+        <x:String x:Key="IconCloud">&#xf0c2;</x:String>
         <x:String x:Key="IconChevronDown">&#xf078;</x:String>
     </UserControl.Resources>
 
