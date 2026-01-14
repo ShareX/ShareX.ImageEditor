@@ -531,8 +531,7 @@
                              <!-- Checkered Background -->
                              <Border BorderThickness="1"
                                      BorderBrush="{StaticResource BorderColor}"
-                                     Background="{StaticResource CheckeredBrush}" 
-                                     CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"/>
+                                     Background="{StaticResource CheckeredBrush}"/>
 
                              <!-- Actual Content -->
                              <Border x:Name="PreviewFrame"
