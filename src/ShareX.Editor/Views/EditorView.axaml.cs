@@ -809,16 +809,16 @@ namespace ShareX.Editor.Views
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
                 dialog.CancelRequested += (s, args) =>
                 {
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
-                vm.ModalContent = dialog;
-                vm.IsModalOpen = true;
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
             }
         }
 
@@ -844,16 +844,16 @@ namespace ShareX.Editor.Views
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
                 dialog.CancelRequested += (s, args) =>
                 {
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
-                vm.ModalContent = dialog;
-                vm.IsModalOpen = true;
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
             }
         }
 
@@ -867,16 +867,16 @@ namespace ShareX.Editor.Views
                 dialog.ApplyRequested += (s, args) =>
                 {
                     vm.CropImage(args.X, args.Y, args.Width, args.Height);
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
                 dialog.CancelRequested += (s, args) =>
                 {
-                    vm.CloseModalCommand.Execute(null);
+                    vm.CloseEffectsPanelCommand.Execute(null);
                 };
                 
-                vm.ModalContent = dialog;
-                vm.IsModalOpen = true;
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
             }
         }
 
@@ -916,7 +916,9 @@ namespace ShareX.Editor.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                vm.OpenRotateCustomAngleDialogCommand.Execute(null);
+                var dialog = new RotateCustomAngleDialog();
+                vm.EffectsPanelContent = dialog;
+                vm.IsEffectsPanelOpen = true;
             }
         }
 
@@ -973,12 +975,6 @@ namespace ShareX.Editor.Views
 
             // Initialize logic
             vm.StartEffectPreview();
-
-            // Reflection-based event wiring since we didn't use an interface
-            // Just kidding, let's use dynamic or hard casting if we know types.
-            // Since we have multiple types, reflection is easiest to avoid boilerplate, 
-            // OR proper pattern matching if they share a common base.
-            // Usage of `dynamic` in simple scenarios:
             
             dynamic d = dialog;
             
@@ -987,16 +983,22 @@ namespace ShareX.Editor.Views
             d.ApplyRequested += new EventHandler<EffectEventArgs>((s, e) => 
             { 
                 vm.ApplyEffect(e.EffectOperation, e.StatusMessage); 
-                vm.CloseModalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             });
             d.CancelRequested += new EventHandler((s, e) => 
             { 
                 vm.CancelEffectPreview(); 
-                vm.CloseModalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             });
 
-            vm.ModalContent = dialog;
-            vm.IsModalOpen = true;
+            // If left sidebar is open, close it to avoid clutter? 
+            // The request says "Side bar at right side won't cover the image preview at center".
+            // So we can keep left sidebar open or close it. 
+            // Usually only one "main" panel is active or both sidebars. 
+            // Let's keep existing behavior for SettingsPanel (left) but ensure EffectsPanel (right) opens.
+            
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
         }
 
         private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)

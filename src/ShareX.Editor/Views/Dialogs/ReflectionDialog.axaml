@@ -6,98 +6,85 @@
              x:Class="ShareX.Editor.Views.Dialogs.ReflectionDialog"
              x:Name="ReflectionDialogRoot">
 
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
-    </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-            <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
+    <StackPanel Spacing="0">
+        <TextBlock Text="Reflection" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
         <StackPanel Spacing="12">
-            <TextBlock Text="Reflection" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextColor}"/>
-            
             <!-- Percentage -->
-            <StackPanel Spacing="2">
+            <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="label" Text="Percentage" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ElementName=PercentageSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                               Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="0" Text="Percentage" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=PercentageSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
                 </Grid>
-                <Slider x:Name="PercentageSlider" Minimum="1" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
+                <Slider x:Name="PercentageSlider" Minimum="1" Maximum="100" Value="50" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
             </StackPanel>
 
-            <!-- Max/Min Alpha -->
-            <Grid ColumnDefinitions="*,8,*">
-                <StackPanel Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Max Alpha"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ElementName=MaxAlphaSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                                   Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="MaxAlphaSlider" Minimum="0" Maximum="255" Value="200" ValueChanged="OnValueChanged"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2" Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Min Alpha"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ElementName=MinAlphaSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                                   Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="MinAlphaSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="OnValueChanged"/>
-                </StackPanel>
-            </Grid>
+            <!-- Max Alpha -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Max Alpha" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=MaxAlphaSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="MaxAlphaSlider" Minimum="0" Maximum="255" Value="200" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
+            </StackPanel>
+
+            <!-- Min Alpha -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Min Alpha" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=MinAlphaSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="MinAlphaSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
+            </StackPanel>
 
             <!-- Offset -->
-            <StackPanel Spacing="2">
+            <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="label" Text="Offset" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ElementName=OffsetSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                               Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="0" Text="Offset" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=OffsetSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
                 </Grid>
-                <Slider x:Name="OffsetSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="OnValueChanged"/>
+                <Slider x:Name="OffsetSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
             </StackPanel>
 
             <!-- Skew -->
-            <Grid ColumnDefinitions="Auto,*">
-                <CheckBox x:Name="SkewCheckBox" Content="Skew" Foreground="{StaticResource TextColor}" 
+            <StackPanel Spacing="4">
+                <CheckBox x:Name="SkewCheckBox" Content="Skew" Foreground="#E7E9EA" 
                           Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                <StackPanel Grid.Column="1" Spacing="2" Margin="16,0,0,0">
+                <StackPanel IsVisible="{Binding ElementName=SkewCheckBox, Path=IsChecked}">
                     <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Skew Size"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ElementName=SkewSizeSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                                   Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="0" Text="Skew Size" Foreground="#9CA3AF"/>
+                        <Border Grid.Column="1" Classes="capsule">
+                            <TextBlock Text="{Binding ElementName=SkewSizeSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                       Foreground="#E7E9EA"/>
+                        </Border>
                     </Grid>
-                    <Slider x:Name="SkewSizeSlider" Minimum="1" Maximum="100" Value="25" ValueChanged="OnValueChanged"/>
+                    <Slider x:Name="SkewSizeSlider" Minimum="1" Maximum="100" Value="25" ValueChanged="OnValueChanged"
+                            Background="#374151"/>
                 </StackPanel>
-            </Grid>
+            </StackPanel>
 
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

@@ -259,6 +259,20 @@ namespace ShareX.Editor.ViewModels
             SelectedOutputRatio = string.IsNullOrWhiteSpace(ratioKey) ? OutputRatioAuto : ratioKey;
         }
 
+        // Effects Panel Properties
+        [ObservableProperty]
+        private bool _isEffectsPanelOpen;
+
+        [ObservableProperty]
+        private object? _effectsPanelContent;
+
+        [RelayCommand]
+        private void CloseEffectsPanel()
+        {
+            IsEffectsPanelOpen = false;
+            EffectsPanelContent = null;
+        }
+
         // Modal Overlay Properties
         [ObservableProperty]
         private bool _isModalOpen;

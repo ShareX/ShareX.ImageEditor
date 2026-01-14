@@ -567,7 +567,7 @@ public static class ImageHelpers
         }
 
         List<SKPoint> points = new List<SKPoint>();
-        Random rand = new Random(42); // Fixed seed for consistent preview
+        Random rand = new Random();
 
         // Top edge
         if (top && horizontalTornCount > 1)
@@ -685,11 +685,11 @@ public static class ImageHelpers
                     // Use modulo to wrap around to 0
                     var pCurrent = pts[i];
                     var pNext = pts[(i + 1) % pts.Length];
-                    
+
                     var nextMid = new SKPoint((pCurrent.X + pNext.X) / 2, (pCurrent.Y + pNext.Y) / 2);
-                    
+
                     path.QuadTo(pCurrent, nextMid);
-                    
+
                     currentMid = nextMid;
                 }
                 path.Close();
@@ -698,7 +698,7 @@ public static class ImageHelpers
             {
                 path.AddPoly(pts, true);
             }
-            
+
             canvas.DrawPath(path, paint);
         }
 
@@ -710,7 +710,7 @@ public static class ImageHelpers
         if (source is null) throw new ArgumentNullException(nameof(source));
         if (minHeight <= 0 || maxHeight <= minHeight) return source.Copy();
 
-        Random rand = new Random(42);
+        Random rand = new Random();
         int maxAbsShift = Math.Max(Math.Abs(minShift), Math.Abs(maxShift));
         int newWidth = source.Width + maxAbsShift * 2;
 

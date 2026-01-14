@@ -330,7 +330,7 @@
         </Border>
 
         <!-- Row 1: Main Content Area with Preview and Sidebar -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*" Background="#272727">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Background="#272727">
 
             <!-- Left Sidebar (Settings Panel) -->
             <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="#242424"
@@ -522,7 +522,7 @@
                                               Width="{Binding ImageWidth}"
                                               Height="{Binding ImageHeight}">
 
-                                            <!-- Image Layer (Hybrid Rendering: SkiaSharp Native) -->
+                                            <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
                                             <controls:SKCanvasControl Name="CanvasControl"
                                                                     HorizontalAlignment="Stretch"
                                                                     VerticalAlignment="Stretch"/>
@@ -562,6 +562,23 @@
                     </LayoutTransformControl>
                 </ScrollViewer>
             </Grid>
+
+            <!-- Right Sidebar (Effects Panel) -->
+            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="#242424"
+                    BorderBrush="#1F1F1F" BorderThickness="1,0,0,0">
+                <Grid>
+                     <Grid.RowDefinitions>
+                         <RowDefinition Height="*" />
+                         <RowDefinition Height="Auto" />
+                     </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                         <StackPanel Width="220" Spacing="0" Margin="16">
+                             <ContentControl Content="{Binding EffectsPanelContent}" />
+                         </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
 
         </Grid>
 

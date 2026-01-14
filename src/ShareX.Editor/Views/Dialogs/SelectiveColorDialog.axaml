@@ -6,113 +6,82 @@
              x:Class="ShareX.Editor.Views.Dialogs.SelectiveColorDialog"
              x:Name="SelectiveColorDialogRoot">
 
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
-    </UserControl.Resources>
-    
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-             <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
-             <Setter Property="FontSize" Value="13"/>
-             <Setter Property="FontWeight" Value="SemiBold"/>
-             <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
-        <StackPanel Spacing="16">
-            <!-- Header -->
-            <TextBlock Text="Selective Color" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource TextColor}"/>
-            
-            <StackPanel Spacing="12">
-                <!-- Color Range Selector -->
-                <StackPanel Spacing="8">
-                    <TextBlock Classes="label" Text="Color Range"/>
-                    <ComboBox x:Name="RangeComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" SelectionChanged="OnRangeChanged">
-                        <ComboBoxItem>Reds</ComboBoxItem>
-                        <ComboBoxItem>Yellows</ComboBoxItem>
-                        <ComboBoxItem>Greens</ComboBoxItem>
-                        <ComboBoxItem>Cyans</ComboBoxItem>
-                        <ComboBoxItem>Blues</ComboBoxItem>
-                        <ComboBoxItem>Magentas</ComboBoxItem>
-                        <ComboBoxItem>Whites</ComboBoxItem>
-                        <ComboBoxItem>Neutrals</ComboBoxItem>
-                        <ComboBoxItem>Blacks</ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
-
-                <!-- Hue Shift -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Hue Shift" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=HueSlider, Path=Value, StringFormat='{}{0:0}°'}" 
-                                   Foreground="{StaticResource TextColor}"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="HueSlider"
-                            Minimum="-180" Maximum="180" Value="0"
-                            TickFrequency="30" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
-
-                <!-- Saturation Shift -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Saturation Shift" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=SatSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                                   Foreground="{StaticResource TextColor}"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="SatSlider"
-                            Minimum="-100" Maximum="100" Value="0"
-                            TickFrequency="25" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
-
-                <!-- Lightness Shift -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Lightness Shift" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=LightSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                                   Foreground="{StaticResource TextColor}"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="LightSlider"
-                            Minimum="-100" Maximum="100" Value="0"
-                            TickFrequency="25" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
-
+    <StackPanel Spacing="0">
+        <!-- Header -->
+        <TextBlock Text="Selective Color" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
+        <StackPanel Spacing="12">
+            <!-- Color Range Selector -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Color Range" Foreground="#9CA3AF"/>
+                <ComboBox x:Name="RangeComboBox" SelectedIndex="0" HorizontalAlignment="Stretch" SelectionChanged="OnRangeChanged"
+                          Background="#374151" BorderThickness="0" CornerRadius="4">
+                    <ComboBoxItem>Reds</ComboBoxItem>
+                    <ComboBoxItem>Yellows</ComboBoxItem>
+                    <ComboBoxItem>Greens</ComboBoxItem>
+                    <ComboBoxItem>Cyans</ComboBoxItem>
+                    <ComboBoxItem>Blues</ComboBoxItem>
+                    <ComboBoxItem>Magentas</ComboBoxItem>
+                    <ComboBoxItem>Whites</ComboBoxItem>
+                    <ComboBoxItem>Neutrals</ComboBoxItem>
+                    <ComboBoxItem>Blacks</ComboBoxItem>
+                </ComboBox>
             </StackPanel>
 
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
+            <!-- Hue Shift -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Hue Shift" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=HueSlider, Path=Value, StringFormat='{}{0:0}°'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="HueSlider"
+                        Minimum="-180" Maximum="180" Value="0"
+                        TickFrequency="30" IsSnapToTickEnabled="False"
+                        Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
+
+            <!-- Saturation Shift -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Saturation Shift" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=SatSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="SatSlider"
+                        Minimum="-100" Maximum="100" Value="0"
+                        TickFrequency="25" IsSnapToTickEnabled="False"
+                         Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
+
+            <!-- Lightness Shift -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Lightness Shift" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=LightSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="LightSlider"
+                        Minimum="-100" Maximum="100" Value="0"
+                        TickFrequency="25" IsSnapToTickEnabled="False"
+                         Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
+
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

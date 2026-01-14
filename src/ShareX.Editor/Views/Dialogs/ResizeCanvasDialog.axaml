@@ -6,103 +6,54 @@
              x:Class="ShareX.Editor.Views.Dialogs.ResizeCanvasDialog"
              x:Name="ResizeCanvasDialogRoot">
 
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
-    </UserControl.Resources>
+    <StackPanel Spacing="0">
+        <!-- Header -->
+        <TextBlock Text="Resize Canvas" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
+        <StackPanel Spacing="12">
+            <TextBlock Text="Add padding (px)" Foreground="#9CA3AF" FontSize="12"/>
 
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-            <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style Selector="NumericUpDown">
-            <Setter Property="Minimum" Value="0"/>
-            <Setter Property="Maximum" Value="1000"/>
-            <Setter Property="Increment" Value="10"/>
-            <Setter Property="FormatString" Value="0"/>
-            <Setter Property="Value" Value="0"/>
-            <Setter Property="Width" Value="130"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
-        <StackPanel Spacing="16">
-            <!-- Header -->
-            <TextBlock Text="Resize Canvas" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource TextColor}"/>
-            
-            <TextBlock Text="Add padding around the image (in pixels)"
-                       Foreground="{StaticResource LabelColor}"
-                       FontSize="12"/>
-
-            <!-- Padding Inputs (2x2 Grid) -->
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*" 
-                  HorizontalAlignment="Center">
+            <!-- Padding Inputs -->
+            <!-- Using simple stack for sidebar -->
+            <StackPanel Spacing="8">
+                <Grid ColumnDefinitions="*,8,*">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Top" Foreground="#9CA3AF" HorizontalAlignment="Center"/>
+                        <NumericUpDown x:Name="TopInput" Value="{Binding TopPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                     <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="Bottom" Foreground="#9CA3AF" HorizontalAlignment="Center"/>
+                        <NumericUpDown x:Name="BottomInput" Value="{Binding BottomPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
                 
-                <!-- Top (centered) -->
-                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-                            Spacing="4" HorizontalAlignment="Center" Margin="0,0,0,8">
-                    <TextBlock Classes="label" Text="Top" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="TopInput"
-                                   Value="{Binding TopPadding, ElementName=ResizeCanvasDialogRoot}"/>
-                </StackPanel>
-
-                <!-- Left and Right -->
-                <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,0,8,8">
-                    <TextBlock Classes="label" Text="Left" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="LeftInput"
-                                   Value="{Binding LeftPadding, ElementName=ResizeCanvasDialogRoot}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4" Margin="8,0,0,8">
-                    <TextBlock Classes="label" Text="Right" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="RightInput"
-                                   Value="{Binding RightPadding, ElementName=ResizeCanvasDialogRoot}"/>
-                </StackPanel>
-
-                <!-- Bottom (centered) -->
-                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
-                            Spacing="4" HorizontalAlignment="Center">
-                    <TextBlock Classes="label" Text="Bottom" HorizontalAlignment="Center"/>
-                    <NumericUpDown x:Name="BottomInput"
-                                   Value="{Binding BottomPadding, ElementName=ResizeCanvasDialogRoot}"/>
-                </StackPanel>
-            </Grid>
+                <Grid ColumnDefinitions="*,8,*">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="Left" Foreground="#9CA3AF" HorizontalAlignment="Center"/>
+                        <NumericUpDown x:Name="LeftInput" Value="{Binding LeftPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="Right" Foreground="#9CA3AF" HorizontalAlignment="Center"/>
+                        <NumericUpDown x:Name="RightInput" Value="{Binding RightPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
 
             <!-- Canvas Color -->
             <StackPanel Spacing="4">
-                <TextBlock Classes="label" Text="Canvas Color"/>
+                <TextBlock Text="Canvas Color" Foreground="#9CA3AF"/>
                 <Grid ColumnDefinitions="Auto,*">
                     <Border Grid.Column="0" 
                             Width="40" Height="32" 
                             CornerRadius="4"
                             Background="{Binding CanvasColorBrush, ElementName=ResizeCanvasDialogRoot}"
-                            BorderBrush="#555" BorderThickness="1"/>
+                            BorderBrush="#1F1F1F" BorderThickness="1"/>
                     <ComboBox Grid.Column="1" 
                               x:Name="ColorPresetCombo"
                               Margin="8,0,0,0"
                               SelectedIndex="0"
-                              SelectionChanged="OnColorPresetChanged">
+                              SelectionChanged="OnColorPresetChanged"
+                              HorizontalAlignment="Stretch" Background="#374151" BorderThickness="0" CornerRadius="4">
                         <ComboBoxItem Content="Transparent"/>
                         <ComboBoxItem Content="White"/>
                         <ComboBoxItem Content="Black"/>
@@ -110,14 +61,12 @@
                     </ComboBox>
                 </Grid>
             </StackPanel>
-
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

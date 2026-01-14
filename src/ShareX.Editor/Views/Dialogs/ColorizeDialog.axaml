@@ -8,98 +8,75 @@
 
     <UserControl.Resources>
     </UserControl.Resources>
-    
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-             <Setter Property="Foreground" Value="#9CA3AF"/>
-             <Setter Property="FontSize" Value="13"/>
-             <Setter Property="FontWeight" Value="SemiBold"/>
-             <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#3975D5"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
 
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
-        <StackPanel Spacing="16">
-            <!-- Header -->
-            <TextBlock Text="Colorize" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="#E7E9EA"/>
-            
-            <StackPanel Spacing="12">
-                <!-- Hue Slider -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Hue" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=HueSlider, Path=Value, StringFormat='{}{0:0}°'}" 
-                                   Foreground="#E7E9EA"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="HueSlider"
-                            Minimum="0" Maximum="360" Value="180"
-                            TickFrequency="30" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
+    <StackPanel Spacing="0">
+        <!-- Header -->
+        <TextBlock Text="Colorize" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
+        <StackPanel Spacing="12">
+            <!-- Hue Slider -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Hue" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=HueSlider, Path=Value, StringFormat='{}{0:0}°'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="HueSlider"
+                        Minimum="0" Maximum="360" Value="180"
+                        TickFrequency="30" IsSnapToTickEnabled="False"
+                         Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
 
-                <!-- Saturation Slider -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Saturation" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=SaturationSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                                   Foreground="#E7E9EA"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="SaturationSlider"
-                            Minimum="0" Maximum="100" Value="50"
-                            TickFrequency="10" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
+            <!-- Saturation Slider -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Saturation" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=SaturationSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="SaturationSlider"
+                        Minimum="0" Maximum="100" Value="50"
+                        TickFrequency="10" IsSnapToTickEnabled="False"
+                         Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
 
-                <!-- Strength Slider -->
-                <StackPanel Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Strength" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                                   Foreground="#E7E9EA"
-                                   FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="StrengthSlider"
-                            Minimum="0" Maximum="100" Value="100"
-                            TickFrequency="10" IsSnapToTickEnabled="False"
-                            ValueChanged="OnValueChanged"/>
-                </StackPanel>
+            <!-- Strength Slider -->
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Strength" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="StrengthSlider"
+                        Minimum="0" Maximum="100" Value="100"
+                        TickFrequency="10" IsSnapToTickEnabled="False"
+                         Background="#374151"
+                        ValueChanged="OnValueChanged"/>
+            </StackPanel>
 
-                <!-- Color Preview -->
-                <Border x:Name="PreviewColorBox" Height="30" CornerRadius="4" BorderBrush="#555" BorderThickness="1">
+            <!-- Color Preview -->
+            <StackPanel Spacing="4">
+                <TextBlock Text="Preview" Foreground="#9CA3AF" FontSize="12"/>
+                <Border x:Name="PreviewColorBox" Height="30" CornerRadius="4" BorderBrush="#374151" BorderThickness="1">
                     <Border.Background>
                         <SolidColorBrush Color="Transparent"/>
                     </Border.Background>
                 </Border>
             </StackPanel>
-
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

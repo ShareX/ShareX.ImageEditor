@@ -6,93 +6,76 @@
              x:Class="ShareX.Editor.Views.Dialogs.GlowDialog"
              x:Name="GlowDialogRoot">
 
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
-    </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-            <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
+    <StackPanel Spacing="0">
+        <TextBlock Text="Glow" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
         <StackPanel Spacing="12">
-            <TextBlock Text="Glow" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextColor}"/>
-            
             <!-- Size -->
-            <StackPanel Spacing="2">
+            <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="label" Text="Size" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ElementName=SizeSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                               Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="0" Text="Size" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=SizeSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
                 </Grid>
-                <Slider x:Name="SizeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"/>
+                <Slider x:Name="SizeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
             </StackPanel>
 
             <!-- Strength -->
-            <StackPanel Spacing="2">
+            <StackPanel Spacing="0">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Classes="label" Text="Strength" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}" 
-                               Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="0" Text="Strength" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
                 </Grid>
-                <Slider x:Name="StrengthSlider" Minimum="1" Maximum="100" Value="80" ValueChanged="OnValueChanged"/>
+                <Slider x:Name="StrengthSlider" Minimum="1" Maximum="100" Value="80" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
             </StackPanel>
 
             <!-- Offset X/Y -->
-            <Grid ColumnDefinitions="*,8,*">
-                <StackPanel Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Offset X"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ElementName=OffsetXSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                                   Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2" Spacing="2">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Classes="label" Text="Offset Y"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ElementName=OffsetYSlider, Path=Value, StringFormat='{}{0:0}'}" 
-                                   Foreground="{StaticResource TextColor}" FontWeight="Bold"/>
-                    </Grid>
-                    <Slider x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"/>
-                </StackPanel>
-            </Grid>
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Offset X" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=OffsetXSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
+            </StackPanel>
+            
+            <StackPanel Spacing="0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Offset Y" Foreground="#9CA3AF"/>
+                    <Border Grid.Column="1" Classes="capsule">
+                        <TextBlock Text="{Binding ElementName=OffsetYSlider, Path=Value, StringFormat='{}{0:0}'}"
+                                   Foreground="#E7E9EA"/>
+                    </Border>
+                </Grid>
+                <Slider x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
+                        Background="#374151"/>
+            </StackPanel>
 
             <!-- Color -->
             <StackPanel Spacing="4">
-                <TextBlock Classes="label" Text="Color"/>
-                <Grid ColumnDefinitions="Auto,*">
-                    <Border x:Name="ColorPreview" Width="32" Height="32" CornerRadius="4" Background="#FFFF00"/>
-                    <TextBox x:Name="ColorTextBox" Grid.Column="1" Margin="8,0,0,0" Text="#FFFF00" TextChanged="OnColorTextChanged"/>
+                <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox x:Name="ColorTextBox" Text="#FFFF00" TextChanged="OnColorTextChanged"
+                             HorizontalAlignment="Stretch" Foreground="#E7E9EA" Background="#374151" BorderThickness="0" CornerRadius="4" Padding="8"/>
+                    <Border x:Name="ColorPreview" Grid.Column="1" Width="30" Height="30" CornerRadius="4" Background="#FFFF00" Margin="8,0,0,0" BorderBrush="#1F1F1F" BorderThickness="1"/>
                 </Grid>
             </StackPanel>
-
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Apply" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>

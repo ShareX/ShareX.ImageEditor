@@ -6,97 +6,58 @@
              x:Class="ShareX.Editor.Views.Dialogs.CropImageDialog"
              x:Name="CropImageDialogRoot">
 
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
-        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
-        <SolidColorBrush x:Key="LabelColor">#9CA3AF</SolidColorBrush>
-    </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="TextBlock.label">
-            <Setter Property="Foreground" Value="{StaticResource LabelColor}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Margin" Value="0,0,0,4"/>
-        </Style>
-        <Style Selector="NumericUpDown">
-            <Setter Property="Minimum" Value="0"/>
-            <Setter Property="Maximum" Value="10000"/>
-            <Setter Property="Increment" Value="1"/>
-            <Setter Property="FormatString" Value="0"/>
-        </Style>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-        <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            <Setter Property="Padding" Value="20,8"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </UserControl.Styles>
-
-    <Border Background="#2E2E2E" CornerRadius="8" Padding="24" MinWidth="350">
-        <StackPanel Spacing="16">
-            <!-- Header -->
-            <TextBlock Text="Crop Image" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource TextColor}"/>
-            
-            <TextBlock Text="Enter crop region coordinates"
-                       Foreground="{StaticResource LabelColor}"
-                       FontSize="12"/>
+    <StackPanel Spacing="0">
+        <!-- Header -->
+        <TextBlock Text="Crop Image" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
+        <StackPanel Spacing="12">
+            <TextBlock Text="Crop region coordinates" Foreground="#9CA3AF" FontSize="12"/>
 
             <!-- X and Y Inputs -->
-            <Grid ColumnDefinitions="*,16,*">
+            <Grid ColumnDefinitions="*,8,*">
                 <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Classes="label" Text="X"/>
+                    <TextBlock Text="X" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="XInput" 
-                                   Value="{Binding CropX, ElementName=CropImageDialogRoot}"/>
+                                   Value="{Binding CropX, ElementName=CropImageDialogRoot}"
+                                   Minimum="0" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Classes="label" Text="Y"/>
+                    <TextBlock Text="Y" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="YInput" 
-                                   Value="{Binding CropY, ElementName=CropImageDialogRoot}"/>
+                                   Value="{Binding CropY, ElementName=CropImageDialogRoot}"
+                                   Minimum="0" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
 
             <!-- Width and Height Inputs -->
-            <Grid ColumnDefinitions="*,16,*">
+            <Grid ColumnDefinitions="*,8,*">
                 <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Classes="label" Text="Width"/>
+                    <TextBlock Text="Width" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="WidthInput" 
                                    Value="{Binding CropWidth, ElementName=CropImageDialogRoot}"
-                                   Minimum="1"/>
+                                   Minimum="1" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Classes="label" Text="Height"/>
+                    <TextBlock Text="Height" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="HeightInput" 
                                    Value="{Binding CropHeight, ElementName=CropImageDialogRoot}"
-                                   Minimum="1"/>
+                                   Minimum="1" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
 
             <!-- Info text -->
             <TextBlock x:Name="InfoText"
-                       Foreground="{StaticResource LabelColor}"
+                       Foreground="#9CA3AF"
                        FontSize="11"
                        TextWrapping="Wrap"/>
-
-            <!-- Buttons -->
-            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="secondary" Content="Cancel" Click="OnCancelClick"/>
-                    <Button Classes="primary" Content="Crop" Click="OnApplyClick"/>
-                </StackPanel>
-            </Grid>
         </StackPanel>
-    </Border>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Crop" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
 </UserControl>
