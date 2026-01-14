@@ -51,20 +51,21 @@
         <x:Double x:Key="AppFontSize">14</x:Double>
         <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
         <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
+        <SolidColorBrush x:Key="BorderColor">#1F1F1F</SolidColorBrush>
 
-        <DrawingBrush x:Key="CheckeredBrush" TileMode="Tile" SourceRect="0,0,20,20" DestinationRect="0,0,20,20">
+        <DrawingBrush x:Key="CheckeredBrush" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
             <DrawingBrush.Drawing>
                 <DrawingGroup>
-                    <GeometryDrawing Brush="#1E1E1E">
+                    <GeometryDrawing Brush="#272727">
                         <GeometryDrawing.Geometry>
-                            <RectangleGeometry Rect="0,0,20,20" />
+                            <RectangleGeometry Rect="0,0,30,30" />
                         </GeometryDrawing.Geometry>
                     </GeometryDrawing>
                     <GeometryDrawing Brush="#2E2E2E">
                         <GeometryDrawing.Geometry>
                             <GeometryGroup>
-                                <RectangleGeometry Rect="0,0,10,10" />
-                                <RectangleGeometry Rect="10,10,10,10" />
+                                <RectangleGeometry Rect="0,0,15,15" />
+                                <RectangleGeometry Rect="15,15,15,15" />
                             </GeometryGroup>
                         </GeometryDrawing.Geometry>
                     </GeometryDrawing>
@@ -524,8 +525,10 @@
                         </LayoutTransformControl.LayoutTransform>
                         <!-- Main Canvas Container with Checkered Background and Shadow -->
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                             <!-- Checkered Background (Behind transparent parts of canvas) -->
-                             <Border Background="{StaticResource CheckeredBrush}" 
+                             <!-- Checkered Background -->
+                             <Border BorderThickness="1"
+                                     BorderBrush="{StaticResource BorderColor}"
+                                     Background="{StaticResource CheckeredBrush}" 
                                      CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"/>
 
                              <!-- Actual Content -->
