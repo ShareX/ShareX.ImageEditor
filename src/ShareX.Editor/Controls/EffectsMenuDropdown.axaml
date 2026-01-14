@@ -8,37 +8,75 @@
 
     <UserControl.Resources>
         <FontFamily x:Key="FontAwesome">avares://ShareX.Editor/Assets#Font Awesome 7 Free</FontFamily>
+        
         <!-- Icons -->
         <x:String x:Key="IconMagic">&#xf0d0;</x:String>
         <x:String x:Key="IconSun">&#xf185;</x:String>
         <x:String x:Key="IconAdjust">&#xf042;</x:String>
         <x:String x:Key="IconPalette">&#xf53f;</x:String>
-        <x:String x:Key="IconFillDrip">&#xf576;</x:String>
-        <x:String x:Key="IconWaveSquare">&#xf83e;</x:String>
+        <x:String x:Key="IconTint">&#xf043;</x:String>
         <x:String x:Key="IconEyeDropper">&#xf1fb;</x:String>
         <x:String x:Key="IconExchangeAlt">&#xf362;</x:String>
-        <x:String x:Key="IconTint">&#xf043;</x:String>
         <x:String x:Key="IconCoffee">&#xf0f4;</x:String>
-        <x:String x:Key="IconCameraRetro">&#xf083;</x:String>
+        <x:String x:Key="IconImage">&#xf03e;</x:String>
         <x:String x:Key="IconHighlighter">&#xf591;</x:String>
-        <x:String x:Key="IconRandom">&#xf074;</x:String>
         <x:String x:Key="IconSync">&#xf021;</x:String>
         <x:String x:Key="IconCloud">&#xf0c2;</x:String>
+        
+        <!-- Edit Icons -->
+        <x:String x:Key="IconResize">&#xf31e;</x:String>
+        <x:String x:Key="IconResizeCanvas">&#xf853;</x:String>
+        <x:String x:Key="IconCropAlt">&#xf565;</x:String>
+        <x:String x:Key="IconRotateCW">&#xf01e;</x:String>
+        <x:String x:Key="IconRotateCCW">&#xf0e2;</x:String>
+        <x:String x:Key="IconRotate">&#xf2ea;</x:String>
+        <x:String x:Key="IconArrowsH">&#xf337;</x:String>
+        <x:String x:Key="IconArrowsV">&#xf338;</x:String>
+        <x:String x:Key="IconSliders">&#xf1de;</x:String>
         <x:String x:Key="IconChevronDown">&#xf078;</x:String>
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <Style Selector="Button.menu-item">
+        <Style Selector="Button.editor-button">
+            <Setter Property="Background" Value="#2E2E2E"/>
+            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#E7E9EA"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Menu Styles matching the theme -->
+        <Style Selector="ContextMenu">
+            <Setter Property="Background" Value="#2E2E2E"/>
+            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+
+        <Style Selector="MenuItem">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Foreground" Value="#E7E9EA"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            
+            <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
+                <Setter Property="Background" Value="#3E3E3E"/>
+            </Style>
+             <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
         </Style>
-        <Style Selector="Button.menu-item:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#3E3E3E"/>
+
+        <Style Selector="MenuItem > MenuItem">
+             <Setter Property="Background" Value="#2E2E2E"/>
         </Style>
+
         <Style Selector="TextBlock.menu-icon">
             <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
             <Setter Property="FontWeight" Value="Black"/>
@@ -46,24 +84,8 @@
             <Setter Property="Width" Value="20"/>
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <Style Selector="TextBlock.menu-text">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="8,0,0,0"/>
-        </Style>
-        <Style Selector="TextBlock.menu-header">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#6B7280"/>
-            <Setter Property="Margin" Value="12,8,12,4"/>
-        </Style>
-        <Style Selector="Border.menu-separator">
-            <Setter Property="Height" Value="1"/>
-            <Setter Property="Background" Value="#3E3E3E"/>
-            <Setter Property="Margin" Value="8,4"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
         </Style>
     </UserControl.Styles>
 
@@ -71,12 +93,168 @@
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"
                 Classes="editor-button"
-                Click="OnDropdownButtonClick"
                 Height="40"
                 MinWidth="60"
                 HorizontalContentAlignment="Stretch">
+            <Button.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                    
+                    <!-- Manipulations Submenu -->
+                    <MenuItem Header="Manipulations">
+                        <MenuItem.Icon>
+                            <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
+                        </MenuItem.Icon>
+                        
+                        <MenuItem Header="Resize image" Click="OnResizeImageClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Resize canvas" Click="OnResizeCanvasClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <Separator/>
+                        
+                        <MenuItem Header="Crop image" Click="OnCropImageClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCropAlt}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Auto crop image" Click="OnAutoCropImageClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconMagic}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <Separator/>
+                        
+                        <MenuItem Header="Rotate 90° clockwise" Click="OnRotate90CWClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCW}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate 90° counter clockwise" Click="OnRotate90CCWClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCCW}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate 180°" Click="OnRotate180Click">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Rotate custom angle..." Click="OnRotateCustomAngleClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                         <Separator/>
+                         
+                        <MenuItem Header="Flip horizontal" Click="OnFlipHorizontalClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Flip vertical" Click="OnFlipVerticalClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsV}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                    </MenuItem>
+
+                    <!-- Adjustments Submenu -->
+                    <MenuItem Header="Adjustments">
+                         <MenuItem.Icon>
+                            <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                        </MenuItem.Icon>
+
+                        <MenuItem Header="Brightness..." Click="OnBrightnessClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Contrast..." Click="OnContrastClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Hue..." Click="OnHueClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconPalette}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Saturation..." Click="OnSaturationClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Gamma..." Click="OnGammaClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Alpha..." Click="OnAlphaClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconEyeDropper}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+
+                        <Separator/>
+                        
+                         <MenuItem Header="Colorize..." Click="OnColorizeClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Selective Color..." Click="OnSelectiveColorClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconHighlighter}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                         <MenuItem Header="Replace Color..." Click="OnReplaceColorClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Grayscale..." Click="OnGrayscaleClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCloud}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
+                        <Separator/>
+
+                        <MenuItem Header="Invert" Click="OnInvertClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconExchangeAlt}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                         <MenuItem Header="Black &amp; White" Click="OnBlackAndWhiteClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Sepia" Click="OnSepiaClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCoffee}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                         <MenuItem Header="Polaroid" Click="OnPolaroidClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconImage}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+
+                </MenuFlyout>
+            </Button.Flyout>
+            
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <!-- Magic Icon -->
                 <TextBlock Grid.Column="0"
                            Text="{StaticResource IconMagic}"
                            FontFamily="{StaticResource FontAwesome}"
@@ -84,11 +262,9 @@
                            FontSize="14"
                            VerticalAlignment="Center"
                            Margin="4,0,0,0"/>
-                           
-                <!-- Spacer -->
+
                 <Border Grid.Column="1"/>
 
-                <!-- Chevron Icon -->
                 <TextBlock Grid.Column="2"
                            Text="{StaticResource IconChevronDown}"
                            FontFamily="{StaticResource FontAwesome}"
@@ -96,23 +272,8 @@
                            FontSize="10"
                            Foreground="#94A3B8"
                            VerticalAlignment="Center"
-                           Margin="4,0,4,0"/>
+                           Margin="8,0,4,0"/>
             </Grid>
         </Button>
-
-        <!-- Popup Menu -->
-        <Popup x:Name="EffectsPopup"
-               PlacementTarget="{Binding #DropdownButton}"
-               Placement="Bottom"
-               IsLightDismissEnabled="True"
-               VerticalOffset="4">
-            <Border Classes="popup-border" MinWidth="220">
-                <ScrollViewer>
-                <StackPanel x:Name="EffectsContainer" Orientation="Vertical" Spacing="0">
-                    <!-- Dynamic content will be added here -->
-                </StackPanel>
-                </ScrollViewer>
-            </Border>
-        </Popup>
     </Grid>
 </UserControl>

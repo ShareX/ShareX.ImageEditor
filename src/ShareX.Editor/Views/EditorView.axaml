@@ -247,10 +247,10 @@
                             ToolTip.Tip="Background"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
 
-                    <!-- Edit Menu Dropdown -->
-                    <controls:EditMenuDropdown x:Name="EditMenuDropdown"
+                    <!-- Effects Menu Dropdown -->
+                    <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
                         Height="40"
-                        ToolTip.Tip="Edit"
+                        ToolTip.Tip="Effects"
                         ResizeImageRequested="OnResizeImageRequested"
                         ResizeCanvasRequested="OnResizeCanvasRequested"
                         CropImageRequested="OnCropImageRequested"
@@ -260,13 +260,21 @@
                         Rotate180Requested="OnRotate180Requested"
                         RotateCustomAngleRequested="OnRotateCustomAngleRequested"
                         FlipHorizontalRequested="OnFlipHorizontalRequested"
-                        FlipVerticalRequested="OnFlipVerticalRequested"/>
-
-                    <!-- Effects Menu Dropdown -->
-                    <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
-                        Height="40"
-                        ToolTip.Tip="Effects"
-                        EffectRequested="OnEffectRequested"/>
+                        FlipVerticalRequested="OnFlipVerticalRequested"
+                        BrightnessRequested="OnBrightnessRequested"
+                        ContrastRequested="OnContrastRequested"
+                        HueRequested="OnHueRequested"
+                        SaturationRequested="OnSaturationRequested"
+                        GammaRequested="OnGammaRequested"
+                        AlphaRequested="OnAlphaRequested"
+                        ColorizeRequested="OnColorizeRequested"
+                        SelectiveColorRequested="OnSelectiveColorRequested"
+                        ReplaceColorRequested="OnReplaceColorRequested"
+                        GrayscaleRequested="OnGrayscaleRequested"
+                        InvertRequested="OnInvertRequested"
+                        BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                        SepiaRequested="OnSepiaRequested"
+                        PolaroidRequested="OnPolaroidRequested"/>
 
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
