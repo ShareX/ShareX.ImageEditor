@@ -49,7 +49,10 @@
 
         <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
         <x:Double x:Key="AppFontSize">14</x:Double>
-        <SolidColorBrush x:Key="AccentColor">#3975D5</SolidColorBrush>
+        <LinearGradientBrush x:Key="AccentColor" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#3E83F2" Offset="0"/>
+            <GradientStop Color="#3975D5" Offset="1"/>
+        </LinearGradientBrush>
         <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
         <SolidColorBrush x:Key="BorderColor">#1F1F1F</SolidColorBrush>
 
