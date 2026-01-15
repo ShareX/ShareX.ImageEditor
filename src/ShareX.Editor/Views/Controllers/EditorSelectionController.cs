@@ -562,7 +562,7 @@ public class EditorSelectionController
              return;
         }
 
-        if (_selectedShape is Polyline)
+        if (_selectedShape is Polyline || _selectedShape is TextBox)
         {
             UpdateHoverOutline();
             return;

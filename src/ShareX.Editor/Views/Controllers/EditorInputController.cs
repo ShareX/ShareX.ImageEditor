@@ -683,14 +683,19 @@ public class EditorInputController
         Canvas.SetLeft(textBox, _startPoint.X);
         Canvas.SetTop(textBox, _startPoint.Y);
 
-        textBox.LostFocus += (s, args) =>
+        void OnCreationLostFocus(object? s, global::Avalonia.Interactivity.RoutedEventArgs args)
         {
             if (s is TextBox tb && tb.Tag is TextAnnotation annotation)
             {
+                tb.LostFocus -= OnCreationLostFocus;
+
                 tb.BorderThickness = new Thickness(0);
                 if (string.IsNullOrWhiteSpace(tb.Text))
                 {
-                    ((Panel)tb.Parent!).Children.Remove(tb);
+                    if (tb.Parent is Panel panel)
+                    {
+                        panel.Children.Remove(tb);
+                    }
                 }
                 else
                 {
@@ -702,9 +707,20 @@ public class EditorInputController
                     
                     // Add to EditorCore to enable undo/redo
                     _view.EditorCore.AddAnnotation(annotation);
+                    
+                    // Convert to display mode (select-only)
+                    tb.IsHitTestVisible = false;
+                    
+                    // Attach standard LostFocus handler for future edits (via double-click)
+                    tb.LostFocus += (sender, e) => 
+                    {
+                        if (sender is TextBox t) t.IsHitTestVisible = false;
+                    };
                 }
             }
-        };
+        }
+
+        textBox.LostFocus += OnCreationLostFocus;
 
         textBox.KeyDown += (s, args) =>
         {
