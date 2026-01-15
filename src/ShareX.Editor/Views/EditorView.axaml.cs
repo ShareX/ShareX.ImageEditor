@@ -598,7 +598,7 @@ namespace ShareX.Editor.Views
             }
         }
 
-        private SkiaSharp.SKBitmap? GetSnapshot()
+        public SkiaSharp.SKBitmap? GetSnapshot()
         {
             // Snapshot logic
             var container = this.FindControl<Grid>("CanvasContainer");
