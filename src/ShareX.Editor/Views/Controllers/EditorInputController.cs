@@ -399,6 +399,8 @@ public class EditorInputController
 
              if (_currentShape.Tag is RectangleAnnotation rectAnn) { rectAnn.StartPoint = ToSKPoint(new Point(left, top)); rectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
              else if (_currentShape.Tag is EllipseAnnotation ellAnn) { ellAnn.StartPoint = ToSKPoint(new Point(left, top)); ellAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
+             // Update bounds for all effect annotations (Blur, Pixelate, Magnify, Highlight)
+             else if (_currentShape.Tag is BaseEffectAnnotation effectAnn) { effectAnn.StartPoint = ToSKPoint(new Point(left, top)); effectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
          }
          else if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
          {
@@ -647,17 +649,30 @@ public class EditorInputController
 
     private void HandleTextTool(Canvas canvas, SolidColorBrush brush, double strokeWidth)
     {
+        var vm = ViewModel;
+        if (vm == null) return;
+        
+        var textAnnotation = new TextAnnotation
+        {
+            StrokeColor = vm.SelectedColor,
+            StrokeWidth = (float)strokeWidth,
+            FontSize = (float)Math.Max(12, strokeWidth * 4),
+            StartPoint = ToSKPoint(_startPoint),
+            EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
+        };
+        
         var textBox = new TextBox
         {
             Foreground = brush,
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.White,
-            FontSize = Math.Max(12, strokeWidth * 4),
+            FontSize = textAnnotation.FontSize,
             Text = string.Empty,
             Padding = new Thickness(4),
             MinWidth = 50,
-            AcceptsReturn = false
+            AcceptsReturn = false,
+            Tag = textAnnotation
         };
 
         Canvas.SetLeft(textBox, _startPoint.X);
@@ -665,12 +680,23 @@ public class EditorInputController
 
         textBox.LostFocus += (s, args) =>
         {
-            if (s is TextBox tb)
+            if (s is TextBox tb && tb.Tag is TextAnnotation annotation)
             {
                 tb.BorderThickness = new Thickness(0);
                 if (string.IsNullOrWhiteSpace(tb.Text))
                 {
                     ((Panel)tb.Parent!).Children.Remove(tb);
+                }
+                else
+                {
+                    // Update annotation with final text and bounds
+                    annotation.Text = tb.Text ?? string.Empty;
+                    annotation.EndPoint = new SKPoint(
+                        (float)(Canvas.GetLeft(tb) + tb.Bounds.Width),
+                        (float)(Canvas.GetTop(tb) + tb.Bounds.Height));
+                    
+                    // Add to EditorCore to enable undo/redo
+                    _view.EditorCore.AddAnnotation(annotation);
                 }
             }
         };
@@ -687,7 +713,6 @@ public class EditorInputController
         canvas.Children.Add(textBox);
         textBox.Focus();
         _isDrawing = false;
-        _view.PushUndo(textBox);
     }
     
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);

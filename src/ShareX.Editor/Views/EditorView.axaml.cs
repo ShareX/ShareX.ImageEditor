@@ -465,23 +465,12 @@ namespace ShareX.Editor.Views
              // Effect annotations (Blur, Pixelate, Magnify, Highlight)
             else if (annotation is BaseEffectAnnotation effect) {
                  Control? factorControl = null;
-                 if (annotation is BlurAnnotation blur) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = blur };
-                 else if (annotation is PixelateAnnotation pix) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = pix };
-                 else if (annotation is MagnifyAnnotation mag) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = mag };
-                 else if (annotation is HighlightAnnotation high) factorControl = new global::Avalonia.Controls.Shapes.Rectangle { Tag = high };
                  
-                 if (factorControl is Shape s) {
-                    s.Stroke = new SolidColorBrush(Color.Parse(annotation.StrokeColor));
-                    s.StrokeThickness = annotation.StrokeWidth;
-                    
-                    if (annotation is HighlightAnnotation) {
-                        s.Stroke = Brushes.Transparent;
-                        // Fill will be handled by UpdateEffectVisual or similar
-                        // Note: Effect creation usually requires calling logic to render effect from bitmap
-                        // We might need to trigger OnRequestUpdateEffect here
-                        // For now we create the control, and expect UpdateEffect to run if we call it
-                    }
-                 }
+                 // Use CreateVisual() which properly sets up the Fill for each type
+                 if (annotation is BlurAnnotation blur) factorControl = blur.CreateVisual();
+                 else if (annotation is PixelateAnnotation pix) factorControl = pix.CreateVisual();
+                 else if (annotation is MagnifyAnnotation mag) factorControl = mag.CreateVisual();
+                 else if (annotation is HighlightAnnotation high) factorControl = high.CreateVisual();
                  
                  if (factorControl != null) {
                     Canvas.SetLeft(factorControl, effect.GetBounds().Left);
@@ -489,9 +478,12 @@ namespace ShareX.Editor.Views
                     factorControl.Width = effect.GetBounds().Width;
                     factorControl.Height = effect.GetBounds().Height;
                     
-                    // Trigger visual update
-                    // We can defer this or call explicit update
-                    OnRequestUpdateEffect(factorControl);
+                    // Trigger visual update for effects that need bitmap generation (Blur, Pixelate, Magnify)
+                    // HighlightAnnotation doesn't need this as CreateVisual() sets up the Fill
+                    if (annotation is not HighlightAnnotation)
+                    {
+                        OnRequestUpdateEffect(factorControl);
+                    }
                     return factorControl;
                  }
              }
@@ -629,8 +621,18 @@ namespace ShareX.Editor.Views
             {
                 double left = Canvas.GetLeft(shape);
                 double top = Canvas.GetTop(shape);
-                double width = shape.Bounds.Width;
-                double height = shape.Bounds.Height;
+                // Use explicit Width/Height first, fallback to Bounds, then annotation bounds
+                double width = shape.Width;
+                double height = shape.Height;
+                if (double.IsNaN(width) || width <= 0) width = shape.Bounds.Width;
+                if (double.IsNaN(height) || height <= 0) height = shape.Bounds.Height;
+                // Final fallback to annotation's own bounds
+                if (width <= 0 || height <= 0)
+                {
+                    var bounds = annotation.GetBounds();
+                    width = bounds.Width;
+                    height = bounds.Height;
+                }
                 if (width <= 0 || height <= 0) return;
 
                 // Map to SKPoint
