@@ -335,6 +335,12 @@ public class EditorSelectionController
 
         _startPoint = currentPoint;
         UpdateSelectionHandles();
+
+        // Real-time effect update during resize
+        if (_selectedShape?.Tag is BaseEffectAnnotation)
+        {
+            RequestUpdateEffect?.Invoke(_selectedShape);
+        }
     }
 
     private void HandleMove(Point currentPoint)
@@ -402,6 +408,12 @@ public class EditorSelectionController
 
         _lastDragPoint = currentPoint;
         UpdateSelectionHandles();
+
+        // Real-time effect update during move
+        if (_selectedShape?.Tag is BaseEffectAnnotation)
+        {
+            RequestUpdateEffect?.Invoke(_selectedShape);
+        }
     }
 
     public void UpdateSelectionHandles()

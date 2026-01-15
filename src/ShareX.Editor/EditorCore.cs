@@ -686,16 +686,15 @@ public class EditorCore : IDisposable
     }
 
     /// <summary>
-    /// Get a snapshot of current annotations (shallow copy for memento)
+    /// Get a snapshot of current annotations (deep copy for memento)
     /// </summary>
     /// <param name="excludeAnnotation">Optional annotation to exclude from the snapshot (e.g. current one being drawn)</param>
     internal List<Annotation> GetAnnotationsSnapshot(Annotation? excludeAnnotation = null)
     {
-        if (excludeAnnotation != null)
-        {
-            return _annotations.Where(a => a != excludeAnnotation).ToList();
-        }
-        return new List<Annotation>(_annotations);
+        var source = excludeAnnotation != null 
+            ? _annotations.Where(a => a != excludeAnnotation) 
+            : _annotations;
+        return source.Select(a => a.Clone()).ToList();
     }
 
     /// <summary>

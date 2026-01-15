@@ -116,6 +116,19 @@ public abstract class Annotation
     }
 
     /// <summary>
+    /// Creates a deep clone of this annotation for undo/redo history.
+    /// Derived classes should override to handle reference-type properties.
+    /// </summary>
+    public virtual Annotation Clone()
+    {
+        // MemberwiseClone handles value types (SKPoint, float, int, etc.) correctly
+        // Derived classes override to deep copy reference types (lists, bitmaps)
+        var clone = (Annotation)MemberwiseClone();
+        clone.Id = Guid.NewGuid(); // New identity for the clone
+        return clone;
+    }
+
+    /// <summary>
     /// Parse hex color string to SKColor
     /// </summary>
     protected SKColor ParseColor(string hexColor)

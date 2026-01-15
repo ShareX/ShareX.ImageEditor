@@ -23,6 +23,13 @@ public class FreehandAnnotation : Annotation
         ToolType = EditorTool.Pen;
     }
 
+    public override Annotation Clone()
+    {
+        var clone = (FreehandAnnotation)base.Clone();
+        clone.Points = new List<SKPoint>(Points); // Deep copy the points list
+        return clone;
+    }
+
     /// <summary>
     /// Creates the Avalonia visual for this annotation
     /// </summary>

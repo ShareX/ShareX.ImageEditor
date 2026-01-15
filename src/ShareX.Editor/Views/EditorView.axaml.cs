@@ -306,7 +306,12 @@ namespace ShareX.Editor.Views
                     vm.DeleteSelectedCommand.Execute(null);
                     e.Handled = true;
                 }
-                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.Z)
+                {
+                    vm.RedoCommand.Execute(null);
+                    e.Handled = true;
+                }
+                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
                     if (e.Key == Key.Z)
                     {
@@ -318,11 +323,6 @@ namespace ShareX.Editor.Views
                         vm.RedoCommand.Execute(null);
                         e.Handled = true;
                     }
-                }
-                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.Z)
-                {
-                    vm.RedoCommand.Execute(null);
-                    e.Handled = true;
                 }
                 else if (e.KeyModifiers == KeyModifiers.None)
                 {
