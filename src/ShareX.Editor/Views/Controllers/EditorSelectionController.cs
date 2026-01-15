@@ -946,37 +946,61 @@ public class EditorSelectionController
         var overlay = _view.FindControl<Canvas>("OverlayCanvas");
         if (overlay == null) return;
         
-        double left, top, width, height;
-        
-        // Get bounds based on shape type
+        // 1. Path-based Outline (Polyline)
+        // Used for Line, Arrow (Path), and Freehand (Polyline) to show outline along the stroke
+        IList<Point>? outlinePoints = null;
+
         if (_hoveredShape is global::Avalonia.Controls.Shapes.Line line)
         {
-            left = Math.Min(line.StartPoint.X, line.EndPoint.X);
-            top = Math.Min(line.StartPoint.Y, line.EndPoint.Y);
-            width = Math.Abs(line.EndPoint.X - line.StartPoint.X);
-            height = Math.Abs(line.EndPoint.Y - line.StartPoint.Y);
-            // Add some padding for thin lines
-            if (width < 10) { left -= 5; width += 10; }
-            if (height < 10) { top -= 5; height += 10; }
+            outlinePoints = new List<Point> { line.StartPoint, line.EndPoint };
         }
-        else if (_hoveredShape is global::Avalonia.Controls.Shapes.Path && _shapeEndpoints.TryGetValue(_hoveredShape, out var endpoints))
+        else if (_hoveredShape is global::Avalonia.Controls.Shapes.Path arrowPath && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
         {
-            left = Math.Min(endpoints.Start.X, endpoints.End.X);
-            top = Math.Min(endpoints.Start.Y, endpoints.End.Y);
-            width = Math.Abs(endpoints.End.X - endpoints.Start.X);
-            height = Math.Abs(endpoints.End.Y - endpoints.Start.Y);
-            // Add some padding for thin lines
-            if (width < 10) { left -= 5; width += 10; }
-
-            if (height < 10) { top -= 5; height += 10; }
+            outlinePoints = new List<Point> { endpoints.Start, endpoints.End };
         }
-        else if (_hoveredShape is SpotlightControl sc && sc.Annotation is SpotlightAnnotation sa)
+        else if (_hoveredShape is Polyline polyline)
+        {
+            outlinePoints = polyline.Points;
+        }
+
+        if (outlinePoints != null)
+        {
+             if (_hoverPolylineBlack == null)
+             {
+                 _hoverPolylineBlack = new Polyline
+                 {
+                     Stroke = Brushes.Black,
+                     StrokeThickness = 1,
+                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                     IsHitTestVisible = false
+                 };
+                 overlay.Children.Add(_hoverPolylineBlack);
+             }
+             if (_hoverPolylineWhite == null)
+             {
+                 _hoverPolylineWhite = new Polyline
+                 {
+                     Stroke = Brushes.White,
+                     StrokeThickness = 1,
+                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+                     StrokeDashOffset = 3,
+                     IsHitTestVisible = false
+                 };
+                 overlay.Children.Add(_hoverPolylineWhite);
+             }
+             
+             _hoverPolylineBlack.Points = outlinePoints;
+             _hoverPolylineWhite.Points = outlinePoints;
+             return;
+        }
+
+        // 2. Bounds-based Calculation
+        double left, top, width, height;
+
+        if (_hoveredShape is SpotlightControl sc && sc.Annotation is SpotlightAnnotation sa)
         {
             var b = sa.GetBounds();
-            left = b.Left;
-            top = b.Top;
-            width = b.Width;
-            height = b.Height;
+            left = b.Left; top = b.Top; width = b.Width; height = b.Height;
         }
         else
         {
@@ -992,12 +1016,7 @@ public class EditorSelectionController
         
         if (width <= 0 || height <= 0) return;
         
-        if (width <= 0 || height <= 0) return;
-        
-        // Helper to safely remove generic outline rects if we switched to Polyline mode or vice versa?
-        // Actually UpdateHoverState calls ClearHoverOutline when shape changes, so we start fresh.
-        // But for safety/robustness we can ensure only the correct type exists.
-        
+        // 3. Ellipse Outline (for Ellipse and Step/Number)
         if (_hoveredShape is Ellipse || (_hoveredShape is Grid && _hoveredShape.Tag is NumberAnnotation))
         {
              if (_hoverEllipseBlack == null)
@@ -1036,39 +1055,7 @@ public class EditorSelectionController
              return;
         }
 
-        if (_hoveredShape is Polyline polyline)
-        {
-             if (_hoverPolylineBlack == null)
-             {
-                 _hoverPolylineBlack = new Polyline
-                 {
-                     Stroke = Brushes.Black,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverPolylineBlack);
-             }
-             if (_hoverPolylineWhite == null)
-             {
-                 _hoverPolylineWhite = new Polyline
-                 {
-                     Stroke = Brushes.White,
-                     StrokeThickness = 1,
-                     StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                     StrokeDashOffset = 3,
-                     IsHitTestVisible = false
-                 };
-                 overlay.Children.Add(_hoverPolylineWhite);
-             }
-             
-             // Sync points
-             _hoverPolylineBlack.Points = polyline.Points;
-             _hoverPolylineWhite.Points = polyline.Points;
-             return;
-        }
-        
-        // Create or update the hover outline (two overlapping rectangles for black/white ant pattern)
+        // 4. Rectangle Outline (Default)
         if (_hoverOutlineBlack == null)
         {
             _hoverOutlineBlack = new global::Avalonia.Controls.Shapes.Rectangle
@@ -1089,7 +1076,7 @@ public class EditorSelectionController
                 Stroke = Brushes.White,
                 StrokeThickness = 1,
                 StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 3, 3 },
-                StrokeDashOffset = 3, // Offset by dash length to alternate
+                StrokeDashOffset = 3,
                 Fill = null,
                 IsHitTestVisible = false
             };
