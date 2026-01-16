@@ -8,7 +8,7 @@ using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
-    public partial class SkewDialog : UserControl
+    public partial class SkewDialog : UserControl, IEffectDialog
     {
         public event EventHandler<EffectEventArgs>? ApplyRequested;
         public event EventHandler<EffectEventArgs>? PreviewRequested;

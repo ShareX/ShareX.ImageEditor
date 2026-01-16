@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using System;
 
 namespace ShareX.Editor.Controls
 {
@@ -35,193 +37,10 @@ namespace ShareX.Editor.Controls
         public event EventHandler? FlipHorizontalRequested;
         public event EventHandler? FlipVerticalRequested;
 
-        public EffectsMenuDropdown()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        private void OnDropdownButtonClick(object? sender, RoutedEventArgs e)
-        {
-            var popup = this.FindControl<Popup>("EffectsPopup");
-            if (popup != null)
-            {
-                popup.IsOpen = !popup.IsOpen;
-            }
-        }
-
-        private void ClosePopup()
-        {
-            var popup = this.FindControl<Popup>("EffectsPopup");
-            if (popup != null)
-            {
-                popup.IsOpen = false;
-            }
-        }
-
-        // --- Adjustments ---
-
-        private void OnBrightnessClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            BrightnessRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnContrastClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ContrastRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnHueClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            HueRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnSaturationClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SaturationRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnGammaClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            GammaRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnAlphaClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            AlphaRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnInvertClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            InvertRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnBlackAndWhiteClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            BlackAndWhiteRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnSepiaClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SepiaRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnPolaroidClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            PolaroidRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnColorizeClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ColorizeRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnSelectiveColorClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SelectiveColorRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnReplaceColorClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ReplaceColorRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnGrayscaleClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            GrayscaleRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        // --- Manipulations ---
-
-        private void OnResizeImageClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ResizeImageRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnResizeCanvasClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ResizeCanvasRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnCropImageClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            CropImageRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnAutoCropImageClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            AutoCropImageRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnRotate90CWClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            Rotate90CWRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnRotate90CCWClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            Rotate90CCWRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnRotate180Click(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            Rotate180Requested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnRotateCustomAngleClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            RotateCustomAngleRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnFlipHorizontalClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            FlipHorizontalRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnFlipVerticalClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            FlipVerticalRequested?.Invoke(this, EventArgs.Empty);
-        }
-
         public event EventHandler? RoundedCornersRequested;
         public event EventHandler? SkewRequested;
 
-        private void OnRoundedCornersClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            RoundedCornersRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnSkewClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SkewRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        // --- Filters ---
+        // Filters
         public event EventHandler? BorderRequested;
         public event EventHandler? OutlineRequested;
         public event EventHandler? ShadowRequested;
@@ -230,68 +49,64 @@ namespace ShareX.Editor.Controls
         public event EventHandler? TornEdgeRequested;
         public event EventHandler? SliceRequested;
 
-        private void OnBorderClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            BorderRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnOutlineClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            OutlineRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnShadowClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ShadowRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnGlowClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            GlowRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnReflectionClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            ReflectionRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnTornEdgeClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            TornEdgeRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnSliceClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SliceRequested?.Invoke(this, EventArgs.Empty);
-        }
-
         public event EventHandler? BlurRequested;
         public event EventHandler? PixelateRequested;
         public event EventHandler? SharpenRequested;
 
-        private void OnBlurClick(object? sender, RoutedEventArgs e)
+        public EffectsMenuDropdown()
         {
-            ClosePopup();
-            BlurRequested?.Invoke(this, EventArgs.Empty);
+            AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnPixelateClick(object? sender, RoutedEventArgs e)
+        private void Raise(EventHandler? handler)
         {
-            ClosePopup();
-            PixelateRequested?.Invoke(this, EventArgs.Empty);
+            Dispatcher.UIThread.Post(() => handler?.Invoke(this, EventArgs.Empty));
         }
 
-        private void OnSharpenClick(object? sender, RoutedEventArgs e)
-        {
-            ClosePopup();
-            SharpenRequested?.Invoke(this, EventArgs.Empty);
-        }
+        // --- Adjustments ---
+
+        private void OnBrightnessClick(object? sender, RoutedEventArgs e) => Raise(BrightnessRequested);
+        private void OnContrastClick(object? sender, RoutedEventArgs e) => Raise(ContrastRequested);
+        private void OnHueClick(object? sender, RoutedEventArgs e) => Raise(HueRequested);
+        private void OnSaturationClick(object? sender, RoutedEventArgs e) => Raise(SaturationRequested);
+        private void OnGammaClick(object? sender, RoutedEventArgs e) => Raise(GammaRequested);
+        private void OnAlphaClick(object? sender, RoutedEventArgs e) => Raise(AlphaRequested);
+        private void OnInvertClick(object? sender, RoutedEventArgs e) => Raise(InvertRequested);
+        private void OnBlackAndWhiteClick(object? sender, RoutedEventArgs e) => Raise(BlackAndWhiteRequested);
+        private void OnSepiaClick(object? sender, RoutedEventArgs e) => Raise(SepiaRequested);
+        private void OnPolaroidClick(object? sender, RoutedEventArgs e) => Raise(PolaroidRequested);
+        private void OnColorizeClick(object? sender, RoutedEventArgs e) => Raise(ColorizeRequested);
+        private void OnSelectiveColorClick(object? sender, RoutedEventArgs e) => Raise(SelectiveColorRequested);
+        private void OnReplaceColorClick(object? sender, RoutedEventArgs e) => Raise(ReplaceColorRequested);
+        private void OnGrayscaleClick(object? sender, RoutedEventArgs e) => Raise(GrayscaleRequested);
+
+        // --- Manipulations ---
+
+        private void OnResizeImageClick(object? sender, RoutedEventArgs e) => Raise(ResizeImageRequested);
+        private void OnResizeCanvasClick(object? sender, RoutedEventArgs e) => Raise(ResizeCanvasRequested);
+        private void OnCropImageClick(object? sender, RoutedEventArgs e) => Raise(CropImageRequested);
+        private void OnAutoCropImageClick(object? sender, RoutedEventArgs e) => Raise(AutoCropImageRequested);
+        private void OnRotate90CWClick(object? sender, RoutedEventArgs e) => Raise(Rotate90CWRequested);
+        private void OnRotate90CCWClick(object? sender, RoutedEventArgs e) => Raise(Rotate90CCWRequested);
+        private void OnRotate180Click(object? sender, RoutedEventArgs e) => Raise(Rotate180Requested);
+        private void OnRotateCustomAngleClick(object? sender, RoutedEventArgs e) => Raise(RotateCustomAngleRequested);
+        private void OnFlipHorizontalClick(object? sender, RoutedEventArgs e) => Raise(FlipHorizontalRequested);
+        private void OnFlipVerticalClick(object? sender, RoutedEventArgs e) => Raise(FlipVerticalRequested);
+
+        private void OnRoundedCornersClick(object? sender, RoutedEventArgs e) => Raise(RoundedCornersRequested);
+        private void OnSkewClick(object? sender, RoutedEventArgs e) => Raise(SkewRequested);
+
+        // --- Filters ---
+
+        private void OnBorderClick(object? sender, RoutedEventArgs e) => Raise(BorderRequested);
+        private void OnOutlineClick(object? sender, RoutedEventArgs e) => Raise(OutlineRequested);
+        private void OnShadowClick(object? sender, RoutedEventArgs e) => Raise(ShadowRequested);
+        private void OnGlowClick(object? sender, RoutedEventArgs e) => Raise(GlowRequested);
+        private void OnReflectionClick(object? sender, RoutedEventArgs e) => Raise(ReflectionRequested);
+        private void OnTornEdgeClick(object? sender, RoutedEventArgs e) => Raise(TornEdgeRequested);
+        private void OnSliceClick(object? sender, RoutedEventArgs e) => Raise(SliceRequested);
+        private void OnBlurClick(object? sender, RoutedEventArgs e) => Raise(BlurRequested);
+        private void OnPixelateClick(object? sender, RoutedEventArgs e) => Raise(PixelateRequested);
+        private void OnSharpenClick(object? sender, RoutedEventArgs e) => Raise(SharpenRequested);
     }
 }

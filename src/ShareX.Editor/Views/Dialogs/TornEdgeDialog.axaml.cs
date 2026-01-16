@@ -6,7 +6,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.Views.Dialogs;
 
-public partial class TornEdgeDialog : UserControl
+public partial class TornEdgeDialog : UserControl, IEffectDialog
 {
     public event EventHandler<EffectEventArgs>? PreviewRequested;
     public event EventHandler<EffectEventArgs>? ApplyRequested;

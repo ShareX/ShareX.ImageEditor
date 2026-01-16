@@ -6,7 +6,7 @@ using ShareX.Editor.Helpers;
 
 namespace ShareX.Editor.Views.Dialogs;
 
-public partial class ReflectionDialog : UserControl
+public partial class ReflectionDialog : UserControl, IEffectDialog
 {
     public event EventHandler<EffectEventArgs>? PreviewRequested;
     public event EventHandler<EffectEventArgs>? ApplyRequested;

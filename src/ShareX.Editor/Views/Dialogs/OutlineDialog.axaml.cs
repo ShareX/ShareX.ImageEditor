@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.Views.Dialogs;
 
-public partial class OutlineDialog : UserControl
+public partial class OutlineDialog : UserControl, IEffectDialog
 {
     public event EventHandler<EffectEventArgs>? PreviewRequested;
     public event EventHandler<EffectEventArgs>? ApplyRequested;

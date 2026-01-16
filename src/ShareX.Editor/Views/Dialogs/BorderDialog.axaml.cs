@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.Views.Dialogs;
 
-public partial class BorderDialog : UserControl
+public partial class BorderDialog : UserControl, IEffectDialog
 {
     public event EventHandler<EffectEventArgs>? PreviewRequested;
     public event EventHandler<EffectEventArgs>? ApplyRequested;

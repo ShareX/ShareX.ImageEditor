@@ -8,7 +8,7 @@ using SkiaSharp;
 
 namespace ShareX.Editor.Views.Dialogs
 {
-    public partial class SelectiveColorDialog : UserControl
+    public partial class SelectiveColorDialog : UserControl, IEffectDialog
     {
         public event EventHandler<EffectEventArgs>? ApplyRequested;
         public event EventHandler<EffectEventArgs>? PreviewRequested;

@@ -10,7 +10,7 @@ using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
-    public partial class ReplaceColorDialog : UserControl
+    public partial class ReplaceColorDialog : UserControl, IEffectDialog
     {
         public event EventHandler<EffectEventArgs>? ApplyRequested;
         public event EventHandler<EffectEventArgs>? PreviewRequested;

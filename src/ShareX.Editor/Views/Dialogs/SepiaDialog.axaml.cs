@@ -8,7 +8,7 @@ using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
-    public partial class SepiaDialog : UserControl
+    public partial class SepiaDialog : UserControl, IEffectDialog
     {
         public event EventHandler<EffectEventArgs>? ApplyRequested;
         public event EventHandler<EffectEventArgs>? PreviewRequested;

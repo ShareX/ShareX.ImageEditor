@@ -8,7 +8,7 @@ using System;
 
 namespace ShareX.Editor.Views.Dialogs
 {
-    public partial class GrayscaleDialog : UserControl
+    public partial class GrayscaleDialog : UserControl, IEffectDialog
     {
         public event EventHandler<EffectEventArgs>? ApplyRequested;
         public event EventHandler<EffectEventArgs>? PreviewRequested;

@@ -991,7 +991,7 @@ namespace ShareX.Editor.Views
         private void OnSharpenRequested(object? sender, EventArgs e) => ShowEffectDialog(new SharpenDialog());
 
 
-        private void ShowEffectDialog<T>(T dialog) where T : UserControl
+        private void ShowEffectDialog<T>(T dialog) where T : UserControl, IEffectDialog
         {
             var vm = DataContext as MainViewModel;
             if (vm == null) return;
@@ -999,20 +999,18 @@ namespace ShareX.Editor.Views
             // Initialize logic
             vm.StartEffectPreview();
             
-            dynamic d = dialog;
-            
-            // Wire events
-            d.PreviewRequested += new EventHandler<EffectEventArgs>((s, e) => vm.PreviewEffect(e.EffectOperation));
-            d.ApplyRequested += new EventHandler<EffectEventArgs>((s, e) => 
+            // Wire events using interface instead of dynamic
+            dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+            dialog.ApplyRequested += (s, e) => 
             { 
                 vm.ApplyEffect(e.EffectOperation, e.StatusMessage); 
                 vm.CloseEffectsPanelCommand.Execute(null);
-            });
-            d.CancelRequested += new EventHandler((s, e) => 
+            };
+            dialog.CancelRequested += (s, e) => 
             { 
                 vm.CancelEffectPreview(); 
                 vm.CloseEffectsPanelCommand.Execute(null);
-            });
+            };
 
             // If left sidebar is open, close it to avoid clutter? 
             // The request says "Side bar at right side won't cover the image preview at center".

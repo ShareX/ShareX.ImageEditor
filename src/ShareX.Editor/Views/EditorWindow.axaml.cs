@@ -14,6 +14,7 @@ namespace ShareX.Editor.Views
     public partial class EditorWindow : Window
     {
         private readonly MainViewModel _viewModel;
+        private string? _pendingFilePath;
 
         public EditorWindow()
         {
@@ -27,11 +28,24 @@ namespace ShareX.Editor.Views
             
             // If the window is closed, we might want to clean up
             this.Closed += OnClosed;
+            
+            // Defer image loading until EditorView is loaded and subscribed
+            this.Loaded += OnWindowLoaded;
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+        
+        private void OnWindowLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            // Now that EditorView is loaded and subscribed to ViewModel, load the image
+            if (!string.IsNullOrEmpty(_pendingFilePath))
+            {
+                LoadImageInternal(_pendingFilePath);
+                _pendingFilePath = null;
+            }
         }
 
         private void OnClosed(object? sender, EventArgs e)
@@ -44,6 +58,7 @@ namespace ShareX.Editor.Views
 
         /// <summary>
         /// Loads an image from the specified file path.
+        /// If called before window is loaded, defers loading until EditorView is ready.
         /// </summary>
         /// <param name="filePath">Absolute path to the image file.</param>
         public void LoadImage(string filePath)
@@ -56,6 +71,18 @@ namespace ShareX.Editor.Views
                 return;
             }
 
+            // If window not loaded yet, defer image loading
+            if (!IsLoaded)
+            {
+                _pendingFilePath = filePath;
+                return;
+            }
+
+            LoadImageInternal(filePath);
+        }
+        
+        private void LoadImageInternal(string filePath)
+        {
             try
             {
                 using var stream = File.OpenRead(filePath);
@@ -119,20 +146,31 @@ namespace ShareX.Editor.Views
 
         private async Task<string?> OnSaveAsRequested()
         {
-            var dialog = new SaveFileDialog
+            var storageProvider = StorageProvider;
+            if (storageProvider == null) return null;
+
+            var file = await storageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
             {
                 Title = "Save Image",
                 DefaultExtension = "png",
-                Filters = new System.Collections.Generic.List<FileDialogFilter>
+                FileTypeChoices = new[]
                 {
-                    new FileDialogFilter { Name = "PNG Image", Extensions = { "png" } },
-                    new FileDialogFilter { Name = "JPEG Image", Extensions = { "jpg", "jpeg" } },
-                    new FileDialogFilter { Name = "All Files", Extensions = { "*" } }
+                    new Avalonia.Platform.Storage.FilePickerFileType("PNG Image")
+                    {
+                        Patterns = new[] { "*.png" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("JPEG Image")
+                    {
+                        Patterns = new[] { "*.jpg", "*.jpeg" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*.*" }
+                    }
                 }
-            };
+            });
 
-            var path = await dialog.ShowAsync(this);
-            return path;
+            return file?.Path.LocalPath;
         }
     }
 }
