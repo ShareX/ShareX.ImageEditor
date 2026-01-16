@@ -373,7 +373,16 @@ namespace ShareX.Editor.Views
             // 1. Clear current UI annotations
             var canvas = this.FindControl<Canvas>("AnnotationCanvas");
             if (canvas == null) return;
-            
+
+            // Dispose old annotations before clearing
+            foreach (var child in canvas.Children)
+            {
+                if (child is Control control)
+                {
+                    (control.Tag as IDisposable)?.Dispose();
+                }
+            }
+
             canvas.Children.Clear();
             _selectionController.ClearSelection();
 
@@ -577,6 +586,9 @@ namespace ShareX.Editor.Views
                 var canvas = this.FindControl<Canvas>("AnnotationCanvas");
                 if (canvas != null && canvas.Children.Contains(selected))
                 {
+                    // Dispose annotation resources before removing
+                    (selected.Tag as IDisposable)?.Dispose();
+
                     canvas.Children.Remove(selected);
 
                     // Remove from view - Undo not fully supported for delete in view layer for now

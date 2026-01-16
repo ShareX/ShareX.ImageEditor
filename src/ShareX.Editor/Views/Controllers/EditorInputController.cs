@@ -93,7 +93,10 @@ public class EditorInputController
                  {
                      _selectionController.ClearSelection();
                  }
-                 
+
+                 // Dispose annotation resources before removing
+                 (hitTarget.Tag as IDisposable)?.Dispose();
+
                  canvas.Children.Remove(hitTarget);
                  vm.StatusText = "Shape deleted";
                  e.Handled = true;

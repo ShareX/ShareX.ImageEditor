@@ -5,7 +5,7 @@ namespace ShareX.Editor.Annotations;
 /// <summary>
 /// Image annotation - stickers or inserted images
 /// </summary>
-public class ImageAnnotation : Annotation
+public class ImageAnnotation : Annotation, IDisposable
 {
     private SKBitmap? _imageBitmap;
 
@@ -94,5 +94,24 @@ public class ImageAnnotation : Annotation
         var bounds = GetBounds();
         var inflated = SKRect.Inflate(bounds, tolerance, tolerance);
         return inflated.Contains(point);
+    }
+
+    /// <summary>
+    /// Dispose unmanaged resources (ImageBitmap)
+    /// </summary>
+    public void Dispose()
+    {
+        _imageBitmap?.Dispose();
+        _imageBitmap = null;
+        GC.SuppressFinalize(this);
+    }
+
+    public override Annotation Clone()
+    {
+        var clone = (ImageAnnotation)base.Clone();
+        // Don't copy the bitmap reference - caller should reload or set new bitmap
+        // This avoids shared bitmap references and disposal issues
+        clone._imageBitmap = null;
+        return clone;
     }
 }
