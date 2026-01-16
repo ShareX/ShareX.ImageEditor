@@ -37,6 +37,19 @@ internal class EditorHistory : IDisposable
     public bool CanUndo => _undoMementoStack.Count > 0;
     public bool CanRedo => _redoMementoStack.Count > 0;
 
+    /// <summary>
+    /// Maximum number of canvas mementos (destructive operations) to keep.
+    /// ISSUE-003 mitigation: Canvas mementos contain full bitmap copies and can consume
+    /// significant memory (e.g., 8MB per 4K screenshot). Limiting to 5 balances undo depth with memory.
+    /// </summary>
+    private const int MaxCanvasMementos = 5;
+
+    /// <summary>
+    /// Maximum number of annotation-only mementos to keep (lightweight operations).
+    /// These don't store canvas bitmaps, so we can keep more.
+    /// </summary>
+    private const int MaxAnnotationMementos = 20;
+
     private readonly EditorCore _editorCore;
     private readonly Stack<EditorMemento> _undoMementoStack = new();
     private readonly Stack<EditorMemento> _redoMementoStack = new();
@@ -52,6 +65,35 @@ internal class EditorHistory : IDisposable
     private void AddMemento(EditorMemento memento)
     {
         _undoMementoStack.Push(memento);
+
+        // ISSUE-003 mitigation: Limit stack depth based on memento type
+        int maxDepth = memento.Canvas != null ? MaxCanvasMementos : MaxAnnotationMementos;
+
+        // Remove oldest mementos if exceeding limit
+        if (_undoMementoStack.Count > maxDepth)
+        {
+            var tempStack = new Stack<EditorMemento>();
+
+            // Keep most recent N mementos
+            for (int i = 0; i < maxDepth; i++)
+            {
+                tempStack.Push(_undoMementoStack.Pop());
+            }
+
+            // Dispose excess old mementos
+            while (_undoMementoStack.Count > 0)
+            {
+                var oldMemento = _undoMementoStack.Pop();
+                oldMemento?.Dispose();
+                System.Diagnostics.Debug.WriteLine($"[HISTORY] Disposed old memento (Canvas: {oldMemento?.Canvas != null}, Stack limit: {maxDepth})");
+            }
+
+            // Restore kept mementos
+            while (tempStack.Count > 0)
+            {
+                _undoMementoStack.Push(tempStack.Pop());
+            }
+        }
 
         // Clear redo stack when new action is performed
         foreach (EditorMemento redoMemento in _redoMementoStack)
@@ -87,6 +129,22 @@ internal class EditorHistory : IDisposable
     public void CreateCanvasMemento()
     {
         EditorMemento memento = GetMementoFromCanvas();
+
+        // ISSUE-003 mitigation: Log memory usage for large canvas mementos
+        if (memento.Canvas != null)
+        {
+            long bitmapBytes = (long)memento.Canvas.Info.BytesSize;
+            double bitmapMB = bitmapBytes / (1024.0 * 1024.0);
+
+            System.Diagnostics.Debug.WriteLine($"[HISTORY] Canvas memento created: {memento.Canvas.Width}x{memento.Canvas.Height}, {bitmapMB:F2} MB");
+
+            // Warn if canvas is very large (> 10MB)
+            if (bitmapMB > 10.0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[HISTORY] Warning: Large canvas memento ({bitmapMB:F2} MB) may impact memory usage. Consider limiting undo depth for large images.");
+            }
+        }
+
         AddMemento(memento);
     }
 
