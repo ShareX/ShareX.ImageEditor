@@ -216,6 +216,7 @@ public class EditorInputController
                 break;
             case EditorTool.Highlighter:
                 _currentShape = new HighlightAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _isCreatingEffect = true;
                 break;
             case EditorTool.SpeechBalloon:
                  var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = "#FFFFFFFF", StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };

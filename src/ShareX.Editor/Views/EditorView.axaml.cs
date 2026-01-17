@@ -796,6 +796,12 @@ namespace ShareX.Editor.Views
             var selected = _selectionController.SelectedShape;
             if (selected == null) return;
 
+            // Ensure the annotation model property is updated so changes persist and effects render correctly
+            if (selected.Tag is Annotation annotation)
+            {
+                annotation.StrokeColor = colorHex;
+            }
+
             var brush = new SolidColorBrush(Color.Parse(colorHex));
 
             switch (selected)
@@ -803,9 +809,8 @@ namespace ShareX.Editor.Views
                 case Shape shape:
                     if (shape.Tag is HighlightAnnotation)
                     {
-                        var highlightColor = Color.Parse(colorHex);
-                        shape.Stroke = Brushes.Transparent;
-                        shape.Fill = new SolidColorBrush(ApplyHighlightAlpha(highlightColor));
+                        // For highlighter, we must regenerate the effect bitmap with the new color
+                        OnRequestUpdateEffect(shape);
                         break;
                     }
 
