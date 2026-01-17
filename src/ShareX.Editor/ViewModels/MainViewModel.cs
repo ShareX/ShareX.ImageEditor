@@ -1143,7 +1143,8 @@ namespace ShareX.Editor.ViewModels
             _imageRedoStack.Clear();
 
             var cropped = ImageHelpers.Crop(_currentSourceImage, rect.Left, rect.Top, rect.Width, rect.Height);
-            UpdatePreview(cropped, clearAnnotations: true);
+            // Don't clear annotations - they are adjusted in EditorCore
+            UpdatePreview(cropped, clearAnnotations: false);
             UpdateUndoRedoProperties();
         }
 
@@ -1193,7 +1194,8 @@ namespace ShareX.Editor.ViewModels
             _imageRedoStack.Clear();
 
             var result = ImageHelpers.CutOut(_currentSourceImage, startPos, endPos, isVertical);
-            UpdatePreview(result, clearAnnotations: true);
+            // Don't clear annotations - they are adjusted in EditorCore
+            UpdatePreview(result, clearAnnotations: false);
 
             StatusText = isVertical
                 ? $"Cut out vertical section ({endPos - startPos}px wide)"
