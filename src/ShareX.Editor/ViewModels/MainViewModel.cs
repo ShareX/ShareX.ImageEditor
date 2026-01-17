@@ -1476,16 +1476,10 @@ namespace ShareX.Editor.ViewModels
         }
 
         /// <summary>
-        /// Commits the effect to the undo stack and updates the source image.
+        /// ISSUE-028 fix: Common logic for committing effects and cleaning up preview state.
         /// </summary>
-        public void ApplyEffect(SkiaSharp.SKBitmap result, string statusMessage)
+        private void CommitEffectAndCleanup(SkiaSharp.SKBitmap result, string statusMessage)
         {
-            if (_preEffectImage == null) return; // Should have been started
-            
-            // Restore _currentSourceImage to pre-effect state so Push works correctly?
-            // Actually, we haven't changed _currentSourceImage yet, only PreviewImage.
-            // So _currentSourceImage is still the "Before" state.
-            
             if (_currentSourceImage == null) return;
 
             // ISSUE-025 fix: Check for null after Copy()
@@ -1509,6 +1503,15 @@ namespace ShareX.Editor.ViewModels
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
+        }
+
+        /// <summary>
+        /// Commits the effect to the undo stack and updates the source image.
+        /// </summary>
+        public void ApplyEffect(SkiaSharp.SKBitmap result, string statusMessage)
+        {
+            if (_preEffectImage == null) return; // Should have been started
+            CommitEffectAndCleanup(result, statusMessage);
         }
 
         /// <summary>
@@ -1566,35 +1569,10 @@ namespace ShareX.Editor.ViewModels
         /// </summary>
         public void ApplyEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect, string statusMessage)
         {
-            if (_preEffectImage == null || _currentSourceImage == null) return;
+            if (_preEffectImage == null) return;
 
-             // ISSUE-025 fix: Check for null after Copy()
-            var undoCopy = _currentSourceImage.Copy();
-            if (undoCopy == null)
-            {
-                StatusText = "Error: Out of memory - unable to save undo state";
-                return;
-            }
-            _imageUndoStack.Push(undoCopy);
-            _imageRedoStack.Clear();
-            
-            // _currentSourceImage IS the _preEffectImage content basically (before preview changes).
-            // So we apply effect to _currentSourceImage or _preEffectImage?
-            // Safer to apply to _preEffectImage (original state) and set as new _currentSourceImage.
-            
             var result = effect(_preEffectImage);
-            UpdatePreview(result, clearAnnotations: true);
-            UpdateUndoRedoProperties();
-            StatusText = statusMessage;
-
-            _preEffectImage?.Dispose();
-            _preEffectImage = null;
-
-            // Restore Background Effects
-            _isPreviewingEffect = false;
-            OnPropertyChanged(nameof(AreBackgroundEffectsActive));
-            UpdateCanvasProperties();
-            ApplySmartPaddingCrop();
+            CommitEffectAndCleanup(result, statusMessage);
         }
 
         // --- Rotate Custom Angle Feature ---

@@ -322,7 +322,8 @@ public class EditorSelectionController
                 else if (handleTag == "ArrowEnd") arrowEnd = currentPoint;
 
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
-                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * 3);
+                // ISSUE-005/006 fix: Use constant for arrow head width
+                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
             }
             _startPoint = currentPoint;
             UpdateSelectionHandles();
@@ -457,7 +458,8 @@ public class EditorSelectionController
                 var newEnd = new Point(endpoints.End.X + deltaX, endpoints.End.Y + deltaY);
 
                 _shapeEndpoints[arrowPath] = (newStart, newEnd);
-                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * 3);
+                // ISSUE-005/006 fix: Use constant for arrow head width
+                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
             }
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();
@@ -497,25 +499,17 @@ public class EditorSelectionController
                 newPoints.Add(new Point(pt.X + deltaX, pt.Y + deltaY));
             }
             polyline.Points = newPoints;
-            
-            // Also update the annotation's points if present
-            if (polyline.Tag is FreehandAnnotation freehand)
+
+            // ISSUE-013 fix: Use IPointBasedAnnotation interface to handle both FreehandAnnotation and SmartEraserAnnotation
+            if (polyline.Tag is IPointBasedAnnotation pointBased)
             {
-                for (int i = 0; i < freehand.Points.Count; i++)
+                for (int i = 0; i < pointBased.Points.Count; i++)
                 {
-                    var oldPt = freehand.Points[i];
-                    freehand.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
+                    var oldPt = pointBased.Points[i];
+                    pointBased.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
                 }
             }
-            else if (polyline.Tag is SmartEraserAnnotation eraser)
-            {
-                for (int i = 0; i < eraser.Points.Count; i++)
-                {
-                    var oldPt = eraser.Points[i];
-                    eraser.Points[i] = new SKPoint(oldPt.X + (float)deltaX, oldPt.Y + (float)deltaY);
-                }
-            }
-            
+
             polyline.InvalidateVisual();
             _lastDragPoint = currentPoint;
             UpdateSelectionHandles();

@@ -36,6 +36,12 @@ namespace ShareX.Editor.Annotations;
 public class ArrowAnnotation : Annotation
 {
     /// <summary>
+    /// Arrow head width is proportional to stroke width for visual balance.
+    /// ISSUE-006 fix: Centralized magic number constant.
+    /// </summary>
+    public const double ArrowHeadWidthMultiplier = 3.0;
+
+    /// <summary>
     /// Arrow head size in pixels
     /// </summary>
     public float ArrowHeadSize { get; set; } = 12;

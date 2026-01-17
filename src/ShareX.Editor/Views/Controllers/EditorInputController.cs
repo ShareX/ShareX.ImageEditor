@@ -416,8 +416,9 @@ public class EditorInputController
          }
          else if (_currentShape is global::Avalonia.Controls.Shapes.Path path) // Arrow
          {
-             path.Data = new ArrowAnnotation().CreateArrowGeometry(_startPoint, currentPoint, vm.StrokeWidth * 3);
-             
+             // ISSUE-005/006 fix: Use constant for arrow head width
+             path.Data = new ArrowAnnotation().CreateArrowGeometry(_startPoint, currentPoint, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+
              if (path.Tag is ArrowAnnotation arrowAnn) { arrowAnn.EndPoint = ToSKPoint(currentPoint); }
              _selectionController.RegisterArrowEndpoint(path, _startPoint, currentPoint);
          }

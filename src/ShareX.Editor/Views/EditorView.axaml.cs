@@ -437,7 +437,8 @@ namespace ShareX.Editor.Views
                     StrokeThickness = 1, // Arrow handles thickness in geometry
                     Tag = arrow
                 };
-                path.Data = arrow.CreateArrowGeometry(new Point(arrow.StartPoint.X, arrow.StartPoint.Y), new Point(arrow.EndPoint.X, arrow.EndPoint.Y), arrow.StrokeWidth * 3);
+                // ISSUE-005/006 fix: Use constant for arrow head width
+                path.Data = arrow.CreateArrowGeometry(new Point(arrow.StartPoint.X, arrow.StartPoint.Y), new Point(arrow.EndPoint.X, arrow.EndPoint.Y), arrow.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
                 return path;
              }
              else if (annotation is TextAnnotation text) {

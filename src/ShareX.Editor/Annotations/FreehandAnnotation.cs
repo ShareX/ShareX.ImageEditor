@@ -8,8 +8,9 @@ namespace ShareX.Editor.Annotations;
 
 /// <summary>
 /// Freehand pen/drawing annotation
+/// ISSUE-013 fix: Implements IPointBasedAnnotation for unified polyline handling.
 /// </summary>
-public class FreehandAnnotation : Annotation
+public class FreehandAnnotation : Annotation, IPointBasedAnnotation
 {
     public List<SKPoint> Points { get; set; } = new List<SKPoint>();
 
