@@ -147,6 +147,16 @@ public class EditorSelectionController
                     hitSource = hitSource.GetVisualParent();
                 }
 
+                // Fallback: Use manual hit test if strict visual hit test failed (e.g. thin lines)
+                if (hitTarget != _selectedShape)
+                {
+                    var manualHit = HitTestShape(canvas, point);
+                    if (manualHit == _selectedShape)
+                    {
+                        hitTarget = manualHit;
+                    }
+                }
+
                 if (hitTarget == _selectedShape)
                 {
                     _isDraggingShape = true;
