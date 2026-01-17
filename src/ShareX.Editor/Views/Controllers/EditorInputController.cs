@@ -111,7 +111,7 @@ public class EditorInputController
             return;
         }
 
-        _view.ClearRedoStack();
+        // ISSUE-019 fix: Dead code removed - redo stack cleared by EditorCore
 
         var point = e.GetPosition(canvas);
         _startPoint = point;
@@ -290,9 +290,9 @@ public class EditorInputController
                 Canvas.SetLeft(_currentShape, _startPoint.X);
                 Canvas.SetTop(_currentShape, _startPoint.Y);
             }
-            
+
             canvas.Children.Add(_currentShape);
-            _view.PushUndo(_currentShape);
+            // ISSUE-019 fix: Dead code removed - undo handled by EditorCore
         }
     }
 
@@ -642,13 +642,13 @@ public class EditorInputController
                 var annotation = new ImageAnnotation();
                 annotation.SetImage(BitmapConversionHelpers.ToSKBitmap(bitmap));
                 imageControl.Tag = annotation;
-                
+
                 Canvas.SetLeft(imageControl, point.X - bitmap.Size.Width / 2);
                 Canvas.SetTop(imageControl, point.Y - bitmap.Size.Height / 2);
-                
+
                 canvas.Children.Add(imageControl);
-                _view.PushUndo(imageControl);
-                
+                // ISSUE-019 fix: Dead code removed - undo handled by EditorCore
+
                 // Add to Core history
                 _view.EditorCore.AddAnnotation(annotation);
                 

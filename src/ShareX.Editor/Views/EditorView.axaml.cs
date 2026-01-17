@@ -182,16 +182,6 @@ namespace ShareX.Editor.Views
 
         // --- Public/Internal Methods for Controllers ---
 
-        internal void PushUndo(Control shape)
-        {
-            // Legacy support: Handled by EditorCore history
-        }
-
-        internal void ClearRedoStack()
-        {
-            // Legacy support: Handled by EditorCore history
-        }
-
         protected override void OnInitialized()
         {
             base.OnInitialized();

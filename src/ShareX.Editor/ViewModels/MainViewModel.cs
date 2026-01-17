@@ -811,8 +811,24 @@ namespace ShareX.Editor.ViewModels
         private void Clear()
         {
             PreviewImage = null;
+
+            // ISSUE-030 fix: Dispose bitmaps before clearing
+            _currentSourceImage?.Dispose();
             _currentSourceImage = null;
+
+            _originalSourceImage?.Dispose();
             _originalSourceImage = null;
+
+            // Dispose all bitmaps in undo/redo stacks
+            while (_imageUndoStack.Count > 0)
+            {
+                _imageUndoStack.Pop()?.Dispose();
+            }
+            while (_imageRedoStack.Count > 0)
+            {
+                _imageRedoStack.Pop()?.Dispose();
+            }
+
             // HasPreviewImage = false; // Handled by OnPreviewImageChanged
             ImageDimensions = "No image";
             StatusText = "Ready";
@@ -1304,12 +1320,14 @@ namespace ShareX.Editor.ViewModels
         public void StartEffectPreview()
         {
             if (_currentSourceImage == null) return;
-            
+
             _isPreviewingEffect = true;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
-            ApplySmartPaddingCrop(); 
+            ApplySmartPaddingCrop();
 
+            // ISSUE-024 fix: Dispose previous bitmap before reassignment
+            _preEffectImage?.Dispose();
             _preEffectImage = _currentSourceImage.Copy();
         }
 
@@ -1463,6 +1481,8 @@ namespace ShareX.Editor.ViewModels
              var current = _currentSourceImage;
              if (current != null)
              {
+                 // ISSUE-024 fix: Dispose previous bitmap before reassignment
+                 _rotateCustomAngleOriginalBitmap?.Dispose();
                  _rotateCustomAngleOriginalBitmap = current.Copy();
                  RotateAngleDegrees = 0;
                  IsRotateCustomAngleDialogOpen = true;
