@@ -951,6 +951,15 @@ public class EditorSelectionController
             
             if (shapeBounds.Contains(currentPoint))
             {
+                // Refined Hit Test for Line
+                if (child is global::Avalonia.Controls.Shapes.Line lineObj)
+                {
+                    if (!IsPointNearLine(currentPoint, lineObj.StartPoint, lineObj.EndPoint, 5 + lineObj.StrokeThickness / 2))
+                    {
+                        continue; // Point is in bounds but not near stroke
+                    }
+                }
+                
                 // Refined Hit Test for Polyline
                 if (child is global::Avalonia.Controls.Shapes.Polyline polylineObj && polylineObj.Points != null)
                 {
@@ -1193,5 +1202,30 @@ public class EditorSelectionController
     private double DistanceSquared(Point p1, Point p2)
     {
         return (p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y);
+    }
+    
+    /// <summary>
+    /// Check if a point is within a threshold distance of a line segment.
+    /// </summary>
+    private bool IsPointNearLine(Point point, Point lineStart, Point lineEnd, double threshold)
+    {
+        var thresholdSq = threshold * threshold;
+        
+        var l2 = DistanceSquared(lineStart, lineEnd);
+        if (l2 == 0)
+        {
+            // Line is a point
+            return DistanceSquared(point, lineStart) <= thresholdSq;
+        }
+
+        // Calculate projection of point onto line segment
+        var t = ((point.X - lineStart.X) * (lineEnd.X - lineStart.X) + (point.Y - lineStart.Y) * (lineEnd.Y - lineStart.Y)) / l2;
+        t = Math.Max(0, Math.Min(1, t));
+
+        var projX = lineStart.X + t * (lineEnd.X - lineStart.X);
+        var projY = lineStart.Y + t * (lineEnd.Y - lineStart.Y);
+
+        var distSq = (point.X - projX) * (point.X - projX) + (point.Y - projY) * (point.Y - projY);
+        return distSq <= thresholdSq;
     }
 }
