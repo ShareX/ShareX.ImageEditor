@@ -8,16 +8,16 @@
 A comprehensive suite of tools for markup and editing:
 *   **Shapes**: Rectangle, Ellipse, Line, Arrow.
 *   **Drawing**: Freehand (Pen) with smooth path rendering.
-*   **Text**: Text boxes and Speech Balloons with on-canvas editing.
-*   **Highlighter**: Translucent highlighting for emphasizing areas.
-*   **Smart Eraser**: Context-aware erasing that matches the background.
-*   **Step Numbering**: Auto-incrementing number stamps for tutorials.
-*   **Zoom/Magnify**: Magnifier tool to enlarge specific details.
+*   **Text & Stickers**: Text boxes, Speech Balloons, and Step Numbering.
+*   **Highlighting**: Translucent Highlighter, Spotlight (dim background), and Magnifier.
+*   **Editing**: Smart Eraser (content-aware), Cut Out (remove region), and Image Insertion.
 
 ### 🎨 Image Effects & Manipulation
-*   **Non-Destructive Effects**: Blur and Pixelate regions to redact sensitive information.
-*   **Canvas Operations**: Crop, Resize (Smart Padding), and Rotate.
-*   **Filters**: Collection of pre-set filters (Grayscale, Sepia, Invert, etc.) powered by SkiaSharp.
+Organized into three main categories for enhanced control:
+
+*   **Adjustments**: Fine-tune image properties including Brightness, Contrast, Gamma, Hue/Saturation, and Curated Color filters (Sepia, Grayscale, Polaroid).
+*   **Filters**: Apply artistic effects such as Blur (Box/Gaussian), Pixelate, Sharpen, Torn Edge, Shadow, and Reflection.
+*   **Manipulations**: Transform the canvas with Resize, Rotate, Flip, Skew, and Auto-Crop operations.
 
 ### 🖱️ User Experience
 *   **Modern UI**: Built on Avalonia 11 with a fluent, dark-themed design.
@@ -36,6 +36,14 @@ ShareX.Editor employs a **Hybrid Rendering** architecture to balance performance
 
 1.  **Interactive Layer (Avalonia)**: The editing surface (`EditorView`) utilizes Avalonia's native vector graphics and controls for fluid, responsive user interaction. Annotations are represented as Avalonia `Control`s or `Shape`s, allowing for styling, hit-testing, and event handling managed directly by the UI framework.
 2.  **Processing Layer (SkiaSharp)**: Underlying image manipulations (such as cropping and applying filters) are handled directly by SkiaSharp bitmaps. This ensures high-fidelity output and efficient processing of pixel data.
+
+## 📂 Project Structure
+
+*   **ShareX.Editor**: The core library containing the editor logic and UI components.
+    *   `Annotations`: Logic for individual tools (shapes, text, etc.).
+    *   `ImageEffects`: Image processing logic split into Adjustments, Filters, and Manipulations.
+    *   `Views`: Avalonia UserControls for the editor interface.
+*   **ShareX.Editor.Loader**: A standalone executable for testing and running the editor during development.
 
 ## 📦 Integration
 
