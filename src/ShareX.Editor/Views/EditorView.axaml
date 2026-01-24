@@ -670,15 +670,15 @@
                         <TextBlock Text="{StaticResource IconHardDrive}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                     </Button>
 
-                    <Button Classes="editor-button" Command="{Binding UploadCommand}" Padding="0"
-                            ToolTip.Tip="Upload image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
-                        <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
-                    </Button>
-
                     <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" Padding="0"
                             ToolTip.Tip="Pin image to screen" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             Classes.active="{Binding IsPinned}">
                         <TextBlock Text="{StaticResource IconThumbtack}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+
+                    <Button Classes="editor-button" Command="{Binding UploadCommand}" Padding="0"
+                            ToolTip.Tip="Upload image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
                     </Button>
                 </StackPanel>
             </Grid>
