@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using SkiaSharp;
 
@@ -34,9 +33,6 @@ public class FreehandAnnotation : Annotation, IPointBasedAnnotation
     /// <summary>
     /// Creates the Avalonia visual for this annotation
     /// </summary>
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
     public Control CreateVisual()
     {
         var brush = new SolidColorBrush(Color.Parse(StrokeColor));
@@ -49,7 +45,7 @@ public class FreehandAnnotation : Annotation, IPointBasedAnnotation
             Data = CreateSmoothedGeometry(),
             Tag = this
         };
-        
+
         if (ShadowEnabled)
         {
             path.Effect = new Avalonia.Media.DropShadowEffect
@@ -60,7 +56,7 @@ public class FreehandAnnotation : Annotation, IPointBasedAnnotation
                 Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
             };
         }
-        
+
         return path;
     }
 
@@ -95,7 +91,7 @@ public class FreehandAnnotation : Annotation, IPointBasedAnnotation
 
             context.LineTo(new Point(Points[Points.Count - 1].X, Points[Points.Count - 1].Y));
         }
-        
+
         context.EndFigure(false);
         return geometry;
     }

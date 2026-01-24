@@ -380,10 +380,6 @@
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
 
-                    <!-- Delete Button -->
-                    <Button Classes="editor-button" Width="40" Height="40"
-                            Command="{Binding DeleteSelectedCommand}" ToolTip.Tip="Delete Selected (Del)"
-                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconDelete}"/>
 
                     <!-- Clear Button -->
                     <Button Classes="editor-button" Width="40" Height="40"
