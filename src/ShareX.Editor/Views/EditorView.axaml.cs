@@ -828,11 +828,13 @@ namespace ShareX.Editor.Views
             }
         }
 
-        private void OnShadowToggleChanged(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+        private void OnShadowButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (DataContext is MainViewModel vm && sender is CheckBox checkBox)
+            if (DataContext is MainViewModel vm)
             {
-                var isEnabled = checkBox.IsChecked == true;
+                // Toggle state
+                vm.ShadowEnabled = !vm.ShadowEnabled;
+                var isEnabled = vm.ShadowEnabled;
                 
                 // Apply to selected annotation if any
                 var selected = _selectionController.SelectedShape;

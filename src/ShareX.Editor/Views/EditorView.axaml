@@ -46,6 +46,7 @@
         <x:String x:Key="IconZoomOut">&#xf010;</x:String>
         <x:String x:Key="IconSync">&#xf021;</x:String>
         <x:String x:Key="IconCloud">&#xf0c2;</x:String>
+        <x:String x:Key="IconCircleHalfStroke">&#xf042;</x:String>
 
         <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
         <x:Double x:Key="AppFontSize">14</x:Double>
@@ -355,16 +356,13 @@
                         IsVisible="{Binding ShowStrength}"
                         ToolTip.Tip="Effect Strength"/>
 
-                    <!-- Shadow Toggle -->
-                    <CheckBox x:Name="ShadowToggle"
-                        IsChecked="{Binding ShadowEnabled}"
-                        IsCheckedChanged="OnShadowToggleChanged"
-                        IsVisible="{Binding ShowShadow}"
-                        Content="Shadow"
-                        Foreground="#E7E9EA"
-                        FontSize="12"
-                        VerticalAlignment="Center"
-                        Margin="4,0"/>
+                    <!-- Shadow Toggle Button -->
+                    <Button Classes="editor-button" Width="40" Height="40"
+                            Classes.active="{Binding ShadowEnabled}"
+                            Click="OnShadowButtonClick"
+                            IsVisible="{Binding ShowShadow}"
+                            ToolTip.Tip="Toggle Shadow"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCircleHalfStroke}"/>
 
                     <!-- Separator -->
                     <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
