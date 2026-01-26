@@ -72,7 +72,27 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         if (source == null) return;
 
         var rect = GetBounds();
-        if (rect.Width <= 0 || rect.Height <= 0) return;
+        int fullW = (int)rect.Width;
+        int fullH = (int)rect.Height;
+        if (fullW <= 0 || fullH <= 0) return;
+
+        // Convert annotation bounds to integer rect
+        var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        
+        // Find intersection with source image bounds for the annotation region
+        var validRect = annotationRect;
+        validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
+
+        // Create result bitmap at FULL annotation size
+        var result = new SKBitmap(fullW, fullH);
+        result.Erase(SKColors.Transparent);
+
+        if (validRect.Width <= 0 || validRect.Height <= 0)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         // For magnification, capture a SMALLER area from the center and scale it UP
         float zoom = Math.Max(1.0f, Amount);
@@ -87,20 +107,39 @@ public class MagnifyAnnotation : BaseEffectAnnotation
 
         var captureRect = new SKRectI((int)captureX, (int)captureY, (int)(captureX + captureWidth), (int)(captureY + captureHeight));
 
-        // Ensure bounds validation
+        // Ensure capture bounds validation
         var sourceBounds = new SKRectI(0, 0, source.Width, source.Height);
         captureRect.Intersect(sourceBounds);
 
-        if (captureRect.Width <= 0 || captureRect.Height <= 0) return;
+        if (captureRect.Width <= 0 || captureRect.Height <= 0)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         using var crop = new SKBitmap(captureRect.Width, captureRect.Height);
-        source.ExtractSubset(crop, captureRect);
+        if (!source.ExtractSubset(crop, captureRect))
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
-        // Scale up to fill the full rect
-        var info = new SKImageInfo((int)rect.Width, (int)rect.Height);
+        // Scale up to fill the valid portion of the annotation
+        var info = new SKImageInfo(validRect.Width, validRect.Height);
         using var scaled = crop.Resize(info, SKFilterQuality.Medium);
 
+        // Draw magnified region into result at correct offset
+        int drawX = validRect.Left - annotationRect.Left;
+        int drawY = validRect.Top - annotationRect.Top;
+
+        using (var resultCanvas = new SKCanvas(result))
+        {
+            resultCanvas.DrawBitmap(scaled, drawX, drawY);
+        }
+
         EffectBitmap?.Dispose();
-        EffectBitmap = scaled.Copy();
+        EffectBitmap = result;
     }
 }

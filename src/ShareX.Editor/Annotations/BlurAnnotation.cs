@@ -74,94 +74,126 @@ public class BlurAnnotation : BaseEffectAnnotation
         if (source == null) return;
 
         var rect = GetBounds();
-        if (rect.Width <= 0 || rect.Height <= 0) return;
+        int fullW = (int)rect.Width;
+        int fullH = (int)rect.Height;
+        if (fullW <= 0 || fullH <= 0) return;
 
-        // Convert to integer bounds
-        var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        // Convert annotation bounds to integer rect
+        var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        
+        // Find intersection with source image bounds
+        var validRect = annotationRect;
+        validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
-        // Ensure bounds are valid
-        skRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
+        // Create result bitmap at FULL annotation size (including out-of-bounds areas)
+        var result = new SKBitmap(fullW, fullH);
+        result.Erase(SKColors.Transparent);
 
-        if (skRect.Width <= 0 || skRect.Height <= 0) return;
+        // If no valid intersection, return empty bitmap
+        if (validRect.Width <= 0 || validRect.Height <= 0)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
-        // Calculate safe padding for the blur kernel (3 sigma covers 99.7% of Gaussian)
+        // Calculate blur parameters
         var blurSigma = Amount;
         var padding = (int)System.Math.Ceiling(blurSigma * 3);
 
-        // Calculate inflated bounds to capture context for edge blurring
-        var wantedInflatedRect = new SKRectI(
-            skRect.Left - padding,
-            skRect.Top - padding,
-            skRect.Right + padding,
-            skRect.Bottom + padding
+        // Calculate padded region for blur context (around the valid region)
+        var wantedPaddedRect = new SKRectI(
+            validRect.Left - padding,
+            validRect.Top - padding,
+            validRect.Right + padding,
+            validRect.Bottom + padding
         );
         
-        // Clamp to source image bounds
-        var inflatedRect = wantedInflatedRect;
-        inflatedRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
+        // Clamp padded region to source bounds
+        var actualPaddedRect = wantedPaddedRect;
+        actualPaddedRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
-        if (inflatedRect.Width <= 0 || inflatedRect.Height <= 0) return;
+        if (actualPaddedRect.Width <= 0 || actualPaddedRect.Height <= 0)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
-        // Extract the padded region from source
-        using var paddedCrop = new SKBitmap(inflatedRect.Width, inflatedRect.Height);
-        if (!source.ExtractSubset(paddedCrop, inflatedRect)) return;
+        // Extract padded region from source
+        using var paddedCrop = new SKBitmap(actualPaddedRect.Width, actualPaddedRect.Height);
+        if (!source.ExtractSubset(paddedCrop, actualPaddedRect))
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
-        // Step 1: Create a surface for the padded region and extend edges where padding was clipped
-        // This ensures the blur has real pixel data at all edges
-        using var paddedSurface = SKSurface.Create(new SKImageInfo(wantedInflatedRect.Width, wantedInflatedRect.Height));
-        var paddedCanvas = paddedSurface.Canvas;
+        // Step 1: Create extended surface with clamped edges
+        using var extendedSurface = SKSurface.Create(new SKImageInfo(wantedPaddedRect.Width, wantedPaddedRect.Height));
+        var extendedCanvas = extendedSurface.Canvas;
         
-        // Fill the entire padded surface by drawing the cropped bitmap with Clamp shader
-        // This extends edge pixels into the padding areas where source image didn't have data
+        // Use clamp shader to extend edge pixels where padding was clipped
         using var clampShader = paddedCrop.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
         using var fillPaint = new SKPaint { Shader = clampShader };
         
-        // Calculate where the actual cropped data should be drawn within the wanted padded area
-        float offsetX = inflatedRect.Left - wantedInflatedRect.Left;
-        float offsetY = inflatedRect.Top - wantedInflatedRect.Top;
+        float cropOffsetX = actualPaddedRect.Left - wantedPaddedRect.Left;
+        float cropOffsetY = actualPaddedRect.Top - wantedPaddedRect.Top;
         
-        paddedCanvas.Save();
-        paddedCanvas.Translate(offsetX, offsetY);
-        paddedCanvas.DrawRect(new SKRect(-offsetX, -offsetY, wantedInflatedRect.Width - offsetX, wantedInflatedRect.Height - offsetY), fillPaint);
-        paddedCanvas.Restore();
+        extendedCanvas.Save();
+        extendedCanvas.Translate(cropOffsetX, cropOffsetY);
+        extendedCanvas.DrawRect(new SKRect(-cropOffsetX, -cropOffsetY, wantedPaddedRect.Width - cropOffsetX, wantedPaddedRect.Height - cropOffsetY), fillPaint);
+        extendedCanvas.Restore();
 
-        // Step 2: Apply blur to the entire padded surface
-        using var paddedImage = paddedSurface.Snapshot();
-        using var paddedBitmap = SKBitmap.FromImage(paddedImage);
+        // Step 2: Apply blur to the extended surface
+        using var extendedImage = extendedSurface.Snapshot();
+        using var extendedBitmap = SKBitmap.FromImage(extendedImage);
         
-        using var blurSurface = SKSurface.Create(new SKImageInfo(wantedInflatedRect.Width, wantedInflatedRect.Height));
+        using var blurSurface = SKSurface.Create(new SKImageInfo(wantedPaddedRect.Width, wantedPaddedRect.Height));
         var blurCanvas = blurSurface.Canvas;
         
         using var blurPaint = new SKPaint();
         blurPaint.ImageFilter = SKImageFilter.CreateBlur(blurSigma, blurSigma);
-        blurCanvas.DrawBitmap(paddedBitmap, 0, 0, blurPaint);
+        blurCanvas.DrawBitmap(extendedBitmap, 0, 0, blurPaint);
         
-        // Step 3: Extract just the center portion (the original annotation bounds)
-        using var blurredPaddedImage = blurSurface.Snapshot();
-        using var blurredPaddedBitmap = SKBitmap.FromImage(blurredPaddedImage);
+        // Step 3: Extract the valid region from blurred result
+        using var blurredImage = blurSurface.Snapshot();
+        using var blurredBitmap = SKBitmap.FromImage(blurredImage);
         
-        // The center region within the padded bitmap corresponds to our original skRect
-        var centerRect = new SKRectI(
-            padding,  // offset from padded edge to actual content
+        // The valid region within the blurred bitmap
+        var validInBlurred = new SKRectI(
             padding,
-            padding + skRect.Width,
-            padding + skRect.Height
+            padding,
+            padding + validRect.Width,
+            padding + validRect.Height
         );
+        validInBlurred.Intersect(new SKRectI(0, 0, blurredBitmap.Width, blurredBitmap.Height));
         
-        // Ensure we don't go out of bounds
-        centerRect.Intersect(new SKRectI(0, 0, blurredPaddedBitmap.Width, blurredPaddedBitmap.Height));
-        
-        if (centerRect.Width <= 0 || centerRect.Height <= 0) return;
-
-        // Extract the final result
-        var result = new SKBitmap(skRect.Width, skRect.Height);
-        if (!blurredPaddedBitmap.ExtractSubset(result, centerRect))
+        if (validInBlurred.Width <= 0 || validInBlurred.Height <= 0)
         {
-            result.Dispose();
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
             return;
         }
 
-        // Store as SKBitmap
+        using var blurredRegion = new SKBitmap(validInBlurred.Width, validInBlurred.Height);
+        if (!blurredBitmap.ExtractSubset(blurredRegion, validInBlurred))
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
+
+        // Step 4: Draw blurred region into result at correct offset
+        // The offset is where the valid region starts within the full annotation bounds
+        int drawX = validRect.Left - annotationRect.Left;
+        int drawY = validRect.Top - annotationRect.Top;
+
+        using (var resultCanvas = new SKCanvas(result))
+        {
+            resultCanvas.DrawBitmap(blurredRegion, drawX, drawY);
+        }
+
         EffectBitmap?.Dispose();
         EffectBitmap = result;
     }

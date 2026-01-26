@@ -67,13 +67,35 @@ public class PixelateAnnotation : BaseEffectAnnotation
         if (source == null) return;
 
         var rect = GetBounds();
-        var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
-        skRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
+        int fullW = (int)rect.Width;
+        int fullH = (int)rect.Height;
+        if (fullW <= 0 || fullH <= 0) return;
 
-        if (skRect.Width <= 0 || skRect.Height <= 0) return;
+        // Convert annotation bounds to integer rect
+        var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        
+        // Find intersection with source image bounds
+        var validRect = annotationRect;
+        validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
-        using var crop = new SKBitmap(skRect.Width, skRect.Height);
-        source.ExtractSubset(crop, skRect);
+        // Create result bitmap at FULL annotation size
+        var result = new SKBitmap(fullW, fullH);
+        result.Erase(SKColors.Transparent);
+
+        if (validRect.Width <= 0 || validRect.Height <= 0)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
+
+        using var crop = new SKBitmap(validRect.Width, validRect.Height);
+        if (!source.ExtractSubset(crop, validRect))
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         // Pixelate logic: Downscale then upscale
         var pixelSize = (int)Math.Max(1, Amount);
@@ -84,9 +106,18 @@ public class PixelateAnnotation : BaseEffectAnnotation
         using var small = crop.Resize(info, SKFilterQuality.Low);
 
         info = new SKImageInfo(crop.Width, crop.Height);
-        using var result = small.Resize(info, SKFilterQuality.None); // Nearest neighbor upscale
+        using var pixelated = small.Resize(info, SKFilterQuality.None); // Nearest neighbor upscale
+
+        // Draw pixelated region into result at correct offset
+        int drawX = validRect.Left - annotationRect.Left;
+        int drawY = validRect.Top - annotationRect.Top;
+
+        using (var resultCanvas = new SKCanvas(result))
+        {
+            resultCanvas.DrawBitmap(pixelated, drawX, drawY);
+        }
 
         EffectBitmap?.Dispose();
-        EffectBitmap = result.Copy();
+        EffectBitmap = result;
     }
 }
