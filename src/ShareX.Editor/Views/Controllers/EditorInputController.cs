@@ -242,6 +242,7 @@ public class EditorInputController
             case EditorTool.SpeechBalloon:
                 var fillColor = vm.FillColor;
                 // Smart default: If user selected transparent fill, default to White or Black based on Stroke contrast
+                if (string.IsNullOrEmpty(fillColor) || fillColor == "#00000000" || fillColor == "Transparent")
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
