@@ -208,7 +208,15 @@ public class EditorInputController
                 HandleTextTool(canvas, brush, vm.StrokeWidth);
                 return;
             case EditorTool.Spotlight:
-                var spotlightAnnotation = new SpotlightAnnotation { StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint), CanvasSize = ToSKSize(canvas.Bounds.Size) };
+                // Map EffectStrength (0-30) to DarkenOpacity (0-255)
+                var opacity = (byte)Math.Clamp(vm.EffectStrength / 30.0 * 255, 0, 255);
+                var spotlightAnnotation = new SpotlightAnnotation 
+                { 
+                    StartPoint = ToSKPoint(_startPoint), 
+                    EndPoint = ToSKPoint(_startPoint), 
+                    CanvasSize = ToSKSize(canvas.Bounds.Size),
+                    DarkenOpacity = opacity
+                };
                 var spotlightControl = spotlightAnnotation.CreateVisual();
                 spotlightControl.Width = canvas.Bounds.Width;
                 spotlightControl.Height = canvas.Bounds.Height;
