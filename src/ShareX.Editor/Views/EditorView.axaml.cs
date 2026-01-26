@@ -179,7 +179,15 @@ namespace ShareX.Editor.Views
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
-                    LoadImageFromViewModel(vm);
+                    // During smart padding, use UpdateSourceImage to preserve history and annotations
+                    if (vm.IsSmartPaddingInProgress)
+                    {
+                        UpdateSourceImageFromViewModel(vm);
+                    }
+                    else
+                    {
+                        LoadImageFromViewModel(vm);
+                    }
                 }
                 else if (e.PropertyName == nameof(MainViewModel.Zoom))
                 {
@@ -229,6 +237,23 @@ namespace ShareX.Editor.Views
                 // We must copy because ToSKBitmap might return a disposable wrapper or we need ownership
                 _editorCore.LoadImage(skBitmap.Copy());
 
+                _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
+                RenderCore();
+            }
+        }
+
+        /// <summary>
+        /// Updates the source image in EditorCore without clearing history or annotations.
+        /// Used during smart padding operations to preserve editing state.
+        /// </summary>
+        private void UpdateSourceImageFromViewModel(MainViewModel vm)
+        {
+            if (vm.PreviewImage == null || _canvasControl == null) return;
+
+            using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+            if (skBitmap != null)
+            {
+                _editorCore.UpdateSourceImage(skBitmap.Copy());
                 _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                 RenderCore();
             }
