@@ -79,7 +79,7 @@ public class MagnifyAnnotation : BaseEffectAnnotation
         // Convert annotation bounds to integer rect
         var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
         
-        // Find intersection with source image bounds for the annotation region
+        // Find intersection with source image bounds
         var validRect = annotationRect;
         validRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
@@ -94,22 +94,30 @@ public class MagnifyAnnotation : BaseEffectAnnotation
             return;
         }
 
-        // For magnification, capture a SMALLER area from the center and scale it UP
+        // For magnification, capture a SMALLER area from the CENTER OF THE VALID REGION and scale it UP
+        // Use the valid region's center to avoid capturing outside the image
         float zoom = Math.Max(1.0f, Amount);
-        float captureWidth = rect.Width / zoom;
-        float captureHeight = rect.Height / zoom;
+        
+        // Calculate capture size based on valid region (not full annotation)
+        float captureWidth = validRect.Width / zoom;
+        float captureHeight = validRect.Height / zoom;
 
-        float centerX = rect.MidX;
-        float centerY = rect.MidY;
+        // Center the capture within the valid region
+        float centerX = validRect.Left + validRect.Width / 2f;
+        float centerY = validRect.Top + validRect.Height / 2f;
 
         float captureX = centerX - (captureWidth / 2);
         float captureY = centerY - (captureHeight / 2);
 
-        var captureRect = new SKRectI((int)captureX, (int)captureY, (int)(captureX + captureWidth), (int)(captureY + captureHeight));
+        var captureRect = new SKRectI(
+            (int)captureX, 
+            (int)captureY, 
+            (int)(captureX + captureWidth), 
+            (int)(captureY + captureHeight)
+        );
 
-        // Ensure capture bounds validation
-        var sourceBounds = new SKRectI(0, 0, source.Width, source.Height);
-        captureRect.Intersect(sourceBounds);
+        // Ensure capture is within source bounds
+        captureRect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
         if (captureRect.Width <= 0 || captureRect.Height <= 0)
         {
@@ -126,11 +134,18 @@ public class MagnifyAnnotation : BaseEffectAnnotation
             return;
         }
 
-        // Scale up to fill the valid portion of the annotation
+        // Scale capture to fill the VALID portion of the annotation
         var info = new SKImageInfo(validRect.Width, validRect.Height);
         using var scaled = crop.Resize(info, SKFilterQuality.Medium);
 
-        // Draw magnified region into result at correct offset
+        if (scaled == null)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
+
+        // Draw scaled content at the correct offset within the full-size result
         int drawX = validRect.Left - annotationRect.Left;
         int drawY = validRect.Top - annotationRect.Top;
 
