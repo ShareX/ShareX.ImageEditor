@@ -78,9 +78,9 @@ public class NumberAnnotation : Annotation
         IBrush fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
             ? Brushes.Transparent
             : new SolidColorBrush(Color.Parse(FillColor));
-            
+
         var strokeColor = Color.Parse(StrokeColor);
-        
+
         var grid = new Grid
         {
             Width = radius * 2,
@@ -107,7 +107,7 @@ public class NumberAnnotation : Annotation
 
         grid.Children.Add(bg);
         grid.Children.Add(numText);
-        
+
         if (ShadowEnabled)
         {
             grid.Effect = new Avalonia.Media.DropShadowEffect
@@ -136,13 +136,13 @@ public class NumberAnnotation : Annotation
                 Style = SKPaintStyle.Fill,
                 IsAntialias = true
             };
-            
+
             if (ShadowEnabled)
             {
                 fillPaint.ImageFilter = SKImageFilter.CreateDropShadow(
                     3, 3, 2, 2, new SKColor(0, 0, 0, 128));
             }
-            
+
             canvas.DrawCircle(center, radius, fillPaint);
         }
         // Draw circle border (uses actual alpha from StrokeColor)
