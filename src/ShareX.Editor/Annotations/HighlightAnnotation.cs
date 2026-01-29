@@ -11,7 +11,7 @@ public class HighlightAnnotation : BaseEffectAnnotation
 {
     public HighlightAnnotation()
     {
-        ToolType = EditorTool.Highlighter;
+        ToolType = EditorTool.Highlight;
         StrokeColor = "#FFFF00"; // Default yellow (opaque for logic, transparency comes from blend)
         StrokeWidth = 0; // No border by default
     }

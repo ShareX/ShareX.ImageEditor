@@ -286,7 +286,7 @@ namespace ShareX.Editor.ViewModels
                 case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
-                case EditorTool.Highlighter:
+                case EditorTool.Highlight:
                     Options.HighlighterColor = color;
                     break;
                 default:
@@ -404,12 +404,12 @@ namespace ShareX.Editor.ViewModels
         public bool ShowBorderColor => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Freehand or EditorTool.Highlighter or EditorTool.Text
+                or EditorTool.Freehand or EditorTool.Highlight or EditorTool.Text
                 or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Freehand or EditorTool.Highlighter or EditorTool.Text
+                    or EditorTool.Freehand or EditorTool.Highlight or EditorTool.Text
                     or EditorTool.SpeechBalloon or EditorTool.Step => true,
                 _ => false
             },
@@ -541,7 +541,7 @@ namespace ShareX.Editor.ViewModels
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
                     break;
-                case EditorTool.Highlighter:
+                case EditorTool.Highlight:
                     SelectedColorValue = Options.HighlighterColor;
                     StrokeWidth = Options.Thickness;
                     break;

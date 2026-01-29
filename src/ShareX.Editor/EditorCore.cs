@@ -953,7 +953,7 @@ public class EditorCore : IDisposable
             EditorTool.Step => new NumberAnnotation(),
             EditorTool.Blur => new BlurAnnotation(),
             EditorTool.Pixelate => new PixelateAnnotation(),
-            EditorTool.Highlighter => new HighlightAnnotation(),
+            EditorTool.Highlight => new HighlightAnnotation(),
             EditorTool.Spotlight => new SpotlightAnnotation(),
             EditorTool.Magnify => new MagnifyAnnotation(),
             EditorTool.SpeechBalloon => new SpeechBalloonAnnotation(),

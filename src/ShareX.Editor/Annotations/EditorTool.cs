@@ -61,11 +61,6 @@ public enum EditorTool
     Freehand,
 
     /// <summary>
-    /// Freehand highlighter (translucent)
-    /// </summary>
-    Highlighter,
-
-    /// <summary>
     /// Add text annotations
     /// </summary>
     Text,
@@ -79,6 +74,11 @@ public enum EditorTool
     /// Add numbered markers (auto-incrementing)
     /// </summary>
     Step,
+
+    /// <summary>
+    /// Smart eraser
+    /// </summary>
+    SmartEraser,
 
     /// <summary>
     /// Blur effect
@@ -96,14 +96,14 @@ public enum EditorTool
     Magnify,
 
     /// <summary>
+    /// Freehand highlighter (translucent)
+    /// </summary>
+    Highlight,
+
+    /// <summary>
     /// Create spotlight effect (darken everything except highlighted area)
     /// </summary>
     Spotlight,
-
-    /// <summary>
-    /// Smart eraser
-    /// </summary>
-    SmartEraser,
 
     /// <summary>
     /// Crop the image
