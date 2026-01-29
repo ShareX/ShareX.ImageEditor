@@ -34,11 +34,12 @@ namespace ShareX.Editor
         public Color BorderColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
-        public float FontSize { get; set; } = 30;
+        public float FontSize { get; set; } = 48;
         public bool Shadow { get; set; } = true;
 
         public Color StepBorderColor { get; set; } = Colors.Transparent;
         public Color StepFillColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
+        public float StepFontSize { get; set; } = 30;
         public Color HighlighterColor { get; set; } = Colors.Yellow;
         public float BlurStrength { get; set; } = 30;
         public float PixelateStrength { get; set; } = 20;

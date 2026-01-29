@@ -117,6 +117,40 @@ namespace ShareX.Editor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.HasSelectedAnnotation = hasSelection;
+                vm.SelectedAnnotation = _selectionController.SelectedShape?.Tag as Annotation;
+
+                // Sync VM properties with selected annotation to update UI
+                if (vm.SelectedAnnotation != null)
+                {
+                    // Prevent feedback loop: UI update -> VM Property Changed -> Apply to Annotation (redundant)
+                    // But Apply... methods limit damage.
+                    
+                    vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
+                    vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+
+                    if (vm.SelectedAnnotation is NumberAnnotation num)
+                    {
+                        vm.FontSize = num.FontSize;
+                        vm.FillColor = num.FillColor;
+                    }
+                    else if (vm.SelectedAnnotation is TextAnnotation text)
+                    {
+                        vm.FontSize = text.FontSize;
+                    }
+                    else if (vm.SelectedAnnotation is SpeechBalloonAnnotation balloon)
+                    {
+                        vm.FontSize = balloon.FontSize;
+                        vm.FillColor = balloon.FillColor;
+                    }
+                    else if (vm.SelectedAnnotation is RectangleAnnotation rect)
+                    {
+                         vm.FillColor = rect.FillColor;
+                    }
+                    else if (vm.SelectedAnnotation is EllipseAnnotation ellipse)
+                    {
+                         vm.FillColor = ellipse.FillColor;
+                    }
+                }
             }
         }
 

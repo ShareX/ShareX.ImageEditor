@@ -121,11 +121,6 @@ public enum EditorTool
     Image,
 
     /// <summary>
-    /// Step/Sequence marker
-    /// </summary>
-    Step,
-
-    /// <summary>
     /// Cursor stamp
     /// </summary>
     Cursor
