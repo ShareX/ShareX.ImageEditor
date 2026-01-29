@@ -283,7 +283,7 @@ namespace ShareX.Editor.ViewModels
         {
             switch (ActiveTool)
             {
-                case EditorTool.Number:
+                case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
                 case EditorTool.Highlighter:
@@ -339,7 +339,7 @@ namespace ShareX.Editor.ViewModels
             var color = FillColorValue;
             switch (ActiveTool)
             {
-                case EditorTool.Number:
+                case EditorTool.Step:
                     Options.StepFillColor = color;
                     break;
                 default:
@@ -353,7 +353,7 @@ namespace ShareX.Editor.ViewModels
 
         partial void OnFontSizeChanged(float value)
         {
-            bool isStep = ActiveTool == EditorTool.Number;
+            bool isStep = ActiveTool == EditorTool.Step;
 
             if (ActiveTool == EditorTool.Select && SelectedAnnotation is NumberAnnotation)
             {
@@ -404,13 +404,13 @@ namespace ShareX.Editor.ViewModels
         public bool ShowBorderColor => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Pen or EditorTool.Highlighter or EditorTool.Text
-                or EditorTool.SpeechBalloon or EditorTool.Number => true,
+                or EditorTool.Freehand or EditorTool.Highlighter or EditorTool.Text
+                or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Pen or EditorTool.Highlighter or EditorTool.Text
-                    or EditorTool.SpeechBalloon or EditorTool.Number => true,
+                    or EditorTool.Freehand or EditorTool.Highlighter or EditorTool.Text
+                    or EditorTool.SpeechBalloon or EditorTool.Step => true,
                 _ => false
             },
             _ => false
@@ -418,10 +418,10 @@ namespace ShareX.Editor.ViewModels
 
         public bool ShowFillColor => ActiveTool switch
         {
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Number => true,
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Number => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.SpeechBalloon or EditorTool.Step => true,
                 _ => false
             },
             _ => false
@@ -430,11 +430,11 @@ namespace ShareX.Editor.ViewModels
         public bool ShowThickness => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Pen or EditorTool.SpeechBalloon or EditorTool.Number or EditorTool.SmartEraser => true,
+                or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Pen or EditorTool.SpeechBalloon or EditorTool.Number or EditorTool.SmartEraser => true,
+                    or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser => true,
                 _ => false
             },
             _ => false
@@ -442,10 +442,10 @@ namespace ShareX.Editor.ViewModels
 
         public bool ShowFontSize => ActiveTool switch
         {
-            EditorTool.Text or EditorTool.Number or EditorTool.SpeechBalloon => true,
+            EditorTool.Text or EditorTool.Step or EditorTool.SpeechBalloon => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Text or EditorTool.Number or EditorTool.SpeechBalloon => true,
+                EditorTool.Text or EditorTool.Step or EditorTool.SpeechBalloon => true,
                 _ => false
             },
             _ => false
@@ -465,11 +465,11 @@ namespace ShareX.Editor.ViewModels
         public bool ShowShadow => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Pen or EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Number => true,
+                or EditorTool.Freehand or EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Pen or EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Number => true,
+                    or EditorTool.Freehand or EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
                 _ => false
             },
             _ => false
@@ -525,7 +525,7 @@ namespace ShareX.Editor.ViewModels
                 case EditorTool.Ellipse:
                 case EditorTool.Line:
                 case EditorTool.Arrow:
-                case EditorTool.Pen:
+                case EditorTool.Freehand:
                 case EditorTool.Text:
                 case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.BorderColor;
@@ -534,7 +534,7 @@ namespace ShareX.Editor.ViewModels
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.FontSize;
                     break;
-                case EditorTool.Number:
+                case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
                     FillColorValue = Options.StepFillColor;
                     StrokeWidth = Options.Thickness; // Or specific step thickness? EditorOptions uses generic Thickness.

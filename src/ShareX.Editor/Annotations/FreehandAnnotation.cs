@@ -20,7 +20,7 @@ public class FreehandAnnotation : Annotation, IPointBasedAnnotation
 
     public FreehandAnnotation()
     {
-        ToolType = EditorTool.Pen;
+        ToolType = EditorTool.Freehand;
     }
 
     public override Annotation Clone()

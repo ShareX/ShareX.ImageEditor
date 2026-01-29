@@ -254,7 +254,7 @@ public class EditorInputController
                 Canvas.SetTop(balloonControl, _startPoint.Y);
                 _currentShape = balloonControl;
                 break;
-            case EditorTool.Number:
+            case EditorTool.Step:
                 var numberAnnotation = new NumberAnnotation
                 {
                     StrokeColor = vm.SelectedColor,
@@ -277,7 +277,7 @@ public class EditorInputController
                 _isDrawing = true; // Keep true so released handler can select it (or we explicitly select it)?
                 // Legacy said: "Keep _isDrawing true so it goes through OnCanvasPointerReleased for auto-selection"
                 break;
-            case EditorTool.Pen:
+            case EditorTool.Freehand:
             case EditorTool.SmartEraser:
                 var path = new global::Avalonia.Controls.Shapes.Path
                 {
@@ -337,9 +337,9 @@ public class EditorInputController
                 && vm.ActiveTool != EditorTool.SpeechBalloon
                 && vm.ActiveTool != EditorTool.Line
                 && vm.ActiveTool != EditorTool.Arrow
-                && vm.ActiveTool != EditorTool.Pen
+                && vm.ActiveTool != EditorTool.Freehand
                 && vm.ActiveTool != EditorTool.SmartEraser
-                && vm.ActiveTool != EditorTool.Number)
+                && vm.ActiveTool != EditorTool.Step)
             {
                 Canvas.SetLeft(_currentShape, _startPoint.X);
                 Canvas.SetTop(_currentShape, _startPoint.Y);
@@ -557,8 +557,8 @@ public class EditorInputController
                 {
                     // Check MinSize for shapes that support size validation
                     // Skip check for Number (single-click), Pen, SmartEraser (freehand stroke)
-                    bool isSizeBased = vm.ActiveTool != EditorTool.Number
-                                    && vm.ActiveTool != EditorTool.Pen
+                    bool isSizeBased = vm.ActiveTool != EditorTool.Step
+                                    && vm.ActiveTool != EditorTool.Freehand
                                     && vm.ActiveTool != EditorTool.SmartEraser
                                     && vm.ActiveTool != EditorTool.Text;
 

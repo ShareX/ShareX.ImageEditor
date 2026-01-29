@@ -46,14 +46,24 @@ public enum EditorTool
     Ellipse,
 
     /// <summary>
+    /// Draw straight lines
+    /// </summary>
+    Line,
+
+    /// <summary>
     /// Draw arrows
     /// </summary>
     Arrow,
 
     /// <summary>
-    /// Draw straight lines
+    /// Freehand pen drawing
     /// </summary>
-    Line,
+    Freehand,
+
+    /// <summary>
+    /// Freehand highlighter (translucent)
+    /// </summary>
+    Highlighter,
 
     /// <summary>
     /// Add text annotations
@@ -61,34 +71,14 @@ public enum EditorTool
     Text,
 
     /// <summary>
+    /// Speech balloon
+    /// </summary>
+    SpeechBalloon,
+
+    /// <summary>
     /// Add numbered markers (auto-incrementing)
     /// </summary>
-    Number,
-
-    /// <summary>
-    /// Create spotlight effect (darken everything except highlighted area)
-    /// </summary>
-    Spotlight,
-
-    /// <summary>
-    /// Crop the image
-    /// </summary>
-    Crop,
-
-    /// <summary>
-    /// Cut out a section and join remaining parts
-    /// </summary>
-    CutOut,
-
-    /// <summary>
-    /// Freehand pen drawing
-    /// </summary>
-    Pen,
-
-    /// <summary>
-    /// Freehand highlighter (translucent)
-    /// </summary>
-    Highlighter,
+    Step,
 
     /// <summary>
     /// Blur effect
@@ -101,27 +91,32 @@ public enum EditorTool
     Pixelate,
 
     /// <summary>
-    /// Smart eraser
-    /// </summary>
-    SmartEraser,
-
-    /// <summary>
     /// Magnify effect
     /// </summary>
     Magnify,
 
     /// <summary>
-    /// Speech balloon
+    /// Create spotlight effect (darken everything except highlighted area)
     /// </summary>
-    SpeechBalloon,
+    Spotlight,
+
+    /// <summary>
+    /// Smart eraser
+    /// </summary>
+    SmartEraser,
+
+    /// <summary>
+    /// Crop the image
+    /// </summary>
+    Crop,
+
+    /// <summary>
+    /// Cut out a section and join remaining parts
+    /// </summary>
+    CutOut,
 
     /// <summary>
     /// Insert image/sticker
     /// </summary>
-    Image,
-
-    /// <summary>
-    /// Cursor stamp
-    /// </summary>
-    Cursor
+    Image
 }

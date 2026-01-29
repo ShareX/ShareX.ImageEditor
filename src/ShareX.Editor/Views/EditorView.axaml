@@ -194,7 +194,7 @@
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
                     <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pen}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
                             ToolTip.Tip="Freehand (P)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
                     <Button Classes="editor-button"
@@ -214,7 +214,7 @@
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
                     <Button Classes="editor-button"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
-                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Number}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
                             ToolTip.Tip="Step/Number (N)"
                             FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
                     <Button Classes="editor-button"

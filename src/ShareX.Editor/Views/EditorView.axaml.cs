@@ -449,7 +449,7 @@ namespace ShareX.Editor.Views
                         case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
                         case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
                         case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
-                        case Key.F: vm.SelectToolCommand.Execute(EditorTool.Pen); e.Handled = true; break; // Freehand
+                        case Key.F: vm.SelectToolCommand.Execute(EditorTool.Freehand); e.Handled = true; break; // Freehand
                         case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlighter); e.Handled = true; break;
                         case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
                         case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;

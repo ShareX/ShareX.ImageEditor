@@ -162,7 +162,7 @@ public partial class EditorViewModel : ObservableObject
         {
             switch (ActiveTool)
             {
-                case EditorTool.Number:
+                case EditorTool.Step:
                     Options.StepFillColor = color;
                     break;
                 case EditorTool.Highlighter:
@@ -194,13 +194,13 @@ public partial class EditorViewModel : ObservableObject
             case EditorTool.Ellipse:
             case EditorTool.Line:
             case EditorTool.Arrow:
-            case EditorTool.Pen:
+            case EditorTool.Freehand:
             case EditorTool.Text:
             case EditorTool.SpeechBalloon:
                 SelectedColor = $"#{Options.BorderColor.A:X2}{Options.BorderColor.R:X2}{Options.BorderColor.G:X2}{Options.BorderColor.B:X2}";
                 StrokeWidth = Options.Thickness;
                 break;
-            case EditorTool.Number:
+            case EditorTool.Step:
                 SelectedColor = $"#{Options.StepFillColor.A:X2}{Options.StepFillColor.R:X2}{Options.StepFillColor.G:X2}{Options.StepFillColor.B:X2}";
                 StrokeWidth = Options.Thickness;
                 break;

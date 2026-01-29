@@ -66,7 +66,7 @@ public class NumberAnnotation : Annotation
 
     public NumberAnnotation()
     {
-        ToolType = EditorTool.Number;
+        ToolType = EditorTool.Step;
     }
 
     /// <summary>
