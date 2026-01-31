@@ -1,0 +1,703 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ShareX.ImageEditor.ViewModels"
+             xmlns:views="using:ShareX.ImageEditor.Views"
+             xmlns:models="using:ShareX.ImageEditor.Annotations"
+             xmlns:converters="using:ShareX.ImageEditor.Converters"
+             xmlns:helpers="using:ShareX.ImageEditor.Helpers"
+             xmlns:controls="using:ShareX.ImageEditor.Controls"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="ShareX.ImageEditor.Views.EditorView"
+             Focusable="True"
+             KeyDown="OnKeyDown">
+
+    <UserControl.Resources>
+        <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
+        <converters:EqualsConverter x:Key="EqualsConverter" />
+        <FontFamily x:Key="FontAwesome">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+        <x:String x:Key="IconSelect">&#xf25a;</x:String>
+        <x:String x:Key="IconRectangle">&#xf0c8;</x:String>
+        <x:String x:Key="IconEllipse">&#xf111;</x:String>
+        <x:String x:Key="IconLine">&#xf068;</x:String>
+        <x:String x:Key="IconArrow">&#xf061;</x:String>
+        <x:String x:Key="IconPen">&#xf304;</x:String>
+        <x:String x:Key="IconHighlighter">&#xf591;</x:String>
+        <x:String x:Key="IconText">&#xf031;</x:String>
+        <x:String x:Key="IconSpeechBalloon">&#xf4ad;</x:String>
+        <x:String x:Key="IconNumber">&#xf0cb;</x:String>
+        <x:String x:Key="IconBlur">&#xf1fc;</x:String>
+        <x:String x:Key="IconPixelate">&#xf009;</x:String>
+        <x:String x:Key="IconMagnify">&#xf00e;</x:String>
+        <x:String x:Key="IconSpotlight">&#xf0eb;</x:String>
+        <x:String x:Key="IconSmartEraser">&#xf12d;</x:String>
+        <x:String x:Key="IconCrop">&#xf125;</x:String>
+        <x:String x:Key="IconCutOut">&#xf0c4;</x:String>
+        <x:String x:Key="IconBackground">&#xf03e;</x:String>
+        <x:String x:Key="IconUndo">&#xf0e2;</x:String>
+        <x:String x:Key="IconRedo">&#xf01e;</x:String>
+        <x:String x:Key="IconClear">&#xf12d;</x:String>
+        <x:String x:Key="IconDelete">&#xf2ed;</x:String>
+        <x:String x:Key="IconCopy">&#xf0c5;</x:String>
+        <x:String x:Key="IconSave">&#xf0c7;</x:String>
+        <x:String x:Key="IconDownload">&#xf019;</x:String>
+        <x:String x:Key="IconZoomIn">&#xf00e;</x:String>
+        <x:String x:Key="IconZoomOut">&#xf010;</x:String>
+        <x:String x:Key="IconSync">&#xf021;</x:String>
+        <x:String x:Key="IconCloud">&#xf0c2;</x:String>
+        <x:String x:Key="IconCloudArrowUp">&#xf0ee;</x:String>
+        <x:String x:Key="IconMoon">&#xf186;</x:String>
+        <x:String x:Key="IconHardDrive">&#xf0a0;</x:String>
+        <x:String x:Key="IconThumbtack">&#xf08d;</x:String>
+
+        <FontFamily x:Key="AppFontFamily">Segoe UI</FontFamily>
+        <x:Double x:Key="AppFontSize">14</x:Double>
+        <LinearGradientBrush x:Key="AccentColor" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#3E83F2" Offset="0"/>
+            <GradientStop Color="#3975D5" Offset="1"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="TextColor">#E7E9EA</SolidColorBrush>
+        <SolidColorBrush x:Key="BorderColor">#1F1F1F</SolidColorBrush>
+
+        <DrawingBrush x:Key="CheckeredBrush" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#272727">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,30,30" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="#2E2E2E">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,15,15" />
+                                <RectangleGeometry Rect="15,15,15,15" />
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}"/>
+            <Setter Property="FontSize" Value="{StaticResource AppFontSize}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="Button.editor-button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="#2E2E2E"/>
+            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="#1F1F1F"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <Style Selector="^:pressed">
+                <Setter Property="RenderTransform" Value="none"/>
+            </Style>
+
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="#1F1F1F"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <Style Selector="^.active">
+                <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Border.popup-border">
+            <Setter Property="Background" Value="#2E2E2E"/>
+            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BoxShadow" Value="0 4 16 #40000000"/>
+        </Style>
+
+        <Style Selector="Slider:horizontal">
+            <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+
+            <Style Selector="^ /template/ Thumb">
+                <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+                <Setter Property="BorderBrush" Value="#2E2E2E"/>
+                <Setter Property="BorderThickness" Value="4"/>
+            </Style>
+
+            <Style Selector="^ /template/ Thumb:pointerover">
+                <Setter Property="BorderThickness" Value="3"/>
+            </Style>
+        </Style>
+
+        <Style Selector="CheckBox">
+            <Style Selector="^:checked /template/ Border#NormalRectangle">
+                <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Border.capsule">
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="{StaticResource AccentColor}"/>
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Row 0: Annotation Toolbar (single row with all tools and controls) -->
+        <Border Grid.Row="0" Padding="0" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="0,0,0,1">
+            <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
+                <StackPanel Orientation="Horizontal" Spacing="4" Margin="8">
+                    <!-- Drawing Tools -->
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Select}"
+                            ToolTip.Tip="Select (V)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSelect}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Rectangle}"
+                            ToolTip.Tip="Rectangle (R)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRectangle}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Ellipse}"
+                            ToolTip.Tip="Ellipse (E)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconEllipse}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Line}"
+                            ToolTip.Tip="Line (L)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconLine}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Arrow}"
+                            ToolTip.Tip="Arrow (A)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
+                            ToolTip.Tip="Freehand (P)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Text}"
+                            ToolTip.Tip="Text (T)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconText}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
+                            ToolTip.Tip="Speech Balloon (B)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
+                            ToolTip.Tip="Step (N)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
+                            ToolTip.Tip="Smart Eraser"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSmartEraser}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Blur}"
+                            ToolTip.Tip="Blur"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBlur}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Pixelate}"
+                            ToolTip.Tip="Pixelate"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPixelate}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
+                            ToolTip.Tip="Magnify (M)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlighter}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
+                            ToolTip.Tip="Highlight (H)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
+                            ToolTip.Tip="Spotlight (S)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpotlight}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"
+                            ToolTip.Tip="Crop (C)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCrop}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=CutOut}"
+                            Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.CutOut}"
+                            ToolTip.Tip="Cut Out (U)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconCutOut}"/>
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding IsSettingsPanelOpen}"
+                            Command="{Binding ToggleSettingsPanelCommand}"
+                            ToolTip.Tip="Background"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
+
+                    <!-- Effects Menu Dropdown -->
+                    <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
+                        Height="40"
+                        ToolTip.Tip="Effects"
+                        ResizeImageRequested="OnResizeImageRequested"
+                        ResizeCanvasRequested="OnResizeCanvasRequested"
+                        CropImageRequested="OnCropImageRequested"
+                        AutoCropImageRequested="OnAutoCropImageRequested"
+                        Rotate90CWRequested="OnRotate90CWRequested"
+                        Rotate90CCWRequested="OnRotate90CCWRequested"
+                        Rotate180Requested="OnRotate180Requested"
+                        RotateCustomAngleRequested="OnRotateCustomAngleRequested"
+                        FlipHorizontalRequested="OnFlipHorizontalRequested"
+                        FlipVerticalRequested="OnFlipVerticalRequested"
+                        BrightnessRequested="OnBrightnessRequested"
+                        ContrastRequested="OnContrastRequested"
+                        HueRequested="OnHueRequested"
+                        SaturationRequested="OnSaturationRequested"
+                        GammaRequested="OnGammaRequested"
+                        AlphaRequested="OnAlphaRequested"
+                        ColorizeRequested="OnColorizeRequested"
+                        SelectiveColorRequested="OnSelectiveColorRequested"
+                        ReplaceColorRequested="OnReplaceColorRequested"
+                        GrayscaleRequested="OnGrayscaleRequested"
+                        InvertRequested="OnInvertRequested"
+                        BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                        SepiaRequested="OnSepiaRequested"
+                        PolaroidRequested="OnPolaroidRequested"
+                        BorderRequested="OnBorderRequested"
+                        OutlineRequested="OnOutlineRequested"
+                        ShadowRequested="OnShadowRequested"
+                        GlowRequested="OnGlowRequested"
+                        ReflectionRequested="OnReflectionRequested"
+                        TornEdgeRequested="OnTornEdgeRequested"
+                        SliceRequested="OnSliceRequested"
+                        RoundedCornersRequested="OnRoundedCornersRequested"
+                        SkewRequested="OnSkewRequested"
+                        Rotate3DRequested="OnRotate3DRequested"
+                        BlurRequested="OnBlurRequested"
+                        PixelateRequested="OnPixelateRequested"
+                        SharpenRequested="OnSharpenRequested"/>
+
+                    <!-- Separator -->
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+
+                    <!-- Border Color Picker Dropdown -->
+                    <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
+                        SelectedColor="{Binding SelectedColorBrush}"
+                        ColorChanged="OnColorChanged"
+                        Height="40"
+                        IsVisible="{Binding ShowBorderColor}"
+                        ToolTip.Tip="Border Color"/>
+
+                    <!-- Fill Color Picker Dropdown -->
+                    <controls:ColorPickerDropdown x:Name="FillColorPickerDropdown"
+                        SelectedColor="{Binding FillColorBrush}"
+                        ColorChanged="OnFillColorChanged"
+                        Height="40"
+                        IsVisible="{Binding ShowFillColor}"
+                        ToolTip.Tip="Fill Color"/>
+
+                    <!-- Thickness Picker Dropdown -->
+                    <controls:WidthPickerDropdown
+                        SelectedWidth="{Binding StrokeWidth}"
+                        WidthChanged="OnWidthChanged"
+                        Height="40"
+                        IsVisible="{Binding ShowThickness}"
+                        ToolTip.Tip="Thickness"/>
+
+                    <!-- Font Size Picker Dropdown -->
+                    <controls:FontSizePickerDropdown
+                        SelectedFontSize="{Binding FontSize}"
+                        FontSizeChanged="OnFontSizeChanged"
+                        Height="40"
+                        IsVisible="{Binding ShowFontSize}"
+                        ToolTip.Tip="Font Size"/>
+
+                    <!-- Strength Slider -->
+                    <controls:StrengthSlider
+                        SelectedStrength="{Binding EffectStrength}"
+                        StrengthChanged="OnStrengthChanged"
+                        IsVisible="{Binding ShowStrength}"
+                        ToolTip.Tip="Effect Strength"/>
+
+                    <!-- Shadow Toggle Button -->
+                    <Button Classes="editor-button" Width="40"
+                            Classes.active="{Binding ShadowEnabled}"
+                            Click="OnShadowButtonClick"
+                            IsVisible="{Binding ShowShadow}"
+                            ToolTip.Tip="Toggle Shadow"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMoon}"/>
+
+                    <!-- Separator -->
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0" IsVisible="{Binding ShowToolOptionsSeparator}"/>
+
+                    <!-- Undo Button -->
+                    <Button Classes="editor-button" Width="40"
+                            Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUndo}"/>
+
+                    <!-- Redo Button -->
+                    <Button Classes="editor-button" Width="40"
+                            Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRedo}"/>
+
+                    <!-- Separator -->
+                    <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+
+
+                    <!-- Clear Button -->
+                    <Button Classes="editor-button" Width="40"
+                            Command="{Binding ClearAnnotationsCommand}" ToolTip.Tip="Clear all annotations"
+                            FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconClear}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Row 1: Main Content Area with Preview and Sidebar -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Background="#272727">
+
+            <!-- Left Sidebar (Settings Panel) -->
+            <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="#242424"
+                    BorderBrush="#1F1F1F" BorderThickness="0,0,1,0">
+                <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              ScrollChanged="OnSidebarScrollChanged">
+                    <StackPanel Width="220" Spacing="0" Margin="16">
+
+                        <!-- Margin Slider -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Margin" Foreground="#9CA3AF"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding PreviewPadding, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider Minimum="0"
+                                    Maximum="200"
+                                    Value="{Binding PreviewPadding}"
+                                    Background="#374151"/>
+                        </StackPanel>
+
+                        <!-- Padding Slider -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Padding" Foreground="#9CA3AF"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding SmartPadding, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider Minimum="0"
+                                    Maximum="200"
+                                    Value="{Binding SmartPadding}"
+                                    Background="#374151"/>
+                            <!-- Smart Padding Checkbox -->
+                            <CheckBox IsChecked="{Binding UseSmartPadding}"
+                                      Foreground="#9CA3AF"
+                                      Content="Smart Padding"
+                                      Margin="0,0,0,8"/>
+                        </StackPanel>
+
+                        <!-- Rounded Corner Slider -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="#9CA3AF"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding PreviewCornerRadius, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider Minimum="0"
+                                    Maximum="50"
+                                    Value="{Binding PreviewCornerRadius}"
+                                    Background="#374151"/>
+                        </StackPanel>
+
+                        <!-- Shadow Slider -->
+                        <StackPanel Spacing="0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Shadow" Foreground="#9CA3AF"/>
+                                <Border Grid.Column="1" Classes="capsule">
+                                    <TextBlock Text="{Binding ShadowBlur, StringFormat='{}{0:F0} px'}"/>
+                                </Border>
+                            </Grid>
+                            <Slider Minimum="0"
+                                    Maximum="100"
+                                    Value="{Binding ShadowBlur}"
+                                    Background="#374151"/>
+                        </StackPanel>
+
+                        <!-- Ratio -->
+                        <StackPanel Spacing="0">
+                            <TextBlock Text="Ratio" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
+                                <Grid.Styles>
+                                    <Style Selector="Button.editor-button">
+                                        <Setter Property="Margin" Value="2"/>
+                                        <Setter Property="Width" Value="NaN"/>
+                                        <Setter Property="Height" Value="32"/>
+                                    </Style>
+                                </Grid.Styles>
+
+                                <!-- Row 0 -->
+                                <Button Grid.Row="0" Grid.Column="0" Content="Auto"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="Auto"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=Auto}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="1:1"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="1:1"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=1:1}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="4:3"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="4:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=4:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                                <!-- Row 1 -->
+                                <Button Grid.Row="1" Grid.Column="0" Content="3:2"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="3:2"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:2}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="16:9"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="16:9"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=16:9}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="5:3"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="5:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=5:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                                <!-- Row 2 -->
+                                <Button Grid.Row="2" Grid.Column="0" Content="9:16"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="9:16"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=9:16}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="2" Grid.Column="1" Content="3:4"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="3:4"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=3:4}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="2:3"
+                                        Classes="editor-button"
+                                        Command="{Binding SetOutputRatioCommand}" CommandParameter="2:3"
+                                        Classes.active="{Binding SelectedOutputRatio, Converter={StaticResource EqualsConverter}, ConverterParameter=2:3}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Background -->
+                        <StackPanel Spacing="0">
+                            <TextBlock Text="Background" Foreground="#9CA3AF" Margin="0,8"/>
+                            <ItemsControl ItemsSource="{Binding GradientPresets}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Padding="0" BorderThickness="0" Background="Transparent" Margin="2"
+                                                Command="{Binding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}">
+                                            <Border Width="50" Height="50" CornerRadius="5" Background="{Binding Brush}" ToolTip.Tip="{Binding Name}"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Central Preview Canvas -->
+            <Grid Grid.Column="1" Margin="8">
+                <ScrollViewer Name="CanvasScrollViewer"
+                              Background="Transparent"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              PointerPressed="OnScrollViewerPointerPressed"
+                              PointerMoved="OnScrollViewerPointerMoved"
+                              PointerReleased="OnScrollViewerPointerReleased">
+                    <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <LayoutTransformControl.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                        </LayoutTransformControl.LayoutTransform>
+                        <!-- Main Canvas Container with Checkered Background and Shadow -->
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                             <!-- Checkered Background -->
+                             <Border BorderThickness="1"
+                                     BorderBrush="{StaticResource BorderColor}"
+                                     Background="{StaticResource CheckeredBrush}"/>
+
+                             <!-- Actual Content -->
+                             <Border x:Name="PreviewFrame"
+                                     IsVisible="{Binding HasPreviewImage}"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Background="{Binding CanvasBackground}"
+                                      Padding="{Binding CanvasPadding}">
+                                 <!-- Outer Border: User-controlled Shadow effect -->
+                                 <Border BoxShadow="{Binding CanvasShadow}"
+                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
+                                     <!-- Padding Border: Uses top-left pixel color -->
+                                     <Border Background="{Binding SmartPaddingColor}"
+                                             Padding="{Binding SmartPaddingThickness}"
+                                             CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
+                                             ClipToBounds="True">
+                                         <!-- Inner Border: White background only -->
+                                         <Border Background="Transparent">
+                                             <Grid Name="CanvasContainer"
+                                                   Background="Transparent"
+                                                   Width="{Binding ImageWidth}"
+                                                   Height="{Binding ImageHeight}">
+     
+                                                 <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
+                                                 <controls:SKCanvasControl Name="CanvasControl"
+                                                                         HorizontalAlignment="Stretch"
+                                                                         VerticalAlignment="Stretch"/>
+     
+                                                 <!-- Annotation Layer (Saved content) -->
+                                                 <Canvas Name="AnnotationCanvas"
+                                                         Background="Transparent"
+                                                         IsVisible="{Binding HasPreviewImage}"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         Cursor="Cross"
+                                                         PointerPressed="OnCanvasPointerPressed"
+                                                         PointerMoved="OnCanvasPointerMoved"
+                                                         PointerReleased="OnCanvasPointerReleased">
+                                                 </Canvas>
+     
+                                                 <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
+                                                 <Canvas Name="OverlayCanvas"
+                                                         IsHitTestVisible="True"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         PointerPressed="OnCanvasPointerPressed"
+                                                         PointerMoved="OnCanvasPointerMoved"
+                                                         PointerReleased="OnCanvasPointerReleased">
+                                                     <Rectangle Name="CropOverlay"
+                                                                IsVisible="False"
+                                                                Stroke="White"
+                                                                StrokeThickness="2"
+                                                                StrokeDashArray="4,2"
+                                                                Fill="#80000000" />
+                                                 </Canvas>
+                                             </Grid>
+                                         </Border>
+                                     </Border>
+                                 </Border>
+                             </Border>
+                        </Grid>
+                    </LayoutTransformControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Right Sidebar (Effects Panel) -->
+            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="#242424"
+                    BorderBrush="#1F1F1F" BorderThickness="1,0,0,0">
+                <Grid>
+                     <Grid.RowDefinitions>
+                         <RowDefinition Height="*" />
+                         <RowDefinition Height="Auto" />
+                     </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                         <StackPanel Width="220" Spacing="0" Margin="16">
+                             <ContentControl Content="{Binding EffectsPanelContent}" />
+                         </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+        <!-- Row 2: Combined Bottom Bar (Export + Zoom Controls) -->
+        <Border Grid.Row="2" Padding="8" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Left: Zoom Controls -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <controls:ZoomPickerDropdown
+                        SelectedZoom="{Binding Zoom}"
+                        ZoomChanged="OnZoomChanged"
+                        Height="40"
+                        ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
+                </StackPanel>
+
+                <!-- Center: Empty spacer -->
+                <Border Grid.Column="1"/>
+
+                <!-- Right: Export Actions -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                    <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
+                            ToolTip.Tip="Copy image to clipboard" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+
+                    <Button Classes="editor-button" Command="{Binding SaveCommand}" Width="40" Padding="0"
+                            ToolTip.Tip="Save image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconSave}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+
+                    <Button Classes="editor-button" Command="{Binding SaveAsCommand}" Width="40" Padding="0"
+                            ToolTip.Tip="Save image as..." ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconHardDrive}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+
+                    <Button Classes="editor-button" Command="{Binding PinToScreenCommand}" Width="40" Padding="0"
+                            ToolTip.Tip="Pin image to screen" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconThumbtack}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+
+                    <Button Classes="editor-button" Command="{Binding UploadCommand}" Width="40" Padding="0"
+                            ToolTip.Tip="Upload image" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        <TextBlock Text="{StaticResource IconCloudArrowUp}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Modal Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                IsVisible="{Binding IsModalOpen}"
+                Background="#80000000"
+                IsHitTestVisible="True">
+            <Grid>
+                <!-- Click outside to close -->
+                <Border Background="Transparent" 
+                        PointerPressed="OnModalBackgroundPressed"/>
+                
+                <!-- Modal Content -->
+                <ContentControl Content="{Binding ModalContent}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

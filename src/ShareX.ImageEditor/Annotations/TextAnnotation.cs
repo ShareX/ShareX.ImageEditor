@@ -1,0 +1,168 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
+using Avalonia.Controls;
+using Avalonia.Media;
+using SkiaSharp;
+
+namespace ShareX.ImageEditor.Annotations;
+
+/// <summary>
+/// Text annotation
+/// </summary>
+public class TextAnnotation : Annotation
+{
+    /// <summary>
+    /// Text content
+    /// </summary>
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Font size in pixels
+    /// </summary>
+    public float FontSize { get; set; } = 48;
+
+    /// <summary>
+    /// Font family
+    /// </summary>
+    public string FontFamily { get; set; } = "Segoe UI";
+
+    /// <summary>
+    /// Bold style
+    /// </summary>
+    public bool IsBold { get; set; }
+
+    /// <summary>
+    /// Italic style
+    /// </summary>
+    public bool IsItalic { get; set; }
+
+    public TextAnnotation()
+    {
+        ToolType = EditorTool.Text;
+    }
+
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation (TextBox for editing)
+    /// </summary>
+    public Control CreateVisual()
+    {
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        var textBox = new TextBox
+        {
+            Foreground = brush,
+            Background = Brushes.Transparent,
+            FontSize = FontSize,
+            FontWeight = IsBold ? FontWeight.Bold : FontWeight.Normal,
+            FontStyle = IsItalic ? FontStyle.Italic : FontStyle.Normal,
+            BorderBrush = Brushes.Transparent,
+            BorderThickness = new Avalonia.Thickness(0),
+            Padding = new Avalonia.Thickness(4),
+            AcceptsReturn = false,
+            Text = Text,
+            Tag = this,
+            MinWidth = 0,
+            IsHitTestVisible = false
+        };
+
+        if (ShadowEnabled)
+        {
+            textBox.Effect = new Avalonia.Media.DropShadowEffect
+            {
+                OffsetX = 3,
+                OffsetY = 3,
+                BlurRadius = 4,
+                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
+            };
+        }
+
+        return textBox;
+    }
+
+    public override void Render(SKCanvas canvas)
+    {
+        var rect = GetBounds();
+        const float padding = 4f;
+
+        // Always draw a visible placeholder/border when text is empty
+        if (string.IsNullOrEmpty(Text))
+        {
+            // Draw a dashed border placeholder to show where text will go
+            using var borderPaint = new SKPaint
+            {
+                Color = ParseColor(StrokeColor),
+                StrokeWidth = 1,
+                Style = SKPaintStyle.Stroke,
+                PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0),
+                IsAntialias = true
+            };
+            canvas.DrawRect(rect, borderPaint);
+            return;
+        }
+
+        using var paint = new SKPaint
+        {
+            Color = ParseColor(StrokeColor),
+            TextSize = FontSize,
+            IsAntialias = true,
+            Typeface = SKTypeface.FromFamilyName(
+                FontFamily,
+                IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
+                SKFontStyleWidth.Normal,
+                IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright)
+        };
+
+        // Treat StartPoint as the top-left of the text box with a small padding like the Avalonia TextBox.
+        var metrics = paint.FontMetrics;
+        float baseline = rect.Top + padding - metrics.Ascent; // ascent is negative
+
+        canvas.DrawText(Text, rect.Left + padding, baseline, paint);
+    }
+
+    public override bool HitTest(SKPoint point, float tolerance = 5)
+    {
+        var textBounds = GetBounds();
+        var inflatedBounds = SKRect.Inflate(textBounds, tolerance, tolerance);
+        return inflatedBounds.Contains(point);
+    }
+
+    public override SKRect GetBounds()
+    {
+        // Use StartPoint and EndPoint like other rectangle-based annotations
+        float left = Math.Min(StartPoint.X, EndPoint.X);
+        float top = Math.Min(StartPoint.Y, EndPoint.Y);
+        float right = Math.Max(StartPoint.X, EndPoint.X);
+        float bottom = Math.Max(StartPoint.Y, EndPoint.Y);
+
+        // Ensure minimum size for visibility
+        // Ensure minimum size for visibility
+        const float minSize = 10f;
+        if (right - left < minSize) right = left + minSize;
+        if (bottom - top < minSize) bottom = top + minSize;
+
+        // Return the bounds defined by StartPoint and EndPoint
+        return new SKRect(left, top, right, bottom);
+    }
+}

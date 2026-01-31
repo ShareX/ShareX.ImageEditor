@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
+             x:Class="ShareX.ImageEditor.Views.Dialogs.SharpenDialog"
+             x:Name="SharpenDialogRoot">
+
+    <StackPanel Spacing="0">
+        <!-- Header -->
+        <TextBlock Text="Sharpen" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        
+        <!-- Slider -->
+        <StackPanel Spacing="0">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="Strength" Foreground="#9CA3AF"/>
+                <Border Grid.Column="1" Classes="capsule">
+                    <TextBlock Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}"
+                               Foreground="#E7E9EA"/>
+                </Border>
+            </Grid>
+            <Slider x:Name="StrengthSlider"
+                    Minimum="0" Maximum="100" Value="50"
+                    TickFrequency="1" IsSnapToTickEnabled="True"
+                    Background="#374151"
+                    ValueChanged="OnValueChanged"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active" Content="Apply" Click="OnApplyClick" Margin="4,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

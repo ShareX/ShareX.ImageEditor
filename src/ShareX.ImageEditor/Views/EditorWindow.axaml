@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="using:ShareX.ImageEditor.Views"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        x:Class="ShareX.ImageEditor.Views.EditorWindow"
+        Title="{Binding WindowTitle}"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen">
+    
+    <views:EditorView Name="EditorViewControl"/>
+
+</Window>
