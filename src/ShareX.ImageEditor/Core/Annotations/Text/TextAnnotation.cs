@@ -23,8 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -32,7 +30,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Text annotation
 /// </summary>
-public class TextAnnotation : Annotation
+public partial class TextAnnotation : Annotation
 {
     /// <summary>
     /// Text content
@@ -62,43 +60,6 @@ public class TextAnnotation : Annotation
     public TextAnnotation()
     {
         ToolType = EditorTool.Text;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation (TextBox for editing)
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
-        var textBox = new TextBox
-        {
-            Foreground = brush,
-            Background = Brushes.Transparent,
-            FontSize = FontSize,
-            FontWeight = IsBold ? FontWeight.Bold : FontWeight.Normal,
-            FontStyle = IsItalic ? FontStyle.Italic : FontStyle.Normal,
-            BorderBrush = Brushes.Transparent,
-            BorderThickness = new Avalonia.Thickness(0),
-            Padding = new Avalonia.Thickness(4),
-            AcceptsReturn = false,
-            Text = Text,
-            Tag = this,
-            MinWidth = 0,
-            IsHitTestVisible = false
-        };
-
-        if (ShadowEnabled)
-        {
-            textBox.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return textBox;
     }
 
     public override void Render(SKCanvas canvas)

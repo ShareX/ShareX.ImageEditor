@@ -23,8 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia.Controls;
-using ShareX.ImageEditor.Controls;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -32,7 +30,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Spotlight annotation - darkens entire image except highlighted area
 /// </summary>
-public class SpotlightAnnotation : Annotation
+public partial class SpotlightAnnotation : Annotation
 {
     /// <summary>
     /// Darkening overlay opacity (0-255)
@@ -47,19 +45,6 @@ public class SpotlightAnnotation : Annotation
     public SpotlightAnnotation()
     {
         ToolType = EditorTool.Spotlight;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation (SpotlightControl)
-    /// </summary>
-    public Control CreateVisual()
-    {
-        return new SpotlightControl
-        {
-            Annotation = this,
-            IsHitTestVisible = false,
-            Tag = this
-        };
     }
 
     public override void Render(SKCanvas canvas)

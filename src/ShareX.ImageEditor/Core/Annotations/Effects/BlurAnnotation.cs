@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -7,7 +5,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Blur annotation - applies blur to the region
 /// </summary>
-public class BlurAnnotation : BaseEffectAnnotation
+public partial class BlurAnnotation : BaseEffectAnnotation
 {
     public BlurAnnotation()
     {
@@ -15,20 +13,6 @@ public class BlurAnnotation : BaseEffectAnnotation
         StrokeColor = "#00000000"; // Transparent border
         StrokeWidth = 0;
         Amount = 10; // Default blur radius
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        return new Avalonia.Controls.Shapes.Rectangle
-        {
-            Stroke = Brushes.Transparent,
-            StrokeThickness = StrokeWidth,
-            Fill = new SolidColorBrush(Color.Parse("#200000FF")), // Faint blue
-            Tag = this
-        };
     }
 
     public override void Render(SKCanvas canvas)

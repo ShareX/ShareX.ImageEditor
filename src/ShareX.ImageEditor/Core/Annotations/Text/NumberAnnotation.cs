@@ -23,9 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -33,7 +30,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Number annotation - auto-incrementing numbered circle markers
 /// </summary>
-public class NumberAnnotation : Annotation
+public partial class NumberAnnotation : Annotation
 {
     /// <summary>
     /// Number to display (typically auto-incremented)
@@ -67,59 +64,6 @@ public class NumberAnnotation : Annotation
     public NumberAnnotation()
     {
         ToolType = EditorTool.Step;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation (Grid with Ellipse and TextBlock)
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var radius = CalculateRadius();
-        IBrush fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
-            ? Brushes.Transparent
-            : new SolidColorBrush(Color.Parse(FillColor));
-
-        var strokeColor = Color.Parse(StrokeColor);
-
-        var grid = new Grid
-        {
-            Width = radius * 2,
-            Height = radius * 2,
-            Tag = this
-        };
-
-        var bg = new Avalonia.Controls.Shapes.Ellipse
-        {
-            Fill = fillBrush,
-            Stroke = new SolidColorBrush(strokeColor),
-            StrokeThickness = StrokeWidth
-        };
-
-        var numText = new TextBlock
-        {
-            Text = Number.ToString(),
-            Foreground = Brushes.White,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontWeight = FontWeight.Bold,
-            FontSize = FontSize * 0.6 // Scale font to fit in circle with padding
-        };
-
-        grid.Children.Add(bg);
-        grid.Children.Add(numText);
-
-        if (ShadowEnabled)
-        {
-            grid.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return grid;
     }
 
     public override void Render(SKCanvas canvas)

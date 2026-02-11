@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using ShareX.ImageEditor.Controls;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -7,7 +5,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Speech Balloon annotation with tail
 /// </summary>
-public class SpeechBalloonAnnotation : Annotation
+public partial class SpeechBalloonAnnotation : Annotation
 {
     /// <summary>
     /// Tail point (absolute position)
@@ -34,32 +32,6 @@ public class SpeechBalloonAnnotation : Annotation
         StrokeWidth = 2;
         StrokeColor = "#FF000000";
         FillColor = "#FFFFFFFF"; // Default to white
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation (SpeechBalloonControl)
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var control = new SpeechBalloonControl
-        {
-            Annotation = this,
-            IsHitTestVisible = true,
-            Tag = this
-        };
-
-        if (ShadowEnabled)
-        {
-            control.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return control;
     }
 
     public override void Render(SKCanvas canvas)

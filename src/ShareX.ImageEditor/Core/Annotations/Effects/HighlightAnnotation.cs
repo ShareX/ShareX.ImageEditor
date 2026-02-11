@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -7,30 +5,13 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Highlight annotation - translucent color overlay
 /// </summary>
-public class HighlightAnnotation : BaseEffectAnnotation
+public partial class HighlightAnnotation : BaseEffectAnnotation
 {
     public HighlightAnnotation()
     {
         ToolType = EditorTool.Highlight;
         StrokeColor = "#FFFF00"; // Default yellow (opaque for logic, transparency comes from blend)
         StrokeWidth = 0; // No border by default
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var baseColor = Color.Parse(StrokeColor);
-        // Fallback visual: Apply consistent highlight alpha (0x55) for the placeholder rect
-        var highlightColor = Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
-        return new Avalonia.Controls.Shapes.Rectangle
-        {
-            Fill = new SolidColorBrush(highlightColor),
-            Stroke = Brushes.Transparent,
-            StrokeThickness = 0,
-            Tag = this
-        };
     }
 
     public override void Render(SKCanvas canvas)

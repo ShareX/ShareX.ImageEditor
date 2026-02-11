@@ -1,5 +1,3 @@
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -7,7 +5,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Pixelate annotation - applies pixelation to the region
 /// </summary>
-public class PixelateAnnotation : BaseEffectAnnotation
+public partial class PixelateAnnotation : BaseEffectAnnotation
 {
     public PixelateAnnotation()
     {
@@ -15,20 +13,6 @@ public class PixelateAnnotation : BaseEffectAnnotation
         StrokeColor = "#00000000";
         StrokeWidth = 0;
         Amount = 10; // Default pixel size
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        return new Avalonia.Controls.Shapes.Rectangle
-        {
-            Stroke = Brushes.Transparent,
-            StrokeThickness = StrokeWidth,
-            Fill = new SolidColorBrush(Color.Parse("#2000FF00")), // Faint green
-            Tag = this
-        };
     }
 
     public override void Render(SKCanvas canvas)
