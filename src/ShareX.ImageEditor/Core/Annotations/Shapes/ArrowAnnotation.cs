@@ -23,9 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -33,7 +30,7 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Arrow annotation (line with arrowhead)
 /// </summary>
-public class ArrowAnnotation : Annotation
+public partial class ArrowAnnotation : Annotation
 {
     /// <summary>
     /// Arrow head width is proportional to stroke width for visual balance.
@@ -49,106 +46,6 @@ public class ArrowAnnotation : Annotation
     public ArrowAnnotation()
     {
         ToolType = EditorTool.Arrow;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
-        var path = new Avalonia.Controls.Shapes.Path
-        {
-            Stroke = brush,
-            StrokeThickness = StrokeWidth,
-            Fill = brush, // Fill arrowhead
-            Tag = this
-        };
-
-        // Populate the arrow geometry using the annotation's points
-        path.Data = CreateArrowGeometry(
-            new Point(StartPoint.X, StartPoint.Y),
-            new Point(EndPoint.X, EndPoint.Y),
-            StrokeWidth * ArrowHeadWidthMultiplier);
-
-        if (ShadowEnabled)
-        {
-            path.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return path;
-    }
-
-    /// <summary>
-    /// Creates arrow geometry for the Avalonia Path (relocated from EditorView)
-    /// </summary>
-    public Geometry CreateArrowGeometry(Avalonia.Point start, Avalonia.Point end, double headSize)
-    {
-        var geometry = new StreamGeometry();
-        using (var ctx = geometry.Open())
-        {
-            var d = end - start;
-            var length = Math.Sqrt(d.X * d.X + d.Y * d.Y);
-
-            if (length > 0)
-            {
-                var ux = d.X / length;
-                var uy = d.Y / length;
-
-                var perpX = -uy;
-                var perpY = ux;
-
-                var enlargedHeadSize = headSize * 1.5;
-                var arrowAngle = Math.PI / 5.14; // 35 degrees
-
-                var arrowBase = new Avalonia.Point(
-                    end.X - enlargedHeadSize * ux,
-                    end.Y - enlargedHeadSize * uy);
-
-                var arrowheadBaseWidth = enlargedHeadSize * Math.Tan(arrowAngle);
-
-                var arrowBaseLeft = new Avalonia.Point(
-                    arrowBase.X + perpX * arrowheadBaseWidth,
-                    arrowBase.Y + perpY * arrowheadBaseWidth);
-
-                var arrowBaseRight = new Avalonia.Point(
-                    arrowBase.X - perpX * arrowheadBaseWidth,
-                    arrowBase.Y - perpY * arrowheadBaseWidth);
-
-                var shaftEndWidth = enlargedHeadSize * 0.30;
-
-                var shaftEndLeft = new Avalonia.Point(
-                    arrowBase.X + perpX * shaftEndWidth,
-                    arrowBase.Y + perpY * shaftEndWidth);
-
-                var shaftEndRight = new Avalonia.Point(
-                    arrowBase.X - perpX * shaftEndWidth,
-                    arrowBase.Y - perpY * shaftEndWidth);
-
-                ctx.BeginFigure(start, true);
-                ctx.LineTo(shaftEndLeft);
-                ctx.LineTo(arrowBaseLeft);
-                ctx.LineTo(end);
-                ctx.LineTo(arrowBaseRight);
-                ctx.LineTo(shaftEndRight);
-                ctx.EndFigure(true);
-            }
-            else
-            {
-                var radius = 2.0;
-                ctx.BeginFigure(new Avalonia.Point(start.X - radius, start.Y), true);
-                ctx.ArcTo(new Avalonia.Point(start.X + radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
-                ctx.ArcTo(new Avalonia.Point(start.X - radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
-                ctx.EndFigure(true);
-            }
-        }
-        return geometry;
     }
 
     public override void Render(SKCanvas canvas)

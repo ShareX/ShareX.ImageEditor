@@ -23,41 +23,40 @@
 
 #endregion License Information (GPL v3)
 
-using SkiaSharp;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
 
 namespace ShareX.ImageEditor.Annotations;
 
-/// <summary>
-/// Rectangle annotation
-/// </summary>
-public partial class RectangleAnnotation : Annotation
+public partial class LineAnnotation
 {
-    public RectangleAnnotation()
+    /// <summary>
+    /// Creates the Avalonia visual for this annotation
+    /// </summary>
+    public Control CreateVisual()
     {
-        ToolType = EditorTool.Rectangle;
-    }
-
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
-
-        // Draw fill first (if not transparent)
-        if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
+        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
+        var line = new Avalonia.Controls.Shapes.Line
         {
-            using var fillPaint = CreateFillPaint();
-            canvas.DrawRect(rect, fillPaint);
+            Stroke = brush,
+            StrokeThickness = StrokeWidth,
+            StartPoint = new Point(StartPoint.X, StartPoint.Y),
+            EndPoint = new Point(EndPoint.X, EndPoint.Y),
+            Tag = this
+        };
+
+        if (ShadowEnabled)
+        {
+            line.Effect = new Avalonia.Media.DropShadowEffect
+            {
+                OffsetX = 3,
+                OffsetY = 3,
+                BlurRadius = 4,
+                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
+            };
         }
 
-        // Draw stroke on top
-        using var strokePaint = CreateStrokePaint();
-        canvas.DrawRect(rect, strokePaint);
-    }
-
-    public override bool HitTest(SKPoint point, float tolerance = 5)
-    {
-        var rect = GetBounds();
-        var expanded = SKRect.Inflate(rect, tolerance, tolerance);
-        return expanded.Contains(point);
+        return line;
     }
 }
-

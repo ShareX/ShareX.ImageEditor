@@ -23,9 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -33,40 +30,11 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Line annotation
 /// </summary>
-public class LineAnnotation : Annotation
+public partial class LineAnnotation : Annotation
 {
     public LineAnnotation()
     {
         ToolType = EditorTool.Line;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
-        var line = new Avalonia.Controls.Shapes.Line
-        {
-            Stroke = brush,
-            StrokeThickness = StrokeWidth,
-            StartPoint = new Point(StartPoint.X, StartPoint.Y),
-            EndPoint = new Point(EndPoint.X, EndPoint.Y),
-            Tag = this
-        };
-
-        if (ShadowEnabled)
-        {
-            line.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return line;
     }
 
     public override void Render(SKCanvas canvas)

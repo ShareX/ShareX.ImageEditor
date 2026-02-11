@@ -23,8 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia.Controls;
-using Avalonia.Media;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Annotations;
@@ -32,42 +30,11 @@ namespace ShareX.ImageEditor.Annotations;
 /// <summary>
 /// Ellipse/circle annotation
 /// </summary>
-public class EllipseAnnotation : Annotation
+public partial class EllipseAnnotation : Annotation
 {
     public EllipseAnnotation()
     {
         ToolType = EditorTool.Ellipse;
-    }
-
-    /// <summary>
-    /// Creates the Avalonia visual for this annotation
-    /// </summary>
-    public Control CreateVisual()
-    {
-        var strokeBrush = new SolidColorBrush(Color.Parse(StrokeColor));
-        IBrush fillBrush = string.IsNullOrEmpty(FillColor) || FillColor == "#00000000"
-            ? Brushes.Transparent
-            : new SolidColorBrush(Color.Parse(FillColor));
-        var ellipse = new Avalonia.Controls.Shapes.Ellipse
-        {
-            Stroke = strokeBrush,
-            StrokeThickness = StrokeWidth,
-            Fill = fillBrush,
-            Tag = this
-        };
-
-        if (ShadowEnabled)
-        {
-            ellipse.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
-
-        return ellipse;
     }
 
     public override void Render(SKCanvas canvas)
