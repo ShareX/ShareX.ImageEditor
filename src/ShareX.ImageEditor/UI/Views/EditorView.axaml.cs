@@ -421,8 +421,19 @@ namespace ShareX.ImageEditor.Views
             {
                 if (e.Key == Key.Delete)
                 {
-                    vm.DeleteSelectedCommand.Execute(null);
-                    e.Handled = true;
+                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        if (vm.ClearAnnotationsCommand.CanExecute(null))
+                        {
+                            vm.ClearAnnotationsCommand.Execute(null);
+                            e.Handled = true;
+                        }
+                    }
+                    else
+                    {
+                        vm.DeleteSelectedCommand.Execute(null);
+                        e.Handled = true;
+                    }
                 }
                 else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.Z)
                 {

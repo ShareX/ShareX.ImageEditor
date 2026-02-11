@@ -178,7 +178,14 @@ public class EditorCanvas : Control
             switch (e.Key)
             {
                 case Key.Delete:
-                    _editor.DeleteSelected();
+                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        _editor.ClearAll();
+                    }
+                    else
+                    {
+                        _editor.DeleteSelected();
+                    }
                     e.Handled = true;
                     break;
                 case Key.Escape:
