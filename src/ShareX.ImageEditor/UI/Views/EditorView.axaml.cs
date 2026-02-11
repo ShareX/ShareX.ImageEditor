@@ -708,7 +708,7 @@ namespace ShareX.ImageEditor.Views
             {
                 canvas.Children.Clear();
                 _selectionController.ClearSelection();
-                _editorCore.ClearAll();
+                _editorCore.ClearAll(resetHistory: false);
                 RenderCore();
 
                 // Update HasAnnotations state

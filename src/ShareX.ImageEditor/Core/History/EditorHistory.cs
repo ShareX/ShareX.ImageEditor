@@ -198,12 +198,14 @@ internal class EditorHistory : IDisposable
     /// Excludes region tools (crop, cutout, spotlight) from memento creation.
     /// </summary>
     /// <param name="excludeAnnotation">Optional annotation to exclude from the memento (to capture state before it was added)</param>
-    public void CreateAnnotationsMemento(Annotation? excludeAnnotation = null)
+    /// <param name="force">Force memento creation regardless of active tool</param>
+    public void CreateAnnotationsMemento(Annotation? excludeAnnotation = null, bool force = false)
     {
         // Skip memento creation for region tools (crop, cutout, spotlight)
         // These tools execute immediately and don't need annotation history
-        if (_editorCore.ActiveTool == EditorTool.Crop ||
-            _editorCore.ActiveTool == EditorTool.Spotlight)
+        if (!force &&
+            (_editorCore.ActiveTool == EditorTool.Crop ||
+             _editorCore.ActiveTool == EditorTool.Spotlight))
         {
             return;
         }

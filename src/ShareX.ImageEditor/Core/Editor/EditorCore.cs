@@ -436,11 +436,21 @@ public class EditorCore : IDisposable
     /// <summary>
     /// Clear all annotations
     /// </summary>
-    public void ClearAll()
+    public void ClearAll(bool resetHistory = true)
     {
+        if (!resetHistory)
+        {
+            _history.CreateAnnotationsMemento(force: true);
+        }
+
         _annotations.Clear();
-        _history?.Dispose();
-        _history = new EditorHistory(this);
+
+        if (resetHistory)
+        {
+            _history?.Dispose();
+            _history = new EditorHistory(this);
+        }
+
         _currentAnnotation = null;
         _selectedAnnotation = null;
         _isDrawing = false;

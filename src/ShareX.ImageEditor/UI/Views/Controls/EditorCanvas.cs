@@ -180,7 +180,7 @@ public class EditorCanvas : Control
                 case Key.Delete:
                     if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                     {
-                        _editor.ClearAll();
+                        _editor.ClearAll(resetHistory: false);
                     }
                     else
                     {
