@@ -462,7 +462,7 @@
                                 ToolTip.Tip="Arrow (A)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconArrow}"/>
                         <Button Classes="editor-button" Width="40"
-                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pen}"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Freehand}"
                                 ToolTip.Tip="Freehand (P)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconPen}"/>
@@ -477,7 +477,7 @@
                                 ToolTip.Tip="Speech Balloon (B)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconSpeechBalloon}"/>
                         <Button Classes="editor-button" Width="40"
-                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Number}"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Step}"
                                 ToolTip.Tip="Step (N)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
@@ -502,7 +502,7 @@
                                 ToolTip.Tip="Magnify (M)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
                         <Button Classes="editor-button" Width="40"
-                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlighter}"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
                                 ToolTip.Tip="Highlight (H)"
                                 FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
