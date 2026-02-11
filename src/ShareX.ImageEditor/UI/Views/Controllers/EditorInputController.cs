@@ -92,13 +92,15 @@ public class EditorInputController
                     _selectionController.ClearSelection();
                 }
 
-                // Dispose annotation resources before removing
-                (hitTarget.Tag as IDisposable)?.Dispose();
-
                 if (hitTarget.Tag is Annotation hitAnnotation)
                 {
+                    // RemoveAnnotation captures history FIRST (clones bitmap for undo),
+                    // then we dispose after so the clone retains the bitmap data
                     _view.EditorCore.RemoveAnnotation(hitAnnotation);
                 }
+
+                // Dispose annotation resources AFTER history snapshot is captured
+                (hitTarget.Tag as IDisposable)?.Dispose();
 
                 canvas.Children.Remove(hitTarget);
 
