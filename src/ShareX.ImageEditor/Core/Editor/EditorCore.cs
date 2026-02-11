@@ -62,6 +62,11 @@ public class EditorCore : IDisposable
     /// </summary>
     public event Action? InvalidateRequested;
 
+    /// <summary>
+    /// Raised when the z-order of annotations changes
+    /// </summary>
+    public event Action? AnnotationOrderChanged;
+
     public event Action? ImageChanged;
     public event Action<Annotation>? EditAnnotationRequested;
 
@@ -947,6 +952,78 @@ public class EditorCore : IDisposable
         {
             RemoveAnnotation(_selectedAnnotation);
         }
+    }
+
+    /// <summary>
+    /// Bring the selected annotation to the front (render last)
+    /// </summary>
+    public void BringToFront()
+    {
+        if (_selectedAnnotation == null || !_annotations.Contains(_selectedAnnotation)) return;
+        int index = _annotations.IndexOf(_selectedAnnotation);
+        // Already at top
+        if (index < 0 || index == _annotations.Count - 1) return;
+
+        _history.CreateAnnotationsMemento();
+        _annotations.RemoveAt(index);
+        _annotations.Add(_selectedAnnotation);
+        AnnotationOrderChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Send the selected annotation to the back (render first)
+    /// </summary>
+    public void SendToBack()
+    {
+        if (_selectedAnnotation == null || !_annotations.Contains(_selectedAnnotation)) return;
+        int index = _annotations.IndexOf(_selectedAnnotation);
+        // Already at bottom
+        if (index <= 0) return;
+
+        _history.CreateAnnotationsMemento();
+        _annotations.RemoveAt(index);
+        _annotations.Insert(0, _selectedAnnotation);
+        AnnotationOrderChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Bring the selected annotation forward one step
+    /// </summary>
+    public void BringForward()
+    {
+        if (_selectedAnnotation == null || !_annotations.Contains(_selectedAnnotation)) return;
+        int index = _annotations.IndexOf(_selectedAnnotation);
+        // Already at top
+        if (index < 0 || index == _annotations.Count - 1) return;
+
+        _history.CreateAnnotationsMemento();
+        _annotations.RemoveAt(index);
+        _annotations.Insert(index + 1, _selectedAnnotation);
+        AnnotationOrderChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
+    }
+
+    /// <summary>
+    /// Send the selected annotation backward one step
+    /// </summary>
+    public void SendBackward()
+    {
+        if (_selectedAnnotation == null || !_annotations.Contains(_selectedAnnotation)) return;
+        int index = _annotations.IndexOf(_selectedAnnotation);
+        // Already at bottom
+        if (index <= 0) return;
+
+        _history.CreateAnnotationsMemento();
+        _annotations.RemoveAt(index);
+        _annotations.Insert(index - 1, _selectedAnnotation);
+        AnnotationOrderChanged?.Invoke();
+        HistoryChanged?.Invoke();
+        InvalidateRequested?.Invoke();
     }
 
     /// <summary>

@@ -39,6 +39,7 @@ using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -101,6 +102,7 @@ namespace ShareX.ImageEditor.Views
                 }
             });
             _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
+            _editorCore.AnnotationOrderChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationOrderChanged);
             _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
                 if (DataContext is MainViewModel vm)
@@ -124,7 +126,18 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.HasSelectedAnnotation = hasSelection;
-                vm.SelectedAnnotation = _selectionController.SelectedShape?.Tag as Annotation;
+                var annotation = _selectionController.SelectedShape?.Tag as Annotation;
+                vm.SelectedAnnotation = annotation;
+
+                // Sync selection to EditorCore so z-order operations work
+                if (annotation != null)
+                {
+                    _editorCore.Select(annotation);
+                }
+                else
+                {
+                    _editorCore.Deselect();
+                }
 
                 // Sync VM properties with selected annotation to update UI
                 if (vm.SelectedAnnotation != null)
@@ -469,6 +482,11 @@ namespace ShareX.ImageEditor.Views
                     // Tool shortcuts
                     switch (e.Key)
                     {
+                        case Key.Home: _editorCore.BringToFront(); e.Handled = true; break;
+                        case Key.End: _editorCore.SendToBack(); e.Handled = true; break;
+                        case Key.PageUp: _editorCore.BringForward(); e.Handled = true; break;
+                        case Key.PageDown: _editorCore.SendBackward(); e.Handled = true; break;
+
                         case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
                         case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
                         case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
@@ -549,6 +567,43 @@ namespace ShareX.ImageEditor.Views
 
             // Update HasAnnotations state
             UpdateHasAnnotationsState();
+        }
+
+        private void OnAnnotationOrderChanged()
+        {
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null) return;
+
+            var children = canvas.Children.OfType<Control>().ToList();
+            if (children.Count == 0) return;
+
+            var coreAnnotations = _editorCore.Annotations;
+            // Create a lookup for O(1) index access
+            var indexLookup = new Dictionary<Annotation, int>();
+            for (int i = 0; i < coreAnnotations.Count; i++)
+            {
+                indexLookup[coreAnnotations[i]] = i;
+            }
+
+            children.Sort((a, b) =>
+            {
+                int indexA = int.MaxValue;
+                if (a.Tag is Annotation tagA && indexLookup.TryGetValue(tagA, out var ia))
+                {
+                    indexA = ia;
+                }
+
+                int indexB = int.MaxValue;
+                if (b.Tag is Annotation tagB && indexLookup.TryGetValue(tagB, out var ib))
+                {
+                    indexB = ib;
+                }
+
+                return indexA.CompareTo(indexB);
+            });
+
+            canvas.Children.Clear();
+            canvas.Children.AddRange(children);
         }
 
         private Control? CreateControlForAnnotation(Annotation annotation)
