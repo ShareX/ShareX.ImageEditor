@@ -131,8 +131,13 @@ namespace ShareX.ImageEditor.Views
                     // Prevent feedback loop: UI update -> VM Property Changed -> Apply to Annotation (redundant)
                     // But Apply... methods limit damage.
 
-                    vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
-                    vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                    // Don't sync stroke properties from ImageAnnotation — it has StrokeWidth=0
+                    // which would clobber Options.Thickness and break other tools
+                    if (vm.SelectedAnnotation is not ImageAnnotation)
+                    {
+                        vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
+                        vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                    }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
                     {
