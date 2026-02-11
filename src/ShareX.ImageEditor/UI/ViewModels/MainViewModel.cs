@@ -28,6 +28,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShareX.ImageEditor.Abstractions;
+using ShareX.ImageEditor.Adapters;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ImageEffects.Adjustments;
@@ -46,6 +48,7 @@ namespace ShareX.ImageEditor.ViewModels
 
         private readonly EditorOptions _options;
         public EditorOptions Options => _options;
+        public IAnnotationToolbarAdapter ToolbarAdapter { get; }
 
         private const string OutputRatioAuto = "Auto";
 
@@ -697,6 +700,7 @@ namespace ShareX.ImageEditor.ViewModels
         public MainViewModel(EditorOptions? options = null)
         {
             _options = options ?? new EditorOptions();
+            ToolbarAdapter = new EditorToolbarAdapter(this);
             Current = this;
             GradientPresets = BuildGradientPresets();
             _canvasBackground = CopyBrush(GradientPresets[0].Brush);

@@ -431,6 +431,7 @@
             
             <!-- Top Toolbar: Tools and Actions -->
             <Border Padding="4" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    DataContext="{Binding ToolbarAdapter}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
                     <StackPanel Orientation="Horizontal" Spacing="4">
@@ -605,6 +606,7 @@
 
             <!-- Bottom Toolbar: Tool Options -->
             <Border Padding="4" Margin="0,-4,0,0" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                    DataContext="{Binding ToolbarAdapter}"
                     IsVisible="{Binding ShowToolOptionsSeparator}"
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
