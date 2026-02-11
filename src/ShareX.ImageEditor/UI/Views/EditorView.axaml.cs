@@ -446,6 +446,11 @@ namespace ShareX.ImageEditor.Views
                         _ = PasteImageFromClipboard();
                         e.Handled = true;
                     }
+                    else if (e.Key == Key.D)
+                    {
+                        DuplicateSelectedAnnotation();
+                        e.Handled = true;
+                    }
                 }
                 else if (e.KeyModifiers == KeyModifiers.None)
                 {
@@ -1542,5 +1547,64 @@ namespace ShareX.ImageEditor.Views
                 }
             }
         }
+
+    /// <summary>
+    /// Duplicates the currently selected annotation with a deep copy.
+    /// The duplicate is offset by 20px and becomes the new selection.
+    /// </summary>
+    private void DuplicateSelectedAnnotation()
+    {
+        var selectedControl = _selectionController.SelectedShape;
+        if (selectedControl == null) return;
+
+        var annotation = selectedControl.Tag as Annotation;
+        if (annotation == null) return;
+
+        var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+        if (canvas == null) return;
+
+        // Deep clone the annotation (ImageAnnotation.Clone deep-copies the bitmap)
+        var clone = annotation.Clone();
+
+        // Offset the duplicate by 20px
+        const float offset = 20f;
+        clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
+        clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
+
+        // Offset freehand/eraser points if applicable
+        if (clone is FreehandAnnotation freehandClone)
+        {
+            for (int i = 0; i < freehandClone.Points.Count; i++)
+            {
+                var pt = freehandClone.Points[i];
+                freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+            }
+        }
+        else if (clone is SmartEraserAnnotation eraserClone)
+        {
+            for (int i = 0; i < eraserClone.Points.Count; i++)
+            {
+                var pt = eraserClone.Points[i];
+                eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+            }
+        }
+
+        // Add to EditorCore (captures undo history before adding)
+        EditorCore.AddAnnotation(clone);
+
+        // Create the UI control for the cloned annotation
+        var control = CreateControlForAnnotation(clone);
+        if (control != null)
+        {
+            canvas.Children.Add(control);
+            _selectionController.SetSelectedShape(control);
+        }
+
+        // Update HasAnnotations state
+        if (DataContext is MainViewModel vm)
+        {
+            vm.HasAnnotations = true;
+        }
+    }
     }
 }
