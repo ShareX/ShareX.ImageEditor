@@ -27,6 +27,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
@@ -1413,12 +1414,9 @@ namespace ShareX.ImageEditor.Views
 
             try
             {
-                // Try bitmap data formats first
-                var formats = await clipboard.GetFormatsAsync();
-
                 // Check for image file paths in clipboard (e.g. copied from Explorer)
-                var fileData = await clipboard.GetDataAsync(DataFormats.Files);
-                if (fileData is System.Collections.Generic.IEnumerable<IStorageItem> files)
+                var files = await clipboard.TryGetFilesAsync();
+                if (files != null)
                 {
                     foreach (var file in files)
                     {
@@ -1446,43 +1444,15 @@ namespace ShareX.ImageEditor.Views
                     }
                 }
 
-                // Try raw bitmap data from clipboard (e.g. PrintScreen, copy from image app)
-                // Avalonia exposes bitmap clipboard data as image/png or similar
-                foreach (var format in new[] { "image/png", "PNG", "image/bmp", "image/jpeg" })
+                // Try clipboard bitmap data (e.g. PrintScreen, copy from image app)
+                var clipboardBitmap = await clipboard.TryGetBitmapAsync();
+                if (clipboardBitmap != null)
                 {
-                    if (formats.Contains(format))
-                    {
-                        var data = await clipboard.GetDataAsync(format);
-                        if (data is byte[] bytes)
-                        {
-                            var skBitmap = SKBitmap.Decode(bytes);
-                            if (skBitmap != null)
-                            {
-                                InsertImageAnnotation(skBitmap);
-                                return;
-                            }
-                        }
-                        else if (data is MemoryStream ms)
-                        {
-                            ms.Position = 0;
-                            var skBitmap = SKBitmap.Decode(ms);
-                            if (skBitmap != null)
-                            {
-                                InsertImageAnnotation(skBitmap);
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                // Final fallback: try "Bitmap" format (Windows-specific)
-                var bitmapData = await clipboard.GetDataAsync("Bitmap");
-                if (bitmapData is byte[] bmpBytes)
-                {
-                    var skBitmap = SKBitmap.Decode(bmpBytes);
+                    var skBitmap = BitmapConversionHelpers.ToSKBitmap(clipboardBitmap);
                     if (skBitmap != null)
                     {
                         InsertImageAnnotation(skBitmap);
+                        return;
                     }
                 }
             }
@@ -1498,7 +1468,7 @@ namespace ShareX.ImageEditor.Views
         private void OnDragOver(object? sender, DragEventArgs e)
         {
             // Accept file drops that contain images
-            if (e.Data.Contains(DataFormats.Files))
+            if (e.DataTransfer.Formats.Contains(DataFormat.File))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -1513,11 +1483,8 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private async void OnDrop(object? sender, DragEventArgs e)
         {
-            if (e.Data.Contains(DataFormats.Files))
+            if (e.DataTransfer.Formats.Contains(DataFormat.File))
             {
-                var files = e.Data.GetFiles();
-                if (files == null) return;
-
                 // Get drop position relative to the annotation canvas
                 var canvas = this.FindControl<Canvas>("AnnotationCanvas");
                 Point? dropPos = null;
@@ -1526,9 +1493,9 @@ namespace ShareX.ImageEditor.Views
                     dropPos = e.GetPosition(canvas);
                 }
 
-                foreach (var item in files)
+                foreach (var item in e.DataTransfer.Items)
                 {
-                    if (item is IStorageFile file)
+                    if (item.TryGetRaw(DataFormat.File) is IStorageFile file)
                     {
                         var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
                         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
