@@ -1586,10 +1586,8 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private void OnDragOver(object? sender, DragEventArgs e)
         {
-            // TODO: Fix DragDrop 'Data' property access or missing references
-            /*
-            // Accept file drops that contain images
-            if (e.Data.GetDataPresent("FileNames"))
+            // Accept file drops
+            if (e.DataTransfer.Formats.Contains(DataFormat.File))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -1597,7 +1595,6 @@ namespace ShareX.ImageEditor.Views
             {
                 e.DragEffects = DragDropEffects.None;
             }
-            */
         }
 
         /// <summary>
@@ -1605,29 +1602,26 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private async void OnDrop(object? sender, DragEventArgs e)
         {
-            // TODO: Fix DragDrop 'Data' property access or missing references
-            /*
-            if (e.Data.GetDataPresent("FileNames"))
+            if (e.DataTransfer.Formats.Contains(DataFormat.File))
             {
-                var fileNames = e.Data.GetData("FileNames") as IEnumerable<string>;
-                if (fileNames != null)
+                // Get drop position relative to the annotation canvas
+                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+                Point? dropPos = null;
+                if (canvas != null)
                 {
-                    // Get drop position relative to the annotation canvas
-                    var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                    Point? dropPos = null;
-                    if (canvas != null)
-                    {
-                        dropPos = e.GetPosition(canvas);
-                    }
+                    dropPos = e.GetPosition(canvas);
+                }
 
-                    foreach (var fileName in fileNames)
+                foreach (var item in e.DataTransfer.Items)
+                {
+                    if (item.TryGetRaw(DataFormat.File) is IStorageFile file)
                     {
-                        var ext = System.IO.Path.GetExtension(fileName)?.ToLowerInvariant();
+                        var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
                         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
                         {
                             try
                             {
-                                using var stream = System.IO.File.OpenRead(fileName);
+                                using var stream = await file.OpenReadAsync();
                                 using var memStream = new System.IO.MemoryStream();
                                 await stream.CopyToAsync(memStream);
                                 memStream.Position = 0;
@@ -1643,13 +1637,12 @@ namespace ShareX.ImageEditor.Views
                             }
                             catch (Exception ex)
                             {
-                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{fileName}': {ex.Message}");
+                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{file.Name}': {ex.Message}");
                             }
                         }
                     }
                 }
             }
-            */
         }
 
     /// <summary>
