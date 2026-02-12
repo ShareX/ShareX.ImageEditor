@@ -90,7 +90,7 @@
                      BorderBrush="#1F1F1F"
                      BorderThickness="1"
                      CornerRadius="6"
-                     Padding="4">
+                     Padding="6,2">
             <ContextMenu.Styles>
                 <Style Selector="MenuItem">
                     <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -99,17 +99,15 @@
                     <Setter Property="CornerRadius" Value="4"/>
                 </Style>
                 <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="#3E83F2"/>
+                    <Setter Property="Background" Value="{StaticResource AccentColor}"/>
                 </Style>
                 <Style Selector="MenuItem:separator">
                     <Setter Property="Height" Value="1"/>
                     <Setter Property="Margin" Value="0,4"/>
-                    <Setter Property="Background" Value="#3E3E3E"/>
+                    <Setter Property="Background" Value="#2E2E2E"/>
                 </Style>
-                <!-- Blurry Glass Effect -->
                 <Style Selector="ContextMenu">
-                    <Setter Property="Background" Value="#CC202020"/>
-                    <!-- <Setter Property="TransparencyLevelHint" Value="Blur"/> -->
+                    <Setter Property="Background" Value="#2E2E2E"/>
                 </Style>
             </ContextMenu.Styles>
 
