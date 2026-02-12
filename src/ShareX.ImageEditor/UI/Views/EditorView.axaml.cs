@@ -847,16 +847,8 @@ namespace ShareX.ImageEditor.Views
 
         public SkiaSharp.SKBitmap? GetSnapshot()
         {
-            // Snapshot logic
-            var container = this.FindControl<Grid>("CanvasContainer");
-            if (container == null || container.Width <= 0 || container.Height <= 0) return null;
-
-            var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
-                new PixelSize((int)container.Width, (int)container.Height),
-                new Vector(96, 96));
-
-            rtb.Render(container);
-            return BitmapConversionHelpers.ToSKBitmap(rtb);
+            // Use EditorCore to get snapshot without selection handles
+            return _editorCore.GetSnapshot();
         }
 
         public Task<Bitmap?> RenderSnapshot()
