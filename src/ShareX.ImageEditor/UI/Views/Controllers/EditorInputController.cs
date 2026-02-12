@@ -322,7 +322,14 @@ public class EditorInputController
 
         if (_currentShape != null)
         {
-            if (Canvas.GetLeft(_currentShape) == 0 && Canvas.GetTop(_currentShape) == 0
+            var currentLeft = Canvas.GetLeft(_currentShape);
+            var currentTop = Canvas.GetTop(_currentShape);
+            
+            // Check for 0 OR NaN (default can be either depending on platform/version)
+            bool isPositionUnset = (currentLeft == 0 || double.IsNaN(currentLeft)) && 
+                                   (currentTop == 0 || double.IsNaN(currentTop));
+
+            if (isPositionUnset
                 && vm.ActiveTool != EditorTool.Spotlight
                 && vm.ActiveTool != EditorTool.SpeechBalloon
                 && vm.ActiveTool != EditorTool.Line

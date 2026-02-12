@@ -44,7 +44,9 @@ public partial class RectangleAnnotation
             Stroke = strokeBrush,
             StrokeThickness = StrokeWidth,
             Fill = fillBrush,
-            Tag = this
+            Tag = this,
+            Width = 0,
+            Height = 0
         };
 
         if (ShadowEnabled)
