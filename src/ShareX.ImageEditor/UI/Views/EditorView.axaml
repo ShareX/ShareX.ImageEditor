@@ -90,7 +90,8 @@
                      BorderBrush="#1F1F1F"
                      BorderThickness="1"
                      CornerRadius="6"
-                     Padding="6,2">
+                     Padding="6,2"
+                     Cursor="Arrow">
             <ContextMenu.Styles>
                 <Style Selector="MenuItem">
                     <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
