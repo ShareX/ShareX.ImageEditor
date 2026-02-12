@@ -916,32 +916,144 @@ namespace ShareX.ImageEditor.ViewModels
                 var targetColor = skBitmap.GetPixel(0, 0);
                 const int tolerance = 30; // Color tolerance for matching
 
-                // ISSUE-021 fix: Sample every 4th pixel for performance (16x faster)
-                // For a 4K image (3840x2160 = 8.3M pixels), this reduces scans from 8.3M to ~520K
-                const int sampleStep = 4;
-
                 // Find bounds of content (non-matching pixels)
+                // SIP-FIX: Use precise scanning (every pixel) to find true edges
                 int minX = skBitmap.Width;
                 int minY = skBitmap.Height;
                 int maxX = 0;
                 int maxY = 0;
 
-                for (int y = 0; y < skBitmap.Height; y += sampleStep)
+                // SIP-FIX: Use unsafe pointer access for performance to allow checking every pixel
+                unsafe
                 {
-                    for (int x = 0; x < skBitmap.Width; x += sampleStep)
-                    {
-                        var pixel = skBitmap.GetPixel(x, y);
+                    byte* ptr = (byte*)skBitmap.GetPixels().ToPointer();
+                    int width = skBitmap.Width;
+                    int height = skBitmap.Height;
+                    int rowBytes = skBitmap.RowBytes;
+                    int bpp = skBitmap.BytesPerPixel;
+                    
+                    byte tR = targetColor.Red;
+                    byte tG = targetColor.Green;
+                    byte tB = targetColor.Blue;
+                    byte tA = targetColor.Alpha;
 
-                        // Check if pixel is different from target color (within tolerance)
-                        if (Math.Abs(pixel.Red - targetColor.Red) > tolerance ||
-                            Math.Abs(pixel.Green - targetColor.Green) > tolerance ||
-                            Math.Abs(pixel.Blue - targetColor.Blue) > tolerance ||
-                            Math.Abs(pixel.Alpha - targetColor.Alpha) > tolerance)
+                    // Only optimize for 4 bytes per pixel (standard Bgra8888/Rgba8888)
+                    if (bpp == 4)
+                    {
+                        bool isBgra = skBitmap.ColorType == SkiaSharp.SKColorType.Bgra8888;
+                        
+                        for (int y = 0; y < height; y++)
                         {
-                            minX = Math.Min(minX, x);
-                            minY = Math.Min(minY, y);
-                            maxX = Math.Max(maxX, x);
-                            maxY = Math.Max(maxY, y);
+                            byte* row = ptr + (y * rowBytes);
+                            bool rowHasContent = false;
+                            
+                            // Scan from left
+                            for (int x = 0; x < width; x++)
+                            {
+                                byte r, g, b, a;
+                                // Simple mapping for standard 4-byte formats
+                                if (isBgra)
+                                {
+                                    b = row[x * 4 + 0];
+                                    g = row[x * 4 + 1];
+                                    r = row[x * 4 + 2];
+                                    a = row[x * 4 + 3];
+                                }
+                                else // Rgba8888
+                                {
+                                    r = row[x * 4 + 0];
+                                    g = row[x * 4 + 1];
+                                    b = row[x * 4 + 2];
+                                    a = row[x * 4 + 3];
+                                }
+
+                                if (Math.Abs(r - tR) > tolerance ||
+                                    Math.Abs(g - tG) > tolerance ||
+                                    Math.Abs(b - tB) > tolerance ||
+                                    Math.Abs(a - tA) > tolerance)
+                                {
+                                    // Found content start
+                                    if (x < minX) minX = x;
+                                    if (x > maxX) maxX = x; // Initial set for this row
+                                    if (y < minY) minY = y;
+                                    if (y > maxY) maxY = y;
+                                    rowHasContent = true;
+                                    break; // Stop left scan
+                                }
+                            }
+
+                            if (rowHasContent)
+                            {
+                                // Scan from right
+                                for (int x = width - 1; x >= 0; x--)
+                                {
+                                    byte r, g, b, a;
+                                    if (isBgra)
+                                    {
+                                        b = row[x * 4 + 0];
+                                        g = row[x * 4 + 1];
+                                        r = row[x * 4 + 2];
+                                        a = row[x * 4 + 3];
+                                    }
+                                    else
+                                    {
+                                        r = row[x * 4 + 0];
+                                        g = row[x * 4 + 1];
+                                        b = row[x * 4 + 2];
+                                        a = row[x * 4 + 3];
+                                    }
+
+                                    if (Math.Abs(r - tR) > tolerance ||
+                                        Math.Abs(g - tG) > tolerance ||
+                                        Math.Abs(b - tB) > tolerance ||
+                                        Math.Abs(a - tA) > tolerance)
+                                    {
+                                        if (x > maxX) maxX = x;
+                                        break; // Stop right scan, found the end of content
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Fallback: Use GetPixel but with edge-scan optimization for non-standard formats
+                        for (int y = 0; y < height; y++)
+                        {
+                            bool rowHasContent = false;
+                            // Scan left
+                            for (int x = 0; x < width; x++)
+                            {
+                                var pixel = skBitmap.GetPixel(x, y);
+                                if (Math.Abs(pixel.Red - tR) > tolerance ||
+                                    Math.Abs(pixel.Green - tG) > tolerance ||
+                                    Math.Abs(pixel.Blue - tB) > tolerance ||
+                                    Math.Abs(pixel.Alpha - tA) > tolerance)
+                                {
+                                    if (x < minX) minX = x;
+                                    if (x > maxX) maxX = x;
+                                    if (y < minY) minY = y;
+                                    if (y > maxY) maxY = y;
+                                    rowHasContent = true;
+                                    break; 
+                                }
+                            }
+                            if (rowHasContent)
+                            {
+                                // Scan right
+                                for (int x = width - 1; x >= 0; x--)
+                                {
+                                    var pixel = skBitmap.GetPixel(x, y);
+                                    if (Math.Abs(pixel.Red - tR) > tolerance ||
+                                        Math.Abs(pixel.Green - tG) > tolerance ||
+                                        Math.Abs(pixel.Blue - tB) > tolerance ||
+                                        Math.Abs(pixel.Alpha - tA) > tolerance)
+                                    {
+                                        if (x > maxX) maxX = x;
+                                        break; 
+                                    }
+                                }
+                            }
                         }
                     }
                 }
