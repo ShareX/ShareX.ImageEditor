@@ -125,6 +125,19 @@
 
             <Separator/>
 
+            <MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}" InputGesture="Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconDelete}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
+                <MenuItem.Icon>
+                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconClear}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            
+            <Separator/>
+
             <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconCutOut}"/>
@@ -143,19 +156,6 @@
             <MenuItem Header="Duplicate" Command="{Binding DuplicateSelectedCommand}" InputGesture="Ctrl+D">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconDuplicate}"/>
-                </MenuItem.Icon>
-            </MenuItem>
-            
-            <Separator/>
-            
-            <MenuItem Header="Delete" Command="{Binding DeleteSelectedCommand}" InputGesture="Delete">
-                <MenuItem.Icon>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconDelete}"/>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
-                <MenuItem.Icon>
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" Text="{StaticResource IconClear}"/>
                 </MenuItem.Icon>
             </MenuItem>
             
