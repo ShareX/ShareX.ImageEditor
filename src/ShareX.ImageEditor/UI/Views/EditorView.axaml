@@ -658,37 +658,6 @@
                             PixelateRequested="OnPixelateRequested"
                             SharpenRequested="OnSharpenRequested"/>
 
-                        <!-- Separator -->
-                        <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
-
-                        <!-- Undo Button -->
-                        <Button Classes="editor-button" Width="40"
-                                Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)"
-                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconUndo}"/>
-
-                        <!-- Redo Button -->
-                        <Button Classes="editor-button" Width="40"
-                                Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Shift+Z)"
-                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconRedo}"/>
-
-                        <!-- Separator -->
-                        <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
-
-
-                        <!-- Clear Button -->
-                        <Button Classes="editor-button" Width="40"
-                                Command="{Binding ClearAnnotationsCommand}" ToolTip.Tip="Clear all annotations"
-                                FontFamily="{StaticResource FontAwesome}" FontWeight="Black" FontSize="16" Content="{StaticResource IconClear}"/>
-
-                         <!-- Separator -->
-                        <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
-
-                        <!-- Zoom Picker -->
-                         <controls:ZoomPickerDropdown
-                            SelectedZoom="{Binding Zoom}"
-                            ZoomChanged="OnZoomChanged"
-                            Height="40"
-                            ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -756,6 +725,16 @@
                 Padding="4" Background="#222222" BorderBrush="#1F1F1F" BorderThickness="1" CornerRadius="4,4,0,0"
                 MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
             <StackPanel Orientation="Horizontal" Spacing="4">
+                <!-- Zoom Picker -->
+                <controls:ZoomPickerDropdown
+                    SelectedZoom="{Binding Zoom}"
+                    ZoomChanged="OnZoomChanged"
+                    Height="40"
+                    ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
+
+                <!-- Separator -->
+                <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Copy image to clipboard" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{StaticResource IconCopy}" FontSize="16" FontFamily="{StaticResource FontAwesome}" FontWeight="Black"/>
