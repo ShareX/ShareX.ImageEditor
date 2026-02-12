@@ -99,7 +99,7 @@ namespace ShareX.ImageEditor.Views
                             try
                             {
                                 _isSyncingToVM = true;
-                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
+                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage);
                             }
                             finally
                             {
