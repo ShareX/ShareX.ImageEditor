@@ -1484,11 +1484,18 @@ namespace ShareX.ImageEditor.Views
         private void InsertImageAnnotation(SKBitmap skBitmap, Point? dropPosition = null)
         {
             var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-            if (canvas == null || DataContext is not MainViewModel vm) return;
+            if (canvas == null || DataContext is not MainViewModel vm)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DROP] InsertImageAnnotation aborted: CanvasNull={canvas == null}, HasMainViewModel={DataContext is MainViewModel}");
+                return;
+            }
 
             // Calculate position: drop point or center of canvas
             var posX = dropPosition?.X ?? (_editorCore.CanvasSize.Width / 2 - skBitmap.Width / 2);
             var posY = dropPosition?.Y ?? (_editorCore.CanvasSize.Height / 2 - skBitmap.Height / 2);
+            System.Diagnostics.Debug.WriteLine(
+                $"[DROP] InsertImageAnnotation: Bitmap={skBitmap.Width}x{skBitmap.Height}, Drop={dropPosition?.ToString() ?? "null"}, " +
+                $"Final=({posX:F1},{posY:F1}), CanvasBounds={canvas.Bounds.Width:F1}x{canvas.Bounds.Height:F1}, CoreCanvas={_editorCore.CanvasSize.Width:F1}x{_editorCore.CanvasSize.Height:F1}");
 
             var annotation = new ImageAnnotation();
             annotation.SetImage(skBitmap);
@@ -1510,6 +1517,7 @@ namespace ShareX.ImageEditor.Views
 
             canvas.Children.Add(imageControl);
             _editorCore.AddAnnotation(annotation);
+            System.Diagnostics.Debug.WriteLine($"[DROP] InsertImageAnnotation complete: UiChildren={canvas.Children.Count}, CoreAnnotations={_editorCore.Annotations.Count}");
 
             vm.HasAnnotations = true;
             vm.ActiveTool = EditorTool.Select; // Auto-switch to Select tool
@@ -1580,15 +1588,10 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private void OnDragOver(object? sender, DragEventArgs e)
         {
-            // Accept file drops
-            if (e.DataTransfer.Formats.Contains(DataFormat.File))
-            {
-                e.DragEffects = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
-            }
+            // Keep DragOver lightweight and non-consuming; resolve concrete files in OnDrop.
+            e.DragEffects = e.DataTransfer.Formats.Contains(DataFormat.File)
+                ? DragDropEffects.Copy
+                : DragDropEffects.None;
         }
 
         /// <summary>
@@ -1596,7 +1599,27 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private async void OnDrop(object? sender, DragEventArgs e)
         {
-            if (e.DataTransfer.Formats.Contains(DataFormat.File))
+            var formatSummary = string.Join(", ", e.DataTransfer.Formats.Select(x => x.ToString()));
+            System.Diagnostics.Debug.WriteLine($"[DROP] OnDrop: Formats=[{formatSummary}], RawItems={e.DataTransfer.Items.Count}");
+
+            var droppedItems = e.DataTransfer.TryGetFiles()?.ToList() ?? new List<IStorageItem>();
+            System.Diagnostics.Debug.WriteLine($"[DROP] TryGetFiles resolved {droppedItems.Count} item(s).");
+
+            // Fallback for providers that expose files only through raw items.
+            if (droppedItems.Count == 0)
+            {
+                foreach (var item in e.DataTransfer.Items)
+                {
+                    if (item.TryGetRaw(DataFormat.File) is IStorageItem storageItem)
+                    {
+                        droppedItems.Add(storageItem);
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine($"[DROP] Raw fallback resolved {droppedItems.Count} item(s).");
+            }
+
+            if (droppedItems.Count > 0)
             {
                 // Get drop position relative to the annotation canvas
                 var canvas = this.FindControl<Canvas>("AnnotationCanvas");
@@ -1604,13 +1627,20 @@ namespace ShareX.ImageEditor.Views
                 if (canvas != null)
                 {
                     dropPos = e.GetPosition(canvas);
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[DROP] Canvas drop position=({dropPos.Value.X:F1},{dropPos.Value.Y:F1}), CanvasBounds={canvas.Bounds.Width:F1}x{canvas.Bounds.Height:F1}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[DROP] AnnotationCanvas not found.");
                 }
 
-                foreach (var item in e.DataTransfer.Items)
+                foreach (var item in droppedItems)
                 {
-                    if (item.TryGetRaw(DataFormat.File) is IStorageFile file)
+                    if (item is IStorageFile file)
                     {
                         var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
+                        System.Diagnostics.Debug.WriteLine($"[DROP] File item: Name='{file.Name}', Path='{file.Path}', Ext='{ext}'");
                         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
                         {
                             try
@@ -1622,11 +1652,26 @@ namespace ShareX.ImageEditor.Views
                                 var skBitmap = SKBitmap.Decode(memStream);
                                 if (skBitmap != null)
                                 {
-                                    // Center image on drop point
+                                    System.Diagnostics.Debug.WriteLine($"[DROP] Decoded bitmap: {skBitmap.Width}x{skBitmap.Height}");
+
+                                    // If there's no base image yet (common in embedded MainWindow editor),
+                                    // use the dropped file as the main preview image.
+                                    if (DataContext is MainViewModel vm && !vm.HasPreviewImage)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine("[DROP] No preview image present. Loading dropped image as main canvas.");
+                                        vm.UpdatePreview(skBitmap, clearAnnotations: true);
+                                        return;
+                                    }
+
+                                    // Otherwise add it as an image annotation on top of the current canvas.
                                     var centeredPos = dropPos.HasValue
                                         ? new Point(dropPos.Value.X - skBitmap.Width / 2, dropPos.Value.Y - skBitmap.Height / 2)
                                         : (Point?)null;
                                     InsertImageAnnotation(skBitmap, centeredPos);
+                                }
+                                else
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"[DROP] SKBitmap.Decode returned null for '{file.Name}'.");
                                 }
                             }
                             catch (Exception ex)
@@ -1634,8 +1679,20 @@ namespace ShareX.ImageEditor.Views
                                 System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{file.Name}': {ex.Message}");
                             }
                         }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[DROP] Skipped unsupported extension for '{file.Name}'.");
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[DROP] Skipped non-file storage item: Type={item.GetType().Name}, Name='{item.Name}'");
                     }
                 }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[DROP] No files resolved from drop payload.");
             }
         }
 
