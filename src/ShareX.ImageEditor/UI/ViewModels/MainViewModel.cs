@@ -73,6 +73,7 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? DuplicateRequested;
         public event EventHandler? CutAnnotationRequested;
         public event EventHandler? CopyAnnotationRequested;
+        public event EventHandler? ZoomToFitRequested;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -1243,6 +1244,12 @@ namespace ShareX.ImageEditor.ViewModels
         private void ResetZoom()
         {
             Zoom = 1.0;
+        }
+
+        [RelayCommand]
+        private void ZoomToFit()
+        {
+            ZoomToFitRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]

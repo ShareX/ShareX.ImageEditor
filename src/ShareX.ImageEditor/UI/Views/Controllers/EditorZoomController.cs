@@ -264,4 +264,45 @@ public class EditorZoomController
             _lastZoom = vm.Zoom;
         }
     }
+
+    public void ZoomToFit()
+    {
+        if (_view.DataContext is not MainViewModel vm || !vm.HasPreviewImage)
+        {
+            return;
+        }
+
+        var scrollViewer = _view.FindControl<ScrollViewer>("CanvasScrollViewer");
+        var previewFrame = _view.FindControl<Border>("PreviewFrame");
+        if (scrollViewer == null || previewFrame == null)
+        {
+            return;
+        }
+
+        // PreviewFrame includes canvas padding/smart padding, so this fits the visible output.
+        double contentWidth = previewFrame.Bounds.Width;
+        double contentHeight = previewFrame.Bounds.Height;
+
+        if (contentWidth <= 0 || contentHeight <= 0)
+        {
+            contentWidth = vm.ImageWidth;
+            contentHeight = vm.ImageHeight;
+        }
+
+        if (contentWidth <= 0 || contentHeight <= 0)
+        {
+            return;
+        }
+
+        const double margin = 24;
+        double availableWidth = Math.Max(1, scrollViewer.Viewport.Width - margin);
+        double availableHeight = Math.Max(1, scrollViewer.Viewport.Height - margin);
+
+        double fitZoom = Math.Min(availableWidth / contentWidth, availableHeight / contentHeight);
+        fitZoom = Math.Clamp(fitZoom, MinZoom, MaxZoom);
+
+        _lastZoom = vm.Zoom;
+        vm.Zoom = fitZoom;
+        CenterCanvasOnZoomChange();
+    }
 }

@@ -225,6 +225,7 @@ namespace ShareX.ImageEditor.Views
                 vm.CopyAnnotationRequested += OnCopyRequested;
                 vm.PasteRequested += OnPasteRequested;
                 vm.DuplicateRequested += OnDuplicateRequested;
+                vm.ZoomToFitRequested += OnZoomToFitRequested;
 
                 vm.SnapshotRequested += async () =>
                 {
@@ -281,6 +282,7 @@ namespace ShareX.ImageEditor.Views
             {
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
                 vm.DeselectRequested -= OnDeselectRequested;
+                vm.ZoomToFitRequested -= OnZoomToFitRequested;
             }
 
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
@@ -1865,6 +1867,11 @@ namespace ShareX.ImageEditor.Views
         private void OnDuplicateRequested(object? sender, EventArgs e)
         {
             DuplicateSelectedAnnotation();
+        }
+
+        private void OnZoomToFitRequested(object? sender, EventArgs e)
+        {
+            _zoomController.ZoomToFit();
         }
 
         public void OpenContextMenu(Control target)
