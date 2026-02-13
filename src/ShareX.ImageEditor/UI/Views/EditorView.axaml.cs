@@ -242,28 +242,7 @@ namespace ShareX.ImageEditor.Views
                     return await RenderSnapshot();
                 };
 
-                vm.SaveAsRequested += async () =>
-                {
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel == null) return null;
 
-                    var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                    {
-                        Title = "Save Image",
-                        FileTypeChoices = new[]
-                        {
-                            new FilePickerFileType("PNG Image") { Patterns = new[] { "*.png" } },
-                            new FilePickerFileType("JPEG Image") { Patterns = new[] { "*.jpg", "*.jpeg" } },
-                            new FilePickerFileType("Bitmap Image") { Patterns = new[] { "*.bmp" } },
-                            new FilePickerFileType("GIF Image") { Patterns = new[] { "*.gif" } },
-                            new FilePickerFileType("WebP Image") { Patterns = new[] { "*.webp" } },
-                            new FilePickerFileType("TIFF Image") { Patterns = new[] { "*.tiff", "*.tif" } } // Added TIFF support
-                        },
-                        DefaultExtension = ".png"
-                    });
-
-                    return file?.Path.LocalPath;
-                };
 
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;

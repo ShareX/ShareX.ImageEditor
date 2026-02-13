@@ -74,6 +74,14 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? CutAnnotationRequested;
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
+        public event EventHandler? PinRequested;
+
+        // Export events
+        public event Func<Task>? SaveRequested;
+        public event Func<Task>? SaveAsRequested;
+        public event Func<Bitmap, Task>? CopyRequested;
+        public event Func<Bitmap, Task>? UploadRequested;
+        public event Func<Task<Bitmap>>? SnapshotRequested;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -747,12 +755,6 @@ namespace ShareX.ImageEditor.ViewModels
         [ObservableProperty]
         private BoxShadows _canvasShadow;
 
-        // Event for View to provide flattened image
-        public event Func<Task<Bitmap?>>? SnapshotRequested;
-
-        // Event for View to show SaveAs dialog and return selected path
-        public event Func<Task<string?>>? SaveAsRequested;
-
         [ObservableProperty]
         private string? _lastSavedPath;
 
@@ -1390,12 +1392,6 @@ namespace ShareX.ImageEditor.ViewModels
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        // Event for View to handle clipboard copy (requires TopLevel access)
-        public event Func<Bitmap, Task>? CopyRequested;
-
-        // Event for host app to handle image upload (passes Bitmap for UploadImage)
-        public event Func<Bitmap, Task>? UploadRequested;
-
         // Event for View to show error dialog
         public event Func<string, string, Task>? ShowErrorDialog;
 
@@ -1441,6 +1437,12 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         private async Task Save()
         {
+            if (SaveRequested != null)
+            {
+                await SaveRequested.Invoke();
+                return;
+            }
+
             // Try get flattened image first
             Bitmap? snapshot = null;
             if (SnapshotRequested != null)
@@ -1481,53 +1483,17 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand]
         private async Task SaveAs()
         {
-            if (SaveAsRequested == null)
+            if (SaveAsRequested != null)
             {
+                await SaveAsRequested.Invoke();
                 return;
-            }
-
-            // Show file picker dialog via View
-            var path = await SaveAsRequested.Invoke();
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            var imageToSave = snapshot ?? PreviewImage;
-            if (imageToSave == null)
-            {
-                return;
-            }
-
-            try
-            {
-                // Save based on file extension
-                var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
-
-                imageToSave.Save(path);
-
-                var filename = System.IO.Path.GetFileName(path);
-                ExportState = "Saved";
-                LastSavedPath = path;
-                DebugHelper.WriteLine($"File saved (Save As): {path}");
-            }
-            catch (Exception ex)
-            {
-                DebugHelper.WriteLine($"File save failed (Save As): {ex.Message}");
             }
         }
 
         [RelayCommand]
         private void PinToScreen()
         {
-            // Actual window topmost logic would be bound or handled in View code-behind
+            PinRequested?.Invoke(this, EventArgs.Empty);
         }
 
         [RelayCommand]
@@ -1837,12 +1803,12 @@ namespace ShareX.ImageEditor.ViewModels
             try
             {
                 _isSyncingFromCore = true;
-                
+
                 // SIP-FIX: Calculate dimensions string BEFORE setting PreviewImage.
                 // Setting PreviewImage can trigger bindings that might dispose the source 
                 // via EditorCore updates if not handled carefully.
                 string dimStr = $"{preview.Width} x {preview.Height}";
-                
+
                 PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
                 ImageDimensions = dimStr;
 
@@ -1959,7 +1925,7 @@ namespace ShareX.ImageEditor.ViewModels
             // SIP-FIX: Prioritize _preEffectImage (clean state) for cancellation.
             // GetBestAvailableSourceBitmap() might return the dirty/preview state from EditorCore.
             SkiaSharp.SKBitmap? source = _preEffectImage ?? GetBestAvailableSourceBitmap();
-            
+
             if (source != null)
             {
                 UpdatePreviewImageOnly(source, syncSourceState: true);
