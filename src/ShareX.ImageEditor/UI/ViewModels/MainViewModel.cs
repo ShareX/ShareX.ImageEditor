@@ -1956,7 +1956,10 @@ namespace ShareX.ImageEditor.ViewModels
         /// </summary>
         public void CancelEffectPreview()
         {
-            SkiaSharp.SKBitmap? source = GetBestAvailableSourceBitmap();
+            // SIP-FIX: Prioritize _preEffectImage (clean state) for cancellation.
+            // GetBestAvailableSourceBitmap() might return the dirty/preview state from EditorCore.
+            SkiaSharp.SKBitmap? source = _preEffectImage ?? GetBestAvailableSourceBitmap();
+            
             if (source != null)
             {
                 UpdatePreviewImageOnly(source, syncSourceState: true);

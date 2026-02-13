@@ -62,6 +62,7 @@ namespace ShareX.ImageEditor.Views
         // Sync flags to prevent loop between VM.PreviewImage <-> Core.SourceImage
         private bool _isSyncingFromVM;
         private bool _isSyncingToVM;
+        private bool _skipNextCoreImageChanged;
 
         // SIP-CLIPBOARD: Internal clipboard for shape deep-cloning
         private static Annotation? _clipboardAnnotation;
@@ -96,10 +97,17 @@ namespace ShareX.ImageEditor.Views
                         // Sync Core image back to VM if change originated from Core (Undo/Redo, Core Crop)
                         if (!_isSyncingFromVM && !_isSyncingToVM && _editorCore.SourceImage != null)
                         {
+                            // SIP-FIX: Break feedback loop from async ImageChanged events (e.g. Smart Padding)
+                            if (_skipNextCoreImageChanged)
+                            {
+                                _skipNextCoreImageChanged = false;
+                                return;
+                            }
+
                             try
                             {
                                 _isSyncingToVM = true;
-                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage);
+                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
                             }
                             finally
                             {
@@ -367,6 +375,7 @@ namespace ShareX.ImageEditor.Views
                     // ISSUE-FIX: Use UpdateSourceImage to preserve existing history/annotations
                     // This allows VM-driven updates (Effects, Undo) to not wipe Core state.
                     // New file loads should be preceded by Clear() from the VM/Host.
+                    _skipNextCoreImageChanged = true;
                     _editorCore.UpdateSourceImage(skBitmap.Copy());
 
                     _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
@@ -390,6 +399,7 @@ namespace ShareX.ImageEditor.Views
             using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
             if (skBitmap != null)
             {
+                _skipNextCoreImageChanged = true;
                 _editorCore.UpdateSourceImage(skBitmap.Copy());
                 _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                 RenderCore();
