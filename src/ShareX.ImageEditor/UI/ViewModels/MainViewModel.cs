@@ -1879,6 +1879,17 @@ namespace ShareX.ImageEditor.ViewModels
 
             if (_editorCore != null)
             {
+                // SIP-FIX: Ensure EditorCore has the original clean image before applying the effect.
+                // This ensures the memento captures the pre-effect state, not the preview/intermediate state.
+                if (preEffectImage != null)
+                {
+                    var cleanState = preEffectImage.Copy();
+                    if (cleanState != null)
+                    {
+                        _editorCore.UpdateSourceImage(cleanState);
+                    }
+                }
+
                 applied = _editorCore.ApplyImageOperation(_ => result, clearAnnotations: false);
                 resultTransferred = applied;
 
