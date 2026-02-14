@@ -39,9 +39,10 @@ public partial class ArrowAnnotation : Annotation
     public const double ArrowHeadWidthMultiplier = 3.0;
 
     /// <summary>
-    /// Arrow head size in pixels
+    /// Optional arrow head size override in pixels.
+    /// When 0 or negative, size is derived from stroke width (matching Avalonia visual rendering).
     /// </summary>
-    public float ArrowHeadSize { get; set; } = 12;
+    public float ArrowHeadSize { get; set; }
 
     public ArrowAnnotation()
     {
@@ -52,6 +53,8 @@ public partial class ArrowAnnotation : Annotation
     {
         using var strokePaint = CreateStrokePaint();
         using var fillPaint = CreateFillPaint();
+        fillPaint.Color = ParseColor(StrokeColor);
+        fillPaint.ImageFilter = null;
 
         // Calculate arrow head
         var dx = EndPoint.X - StartPoint.X;
@@ -66,29 +69,32 @@ public partial class ArrowAnnotation : Annotation
             // Modern arrow: narrower angle (20 degrees instead of 30)
             var arrowAngle = Math.PI / 9; // 20 degrees for sleeker look
             var angle = Math.Atan2(dy, dx);
+            float headSize = ArrowHeadSize > 0
+                ? ArrowHeadSize
+                : (float)(StrokeWidth * ArrowHeadWidthMultiplier);
 
             // Calculate arrowhead base point
             var arrowBase = new SKPoint(
-                EndPoint.X - ArrowHeadSize * ux,
-                EndPoint.Y - ArrowHeadSize * uy);
-
-            // Draw line from start to arrow base
-            canvas.DrawLine(StartPoint, arrowBase, strokePaint);
+                EndPoint.X - headSize * ux,
+                EndPoint.Y - headSize * uy);
 
             // Arrow head wing points
             var point1 = new SKPoint(
-                (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle - arrowAngle)),
-                (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle - arrowAngle)));
+                (float)(EndPoint.X - headSize * Math.Cos(angle - arrowAngle)),
+                (float)(EndPoint.Y - headSize * Math.Sin(angle - arrowAngle)));
 
             var point2 = new SKPoint(
-                (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle + arrowAngle)),
-                (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle + arrowAngle)));
+                (float)(EndPoint.X - headSize * Math.Cos(angle + arrowAngle)),
+                (float)(EndPoint.Y - headSize * Math.Sin(angle + arrowAngle)));
 
-            // Draw filled arrow head triangle
+            // Match the Avalonia visual geometry path for consistent appearance.
             using var path = new SKPath();
-            path.MoveTo(EndPoint);
+            path.MoveTo(StartPoint);
+            path.LineTo(arrowBase);
             path.LineTo(point1);
+            path.LineTo(EndPoint);
             path.LineTo(point2);
+            path.LineTo(arrowBase);
             path.Close();
 
             canvas.DrawPath(path, fillPaint);
