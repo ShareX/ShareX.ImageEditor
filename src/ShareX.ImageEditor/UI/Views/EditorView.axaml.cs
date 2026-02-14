@@ -23,9 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -33,6 +30,7 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
@@ -42,9 +40,6 @@ using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -210,10 +205,10 @@ namespace ShareX.ImageEditor.Views
         protected override void OnLoaded(RoutedEventArgs e)
         {
             base.OnLoaded(e);
-            
+
             // Check clipboard initially
             _ = CheckClipboardStatus();
-            
+
             // Listen for window activation to check clipboard (as close as we get to ClipboardChanged)
             if (TopLevel.GetTopLevel(this) is Window window)
             {
@@ -1685,79 +1680,79 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
-    /// <summary>
-    /// Duplicates the currently selected annotation with a deep copy.
-    /// The duplicate is offset by 20px and becomes the new selection.
-    /// </summary>
-    private void DuplicateSelectedAnnotation()
-    {
-        var selectedControl = _selectionController.SelectedShape;
-        if (selectedControl == null) return;
-
-        var annotation = selectedControl.Tag as Annotation;
-        if (annotation == null) return;
-
-        var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-        if (canvas == null) return;
-
-        // Deep clone the annotation (ImageAnnotation.Clone deep-copies the bitmap)
-        var clone = annotation.Clone();
-
-        // Offset the duplicate by 20px
-        const float offset = 20f;
-        clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
-        clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
-
-        // Offset freehand/eraser points if applicable
-        if (clone is FreehandAnnotation freehandClone)
+        /// <summary>
+        /// Duplicates the currently selected annotation with a deep copy.
+        /// The duplicate is offset by 20px and becomes the new selection.
+        /// </summary>
+        private void DuplicateSelectedAnnotation()
         {
-            for (int i = 0; i < freehandClone.Points.Count; i++)
+            var selectedControl = _selectionController.SelectedShape;
+            if (selectedControl == null) return;
+
+            var annotation = selectedControl.Tag as Annotation;
+            if (annotation == null) return;
+
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null) return;
+
+            // Deep clone the annotation (ImageAnnotation.Clone deep-copies the bitmap)
+            var clone = annotation.Clone();
+
+            // Offset the duplicate by 20px
+            const float offset = 20f;
+            clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
+            clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
+
+            // Offset freehand/eraser points if applicable
+            if (clone is FreehandAnnotation freehandClone)
             {
-                var pt = freehandClone.Points[i];
-                freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+                for (int i = 0; i < freehandClone.Points.Count; i++)
+                {
+                    var pt = freehandClone.Points[i];
+                    freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+                }
+            }
+            else if (clone is SmartEraserAnnotation eraserClone)
+            {
+                for (int i = 0; i < eraserClone.Points.Count; i++)
+                {
+                    var pt = eraserClone.Points[i];
+                    eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+                }
+            }
+
+            // Add to EditorCore (captures undo history before adding)
+            _editorCore.AddAnnotation(clone);
+
+            // Create the UI control for the cloned annotation
+            var control = CreateControlForAnnotation(clone);
+            if (control != null)
+            {
+                canvas.Children.Add(control);
+                _selectionController.SetSelectedShape(control);
+            }
+
+            // Update clipboard status after internal copy
+            _ = CheckClipboardStatus();
+
+            // Update HasAnnotations state
+            if (DataContext is MainViewModel vm)
+            {
+                vm.HasAnnotations = true;
             }
         }
-        else if (clone is SmartEraserAnnotation eraserClone)
-        {
-            for (int i = 0; i < eraserClone.Points.Count; i++)
-            {
-                var pt = eraserClone.Points[i];
-                eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
-            }
-        }
-
-        // Add to EditorCore (captures undo history before adding)
-        _editorCore.AddAnnotation(clone);
-
-        // Create the UI control for the cloned annotation
-        var control = CreateControlForAnnotation(clone);
-        if (control != null)
-        {
-            canvas.Children.Add(control);
-            _selectionController.SetSelectedShape(control);
-        }
-
-        // Update clipboard status after internal copy
-        _ = CheckClipboardStatus();
-
-        // Update HasAnnotations state
-        if (DataContext is MainViewModel vm)
-        {
-            vm.HasAnnotations = true;
-        }
-    }
         private async void OnCutRequested(object? sender, EventArgs e)
         {
             if (_selectionController.SelectedShape?.Tag is Annotation annotation)
             {
                 // Copy to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
-                
+
                 // Update clipboard status
                 _ = CheckClipboardStatus();
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
                 try
                 {
@@ -1783,12 +1778,12 @@ namespace ShareX.ImageEditor.Views
             {
                 // Deep clone to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
-                
+
                 // Update clipboard status
                 _ = CheckClipboardStatus();
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
                 // This ensures that if the user pastes, we know to use the internal clipboard
                 // unless they subsequently copy something externally
@@ -1855,15 +1850,15 @@ namespace ShareX.ImageEditor.Views
 
             // Offset position so it's visible (10px offset)
             const float offset = 20f;
-            
+
             // Adjust points based on type
             if (newAnnotation is ImageAnnotation img)
             {
                 // Check if the image bitmap is valid (disposed?)
                 if (img.ImageBitmap == null && _clipboardAnnotation is ImageAnnotation clipImg)
                 {
-                   // Resurrect bitmap if needed (unlikely if deep cloned correctly)
-                   // But Clone() manages it.
+                    // Resurrect bitmap if needed (unlikely if deep cloned correctly)
+                    // But Clone() manages it.
                 }
             }
 
@@ -1873,22 +1868,22 @@ namespace ShareX.ImageEditor.Views
 
             if (newAnnotation is FreehandAnnotation freehand)
             {
-                 for (int i = 0; i < freehand.Points.Count; i++)
-                 {
-                     freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
-                 }
+                for (int i = 0; i < freehand.Points.Count; i++)
+                {
+                    freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
+                }
             }
             else if (newAnnotation is SmartEraserAnnotation eraser)
             {
-                 for (int i = 0; i < eraser.Points.Count; i++)
-                 {
-                     eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
-                 }
+                for (int i = 0; i < eraser.Points.Count; i++)
+                {
+                    eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
+                }
             }
 
             // Add to Core
             _editorCore.AddAnnotation(newAnnotation);
-            
+
             // Create UI
             var control = CreateControlForAnnotation(newAnnotation);
             if (control != null)
@@ -1897,7 +1892,7 @@ namespace ShareX.ImageEditor.Views
                 if (canvas != null)
                 {
                     canvas.Children.Add(control);
-                    
+
                     // Update selection to the pasted object
                     _selectionController.SetSelectedShape(control);
                 }
@@ -1929,7 +1924,7 @@ namespace ShareX.ImageEditor.Views
                 menu.Open(target);
             }
         }
-        
+
         /// <summary>
         /// Checks if there is content on the system clipboard or internal clipboard
         /// and updates the ViewModel's CanPaste property.
@@ -1958,14 +1953,14 @@ namespace ShareX.ImageEditor.Views
                         var files = await clipboard.TryGetFilesAsync();
                         if (files != null && files.Any())
                         {
-                             canPaste = true;
+                            canPaste = true;
                         }
                         else
                         {
                             // Check for bitmap
                             var formats = await clipboard.GetDataFormatsAsync();
-                            if (formats.Any(f => f.ToString() == "PNG") || 
-                                formats.Any(f => f.ToString() == "Bitmap") || 
+                            if (formats.Any(f => f.ToString() == "PNG") ||
+                                formats.Any(f => f.ToString() == "Bitmap") ||
                                 formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
                             {
                                 canPaste = true;
@@ -1975,7 +1970,7 @@ namespace ShareX.ImageEditor.Views
                     catch { }
                 }
             }
-            
+
             vm.CanPaste = canPaste;
         }
     }
