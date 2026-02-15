@@ -749,7 +749,8 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 "Dark" => ThemeVariant.Dark,
                 "Light" => ThemeVariant.Light,
-                "ShareX" => ThemeManager.ShareX,
+                "ShareXDark" => ThemeManager.ShareXDark,
+                "ShareXLight" => ThemeManager.ShareXLight,
                 _ => ThemeVariant.Default
             };
             ThemeManager.SetTheme(theme);

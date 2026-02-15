@@ -3,8 +3,70 @@
                     xmlns:helpers="clr-namespace:ShareX.ImageEditor.Helpers">
   <ResourceDictionary.ThemeDictionaries>
 
+    <!-- Custom ShareX Light -->
+    <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXLight}">
+      <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
+      <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+      <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
+
+      <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
+      <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
+
+      <Color x:Key="ShareX.Color.Text">#454545</Color>
+      <Color x:Key="ShareX.Color.Text.Secondary">#454545</Color>
+
+      <Color x:Key="ShareX.Color.Background.Main">#F5F5F7</Color>
+      <Color x:Key="ShareX.Color.Background.Panel">#FFFFFF</Color>
+      <Color x:Key="ShareX.Color.Background.Popup">#FFFFFF</Color>
+      <Color x:Key="ShareX.Color.Background.Toolbar">#FFFFFF</Color>
+
+      <Color x:Key="ShareX.Color.Border">#FDFDFD</Color>
+      <Color x:Key="ShareX.Color.Control.Background">#E5E5EA</Color>
+      <Color x:Key="ShareX.Color.Control.Border">#FDFDFD</Color>
+
+      <LinearGradientBrush x:Key="ShareX.Brush.Accent" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
+        <GradientStop Color="{StaticResource ShareX.Color.Accent.End}" Offset="1" />
+      </LinearGradientBrush>
+
+      <SolidColorBrush x:Key="ShareX.Brush.Text" Color="{StaticResource ShareX.Color.Text}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Text.Secondary" Color="{StaticResource ShareX.Color.Text.Secondary}" />
+
+      <SolidColorBrush x:Key="ShareX.Brush.Background.Main" Color="{StaticResource ShareX.Color.Background.Main}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Background.Panel" Color="{StaticResource ShareX.Color.Background.Panel}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Background.Popup" Color="{StaticResource ShareX.Color.Background.Popup}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Background.Toolbar" Color="{StaticResource ShareX.Color.Background.Toolbar}" />
+
+      <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{StaticResource ShareX.Color.Border}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{StaticResource ShareX.Color.Control.Background}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
+      <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#C9C9C9" />
+
+      <!-- Checkered Brush for Light -->
+      <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
+        <DrawingBrush.Drawing>
+          <DrawingGroup>
+            <GeometryDrawing Brush="#FFFFFF">
+              <GeometryDrawing.Geometry>
+                <RectangleGeometry Rect="0,0,30,30" />
+              </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing Brush="#EBEBEB">
+              <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                  <RectangleGeometry Rect="0,0,15,15" />
+                  <RectangleGeometry Rect="15,15,15,15" />
+                </GeometryGroup>
+              </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+          </DrawingGroup>
+        </DrawingBrush.Drawing>
+      </DrawingBrush>
+    </ResourceDictionary>
+
     <!-- Custom ShareX Theme (Dark-based) -->
-    <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareX}">
+    <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXDark}">
       <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
       <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
 
@@ -41,6 +103,7 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{StaticResource ShareX.Color.Border}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{StaticResource ShareX.Color.Control.Background}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#2E2E2E" />
 
       <!-- Checkered Brush for ShareX Dark -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
@@ -83,6 +146,7 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{DynamicResource SystemBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{DynamicResource SystemControlBackgroundBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{DynamicResource SystemBaseLowColor}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{DynamicResource SystemBaseLowColor}" />
 
       <!-- Checkered Brush for Dark (Same as ShareX roughly) -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
@@ -125,6 +189,7 @@
       <SolidColorBrush x:Key="ShareX.Brush.Border" Color="{DynamicResource SystemBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{DynamicResource SystemControlBackgroundBaseLowColor}" />
       <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{DynamicResource SystemBaseLowColor}" />
+      <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{DynamicResource SystemBaseMediumLowColor}" />
 
       <!-- Checkered Brush for Light -->
       <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">

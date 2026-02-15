@@ -57,7 +57,6 @@
         <x:String x:Key="IconHardDrive">&#xf0a0;</x:String>
         <x:String x:Key="IconThumbtack">&#xf08d;</x:String>
 
-
         <ContextMenu x:Key="EditorContextMenu"
                      Placement="Pointer"
                      BorderBrush="{DynamicResource ShareX.Brush.Border}"
@@ -161,9 +160,10 @@
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconMoon}"/>
                 </MenuItem.Icon>
-                <MenuItem Header="ShareX" Command="{Binding SetThemeCommand}" CommandParameter="ShareX"/>
-                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="Light"/>
+                <MenuItem Header="ShareX (Dark)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
+                <MenuItem Header="ShareX (Light)" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
                 <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="Dark"/>
+                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="Light"/>
             </MenuItem>
         </ContextMenu>
     </UserControl.Resources>
@@ -731,7 +731,7 @@
                     ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
 
                 <!-- Separator -->
-                <Border Width="1" Height="40" Background="#2E2E2E" Margin="4,0"/>
+                <Border Width="1" Height="40" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,0"/>
 
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
                         ToolTip.Tip="Copy image to clipboard" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">

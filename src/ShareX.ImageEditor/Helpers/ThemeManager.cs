@@ -6,7 +6,8 @@ namespace ShareX.ImageEditor.Helpers
 {
     public static class ThemeManager
     {
-        public static readonly ThemeVariant ShareX = new ThemeVariant("ShareX", ThemeVariant.Dark);
+        public static readonly ThemeVariant ShareXDark = new ThemeVariant("ShareXDark", ThemeVariant.Dark);
+        public static readonly ThemeVariant ShareXLight = new ThemeVariant("ShareXLight", ThemeVariant.Light);
 
         public static event EventHandler<ThemeVariant>? ThemeChanged;
 
