@@ -63,6 +63,26 @@
                     </DrawingGroup>
                 </DrawingBrush.Drawing>
             </DrawingBrush>
+
+            <DrawingBrush x:Key="ShareX.Brush.Checkered.Small" TileMode="Tile" SourceRect="0,0,8,8" DestinationRect="0,0,8,8">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#272727">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,8,8" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#2E2E2E">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <RectangleGeometry Rect="0,0,4,4" />
+                                    <RectangleGeometry Rect="4,4,4,4" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
         </ResourceDictionary>
 
         <!-- Custom ShareX Light -->
@@ -124,6 +144,26 @@
                     </DrawingGroup>
                 </DrawingBrush.Drawing>
             </DrawingBrush>
+
+            <DrawingBrush x:Key="ShareX.Brush.Checkered.Small" TileMode="Tile" SourceRect="0,0,8,8" DestinationRect="0,0,8,8">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#FFFFFF">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,8,8" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#EBEBEB">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <RectangleGeometry Rect="0,0,4,4" />
+                                    <RectangleGeometry Rect="4,4,4,4" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
         </ResourceDictionary>
 
         <!-- Default Dark Theme -->
@@ -167,6 +207,26 @@
                     </DrawingGroup>
                 </DrawingBrush.Drawing>
             </DrawingBrush>
+
+            <DrawingBrush x:Key="ShareX.Brush.Checkered.Small" TileMode="Tile" SourceRect="0,0,8,8" DestinationRect="0,0,8,8">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#1E1E1E">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,8,8" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#2A2A2A">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <RectangleGeometry Rect="0,0,4,4" />
+                                    <RectangleGeometry Rect="4,4,4,4" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
         </ResourceDictionary>
 
         <!-- Default Light Theme -->
@@ -204,6 +264,26 @@
                                 <GeometryGroup>
                                     <RectangleGeometry Rect="0,0,15,15" />
                                     <RectangleGeometry Rect="15,15,15,15" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+
+            <DrawingBrush x:Key="ShareX.Brush.Checkered.Small" TileMode="Tile" SourceRect="0,0,8,8" DestinationRect="0,0,8,8">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#FFFFFF">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,8,8" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#EBEBEB">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <RectangleGeometry Rect="0,0,4,4" />
+                                    <RectangleGeometry Rect="4,4,4,4" />
                                 </GeometryGroup>
                             </GeometryDrawing.Geometry>
                         </GeometryDrawing>
