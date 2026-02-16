@@ -324,9 +324,9 @@ public class EditorInputController
         {
             var currentLeft = Canvas.GetLeft(_currentShape);
             var currentTop = Canvas.GetTop(_currentShape);
-            
+
             // Check for 0 OR NaN (default can be either depending on platform/version)
-            bool isPositionUnset = (currentLeft == 0 || double.IsNaN(currentLeft)) && 
+            bool isPositionUnset = (currentLeft == 0 || double.IsNaN(currentLeft)) &&
                                    (currentTop == 0 || double.IsNaN(currentTop));
 
             if (isPositionUnset

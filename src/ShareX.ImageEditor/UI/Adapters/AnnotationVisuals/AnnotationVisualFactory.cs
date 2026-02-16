@@ -26,7 +26,6 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
-using Avalonia.Layout;
 using Avalonia.Media;
 using ShareX.ImageEditor.Controls;
 using ShareX.ImageEditor.Helpers;

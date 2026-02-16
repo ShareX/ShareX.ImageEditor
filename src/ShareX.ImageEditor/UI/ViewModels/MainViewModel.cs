@@ -75,13 +75,46 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? CutAnnotationRequested;
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
-        public event EventHandler? PinRequested;
+        private EventHandler? _pinRequested;
+        public event EventHandler? PinRequested
+        {
+            add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
+            remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanPinToScreen() => _pinRequested != null;
 
         // Export events
-        public event Func<Task>? SaveRequested;
-        public event Func<Task>? SaveAsRequested;
-        public event Func<Bitmap, Task>? CopyRequested;
-        public event Func<Bitmap, Task>? UploadRequested;
+        private Func<Task>? _saveRequested;
+        public event Func<Task>? SaveRequested
+        {
+            add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
+            remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanSave() => _saveRequested != null;
+
+        private Func<Task>? _saveAsRequested;
+        public event Func<Task>? SaveAsRequested
+        {
+            add { _saveAsRequested += value; SaveAsCommand.NotifyCanExecuteChanged(); }
+            remove { _saveAsRequested -= value; SaveAsCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanSaveAs() => _saveAsRequested != null;
+
+        private Func<Bitmap, Task>? _copyRequested;
+        public event Func<Bitmap, Task>? CopyRequested
+        {
+            add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
+            remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanCopy() => _copyRequested != null;
+
+        private Func<Bitmap, Task>? _uploadRequested;
+        public event Func<Bitmap, Task>? UploadRequested
+        {
+            add { _uploadRequested += value; UploadCommand.NotifyCanExecuteChanged(); }
+            remove { _uploadRequested -= value; UploadCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanUpload() => _uploadRequested != null;
         public event Func<Task<Bitmap?>>? SnapshotRequested;
 
         private Bitmap? _previewImage;
@@ -1410,7 +1443,7 @@ namespace ShareX.ImageEditor.ViewModels
         // Event for View to show error dialog
         public event Func<string, string, Task>? ShowErrorDialog;
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanCopy))]
         private async Task Copy()
         {
             // Get flattened image with annotations
@@ -1427,11 +1460,11 @@ namespace ShareX.ImageEditor.ViewModels
                 return;
             }
 
-            if (CopyRequested != null)
+            if (_copyRequested != null)
             {
                 try
                 {
-                    await CopyRequested.Invoke(imageToUse);
+                    await _copyRequested.Invoke(imageToUse);
                     ExportState = "Copied";
                     DebugHelper.WriteLine("Clipboard copy: Image copied to clipboard.");
                 }
@@ -1449,12 +1482,12 @@ namespace ShareX.ImageEditor.ViewModels
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanSave))]
         private async Task Save()
         {
-            if (SaveRequested != null)
+            if (_saveRequested != null)
             {
-                await SaveRequested.Invoke();
+                await _saveRequested.Invoke();
                 return;
             }
 
@@ -1495,23 +1528,23 @@ namespace ShareX.ImageEditor.ViewModels
             await Task.CompletedTask;
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanSaveAs))]
         private async Task SaveAs()
         {
-            if (SaveAsRequested != null)
+            if (_saveAsRequested != null)
             {
-                await SaveAsRequested.Invoke();
+                await _saveAsRequested.Invoke();
                 return;
             }
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanPinToScreen))]
         private void PinToScreen()
         {
-            PinRequested?.Invoke(this, EventArgs.Empty);
+            _pinRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
             DebugHelper.WriteLine("Upload() called - starting upload flow");
@@ -1530,15 +1563,15 @@ namespace ShareX.ImageEditor.ViewModels
                 return;
             }
 
-            DebugHelper.WriteLine($"Upload: UploadRequested is {(UploadRequested != null ? "subscribed" : "NULL")}");
+            DebugHelper.WriteLine($"Upload: UploadRequested is {(_uploadRequested != null ? "subscribed" : "NULL")}");
 
-            if (UploadRequested != null)
+            if (_uploadRequested != null)
             {
                 try
                 {
                     ExportState = "Uploading";
                     DebugHelper.WriteLine("Upload: About to invoke UploadRequested event");
-                    await UploadRequested.Invoke(imageToUpload);
+                    await _uploadRequested.Invoke(imageToUpload);
                     DebugHelper.WriteLine("Upload: Image passed to host for upload.");
                 }
                 catch (Exception ex)
