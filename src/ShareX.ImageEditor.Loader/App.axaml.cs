@@ -25,6 +25,7 @@
 
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using ShareX.ImageEditor.ViewModels;
 using SkiaSharp;
@@ -54,6 +55,20 @@ namespace ShareX.ImageEditor.Loader
                 if (window.DataContext is MainViewModel vm)
                 {
                     LoadExampleImage(vm);
+
+                    vm.CopyRequested += async (bitmap) =>
+                    {
+                        var clipboard = desktop.MainWindow?.Clipboard;
+
+                        if (clipboard != null)
+                        {
+                            var data = new DataTransfer();
+                            var item = new DataTransferItem();
+                            item.SetBitmap(bitmap);
+                            data.Add(item);
+                            await clipboard.SetDataAsync(data);
+                        }
+                    };
                 }
             }
 
