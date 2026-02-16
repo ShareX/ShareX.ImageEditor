@@ -1825,11 +1825,9 @@ namespace ShareX.ImageEditor.Views
 
         public void OpenContextMenu(Control target)
         {
-            var menu = this.Resources["EditorContextMenu"] as ContextMenu;
-            if (menu != null)
+            if (this.Resources["EditorContextMenu"] is MenuFlyout menu)
             {
-                menu.PlacementTarget = target;
-                menu.Open(target);
+                menu.ShowAt(target, true);
             }
         }
 
