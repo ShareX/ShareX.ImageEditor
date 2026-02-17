@@ -136,11 +136,14 @@ namespace ShareX.ImageEditor
                             case MainViewModel.EditorTaskResult.Continue:
                                 result = window.GetResultBytes();
                                 break;
+                            case MainViewModel.EditorTaskResult.ContinueNoSave:
+                                result = window.GetSourceBytes();
+                                break;
                         }
                     }
                     else
                     {
-                         result = window.GetResultBytes();
+                        result = window.GetResultBytes();
                     }
                 }
             });

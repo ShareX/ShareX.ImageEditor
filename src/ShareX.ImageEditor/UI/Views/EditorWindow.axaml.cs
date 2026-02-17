@@ -167,6 +167,12 @@ namespace ShareX.ImageEditor.Views
             return editorView?.GetSnapshot();
         }
 
+        public SKBitmap? GetSourceBitmap()
+        {
+            var editorView = this.FindControl<EditorView>("EditorViewControl");
+            return editorView?.GetSource();
+        }
+
         /// <summary>
         /// Gets the encoded image data in the specified format. 
         /// Useful for interoperability with other frameworks (e.g. WinForms).
@@ -174,6 +180,19 @@ namespace ShareX.ImageEditor.Views
         public byte[]? GetResultBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
         {
             using var bitmap = GetResultBitmap();
+            if (bitmap == null) return null;
+
+            using var data = bitmap.Encode(format, quality);
+            return data.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the encoded image data in the specified format. 
+        /// Useful for interoperability with other frameworks (e.g. WinForms).
+        /// </summary>
+        public byte[]? GetSourceBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+        {
+            using var bitmap = GetSourceBitmap();
             if (bitmap == null) return null;
 
             using var data = bitmap.Encode(format, quality);

@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:ShareX.ImageEditor.ViewModels"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
              x:Class="ShareX.ImageEditor.Views.ConfirmationDialogView"
-             x:DataType="vm:MainViewModel+ConfirmationDialogViewModel">
+             x:DataType="vm:ConfirmationDialogViewModel">
 
     <Border Background="{DynamicResource ShareX.Brush.Background.Popup}" 
             BorderBrush="{DynamicResource ShareX.Brush.Border}" 

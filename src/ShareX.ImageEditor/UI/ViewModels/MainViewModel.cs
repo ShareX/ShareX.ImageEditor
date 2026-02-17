@@ -64,23 +64,6 @@ namespace ShareX.ImageEditor.ViewModels
         [ObservableProperty]
         private bool _isDirty;
 
-        public partial class ConfirmationDialogViewModel : ObservableObject
-        {
-            public string Title { get; } = "ShareX - Image editor";
-            public string Message { get; } = "There are unsaved changes.\n\nWould you like to save the changes before closing the image editor?";
-
-            public IRelayCommand YesCommand { get; }
-            public IRelayCommand NoCommand { get; }
-            public IRelayCommand CancelCommand { get; }
-
-            public ConfirmationDialogViewModel(Action onYes, Action onNo, Action onCancel)
-            {
-                YesCommand = new RelayCommand(onYes);
-                NoCommand = new RelayCommand(onNo);
-                CancelCommand = new RelayCommand(onCancel);
-            }
-        }
-
         [ObservableProperty]
         private string _exportState = "";
 
@@ -142,6 +125,7 @@ namespace ShareX.ImageEditor.ViewModels
             }
             else
             {
+                TaskResult = EditorTaskResult.Continue;
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -152,8 +136,6 @@ namespace ShareX.ImageEditor.ViewModels
                 onYes: async () =>
                 {
                     TaskResult = EditorTaskResult.Continue;
-                    // Save returns a task
-                    await Save();
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
@@ -280,10 +262,10 @@ namespace ShareX.ImageEditor.ViewModels
                 ImageWidth = value.Size.Width;
                 ImageHeight = value.Size.Height;
                 HasPreviewImage = true;
-                
+
                 if (!_isSyncingFromCore && !_isApplyingSmartPadding)
                 {
-                     IsDirty = true;
+                    IsDirty = true;
                 }
 
                 OnPropertyChanged(nameof(SmartPaddingColor));

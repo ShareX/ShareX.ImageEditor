@@ -120,7 +120,7 @@ namespace ShareX.ImageEditor.Views
                 {
                     UpdateViewModelHistoryState(vm);
                     vm.RecalculateNumberCounter(_editorCore.Annotations);
-                    
+
                     // Mark as dirty when history changes (annotations added/interactions/undo/redo)
                     vm.IsDirty = true;
                 }
@@ -740,6 +740,16 @@ namespace ShareX.ImageEditor.Views
                 int canvasChildCount = canvas?.Children.Count ?? 0;
                 vm.HasAnnotations = coreAnnotationCount > 0 || canvasChildCount > 0;
             }
+        }
+
+        public SkiaSharp.SKBitmap? GetSource()
+        {
+            if (_editorCore.SourceImage != null)
+            {
+                return _editorCore.SourceImage.Copy();
+            }
+
+            return null;
         }
 
         public SkiaSharp.SKBitmap? GetSnapshot()
