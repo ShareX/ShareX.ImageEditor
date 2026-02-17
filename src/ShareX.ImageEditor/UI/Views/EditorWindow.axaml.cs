@@ -54,6 +54,8 @@ namespace ShareX.ImageEditor.Views
             // Set initial theme and subscribe to changes
             RequestedThemeVariant = ThemeManager.ShareXDark;
             ThemeManager.ThemeChanged += (s, theme) => RequestedThemeVariant = theme;
+
+            _viewModel.CloseRequested += (s, e) => Close();
         }
 
         private void InitializeComponent()

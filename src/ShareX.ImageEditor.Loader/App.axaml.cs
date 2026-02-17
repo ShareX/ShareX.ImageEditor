@@ -54,6 +54,7 @@ namespace ShareX.ImageEditor.Loader
 
                 if (window.DataContext is MainViewModel vm)
                 {
+                    vm.TaskMode = true;
                     LoadExampleImage(vm);
 
                     vm.CopyRequested += async (bitmap) =>

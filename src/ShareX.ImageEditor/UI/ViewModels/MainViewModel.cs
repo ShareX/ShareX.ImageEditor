@@ -47,6 +47,13 @@ namespace ShareX.ImageEditor.ViewModels
             public required IBrush Brush { get; init; }
         }
 
+        public enum EditorTaskResult
+        {
+            None,
+            Continue,
+            Cancel
+        }
+
         private readonly EditorOptions _options;
         public EditorOptions Options => _options;
         public IAnnotationToolbarAdapter ToolbarAdapter { get; }
@@ -81,7 +88,30 @@ namespace ShareX.ImageEditor.ViewModels
             add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
             remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
         }
+
         public bool CanPinToScreen() => _pinRequested != null;
+
+        public event EventHandler? CloseRequested;
+
+        [ObservableProperty]
+        private bool _taskMode;
+
+        [ObservableProperty]
+        private EditorTaskResult _taskResult = EditorTaskResult.None;
+
+        [RelayCommand]
+        private void Continue()
+        {
+            TaskResult = EditorTaskResult.Continue;
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void Cancel()
+        {
+            TaskResult = EditorTaskResult.Cancel;
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
 
         // Export events
         private Func<Task>? _saveRequested;
