@@ -108,7 +108,7 @@ namespace ShareX.ImageEditor
             window.Show();
         }
 
-        public static byte[]? ShowEditorDialog(Stream imageStream, EditorEvents? events = null)
+        public static byte[]? ShowEditorDialog(Stream imageStream, EditorEvents? events = null, bool taskMode = false)
         {
             byte[]? result = null;
 
@@ -120,9 +120,29 @@ namespace ShareX.ImageEditor
                 window.LoadImage(imageStream);
             }
 
+            if (taskMode && window.DataContext is MainViewModel vm)
+            {
+                vm.TaskMode = true;
+            }
+
             SetupEvents(window, events, () =>
             {
-                result = window.GetResultBytes();
+                if (window.DataContext is MainViewModel vm)
+                {
+                    if (taskMode)
+                    {
+                        switch (vm.TaskResult)
+                        {
+                            case MainViewModel.EditorTaskResult.Continue:
+                                result = window.GetResultBytes();
+                                break;
+                        }
+                    }
+                    else
+                    {
+                         result = window.GetResultBytes();
+                    }
+                }
             });
 
             window.Show();

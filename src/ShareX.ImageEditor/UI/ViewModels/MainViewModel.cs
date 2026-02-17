@@ -51,6 +51,7 @@ namespace ShareX.ImageEditor.ViewModels
         {
             None,
             Continue,
+            ContinueNoSave,
             Cancel
         }
 
@@ -150,6 +151,7 @@ namespace ShareX.ImageEditor.ViewModels
             var dialog = new ConfirmationDialogViewModel(
                 onYes: async () =>
                 {
+                    TaskResult = EditorTaskResult.Continue;
                     // Save returns a task
                     await Save();
                     IsModalOpen = false;
@@ -157,6 +159,7 @@ namespace ShareX.ImageEditor.ViewModels
                 },
                 onNo: () =>
                 {
+                    TaskResult = EditorTaskResult.ContinueNoSave;
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
