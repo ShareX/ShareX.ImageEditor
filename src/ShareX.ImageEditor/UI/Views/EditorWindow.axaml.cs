@@ -38,7 +38,11 @@ namespace ShareX.ImageEditor.Views
         private string? _pendingFilePath;
         private bool _allowClose;
 
-        public EditorWindow(EditorOptions? options = null)
+        public EditorWindow() : this(null)
+        {
+        }
+
+        public EditorWindow(EditorOptions? options)
         {
             InitializeComponent();
 
