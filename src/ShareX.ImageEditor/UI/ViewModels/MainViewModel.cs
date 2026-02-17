@@ -61,6 +61,26 @@ namespace ShareX.ImageEditor.ViewModels
         private const string OutputRatioAuto = "Auto";
 
         [ObservableProperty]
+        private bool _isDirty;
+
+        public partial class ConfirmationDialogViewModel : ObservableObject
+        {
+            public string Title { get; } = "ShareX - Image editor";
+            public string Message { get; } = "There are unsaved changes.\n\nWould you like to save the changes before closing the image editor?";
+
+            public IRelayCommand YesCommand { get; }
+            public IRelayCommand NoCommand { get; }
+            public IRelayCommand CancelCommand { get; }
+
+            public ConfirmationDialogViewModel(Action onYes, Action onNo, Action onCancel)
+            {
+                YesCommand = new RelayCommand(onYes);
+                NoCommand = new RelayCommand(onNo);
+                CancelCommand = new RelayCommand(onCancel);
+            }
+        }
+
+        [ObservableProperty]
         private string _exportState = "";
 
         private bool _isSyncingFromCore;
@@ -111,6 +131,43 @@ namespace ShareX.ImageEditor.ViewModels
         {
             TaskResult = EditorTaskResult.Cancel;
             CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RequestClose()
+        {
+            if (IsDirty)
+            {
+                ShowConfirmationDialog();
+            }
+            else
+            {
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void ShowConfirmationDialog()
+        {
+            var dialog = new ConfirmationDialogViewModel(
+                onYes: async () =>
+                {
+                    // Save returns a task
+                    await Save();
+                    IsModalOpen = false;
+                    CloseRequested?.Invoke(this, EventArgs.Empty);
+                },
+                onNo: () =>
+                {
+                    IsModalOpen = false;
+                    CloseRequested?.Invoke(this, EventArgs.Empty);
+                },
+                onCancel: () =>
+                {
+                    IsModalOpen = false;
+                }
+            );
+
+            ModalContent = dialog;
+            IsModalOpen = true;
         }
 
         // Export events
@@ -220,6 +277,12 @@ namespace ShareX.ImageEditor.ViewModels
                 ImageWidth = value.Size.Width;
                 ImageHeight = value.Size.Height;
                 HasPreviewImage = true;
+                
+                if (!_isSyncingFromCore && !_isApplyingSmartPadding)
+                {
+                     IsDirty = true;
+                }
+
                 OnPropertyChanged(nameof(SmartPaddingColor));
 
                 // Apply smart padding crop if enabled (but not if we're already applying it)
@@ -1549,6 +1612,7 @@ namespace ShareX.ImageEditor.ViewModels
                 }
 
                 ExportState = "Saved";
+                IsDirty = false;
                 DebugHelper.WriteLine($"File saved: {path}");
             }
             catch (Exception ex)

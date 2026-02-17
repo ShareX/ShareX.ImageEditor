@@ -36,12 +36,9 @@ namespace ShareX.ImageEditor.Views
     {
         private readonly MainViewModel _viewModel;
         private string? _pendingFilePath;
+        private bool _allowClose;
 
-        public EditorWindow() : this(null)
-        {
-        }
-
-        public EditorWindow(EditorOptions? options)
+        public EditorWindow(EditorOptions? options = null)
         {
             InitializeComponent();
 
@@ -55,7 +52,23 @@ namespace ShareX.ImageEditor.Views
             RequestedThemeVariant = ThemeManager.ShareXDark;
             ThemeManager.ThemeChanged += (s, theme) => RequestedThemeVariant = theme;
 
-            _viewModel.CloseRequested += (s, e) => Close();
+            _viewModel.CloseRequested += (s, e) =>
+            {
+                _allowClose = true;
+                Close();
+            };
+        }
+
+        protected override void OnClosing(WindowClosingEventArgs e)
+        {
+            if (_allowClose)
+            {
+                base.OnClosing(e);
+                return;
+            }
+
+            e.Cancel = true;
+            _viewModel.RequestClose();
         }
 
         private void InitializeComponent()
@@ -108,6 +121,7 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.IsDirty = false;
             }
             catch (Exception ex)
             {
@@ -132,6 +146,7 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.IsDirty = false;
             }
             catch (Exception ex)
             {

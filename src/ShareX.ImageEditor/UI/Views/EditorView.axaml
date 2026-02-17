@@ -13,6 +13,12 @@
              Focusable="True"
              KeyDown="OnKeyDown">
 
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:MainViewModel+ConfirmationDialogViewModel}">
+            <views:ConfirmationDialogView />
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
     <UserControl.Resources>
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
