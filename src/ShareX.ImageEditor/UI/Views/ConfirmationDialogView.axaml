@@ -23,7 +23,7 @@
             </Border>
 
             <!-- Content -->
-            <StackPanel Grid.Row="1" Margin="20" Spacing="10" Background="{DynamicResource ShareX.Brush.Background.Popup}">
+            <StackPanel Grid.Row="1" Margin="20" Spacing="10">
                 <StackPanel Orientation="Horizontal" Spacing="25" VerticalAlignment="Center">
                     <TextBlock Text="⚠️" FontSize="40" VerticalAlignment="Center" FontWeight="Normal"/>
                     <TextBlock Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="300" FontWeight="Normal"/>
