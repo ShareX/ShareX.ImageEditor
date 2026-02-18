@@ -91,20 +91,12 @@ internal class EditorHistory : IDisposable
                         keep = true;
                         keptCanvasCount++;
                     }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[HISTORY] Canvas limit ({MaxCanvasMementos}) reached at index {i}. Disposing older items.");
-                    }
                 }
                 else
                 {
                     // Annotation memento - keep if within total limit
                     keep = true;
                 }
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"[HISTORY] Total limit ({MaxAnnotationMementos}) reached at index {i}. Disposing older items.");
             }
 
             if (keep)
@@ -141,8 +133,6 @@ internal class EditorHistory : IDisposable
         }
 
         _redoMementoStack.Clear();
-
-        System.Diagnostics.Debug.WriteLine($"[HISTORY] Added memento. Stack size: {_undoMementoStack.Count} (Canvas: {keptCanvasCount})");
     }
 
     /// <summary>
@@ -174,22 +164,6 @@ internal class EditorHistory : IDisposable
     public void CreateCanvasMemento()
     {
         EditorMemento memento = GetMementoFromCanvas();
-
-        // ISSUE-003 mitigation: Log memory usage for large canvas mementos
-        if (memento.Canvas != null)
-        {
-            long bitmapBytes = (long)memento.Canvas.Info.BytesSize;
-            double bitmapMB = bitmapBytes / (1024.0 * 1024.0);
-
-            System.Diagnostics.Debug.WriteLine($"[HISTORY] Canvas memento created: {memento.Canvas.Width}x{memento.Canvas.Height}, {bitmapMB:F2} MB");
-
-            // Warn if canvas is very large (> 10MB)
-            if (bitmapMB > 10.0)
-            {
-                System.Diagnostics.Debug.WriteLine($"[HISTORY] Warning: Large canvas memento ({bitmapMB:F2} MB) may impact memory usage. Consider limiting undo depth for large images.");
-            }
-        }
-
         AddMemento(memento);
     }
 

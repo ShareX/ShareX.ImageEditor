@@ -64,9 +64,6 @@ namespace ShareX.ImageEditor.ViewModels
         [ObservableProperty]
         private bool _isDirty;
 
-        [ObservableProperty]
-        private string _exportState = "";
-
         private bool _isSyncingFromCore;
 
         [ObservableProperty]
@@ -1234,9 +1231,8 @@ namespace ShareX.ImageEditor.ViewModels
                 PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
                 ImageDimensions = $"{cropped.Width} x {cropped.Height}";
             }
-            catch (Exception ex)
+            catch
             {
-                DebugHelper.WriteLine($"Smart padding crop failed: {ex.Message}");
             }
             finally
             {
@@ -1544,13 +1540,10 @@ namespace ShareX.ImageEditor.ViewModels
                 try
                 {
                     await _copyRequested.Invoke(imageToUse);
-                    ExportState = "Copied";
-                    DebugHelper.WriteLine("Clipboard copy: Image copied to clipboard.");
                 }
                 catch (Exception ex)
                 {
                     var errorMessage = $"Failed to copy image to clipboard.\n\nError: {ex.Message}";
-                    DebugHelper.WriteLine($"Clipboard copy failed: {ex.Message}");
 
                     // Show error dialog
                     if (ShowErrorDialog != null)
@@ -1588,8 +1581,6 @@ namespace ShareX.ImageEditor.ViewModels
         [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
-            DebugHelper.WriteLine("Upload() called - starting upload flow");
-
             // Get flattened image with annotations
             Bitmap? snapshot = null;
             if (SnapshotRequested != null)
@@ -1598,32 +1589,17 @@ namespace ShareX.ImageEditor.ViewModels
             }
 
             var imageToUpload = snapshot ?? PreviewImage;
-            if (imageToUpload == null)
-            {
-                DebugHelper.WriteLine("Upload: No image to upload");
-                return;
-            }
-
-            DebugHelper.WriteLine($"Upload: UploadRequested is {(_uploadRequested != null ? "subscribed" : "NULL")}");
+            if (imageToUpload == null) return;
 
             if (_uploadRequested != null)
             {
                 try
                 {
-                    ExportState = "Uploading";
-                    DebugHelper.WriteLine("Upload: About to invoke UploadRequested event");
                     await _uploadRequested.Invoke(imageToUpload);
-                    DebugHelper.WriteLine("Upload: Image passed to host for upload.");
                 }
-                catch (Exception ex)
+                catch
                 {
-                    ExportState = "";
-                    DebugHelper.WriteLine($"Upload failed: {ex.Message}");
                 }
-            }
-            else
-            {
-                DebugHelper.WriteLine("Upload: UploadRequested is null - no subscriber");
             }
         }
 
@@ -1639,7 +1615,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(source))
             {
-                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Source bitmap is null/disposed.");
                 return null;
             }
 
@@ -1647,7 +1622,6 @@ namespace ShareX.ImageEditor.ViewModels
             SkiaSharp.SKBitmap? copy = safeSource.Copy();
             if (copy == null || copy.Handle == IntPtr.Zero)
             {
-                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Failed to create bitmap copy.");
                 copy?.Dispose();
                 return null;
             }
@@ -1661,11 +1635,6 @@ namespace ShareX.ImageEditor.ViewModels
             if (IsBitmapAlive(coreSource))
             {
                 return coreSource;
-            }
-
-            if (coreSource != null)
-            {
-                DebugHelper.WriteLine("[MEMORY WARNING] Core source bitmap is disposed. Falling back to ViewModel source.");
             }
 
             if (IsBitmapAlive(_currentSourceImage))
@@ -1692,7 +1661,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(image))
             {
-                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreview: Ignoring disposed bitmap.");
                 return;
             }
 
@@ -1708,11 +1676,6 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 _originalSourceImage?.Dispose();
                 var copy = SafeCopyBitmap(image, "UpdatePreview");
-                if (copy == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] UpdatePreview: Failed to create backup copy");
-                    // Continue without backup - smart padding might fail but image update will work
-                }
                 _originalSourceImage = copy;
             }
 
@@ -1840,16 +1803,12 @@ namespace ShareX.ImageEditor.ViewModels
                 return;
             }
 
-            if (_editorCore.ApplyImageEffect(effect) && !string.IsNullOrWhiteSpace(statusMessage))
-            {
-                ExportState = statusMessage;
-            }
+            _editorCore.ApplyImageEffect(effect);
         }
 
         // --- Effect Live Preview Logic ---
 
         private SkiaSharp.SKBitmap? _preEffectImage;
-
 
         /// <summary>
         /// Called when an effect dialog opens to store the state before previewing.
@@ -1885,7 +1844,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(preview))
             {
-                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreviewImageOnly: Ignoring disposed bitmap.");
                 return;
             }
 
@@ -1990,11 +1948,6 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
-
-            if (applied && !string.IsNullOrWhiteSpace(statusMessage))
-            {
-                ExportState = statusMessage;
-            }
         }
 
         /// <summary>
@@ -2043,9 +1996,8 @@ namespace ShareX.ImageEditor.ViewModels
                 UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"Preview Error: {ex}");
             }
         }
 

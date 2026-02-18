@@ -101,7 +101,6 @@ namespace ShareX.ImageEditor.Views
 
             if (!File.Exists(filePath))
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: File not found: {filePath}");
                 return;
             }
 
@@ -127,9 +126,8 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
                 _viewModel.IsDirty = false;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: Failed to load image from path '{filePath}': {ex}");
             }
         }
 
@@ -152,9 +150,8 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
                 _viewModel.IsDirty = false;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: Failed to load image from stream: {ex}");
             }
         }
 

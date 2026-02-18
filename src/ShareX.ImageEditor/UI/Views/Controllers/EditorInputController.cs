@@ -607,9 +607,6 @@ public class EditorInputController
                     {
                         _view.EditorCore.AddAnnotation(annotation);
 
-                        // ISSUE-001 mitigation: Validate sync after adding annotation
-                        System.Diagnostics.Debug.WriteLine($"[ANNOTATION] Added {annotation.GetType().Name} (ID: {annotation.Id})");
-
                         // Update HasAnnotations state for Clear button
                         vm.HasAnnotations = true;
                     }
