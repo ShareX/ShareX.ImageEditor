@@ -22,7 +22,7 @@
     <UserControl.Resources>
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
-        
+
         <x:String x:Key="IconSelect">&#xf25a;</x:String>
         <x:String x:Key="IconRectangle">&#xf0c8;</x:String>
         <x:String x:Key="IconEllipse">&#xf111;</x:String>
@@ -95,7 +95,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconClear}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            
+
             <Separator/>
 
             <MenuItem Header="Cut" Command="{Binding CutAnnotationCommand}" InputGesture="Ctrl+X">
@@ -118,9 +118,9 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconDuplicate}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            
+
             <Separator/>
-            
+
             <MenuItem Header="Bring to front" Command="{Binding BringToFrontCommand}" InputGesture="Home">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconBringToFront}"/>
@@ -141,7 +141,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="{StaticResource IconSendToBack}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            
+
             <Separator/>
 
             <MenuItem Header="Theme">
@@ -258,7 +258,7 @@
     </UserControl.Styles>
 
     <Grid RowDefinitions="*">
-        
+
         <!-- Row 0: Main Content Area with Preview and Sidebar (Background Layer) -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Main}">
 
@@ -435,70 +435,70 @@
                         </LayoutTransformControl.LayoutTransform>
                         <!-- Main Canvas Container with Checkered Background and Shadow -->
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                             <!-- Checkered Background -->
-                             <Border BorderThickness="1"
-                                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                                     Background="{DynamicResource ShareX.Brush.Checkered}"/>
+                            <!-- Checkered Background -->
+                            <Border BorderThickness="1"
+                                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                    Background="{DynamicResource ShareX.Brush.Checkered}"/>
 
-                             <!-- Actual Content -->
-                             <Border x:Name="PreviewFrame"
-                                     IsVisible="{Binding HasPreviewImage}"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch"
-                                      Background="{Binding CanvasBackground}"
-                                      Padding="{Binding CanvasPadding}">
-                                 <!-- Outer Border: User-controlled Shadow effect -->
-                                 <Border BoxShadow="{Binding CanvasShadow}"
-                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
-                                     <!-- Padding Border: Uses top-left pixel color -->
-                                     <Border Background="{Binding SmartPaddingColor}"
-                                             Padding="{Binding SmartPaddingThickness}"
-                                             CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
-                                             ClipToBounds="True">
-                                         <!-- Inner Border: White background only -->
-                                         <Border Background="Transparent">
-                                             <Grid Name="CanvasContainer"
-                                                   Background="Transparent"
-                                                   Width="{Binding ImageWidth}"
-                                                   Height="{Binding ImageHeight}">
-     
-                                                 <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
-                                                 <controls:SKCanvasControl Name="CanvasControl"
-                                                                         HorizontalAlignment="Stretch"
-                                                                         VerticalAlignment="Stretch"/>
-     
-                                                 <!-- Annotation Layer (Saved content) -->
-                                                 <Canvas Name="AnnotationCanvas"
-                                                         Background="Transparent"
-                                                         IsVisible="{Binding HasPreviewImage}"
-                                                         HorizontalAlignment="Stretch"
-                                                         VerticalAlignment="Stretch"
-                                                         Cursor="Cross"
-                                                         PointerPressed="OnCanvasPointerPressed"
-                                                         PointerMoved="OnCanvasPointerMoved"
-                                                         PointerReleased="OnCanvasPointerReleased">
-                                                 </Canvas>
-     
-                                                 <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
-                                                 <Canvas Name="OverlayCanvas"
-                                                         IsHitTestVisible="True"
-                                                         HorizontalAlignment="Stretch"
-                                                         VerticalAlignment="Stretch"
-                                                         PointerPressed="OnCanvasPointerPressed"
-                                                         PointerMoved="OnCanvasPointerMoved"
-                                                         PointerReleased="OnCanvasPointerReleased">
-                                                     <Rectangle Name="CropOverlay"
-                                                                IsVisible="False"
-                                                                Stroke="White"
-                                                                StrokeThickness="2"
-                                                                StrokeDashArray="4,2"
-                                                                Fill="#80000000" />
-                                                 </Canvas>
-                                             </Grid>
-                                         </Border>
-                                     </Border>
-                                 </Border>
-                             </Border>
+                            <!-- Actual Content -->
+                            <Border x:Name="PreviewFrame"
+                                    IsVisible="{Binding HasPreviewImage}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     Background="{Binding CanvasBackground}"
+                                     Padding="{Binding CanvasPadding}">
+                                <!-- Outer Border: User-controlled Shadow effect -->
+                                <Border BoxShadow="{Binding CanvasShadow}"
+                                       CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
+                                    <!-- Padding Border: Uses top-left pixel color -->
+                                    <Border Background="{Binding SmartPaddingColor}"
+                                            Padding="{Binding SmartPaddingThickness}"
+                                            CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
+                                            ClipToBounds="True">
+                                        <!-- Inner Border: White background only -->
+                                        <Border Background="Transparent">
+                                            <Grid Name="CanvasContainer"
+                                                  Background="Transparent"
+                                                  Width="{Binding ImageWidth}"
+                                                  Height="{Binding ImageHeight}">
+
+                                                <!-- Image layer (Hybrid Rendering: using SkiaSharp) -->
+                                                <controls:SKCanvasControl Name="CanvasControl"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        VerticalAlignment="Stretch"/>
+
+                                                <!-- Annotation Layer (Saved content) -->
+                                                <Canvas Name="AnnotationCanvas"
+                                                        Background="Transparent"
+                                                        IsVisible="{Binding HasPreviewImage}"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Stretch"
+                                                        Cursor="Cross"
+                                                        PointerPressed="OnCanvasPointerPressed"
+                                                        PointerMoved="OnCanvasPointerMoved"
+                                                        PointerReleased="OnCanvasPointerReleased">
+                                                </Canvas>
+
+                                                <!-- Overlay Layer (Transient UI: Selection handles, Crop) -->
+                                                <Canvas Name="OverlayCanvas"
+                                                        IsHitTestVisible="True"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Stretch"
+                                                        PointerPressed="OnCanvasPointerPressed"
+                                                        PointerMoved="OnCanvasPointerMoved"
+                                                        PointerReleased="OnCanvasPointerReleased">
+                                                    <Rectangle Name="CropOverlay"
+                                                               IsVisible="False"
+                                                               Stroke="White"
+                                                               StrokeThickness="2"
+                                                               StrokeDashArray="4,2"
+                                                               Fill="#80000000" />
+                                                </Canvas>
+                                            </Grid>
+                                        </Border>
+                                    </Border>
+                                </Border>
+                            </Border>
                         </Grid>
                     </LayoutTransformControl>
                 </ScrollViewer>
@@ -508,15 +508,15 @@
             <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="{DynamicResource ShareX.Brush.Background.Panel}"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1,0,0,0">
                 <Grid>
-                     <Grid.RowDefinitions>
-                         <RowDefinition Height="*" />
-                         <RowDefinition Height="Auto" />
-                     </Grid.RowDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
                     <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                         <StackPanel Width="220" Spacing="0" Margin="16">
-                             <ContentControl Content="{Binding EffectsPanelContent}" />
-                         </StackPanel>
+                        <StackPanel Width="220" Spacing="0" Margin="16">
+                            <ContentControl Content="{Binding EffectsPanelContent}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Border>
@@ -525,7 +525,7 @@
 
         <!-- Row 0: Annotation Toolbar (split into two centered rows) - OVERLAY -->
         <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
-            
+
             <!-- Top Toolbar: Tools and Actions -->
             <Border Padding="4" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
                     DataContext="{Binding ToolbarAdapter}"
@@ -748,82 +748,47 @@
                 <Grid IsVisible="{Binding TaskMode}" Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom">
                     <!-- Cancel Button: Red Rectangle (Behind) -->
                     <Button Command="{Binding CancelCommand}"
-                            BorderBrush="#B91C1C"
+                            Background="#DC2626"
+                            BorderBrush="#EF4444"
+                            BorderThickness="1"
                             Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right"
                             Width="50" Margin="0,0,0,0" Padding="25,0,10,0" CornerRadius="0,4,4,0"
                             ToolTip.Tip="Cancel" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="0">
-                        <Button.Background>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Offset="0" Color="#EF4444"/>
-                                <GradientStop Offset="0.5" Color="#EF4444"/>
-                                <GradientStop Offset="0.5" Color="#DC2626"/>
-                                <GradientStop Offset="1" Color="#DC2626"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
                         <Button.Styles>
-                             <Style Selector="Button:pressed /template/ ContentPresenter">
-                                 <Setter Property="RenderTransform" Value="none"/>
-                             </Style>
-                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                 <Setter Property="Background">
-                                     <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                            <GradientStop Offset="0" Color="#F87171"/>
-                                            <GradientStop Offset="0.5" Color="#F87171"/>
-                                            <GradientStop Offset="0.5" Color="#EF4444"/>
-                                            <GradientStop Offset="1" Color="#EF4444"/>
-                                        </LinearGradientBrush>
-                                     </Setter.Value>
-                                 </Setter>
-                                 <Setter Property="ZIndex" Value="0"/>
-                             </Style>
+                            <Style Selector="Button:pressed /template/ ContentPresenter">
+                                <Setter Property="RenderTransform" Value="none"/>
+                            </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="ZIndex" Value="0"/>
+                            </Style>
                         </Button.Styles>
-                        <TextBlock Text="{StaticResource IconCancel}" 
-                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}" 
+                        <TextBlock Text="{StaticResource IconCancel}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                                    FontSize="16" FontWeight="Black" Foreground="White"
                                    VerticalAlignment="Center"/>
                     </Button>
-                    
+
                     <!-- Continue Button: Big Green Circle (Front) -->
                     <Button Command="{Binding ContinueCommand}"
                             Width="56" Height="56" CornerRadius="28"
-                            BorderBrush="#059669"
+                            Background="#10B981"
+                            BorderBrush="#13DD9A"
                             BorderThickness="1"
                             HorizontalAlignment="Left" VerticalAlignment="Bottom"
                             Margin="0,0,0,-8"
                             ToolTip.Tip="Continue" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"
                             ZIndex="20">
-                        <Button.Background>
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Offset="0" Color="#10B981"/>
-                                <GradientStop Offset="0.5" Color="#10B981"/>
-                                <GradientStop Offset="0.5" Color="#059669"/>
-                                <GradientStop Offset="1" Color="#059669"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
                         <Button.Styles>
-                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                 <Setter Property="Background">
-                                     <Setter.Value>
-                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                            <GradientStop Offset="0" Color="#34D399"/>
-                                            <GradientStop Offset="0.5" Color="#34D399"/>
-                                            <GradientStop Offset="0.5" Color="#10B981"/>
-                                            <GradientStop Offset="1" Color="#10B981"/>
-                                        </LinearGradientBrush>
-                                     </Setter.Value>
-                                 </Setter>
-                                 <Setter Property="ZIndex" Value="20"/>
-                             </Style>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="ZIndex" Value="20"/>
+                            </Style>
                         </Button.Styles>
-                        <Grid>
-                            <TextBlock Text="{StaticResource IconPlay}" 
-                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}" 
-                                   FontSize="22" FontWeight="Black" Foreground="White" 
+                        <TextBlock Text="{StaticResource IconPlay}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="22" FontWeight="Black" Foreground="White"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Margin="4,0,0,0"/>
-                        </Grid>
                     </Button>
                 </Grid>
 
@@ -861,9 +826,9 @@
                 IsHitTestVisible="True">
             <Grid>
                 <!-- Click outside to close -->
-                <Border Background="Transparent" 
+                <Border Background="Transparent"
                         PointerPressed="OnModalBackgroundPressed"/>
-                
+
                 <!-- Modal Content -->
                 <ContentControl Content="{Binding ModalContent}"
                                 HorizontalAlignment="Center"
