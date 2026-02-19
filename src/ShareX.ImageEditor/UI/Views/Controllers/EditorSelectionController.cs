@@ -548,6 +548,19 @@ public class EditorSelectionController
         }
     }
 
+    public void MoveSelectedShape(double deltaX, double deltaY)
+    {
+        if (_selectedShape == null) return;
+
+        _lastDragPoint = new Point(0, 0);
+        HandleMove(new Point(deltaX, deltaY));
+
+        if (_selectedShape?.Tag is BaseEffectAnnotation)
+        {
+            RequestUpdateEffect?.Invoke(_selectedShape);
+        }
+    }
+
     private void HandleMove(Point currentPoint)
     {
         if (_selectedShape == null)
