@@ -90,11 +90,6 @@ namespace ShareX.ImageEditor
             }
         }
 
-        public static void InitializeAsync()
-        {
-            Task.Run(Initialize);
-        }
-
         public static void ShowEditor(string filePath)
         {
             Initialize();
