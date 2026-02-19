@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -23,6 +24,10 @@ public class EditorSelectionController
     private Point _startPoint; // Used for resizing deltas
     private bool _isDraggingShape;
     private global::Avalonia.Controls.Shapes.Line? _rotationLine; // Dotted line connecting top-center to rotation handle
+
+    // Reactive bounds tracking for text annotations
+    private Control? _observedShape;
+    private EventHandler<AvaloniaPropertyChangedEventArgs>? _boundsHandler;
 
     // Hover tracking for ant lines
     private Control? _hoveredShape;
@@ -58,6 +63,7 @@ public class EditorSelectionController
         _isDraggingHandle = false;
         _draggedHandle = null;
         _isDraggingShape = false;
+        UpdateBoundsObserver(); // Clear observer
         ClearHoverOutline();
         UpdateSelectionHandles();
         if (wasSelected)
@@ -70,6 +76,7 @@ public class EditorSelectionController
     {
         var wasNull = _selectedShape == null;
         _selectedShape = shape;
+        UpdateBoundsObserver();
         // Set the hovered shape to the selected shape so ant lines appear
         _hoveredShape = shape;
         UpdateHoverOutline();
@@ -236,6 +243,7 @@ public class EditorSelectionController
                     }
 
                     _selectedShape = hitTarget;
+                    UpdateBoundsObserver();
                     _isDraggingShape = true;
                     _lastDragPoint = point;
                     UpdateSelectionHandles();
@@ -265,6 +273,7 @@ public class EditorSelectionController
                         }
 
                         _selectedShape = manualHit;
+                        UpdateBoundsObserver();
                         _isDraggingShape = true;
                         _lastDragPoint = point;
                         UpdateSelectionHandles();
@@ -1593,6 +1602,43 @@ public class EditorSelectionController
         _balloonTextEditor.Resources["TextControlBorderBrush"] = Avalonia.Media.Brushes.Transparent;
         _balloonTextEditor.Resources["TextControlBorderBrushFocused"] = Avalonia.Media.Brushes.Transparent;
         _balloonTextEditor.Resources["TextControlBorderBrushPointerOver"] = Avalonia.Media.Brushes.Transparent;
+    }
+
+    private void UpdateBoundsObserver()
+    {
+        if (_observedShape != null && _boundsHandler != null)
+        {
+            _observedShape.PropertyChanged -= _boundsHandler;
+            _observedShape = null;
+            _boundsHandler = null;
+        }
+
+        if (_selectedShape is TextBox tb && tb.Tag is TextAnnotation textAnn)
+        {
+            _observedShape = tb;
+            _boundsHandler = (s, args) =>
+            {
+                if (args.Property == Visual.BoundsProperty)
+                {
+                    var bounds = tb.Bounds;
+                    // Handle valid size (ignore 0x0 or uninitialized)
+                    if (bounds.Width > 0 && bounds.Height > 0)
+                    {
+                        var left = Canvas.GetLeft(tb);
+                        var top = Canvas.GetTop(tb);
+
+                        // Sync visual bounds to annotation model
+                        // This ensures hit tests (which rely on annotation start/end points) are accurate
+                        textAnn.StartPoint = new SKPoint((float)left, (float)top);
+                        textAnn.EndPoint = new SKPoint((float)(left + bounds.Width), (float)(top + bounds.Height));
+
+                        // Refresh selection handles to match new bounds
+                        UpdateSelectionHandles();
+                    }
+                }
+            };
+            _observedShape.PropertyChanged += _boundsHandler;
+        }
     }
 }
 
