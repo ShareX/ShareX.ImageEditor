@@ -544,7 +544,7 @@ namespace ShareX.ImageEditor.Views
                             case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
                             case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
-                            
+
                             case Key.Enter:
                                 if (vm.TaskMode)
                                 {
@@ -552,28 +552,40 @@ namespace ShareX.ImageEditor.Views
                                     e.Handled = true;
                                 }
                                 break;
-                            case Key.Escape:
-                                if (_selectionController.SelectedShape != null)
-                                {
-                                    _selectionController.ClearSelection();
-                                    e.Handled = true;
-                                }
-                                else if (vm.TaskMode)
-                                {
-                                    vm.CancelCommand.Execute(null);
-                                    e.Handled = true;
-                                }
-                                else
-                                {
-                                    if (TopLevel.GetTopLevel(this) is Avalonia.Controls.Window window)
-                                    {
-                                        window.Close();
-                                        e.Handled = true;
-                                    }
-                                }
-                                break;
                         }
                     }
+                }
+            }
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Source is TextBox) return;
+
+            if (DataContext is MainViewModel vm && e.KeyModifiers == KeyModifiers.None)
+            {
+                switch (e.Key)
+                {
+                    case Key.Escape:
+                        if (_selectionController.SelectedShape != null)
+                        {
+                            _selectionController.ClearSelection();
+                            e.Handled = true;
+                        }
+                        else if (vm.TaskMode)
+                        {
+                            vm.CancelCommand.Execute(null);
+                            e.Handled = true;
+                        }
+                        else
+                        {
+                            if (TopLevel.GetTopLevel(this) is Avalonia.Controls.Window window)
+                            {
+                                window.Close();
+                                e.Handled = true;
+                            }
+                        }
+                        break;
                 }
             }
         }
