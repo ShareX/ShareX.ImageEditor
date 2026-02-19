@@ -190,6 +190,10 @@ namespace ShareX.ImageEditor.Views
                     {
                         vm.FillColor = ellipse.FillColor;
                     }
+                    else if (vm.SelectedAnnotation is BaseEffectAnnotation effect)
+                    {
+                        vm.EffectStrength = (int)effect.Amount;
+                    }
                 }
             }
         }
