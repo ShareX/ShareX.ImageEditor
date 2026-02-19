@@ -65,20 +65,28 @@ namespace ShareX.ImageEditor
     {
         private static bool initialized = false;
 
-        private static void Initialize()
+        private static readonly object _initLock = new object();
+
+        public static void Initialize()
         {
             if (!initialized)
             {
-                if (Application.Current == null)
+                lock (_initLock)
                 {
-                    AppBuilder.Configure<AvaloniaApp>()
-                        .UsePlatformDetect()
-                        .WithInterFont()
-                        .LogToTrace()
-                        .SetupWithoutStarting();
-                }
+                    if (!initialized)
+                    {
+                        if (Application.Current == null)
+                        {
+                            AppBuilder.Configure<AvaloniaApp>()
+                                .UsePlatformDetect()
+                                .WithInterFont()
+                                .LogToTrace()
+                                .SetupWithoutStarting();
+                        }
 
-                initialized = true;
+                        initialized = true;
+                    }
+                }
             }
         }
 
