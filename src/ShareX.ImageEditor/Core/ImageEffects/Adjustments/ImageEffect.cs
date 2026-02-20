@@ -36,13 +36,43 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
 
         SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
 
-        for (int x = 0; x < source.Width; x++)
+        if (source.ColorType == SKColorType.Bgra8888 || source.ColorType == SKColorType.Rgba8888)
         {
-            for (int y = 0; y < source.Height; y++)
+            unsafe
             {
-                SKColor original = source.GetPixel(x, y);
-                SKColor modified = operation(original);
-                result.SetPixel(x, y, modified);
+                byte* srcPtr = (byte*)source.GetPixels();
+                byte* dstPtr = (byte*)result.GetPixels();
+                int length = source.Width * source.Height * source.BytesPerPixel;
+                
+                int rIdx = source.ColorType == SKColorType.Bgra8888 ? 2 : 0;
+                int bIdx = source.ColorType == SKColorType.Bgra8888 ? 0 : 2;
+
+                for (int i = 0; i < length; i += 4)
+                {
+                    byte b = srcPtr[i + bIdx];
+                    byte g = srcPtr[i + 1];
+                    byte r = srcPtr[i + rIdx];
+                    byte a = srcPtr[i + 3];
+                    
+                    var modified = operation(new SKColor(r, g, b, a));
+
+                    dstPtr[i + bIdx] = modified.Blue;
+                    dstPtr[i + 1] = modified.Green;
+                    dstPtr[i + rIdx] = modified.Red;
+                    dstPtr[i + 3] = modified.Alpha;
+                }
+            }
+        }
+        else
+        {
+            for (int x = 0; x < source.Width; x++)
+            {
+                for (int y = 0; y < source.Height; y++)
+                {
+                    SKColor original = source.GetPixel(x, y);
+                    SKColor modified = operation(original);
+                    result.SetPixel(x, y, modified);
+                }
             }
         }
 
