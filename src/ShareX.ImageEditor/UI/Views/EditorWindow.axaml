@@ -6,7 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ShareX.ImageEditor.Views.EditorWindow"
         Title="{Binding WindowTitle}"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
     
     <Window.Resources>
         <ResourceDictionary>

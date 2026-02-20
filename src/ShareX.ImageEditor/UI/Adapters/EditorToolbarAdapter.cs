@@ -136,6 +136,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public bool ShowToolOptionsSeparator => ShowToolOptions;
 
+    public string ColorPickerTooltip => _viewModel.ColorPickerTooltip;
+
     public ICommand SelectToolCommand => _viewModel.SelectToolCommand;
 
     public ICommand UndoCommand => _viewModel.UndoCommand;

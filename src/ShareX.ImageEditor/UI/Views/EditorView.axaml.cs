@@ -546,7 +546,11 @@ namespace ShareX.ImageEditor.Views
                             case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
 
                             case Key.Enter:
-                                if (vm.TaskMode)
+                                if (_inputController.TryConfirmCrop())
+                                {
+                                    e.Handled = true;
+                                }
+                                else if (vm.TaskMode)
                                 {
                                     vm.ContinueCommand.Execute(null);
                                     e.Handled = true;
@@ -567,7 +571,11 @@ namespace ShareX.ImageEditor.Views
                 switch (e.Key)
                 {
                     case Key.Escape:
-                        if (_selectionController.SelectedShape != null)
+                        if (_inputController.CancelCrop())
+                        {
+                            e.Handled = true;
+                        }
+                        else if (_selectionController.SelectedShape != null)
                         {
                             _selectionController.ClearSelection();
                             e.Handled = true;
@@ -611,6 +619,7 @@ namespace ShareX.ImageEditor.Views
 
         private void OnDeselectRequested(object? sender, EventArgs e)
         {
+            _inputController.CancelCrop();
             _selectionController.ClearSelection();
         }
 

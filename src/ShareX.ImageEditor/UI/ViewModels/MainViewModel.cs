@@ -624,9 +624,12 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowShadow));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
+            OnPropertyChanged(nameof(ColorPickerTooltip));
         }
 
         public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
+
+        public string ColorPickerTooltip => ActiveTool == EditorTool.Highlight ? "Highlight Color" : "Border Color";
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -666,6 +669,10 @@ namespace ShareX.ImageEditor.ViewModels
                     StrokeWidth = Options.Thickness; // Or specific step thickness? EditorOptions uses generic Thickness.
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
+                    break;
+                case EditorTool.SmartEraser:
+                    // SmartEraserAnnotation always uses StrokeWidth = 10 internally; keep UI in sync.
+                    StrokeWidth = 10;
                     break;
                 case EditorTool.Highlight:
                     SelectedColorValue = Options.HighlighterColor;

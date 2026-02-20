@@ -1096,7 +1096,25 @@ public class EditorCore : IDisposable
         // Capture state BEFORE adding the new annotation (Undo will revert to this state)
         _history.CreateAnnotationsMemento();
 
-        _annotations.Add(annotation);
+        // HighlightAnnotations are inserted before non-effect annotations so they render
+        // below vector shapes (arrows, rectangles, text) by default.
+        if (annotation is HighlightAnnotation)
+        {
+            int insertPos = _annotations.Count;
+            for (int i = 0; i < _annotations.Count; i++)
+            {
+                if (_annotations[i] is not BaseEffectAnnotation)
+                {
+                    insertPos = i;
+                    break;
+                }
+            }
+            _annotations.Insert(insertPos, annotation);
+        }
+        else
+        {
+            _annotations.Add(annotation);
+        }
 
         HistoryChanged?.Invoke();
         // We don't necessarily need to render if the view already added the control,

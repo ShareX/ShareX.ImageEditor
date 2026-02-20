@@ -678,13 +678,13 @@
                     MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <!-- Border Color Picker Dropdown -->
+                        <!-- Border/Highlight Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
                             SelectedColor="{Binding SelectedColorBrush}"
                             ColorChanged="OnColorChanged"
                             Height="40"
                             IsVisible="{Binding ShowBorderColor}"
-                            ToolTip.Tip="Border Color"/>
+                            ToolTip.Tip="{Binding ColorPickerTooltip}"/>
 
                         <!-- Fill Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="FillColorPickerDropdown"
