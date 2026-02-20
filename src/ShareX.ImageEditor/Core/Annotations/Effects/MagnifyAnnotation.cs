@@ -15,40 +15,8 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
         Amount = 2.0f; // Zoom level (2x)
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        if (EffectBitmap != null)
-        {
-            canvas.DrawBitmap(EffectBitmap, rect.Left, rect.Top);
-        }
-        else
-        {
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(211, 211, 211, 128), // LightGray with 50% opacity
-                Style = SKPaintStyle.Fill
-            };
-            canvas.DrawRect(rect, paint);
-        }
 
-        // No border for magnifier as requested
-        // using var strokePaint = CreateStrokePaint();
-        // canvas.DrawRect(rect, strokePaint);
-
-        if (IsSelected)
-        {
-            using var selectPaint = new SKPaint
-            {
-                Color = SKColors.DodgerBlue,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, selectPaint);
-        }
-    }
 
     public override void UpdateEffect(SKBitmap source)
     {

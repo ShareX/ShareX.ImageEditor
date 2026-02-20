@@ -14,44 +14,8 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
         StrokeWidth = 0; // No border by default
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        if (EffectBitmap != null)
-        {
-            using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.High };
-            canvas.DrawBitmap(EffectBitmap, rect, paint);
-        }
-        else
-        {
-            // Fallback rendering
-            var baseColor = ParseColor(StrokeColor);
-            var highlightColor = new SKColor(baseColor.Red, baseColor.Green, baseColor.Blue, 0x55);
 
-            using var paint = new SKPaint
-            {
-                Color = highlightColor,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
-
-            canvas.DrawRect(rect, paint);
-        }
-
-        // Draw selection highlight if selected
-        if (IsSelected)
-        {
-            using var selectPaint = new SKPaint
-            {
-                Color = SKColors.DodgerBlue,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, selectPaint);
-        }
-    }
 
     public override void UpdateEffect(SKBitmap source)
     {

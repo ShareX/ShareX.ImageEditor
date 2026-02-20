@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -22,6 +23,11 @@ public class EditorSelectionController
     private Point _lastDragPoint;
     private Point _startPoint; // Used for resizing deltas
     private bool _isDraggingShape;
+    private global::Avalonia.Controls.Shapes.Line? _rotationLine; // Dotted line connecting top-center to rotation handle
+
+    // Reactive bounds tracking for text annotations
+    private Control? _observedShape;
+    private EventHandler<AvaloniaPropertyChangedEventArgs>? _boundsHandler;
 
     // Hover tracking for ant lines
     private Control? _hoveredShape;
@@ -57,6 +63,7 @@ public class EditorSelectionController
         _isDraggingHandle = false;
         _draggedHandle = null;
         _isDraggingShape = false;
+        UpdateBoundsObserver(); // Clear observer
         ClearHoverOutline();
         UpdateSelectionHandles();
         if (wasSelected)
@@ -69,6 +76,7 @@ public class EditorSelectionController
     {
         var wasNull = _selectedShape == null;
         _selectedShape = shape;
+        UpdateBoundsObserver();
         // Set the hovered shape to the selected shape so ant lines appear
         _hoveredShape = shape;
         UpdateHoverOutline();
@@ -235,6 +243,7 @@ public class EditorSelectionController
                     }
 
                     _selectedShape = hitTarget;
+                    UpdateBoundsObserver();
                     _isDraggingShape = true;
                     _lastDragPoint = point;
                     UpdateSelectionHandles();
@@ -264,6 +273,7 @@ public class EditorSelectionController
                         }
 
                         _selectedShape = manualHit;
+                        UpdateBoundsObserver();
                         _isDraggingShape = true;
                         _lastDragPoint = point;
                         UpdateSelectionHandles();
@@ -375,7 +385,7 @@ public class EditorSelectionController
         }
 
         // Special handling for Arrow endpoints
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath)
         {
             if (_shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
             {
@@ -386,14 +396,13 @@ public class EditorSelectionController
                 else if (handleTag == "ArrowEnd") arrowEnd = currentPoint;
 
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
-                // ISSUE-005/006 fix: Use constant for arrow head width
-                arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(arrowStart, arrowEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
 
                 // Sync annotation points for hit testing
                 if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
                 {
                     arrowAnnotation.StartPoint = new SKPoint((float)arrowStart.X, (float)arrowStart.Y);
                     arrowAnnotation.EndPoint = new SKPoint((float)arrowEnd.X, (float)arrowEnd.Y);
+                    AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnnotation);
                 }
             }
             _startPoint = currentPoint;
@@ -406,6 +415,36 @@ public class EditorSelectionController
         {
             balloon.TailPoint = new SKPoint((float)currentPoint.X, (float)currentPoint.Y);
             balloonControl.InvalidateVisual();
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
+        }
+
+        // Rotation handling for TextBox (Text annotation)
+        if (_selectedShape is TextBox rotateTextBox && handleTag == "Rotate")
+        {
+            if (rotateTextBox.Tag is TextAnnotation rotateTextAnn)
+            {
+                var tbLeft = Canvas.GetLeft(rotateTextBox);
+                var tbTop = Canvas.GetTop(rotateTextBox);
+                var tbWidth = rotateTextBox.Bounds.Width;
+                var tbHeight = rotateTextBox.Bounds.Height;
+                if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = rotateTextBox.Width;
+                if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = rotateTextBox.Height;
+
+                double cx = tbLeft + tbWidth / 2;
+                double cy = tbTop + tbHeight / 2;
+
+                double dx = currentPoint.X - cx;
+                double dy = currentPoint.Y - cy;
+                double angleRad = Math.Atan2(dx, -dy); // 0 = up, clockwise positive
+                double angleDeg = angleRad * 180.0 / Math.PI;
+
+                rotateTextAnn.RotationAngle = (float)angleDeg;
+
+                rotateTextBox.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+                rotateTextBox.RenderTransform = new RotateTransform(angleDeg);
+            }
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -473,7 +512,7 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid || _selectedShape is TextBox)
         {
             double newLeft = left;
             double newTop = top;
@@ -509,6 +548,19 @@ public class EditorSelectionController
         }
     }
 
+    public void MoveSelectedShape(double deltaX, double deltaY)
+    {
+        if (_selectedShape == null) return;
+
+        _lastDragPoint = new Point(0, 0);
+        HandleMove(new Point(deltaX, deltaY));
+
+        if (_selectedShape?.Tag is BaseEffectAnnotation)
+        {
+            RequestUpdateEffect?.Invoke(_selectedShape);
+        }
+    }
+
     private void HandleMove(Point currentPoint)
     {
         if (_selectedShape == null)
@@ -536,20 +588,19 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _view.DataContext is MainViewModel vm && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Path arrowPath && _shapeEndpoints.TryGetValue(arrowPath, out var endpoints))
         {
             var newStart = new Point(endpoints.Start.X + deltaX, endpoints.Start.Y + deltaY);
             var newEnd = new Point(endpoints.End.X + deltaX, endpoints.End.Y + deltaY);
 
             _shapeEndpoints[arrowPath] = (newStart, newEnd);
-            // ISSUE-005/006 fix: Use constant for arrow head width
-            arrowPath.Data = new ArrowAnnotation().CreateArrowGeometry(newStart, newEnd, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
 
             // Sync annotation points for hit testing
             if (arrowPath.Tag is ArrowAnnotation arrowAnnotation)
             {
                 arrowAnnotation.StartPoint = new SKPoint((float)newStart.X, (float)newStart.Y);
                 arrowAnnotation.EndPoint = new SKPoint((float)newEnd.X, (float)newEnd.Y);
+                AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnnotation);
             }
 
             _lastDragPoint = currentPoint;
@@ -703,8 +754,85 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is Polyline || _selectedShape is TextBox)
+        if (_selectedShape is Polyline)
         {
+            UpdateHoverOutline();
+            return;
+        }
+
+        // TextBox (Text annotation): resize handles + rotation handle
+        if (_selectedShape is TextBox textBox)
+        {
+            var tbLeft = Canvas.GetLeft(textBox);
+            var tbTop = Canvas.GetTop(textBox);
+            var tbWidth = textBox.Bounds.Width;
+            var tbHeight = textBox.Bounds.Height;
+            if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = textBox.Width;
+            if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = textBox.Height;
+
+            // Get rotation angle from the annotation
+            double rotAngle = 0;
+            if (textBox.Tag is TextAnnotation textAnn)
+            {
+                rotAngle = textAnn.RotationAngle;
+            }
+
+            double cx = tbLeft + tbWidth / 2;
+            double cy = tbTop + tbHeight / 2;
+
+            // Helper to rotate a point around center
+            Point RotPt(double x, double y)
+            {
+                if (rotAngle == 0) return new Point(x, y);
+                double rad = rotAngle * Math.PI / 180.0;
+                double cos = Math.Cos(rad);
+                double sin = Math.Sin(rad);
+                double dx = x - cx;
+                double dy = y - cy;
+                return new Point(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
+            }
+
+            // 8 resize handles at rotated positions
+            var tl = RotPt(tbLeft, tbTop);
+            var tc = RotPt(tbLeft + tbWidth / 2, tbTop);
+            var tr = RotPt(tbLeft + tbWidth, tbTop);
+            var rc = RotPt(tbLeft + tbWidth, tbTop + tbHeight / 2);
+            var br = RotPt(tbLeft + tbWidth, tbTop + tbHeight);
+            var bc = RotPt(tbLeft + tbWidth / 2, tbTop + tbHeight);
+            var bl = RotPt(tbLeft, tbTop + tbHeight);
+            var lc = RotPt(tbLeft, tbTop + tbHeight / 2);
+
+            CreateHandle(tl.X, tl.Y, "TopLeft");
+            CreateHandle(tc.X, tc.Y, "TopCenter");
+            CreateHandle(tr.X, tr.Y, "TopRight");
+            CreateHandle(rc.X, rc.Y, "RightCenter");
+            CreateHandle(br.X, br.Y, "BottomRight");
+            CreateHandle(bc.X, bc.Y, "BottomCenter");
+            CreateHandle(bl.X, bl.Y, "BottomLeft");
+            CreateHandle(lc.X, lc.Y, "LeftCenter");
+
+            // Rotation handle: dotted line from top-center going up, then a rotation node
+            var rotLineStart = tc;
+            var rotHandlePos = RotPt(tbLeft + tbWidth / 2, tbTop - 30);
+
+            // Draw dotted line connector at rotated positions
+            if (overlay != null)
+            {
+                _rotationLine = new global::Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = rotLineStart,
+                    EndPoint = rotHandlePos,
+                    Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)), // DodgerBlue
+                    StrokeThickness = 1.5,
+                    StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 4 },
+                    IsHitTestVisible = false
+                };
+                overlay.Children.Add(_rotationLine);
+                _selectionHandles.Add(_rotationLine);
+            }
+
+            CreateHandle(rotHandlePos.X, rotHandlePos.Y, "Rotate");
+
             UpdateHoverOutline();
             return;
         }
@@ -1134,20 +1262,30 @@ public class EditorSelectionController
                 shapeBounds = new Rect(minX, minY, maxX - minX, maxY - minY);
             }
 
-            if (shapeBounds.Contains(currentPoint))
+            // Start with rough bounds check
+            bool isRotated = false;
+            if (child.Tag is Annotation tagAnn && tagAnn.RotationAngle != 0)
+            {
+                isRotated = true;
+            }
+
+            // If rotated, the axis-aligned 'shapeBounds' is invalid/insufficient.
+            // We skip the Contains check and rely on the annotation's own HitTest (which handles rotation).
+            if (isRotated || shapeBounds.Contains(currentPoint))
             {
                 // Use the annotation's HitTest method if available
-                // Skip strict hit test for TextBox to match visual bounds (ant lines)
-                if (child.Tag is Annotation annotation && !(child is TextBox))
+                if (child.Tag is Annotation annotation)
                 {
                     var skPoint = ToSKPoint(currentPoint);
-                    if (!annotation.HitTest(skPoint))
+                    if (annotation.HitTest(skPoint))
                     {
-                        continue; // Annotation's hit test failed
+                        return child;
                     }
                 }
-
-                return child;
+                else
+                {
+                    return child;
+                }
             }
         }
         return null;
@@ -1351,6 +1489,26 @@ public class EditorSelectionController
         Canvas.SetTop(_hoverOutlineWhite, top - 2);
         _hoverOutlineWhite.Width = width + 4;
         _hoverOutlineWhite.Height = height + 4;
+
+        // Apply rotation to hover outline for rotated shapes (e.g. TextBox)
+        if (_hoveredShape is TextBox hoveredTb && hoveredTb.Tag is TextAnnotation hoveredTextAnn && hoveredTextAnn.RotationAngle != 0)
+        {
+            var rotTransform = new RotateTransform(hoveredTextAnn.RotationAngle);
+            // Rotate around the center of the outline (which matches the shape center)
+            var originX = (width + 4) > 0 ? ((left + width / 2) - (left - 2)) / (width + 4) : 0.5;
+            var originY = (height + 4) > 0 ? ((top + height / 2) - (top - 2)) / (height + 4) : 0.5;
+            var origin = new RelativePoint(originX, originY, RelativeUnit.Relative);
+
+            _hoverOutlineBlack.RenderTransformOrigin = origin;
+            _hoverOutlineBlack.RenderTransform = rotTransform;
+            _hoverOutlineWhite.RenderTransformOrigin = origin;
+            _hoverOutlineWhite.RenderTransform = rotTransform;
+        }
+        else
+        {
+            _hoverOutlineBlack.RenderTransform = null;
+            _hoverOutlineWhite.RenderTransform = null;
+        }
     }
 
     private void AttachTextBoxEditHandlers(TextBox tb)
@@ -1457,6 +1615,43 @@ public class EditorSelectionController
         _balloonTextEditor.Resources["TextControlBorderBrush"] = Avalonia.Media.Brushes.Transparent;
         _balloonTextEditor.Resources["TextControlBorderBrushFocused"] = Avalonia.Media.Brushes.Transparent;
         _balloonTextEditor.Resources["TextControlBorderBrushPointerOver"] = Avalonia.Media.Brushes.Transparent;
+    }
+
+    private void UpdateBoundsObserver()
+    {
+        if (_observedShape != null && _boundsHandler != null)
+        {
+            _observedShape.PropertyChanged -= _boundsHandler;
+            _observedShape = null;
+            _boundsHandler = null;
+        }
+
+        if (_selectedShape is TextBox tb && tb.Tag is TextAnnotation textAnn)
+        {
+            _observedShape = tb;
+            _boundsHandler = (s, args) =>
+            {
+                if (args.Property == Visual.BoundsProperty)
+                {
+                    var bounds = tb.Bounds;
+                    // Handle valid size (ignore 0x0 or uninitialized)
+                    if (bounds.Width > 0 && bounds.Height > 0)
+                    {
+                        var left = Canvas.GetLeft(tb);
+                        var top = Canvas.GetTop(tb);
+
+                        // Sync visual bounds to annotation model
+                        // This ensures hit tests (which rely on annotation start/end points) are accurate
+                        textAnn.StartPoint = new SKPoint((float)left, (float)top);
+                        textAnn.EndPoint = new SKPoint((float)(left + bounds.Width), (float)(top + bounds.Height));
+
+                        // Refresh selection handles to match new bounds
+                        UpdateSelectionHandles();
+                    }
+                }
+            };
+            _observedShape.PropertyChanged += _boundsHandler;
+        }
     }
 }
 

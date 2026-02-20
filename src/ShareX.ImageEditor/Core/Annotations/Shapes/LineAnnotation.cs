@@ -37,11 +37,7 @@ public partial class LineAnnotation : Annotation
         ToolType = EditorTool.Line;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        using var paint = CreateStrokePaint();
-        canvas.DrawLine(StartPoint, EndPoint, paint);
-    }
+
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

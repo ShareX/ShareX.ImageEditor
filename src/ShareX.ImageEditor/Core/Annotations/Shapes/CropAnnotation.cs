@@ -38,58 +38,7 @@ public class CropAnnotation : Annotation
         ToolType = EditorTool.Crop;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        // Draw dashed border
-        using var dashPaint = new SKPaint
-        {
-            Color = SKColors.Black,
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0),
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, dashPaint);
-
-        // Draw resize handles at corners and edges
-        DrawHandle(canvas, new SKPoint(rect.Left, rect.Top));
-        DrawHandle(canvas, new SKPoint(rect.Right, rect.Top));
-        DrawHandle(canvas, new SKPoint(rect.Left, rect.Bottom));
-        DrawHandle(canvas, new SKPoint(rect.Right, rect.Bottom));
-        DrawHandle(canvas, new SKPoint(rect.MidX, rect.Top));
-        DrawHandle(canvas, new SKPoint(rect.MidX, rect.Bottom));
-        DrawHandle(canvas, new SKPoint(rect.Left, rect.MidY));
-        DrawHandle(canvas, new SKPoint(rect.Right, rect.MidY));
-    }
-
-    private void DrawHandle(SKCanvas canvas, SKPoint center)
-    {
-        const float handleSize = 8;
-        var rect = new SKRect(
-            center.X - handleSize / 2,
-            center.Y - handleSize / 2,
-            center.X + handleSize / 2,
-            center.Y + handleSize / 2);
-
-        using var fillPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, fillPaint);
-
-        using var strokePaint = new SKPaint
-        {
-            Color = SKColors.Black,
-            StrokeWidth = 1,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, strokePaint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

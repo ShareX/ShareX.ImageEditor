@@ -47,31 +47,8 @@ public partial class SpotlightAnnotation : Annotation
         ToolType = EditorTool.Spotlight;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        if (CanvasSize.Width <= 0 || CanvasSize.Height <= 0) return;
 
-        var spotlightRect = GetBounds();
 
-        // Create dark overlay using path with EvenOdd fill rule
-        using var path = new SKPath { FillType = SKPathFillType.EvenOdd };
-
-        // Outer rectangle: full canvas
-        path.AddRect(new SKRect(0, 0, CanvasSize.Width, CanvasSize.Height));
-
-        // Inner rectangle: spotlight (hole)
-        path.AddRect(spotlightRect);
-
-        // Draw the overlay (darkens everything except the rectangle)
-        using var paint = new SKPaint
-        {
-            Color = new SKColor(0, 0, 0, DarkenOpacity),
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-
-        canvas.DrawPath(path, paint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

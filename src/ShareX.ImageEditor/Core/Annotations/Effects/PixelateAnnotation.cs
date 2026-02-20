@@ -15,36 +15,8 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
         Amount = 10; // Default pixel size
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        if (EffectBitmap != null)
-        {
-            canvas.DrawBitmap(EffectBitmap, rect.Left, rect.Top);
-        }
-        else
-        {
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(128, 128, 128, 77),
-                Style = SKPaintStyle.Fill
-            };
-            canvas.DrawRect(rect, paint);
-        }
 
-        if (IsSelected)
-        {
-            using var selectPaint = new SKPaint
-            {
-                Color = SKColors.DodgerBlue,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, selectPaint);
-        }
-    }
 
     public override void UpdateEffect(SKBitmap source)
     {

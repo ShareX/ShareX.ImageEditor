@@ -324,9 +324,9 @@ public class EditorInputController
         {
             var currentLeft = Canvas.GetLeft(_currentShape);
             var currentTop = Canvas.GetTop(_currentShape);
-            
+
             // Check for 0 OR NaN (default can be either depending on platform/version)
-            bool isPositionUnset = (currentLeft == 0 || double.IsNaN(currentLeft)) && 
+            bool isPositionUnset = (currentLeft == 0 || double.IsNaN(currentLeft)) &&
                                    (currentTop == 0 || double.IsNaN(currentTop));
 
             if (isPositionUnset
@@ -493,10 +493,12 @@ public class EditorInputController
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Path path) // Arrow
         {
-            // ISSUE-005/006 fix: Use constant for arrow head width
-            path.Data = new ArrowAnnotation().CreateArrowGeometry(_startPoint, currentPoint, vm.StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+            if (path.Tag is ArrowAnnotation arrowAnn)
+            {
+                arrowAnn.EndPoint = ToSKPoint(currentPoint);
+                AnnotationVisualFactory.UpdateVisualControl(path, arrowAnn);
+            }
 
-            if (path.Tag is ArrowAnnotation arrowAnn) { arrowAnn.EndPoint = ToSKPoint(currentPoint); }
             _selectionController.RegisterArrowEndpoint(path, _startPoint, currentPoint);
         }
         else if (_currentShape is ShareX.ImageEditor.Controls.SpotlightControl spotlight)
@@ -604,9 +606,6 @@ public class EditorInputController
                     if (_currentShape.Tag is Annotation annotation && vm.ActiveTool != EditorTool.Crop && vm.ActiveTool != EditorTool.CutOut)
                     {
                         _view.EditorCore.AddAnnotation(annotation);
-
-                        // ISSUE-001 mitigation: Validate sync after adding annotation
-                        System.Diagnostics.Debug.WriteLine($"[ANNOTATION] Added {annotation.GetType().Name} (ID: {annotation.Id})");
 
                         // Update HasAnnotations state for Clear button
                         vm.HasAnnotations = true;

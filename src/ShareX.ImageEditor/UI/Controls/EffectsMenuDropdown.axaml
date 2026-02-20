@@ -37,10 +37,10 @@
 
     <UserControl.Styles>
         <Style Selector="Button.editor-button">
-            <Setter Property="Background" Value="#2E2E2E"/>
-            <Setter Property="BorderBrush" Value="#1F1F1F"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -49,7 +49,7 @@
 
         <Style Selector="MenuItem">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#E7E9EA"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
             <Setter Property="Padding" Value="8,6"/>
             <Setter Property="Margin" Value="5,2"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
@@ -58,24 +58,24 @@
             <Setter Property="CornerRadius" Value="4"/>
             
             <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
-                <Setter Property="Background" Value="#3E3E3E"/>
+                <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
             </Style>
-             <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
-                <Setter Property="Foreground" Value="White"/>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
             </Style>
         </Style>
 
         <Style Selector="Separator">
-            <Setter Property="Background" Value="#3E3E3E"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
             <Setter Property="Padding" Value="4,0"/>
         </Style>
 
         <Style Selector="TextBlock.menu-icon">
-            <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Icon}"/>
             <Setter Property="FontWeight" Value="Black"/>
             <Setter Property="FontSize" Value="32"/>
             <Setter Property="Width" Value="40"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0"/>
@@ -332,7 +332,7 @@
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <TextBlock Grid.Column="0"
                            Text="{StaticResource IconMagic}"
-                           FontFamily="{StaticResource FontAwesome}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="14"
                            VerticalAlignment="Center"
@@ -342,10 +342,10 @@
 
                 <TextBlock Grid.Column="2"
                            Text="{StaticResource IconChevronDown}"
-                           FontFamily="{StaticResource FontAwesome}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="10"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"
                            Margin="8,0,4,0"/>
             </Grid>

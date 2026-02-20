@@ -10,7 +10,7 @@
         <!-- Strength Label -->
         <TextBlock Grid.Column="0"
                    Text="{Binding Value, ElementName=StrengthSliderControl, StringFormat='{}{0:F0}'}"
-                   Foreground="#94A3B8"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                    FontSize="12"
                    VerticalAlignment="Center"
                    Width="24"

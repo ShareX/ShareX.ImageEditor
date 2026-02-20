@@ -13,13 +13,13 @@
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="Button.picker-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
         </Style>
         <Style Selector="Button.picker-button.active">
-            <Setter Property="Background" Value="#3E83F2"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
         <Style Selector="Button.picker-button.active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#3E83F2"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
     </UserControl.Styles>
 
@@ -35,7 +35,7 @@
                 <!-- Font Size Preview -->
                 <TextBlock Grid.Column="0"
                            Text="{Binding SelectedFontSize, ElementName=FontSizePickerDropdownRoot, StringFormat='{}{0} pt'}"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            FontSize="12"
                            VerticalAlignment="Center"
                            Margin="0,0,6,0"/>
@@ -46,10 +46,10 @@
                 <!-- Chevron Icon (FontAwesome ChevronDown) -->
                 <TextBlock Grid.Column="2"
                            Text="&#xf078;"
-                           FontFamily="avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="10"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"/>
             </Grid>
         </Button>
@@ -79,7 +79,7 @@
                                     VerticalContentAlignment="Center">
                                 <TextBlock Text="{Binding ., StringFormat='{}{0} pt'}"
                                            FontSize="12"
-                                           Foreground="#E7E9EA"/>
+                                           Foreground="{DynamicResource ShareX.Brush.Text}"/>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

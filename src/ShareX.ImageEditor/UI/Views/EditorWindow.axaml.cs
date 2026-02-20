@@ -26,6 +26,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.ViewModels;
 using SkiaSharp;
 
@@ -35,6 +36,7 @@ namespace ShareX.ImageEditor.Views
     {
         private readonly MainViewModel _viewModel;
         private string? _pendingFilePath;
+        private bool _allowClose;
 
         public EditorWindow() : this(null)
         {
@@ -49,6 +51,28 @@ namespace ShareX.ImageEditor.Views
 
             // Defer image loading until EditorView is loaded and subscribed
             this.Loaded += OnWindowLoaded;
+
+            // Set initial theme and subscribe to changes
+            RequestedThemeVariant = ThemeManager.ShareXDark;
+            ThemeManager.ThemeChanged += (s, theme) => RequestedThemeVariant = theme;
+
+            _viewModel.CloseRequested += (s, e) =>
+            {
+                _allowClose = true;
+                Close();
+            };
+        }
+
+        protected override void OnClosing(WindowClosingEventArgs e)
+        {
+            if (_allowClose)
+            {
+                base.OnClosing(e);
+                return;
+            }
+
+            e.Cancel = true;
+            _viewModel.RequestClose();
         }
 
         private void InitializeComponent()
@@ -77,7 +101,6 @@ namespace ShareX.ImageEditor.Views
 
             if (!File.Exists(filePath))
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: File not found: {filePath}");
                 return;
             }
 
@@ -101,10 +124,10 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.IsDirty = false;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: Failed to load image from path '{filePath}': {ex}");
             }
         }
 
@@ -125,10 +148,10 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.IsDirty = false;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"EditorWindow: Failed to load image from stream: {ex}");
             }
         }
 
@@ -141,6 +164,12 @@ namespace ShareX.ImageEditor.Views
             return editorView?.GetSnapshot();
         }
 
+        public SKBitmap? GetSourceBitmap()
+        {
+            var editorView = this.FindControl<EditorView>("EditorViewControl");
+            return editorView?.GetSource();
+        }
+
         /// <summary>
         /// Gets the encoded image data in the specified format. 
         /// Useful for interoperability with other frameworks (e.g. WinForms).
@@ -148,6 +177,19 @@ namespace ShareX.ImageEditor.Views
         public byte[]? GetResultBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
         {
             using var bitmap = GetResultBitmap();
+            if (bitmap == null) return null;
+
+            using var data = bitmap.Encode(format, quality);
+            return data.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the encoded image data in the specified format. 
+        /// Useful for interoperability with other frameworks (e.g. WinForms).
+        /// </summary>
+        public byte[]? GetSourceBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+        {
+            using var bitmap = GetSourceBitmap();
             if (bitmap == null) return null;
 
             using var data = bitmap.Encode(format, quality);

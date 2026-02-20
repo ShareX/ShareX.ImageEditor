@@ -66,58 +66,7 @@ public partial class NumberAnnotation : Annotation
         ToolType = EditorTool.Step;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var center = StartPoint;
-        var radius = CalculateRadius();
 
-        // Draw filled circle (if fill is not transparent)
-        if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
-        {
-            using var fillPaint = new SKPaint
-            {
-                Color = ParseColor(FillColor),
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
-
-            if (ShadowEnabled)
-            {
-                fillPaint.ImageFilter = SKImageFilter.CreateDropShadow(
-                    3, 3, 2, 2, new SKColor(0, 0, 0, 128));
-            }
-
-            canvas.DrawCircle(center, radius, fillPaint);
-        }
-        // Draw circle border (uses actual alpha from StrokeColor)
-        using var borderPaint = new SKPaint
-        {
-            Color = ParseColor(StrokeColor),
-            StrokeWidth = StrokeWidth,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true
-        };
-        canvas.DrawCircle(center, radius, borderPaint);
-
-        // Draw number text
-        using var textPaint = new SKPaint
-        {
-            Color = SKColors.White, // Keep text white for now
-            TextSize = FontSize * 0.6f, // Match visual scaling
-            IsAntialias = true,
-            TextAlign = SKTextAlign.Center,
-            Typeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
-        };
-
-        var text = Number.ToString();
-
-        // Center text vertically
-        var textBounds = new SKRect();
-        textPaint.MeasureText(text, ref textBounds);
-        var textY = center.Y + textBounds.Height / 2 - textBounds.Bottom;
-
-        canvas.DrawText(text, center.X, textY, textPaint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

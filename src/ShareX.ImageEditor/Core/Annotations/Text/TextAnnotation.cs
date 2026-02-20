@@ -62,49 +62,25 @@ public partial class TextAnnotation : Annotation
         ToolType = EditorTool.Text;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
-        const float padding = 4f;
 
-        // Always draw a visible placeholder/border when text is empty
-        if (string.IsNullOrEmpty(Text))
-        {
-            // Draw a dashed border placeholder to show where text will go
-            using var borderPaint = new SKPaint
-            {
-                Color = ParseColor(StrokeColor),
-                StrokeWidth = 1,
-                Style = SKPaintStyle.Stroke,
-                PathEffect = SKPathEffect.CreateDash(new float[] { 4, 4 }, 0),
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, borderPaint);
-            return;
-        }
-
-        using var paint = new SKPaint
-        {
-            Color = ParseColor(StrokeColor),
-            TextSize = FontSize,
-            IsAntialias = true,
-            Typeface = SKTypeface.FromFamilyName(
-                FontFamily,
-                IsBold ? SKFontStyleWeight.Bold : SKFontStyleWeight.Normal,
-                SKFontStyleWidth.Normal,
-                IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright)
-        };
-
-        // Treat StartPoint as the top-left of the text box with a small padding like the Avalonia TextBox.
-        var metrics = paint.FontMetrics;
-        float baseline = rect.Top + padding - metrics.Ascent; // ascent is negative
-
-        canvas.DrawText(Text, rect.Left + padding, baseline, paint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var textBounds = GetBounds();
+
+        // If rotated, transform the test point by the inverse rotation
+        if (RotationAngle != 0)
+        {
+            float cx = textBounds.MidX;
+            float cy = textBounds.MidY;
+            float rad = -RotationAngle * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
+            float dx = point.X - cx;
+            float dy = point.Y - cy;
+            point = new SKPoint(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
+        }
+
         var inflatedBounds = SKRect.Inflate(textBounds, tolerance, tolerance);
         return inflatedBounds.Contains(point);
     }

@@ -135,9 +135,11 @@ public class EditorCore : IDisposable
     private bool _isResizing;
     private HandleType _activeHandle;
     private SKRect _initialBounds;
+    private SKPoint _rotationCenter;
 
     private const float HandleSize = 10f;
-    private enum HandleType { None, TopLeft, TopMiddle, TopRight, MiddleRight, BottomRight, BottomMiddle, BottomLeft, MiddleLeft, Start, End }
+    private const float RotationHandleOffset = 30f;
+    private enum HandleType { None, TopLeft, TopMiddle, TopRight, MiddleRight, BottomRight, BottomMiddle, BottomLeft, MiddleLeft, Start, End, Rotate }
 
     /// <summary>
     /// All annotations in the editor
@@ -638,6 +640,18 @@ public class EditorCore : IDisposable
                 InvalidateRequested?.Invoke();
                 return;
             }
+            if (_activeHandle == HandleType.Rotate)
+            {
+                // Compute rotation angle from center to mouse position
+                float dx = point.X - _rotationCenter.X;
+                float dy = point.Y - _rotationCenter.Y;
+                float angleRad = (float)Math.Atan2(dx, -dy); // 0 = up, clockwise positive
+                float angleDeg = angleRad * 180f / (float)Math.PI;
+                _selectedAnnotation.RotationAngle = angleDeg;
+                UpdateAnnotationState(_selectedAnnotation);
+                InvalidateRequested?.Invoke();
+                return;
+            }
 
             ApplyResize(point);
 
@@ -798,6 +812,9 @@ public class EditorCore : IDisposable
         _initialBounds = _selectedAnnotation!.GetBounds();
         _lastDragPoint = point;
 
+        // Store center of bounds for rotation calculations
+        _rotationCenter = new SKPoint(_initialBounds.MidX, _initialBounds.MidY);
+
         if (_selectedAnnotation is FreehandAnnotation freehand)
         {
         }
@@ -811,6 +828,9 @@ public class EditorCore : IDisposable
     private void ApplyResize(SKPoint point)
     {
         if (_selectedAnnotation == null) return;
+
+        // Rotation is handled directly in OnPointerMoved
+        if (_activeHandle == HandleType.Rotate) return;
 
         // Lines/arrows resize via start/end handles only
         if (_selectedAnnotation is LineAnnotation || _selectedAnnotation is ArrowAnnotation)
@@ -1158,61 +1178,26 @@ public class EditorCore : IDisposable
     #region Rendering
 
     /// <summary>
-    /// Render the entire editor canvas to an SKCanvas
+    /// Render the source image to an SKCanvas.
+    /// Annotations are rendered by the Avalonia visual tree (hybrid rendering).
     /// </summary>
     /// <param name="canvas">Target canvas</param>
-    /// <param name="renderVectorAnnotations">If true, renders all annotations. If false, skips vector annotations (for hybrid rendering).</param>
-    public void Render(SKCanvas canvas, bool renderVectorAnnotations = true)
+    public void Render(SKCanvas canvas)
     {
         canvas.Clear(SKColors.Transparent);
 
-        // Draw source image
+        // Draw source image only — annotations are handled by Avalonia controls
         if (SourceImage != null)
         {
             canvas.DrawBitmap(SourceImage, 0, 0);
         }
-
-        // Draw annotations
-        foreach (var annotation in _annotations)
-        {
-            // In hybrid mode, we skip vector annotations as they are handled by Avalonia
-            if (!renderVectorAnnotations && IsVectorAnnotation(annotation))
-            {
-                continue;
-            }
-
-            annotation.Render(canvas);
-        }
-
-        // Draw selection handles only if we are rendering everything (or strictly debugging)
-        // Usually handles are vectors in the hybrid view
-        if (renderVectorAnnotations && _selectedAnnotation != null)
-        {
-            DrawSelectionHandles(canvas, _selectedAnnotation);
-        }
-    }
-
-    private bool IsVectorAnnotation(Annotation annotation)
-    {
-        // Define what counts as a 'Vector' annotation that Avalonia handles
-        // Effect annotations (Blur, Pixelate, Magnify, Highlight) are also vector in the hybrid model
-        // because they render their effect bitmaps directly as ImageBrush fills in Avalonia controls
-        return annotation is RectangleAnnotation ||
-               annotation is EllipseAnnotation ||
-               annotation is LineAnnotation ||
-               annotation is ArrowAnnotation ||
-               annotation is TextAnnotation ||
-               annotation is SpeechBalloonAnnotation ||
-               annotation is NumberAnnotation ||
-               annotation is BaseEffectAnnotation ||
-               annotation is FreehandAnnotation ||
-               annotation is SmartEraserAnnotation ||
-               annotation is ImageAnnotation ||
-               annotation is SpotlightAnnotation;
     }
 
     /// <summary>
-    /// Get a snapshot of the current canvas as an SKBitmap
+    /// Get a snapshot of the source image (without annotations) as an SKBitmap.
+    /// Used internally for pixel color sampling (e.g. SmartEraser).
+    /// For full export with annotations, use EditorView.GetSnapshot() which
+    /// renders the Avalonia visual tree via RenderTargetBitmap.
     /// </summary>
     public SKBitmap? GetSnapshot()
     {
@@ -1220,57 +1205,9 @@ public class EditorCore : IDisposable
 
         var bitmap = new SKBitmap(SourceImage.Width, SourceImage.Height);
         using var canvas = new SKCanvas(bitmap);
-
-        // Draw without selection handles
         canvas.DrawBitmap(SourceImage, 0, 0);
-        foreach (var annotation in _annotations)
-        {
-            annotation.Render(canvas);
-        }
 
         return bitmap;
-    }
-
-    private void DrawSelectionHandles(SKCanvas canvas, Annotation annotation)
-    {
-        if (annotation is FreehandAnnotation || annotation is SmartEraserAnnotation)
-        {
-            return;
-        }
-
-        var bounds = annotation.GetBounds();
-
-        using var strokePaint = new SKPaint
-        {
-            Color = SKColors.DodgerBlue,
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true
-        };
-
-        using var fillPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-
-        // Draw selection rectangle only for box-based annotations
-        if (!(annotation is LineAnnotation || annotation is ArrowAnnotation))
-        {
-            canvas.DrawRect(bounds, strokePaint);
-        }
-
-        // Draw handles
-        var handles = GetAnnotationHandles(annotation);
-        float handleSize = HandleSize;
-
-        foreach (var handle in handles)
-        {
-            float radius = handleSize / 2;
-            canvas.DrawCircle(handle.Position, radius, fillPaint);
-            canvas.DrawCircle(handle.Position, radius, strokePaint);
-        }
     }
 
     private IEnumerable<(HandleType Type, SKPoint Position)> GetAnnotationHandles(Annotation annotation)
@@ -1287,15 +1224,50 @@ public class EditorCore : IDisposable
         else
         {
             var bounds = annotation.GetBounds();
-            yield return (HandleType.TopLeft, new SKPoint(bounds.Left, bounds.Top));
-            yield return (HandleType.TopMiddle, new SKPoint(bounds.MidX, bounds.Top));
-            yield return (HandleType.TopRight, new SKPoint(bounds.Right, bounds.Top));
-            yield return (HandleType.MiddleRight, new SKPoint(bounds.Right, bounds.MidY));
-            yield return (HandleType.BottomRight, new SKPoint(bounds.Right, bounds.Bottom));
-            yield return (HandleType.BottomMiddle, new SKPoint(bounds.MidX, bounds.Bottom));
-            yield return (HandleType.BottomLeft, new SKPoint(bounds.Left, bounds.Bottom));
-            yield return (HandleType.MiddleLeft, new SKPoint(bounds.Left, bounds.MidY));
+            var center = new SKPoint(bounds.MidX, bounds.MidY);
+            float angle = annotation.RotationAngle;
+            bool rotate = angle != 0;
+
+            var tl = new SKPoint(bounds.Left, bounds.Top);
+            var tm = new SKPoint(bounds.MidX, bounds.Top);
+            var tr = new SKPoint(bounds.Right, bounds.Top);
+            var mr = new SKPoint(bounds.Right, bounds.MidY);
+            var br = new SKPoint(bounds.Right, bounds.Bottom);
+            var bm = new SKPoint(bounds.MidX, bounds.Bottom);
+            var bl = new SKPoint(bounds.Left, bounds.Bottom);
+            var ml = new SKPoint(bounds.Left, bounds.MidY);
+
+            yield return (HandleType.TopLeft, rotate ? RotatePoint(tl, center, angle) : tl);
+            yield return (HandleType.TopMiddle, rotate ? RotatePoint(tm, center, angle) : tm);
+            yield return (HandleType.TopRight, rotate ? RotatePoint(tr, center, angle) : tr);
+            yield return (HandleType.MiddleRight, rotate ? RotatePoint(mr, center, angle) : mr);
+            yield return (HandleType.BottomRight, rotate ? RotatePoint(br, center, angle) : br);
+            yield return (HandleType.BottomMiddle, rotate ? RotatePoint(bm, center, angle) : bm);
+            yield return (HandleType.BottomLeft, rotate ? RotatePoint(bl, center, angle) : bl);
+            yield return (HandleType.MiddleLeft, rotate ? RotatePoint(ml, center, angle) : ml);
+
+            // Rotation handle above the top-center for text annotations
+            if (annotation is TextAnnotation)
+            {
+                var rotHandle = new SKPoint(bounds.MidX, bounds.Top - RotationHandleOffset);
+                yield return (HandleType.Rotate, rotate ? RotatePoint(rotHandle, center, angle) : rotHandle);
+            }
         }
+    }
+
+    /// <summary>
+    /// Rotates a point around a center by the given angle in degrees (clockwise).
+    /// </summary>
+    private static SKPoint RotatePoint(SKPoint point, SKPoint center, float angleDeg)
+    {
+        float rad = angleDeg * (float)Math.PI / 180f;
+        float cos = (float)Math.Cos(rad);
+        float sin = (float)Math.Sin(rad);
+        float dx = point.X - center.X;
+        float dy = point.Y - center.Y;
+        return new SKPoint(
+            center.X + dx * cos - dy * sin,
+            center.Y + dx * sin + dy * cos);
     }
 
     #endregion

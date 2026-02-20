@@ -27,10 +27,10 @@
                 <!-- Chevron Icon (FontAwesome ChevronDown) -->
                 <TextBlock Grid.Column="1"
                            Text="&#xf078;"
-                           FontFamily="avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="10"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"
                            Margin="8,0,4,0"/>
             </Grid>

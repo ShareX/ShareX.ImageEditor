@@ -6,9 +6,16 @@
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="ShareX.ImageEditor.Views.EditorWindow"
         Title="{Binding WindowTitle}"
-        WindowState="Maximized"
         WindowStartupLocation="CenterScreen">
     
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShareX.ImageEditor/UI/Themes/ShareXTheme.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <views:EditorView Name="EditorViewControl"/>
 
 </Window>

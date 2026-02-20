@@ -38,68 +38,59 @@ public partial class ArrowAnnotation : Annotation
     /// </summary>
     public const double ArrowHeadWidthMultiplier = 3.0;
 
-    /// <summary>
-    /// Arrow head size in pixels
-    /// </summary>
-    public float ArrowHeadSize { get; set; } = 12;
-
     public ArrowAnnotation()
     {
         ToolType = EditorTool.Arrow;
     }
 
-    public override void Render(SKCanvas canvas)
+    /// <summary>
+    /// Single source of truth for arrow geometry points.
+    /// Both <see cref="Render"/> (SKCanvas) and <c>CreateArrowGeometry</c> (Avalonia)
+    /// consume this method so the shape can never diverge between rendering backends.
+    /// Returns null when the arrow has zero length.
+    /// </summary>
+    public static ArrowPoints? ComputeArrowPoints(
+        float startX, float startY,
+        float endX, float endY,
+        double headSize)
     {
-        using var strokePaint = CreateStrokePaint();
-        using var fillPaint = CreateFillPaint();
+        var dx = endX - startX;
+        var dy = endY - startY;
+        var length = Math.Sqrt(dx * dx + dy * dy);
 
-        // Calculate arrow head
-        var dx = EndPoint.X - StartPoint.X;
-        var dy = EndPoint.Y - StartPoint.Y;
-        var length = (float)Math.Sqrt(dx * dx + dy * dy);
+        if (length <= 0) return null;
 
-        if (length > 0)
-        {
-            var ux = dx / length;
-            var uy = dy / length;
+        var ux = dx / length;
+        var uy = dy / length;
+        var perpX = -uy;
+        var perpY = ux;
 
-            // Modern arrow: narrower angle (20 degrees instead of 30)
-            var arrowAngle = Math.PI / 9; // 20 degrees for sleeker look
-            var angle = Math.Atan2(dy, dx);
+        var headHeight = headSize * 2.5;
+        var headWidthBase = headSize * 1.5;
+        var arrowAngle = Math.PI / 5.14; // 35 degrees
 
-            // Calculate arrowhead base point
-            var arrowBase = new SKPoint(
-                EndPoint.X - ArrowHeadSize * ux,
-                EndPoint.Y - ArrowHeadSize * uy);
+        var baseX = endX - headHeight * ux;
+        var baseY = endY - headHeight * uy;
 
-            // Draw line from start to arrow base
-            canvas.DrawLine(StartPoint, arrowBase, strokePaint);
+        var wingWidth = headWidthBase * Math.Tan(arrowAngle);
+        var shaftWidth = headWidthBase * 0.25;
 
-            // Arrow head wing points
-            var point1 = new SKPoint(
-                (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle - arrowAngle)),
-                (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle - arrowAngle)));
-
-            var point2 = new SKPoint(
-                (float)(EndPoint.X - ArrowHeadSize * Math.Cos(angle + arrowAngle)),
-                (float)(EndPoint.Y - ArrowHeadSize * Math.Sin(angle + arrowAngle)));
-
-            // Draw filled arrow head triangle
-            using var path = new SKPath();
-            path.MoveTo(EndPoint);
-            path.LineTo(point1);
-            path.LineTo(point2);
-            path.Close();
-
-            canvas.DrawPath(path, fillPaint);
-            canvas.DrawPath(path, strokePaint);
-        }
-        else
-        {
-            // Fallback for zero-length arrow
-            canvas.DrawLine(StartPoint, EndPoint, strokePaint);
-        }
+        return new ArrowPoints(
+            ShaftEndLeft: new SKPoint((float)(baseX + perpX * shaftWidth), (float)(baseY + perpY * shaftWidth)),
+            ShaftEndRight: new SKPoint((float)(baseX - perpX * shaftWidth), (float)(baseY - perpY * shaftWidth)),
+            WingLeft: new SKPoint((float)(baseX + perpX * wingWidth), (float)(baseY + perpY * wingWidth)),
+            WingRight: new SKPoint((float)(baseX - perpX * wingWidth), (float)(baseY - perpY * wingWidth))
+        );
     }
+
+    /// <summary>
+    /// Computed arrow geometry points returned by <see cref="ComputeArrowPoints"/>.
+    /// </summary>
+    public record struct ArrowPoints(
+        SKPoint ShaftEndLeft,
+        SKPoint ShaftEndRight,
+        SKPoint WingLeft,
+        SKPoint WingRight);
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

@@ -30,13 +30,7 @@
                     <!-- Checkered Background -->
                     <Border CornerRadius="4" ClipToBounds="True">
                         <Border.Background>
-                            <VisualBrush TileMode="Tile" Stretch="None" SourceRect="0,0,8,8" DestinationRect="0,0,8,8">
-                                <VisualBrush.Visual>
-                                    <Grid Width="8" Height="8" Background="#272727">
-                                        <Path Data="M 0 0 L 4 0 L 4 4 L 0 4 Z M 4 4 L 8 4 L 8 8 L 4 8 Z" Fill="#2E2E2E"/>
-                                    </Grid>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
+                            <DynamicResource ResourceKey="ShareX.Brush.Checkered.Small"/>
                         </Border.Background>
                     </Border>
                     
@@ -51,10 +45,10 @@
                 <!-- Chevron Icon (FontAwesome ChevronDown) -->
                 <TextBlock Grid.Column="2"
                            Text="&#xf078;"
-                           FontFamily="avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="10"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"/>
             </Grid>
         </Button>
@@ -64,10 +58,10 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
-            <Border Background="#1E1E1E" 
+            <Border Background="{DynamicResource ShareX.Brush.Background.Popup}" 
                     CornerRadius="8" 
                     Padding="4"
-                    BorderBrush="#3E3E3E"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
                     BorderThickness="1">
                 <cp:ColorView x:Name="ColorViewControl"
                               Color="{Binding SelectedColorValue, ElementName=ColorPickerDropdownRoot, Mode=TwoWay}"

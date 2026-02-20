@@ -23,9 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -33,6 +30,7 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
@@ -42,9 +40,6 @@ using ShareX.ImageEditor.Views.Controllers;
 using ShareX.ImageEditor.Views.Dialogs;
 using SkiaSharp;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -125,6 +120,9 @@ namespace ShareX.ImageEditor.Views
                 {
                     UpdateViewModelHistoryState(vm);
                     vm.RecalculateNumberCounter(_editorCore.Annotations);
+
+                    // Mark as dirty when history changes (annotations added/interactions/undo/redo)
+                    vm.IsDirty = true;
                 }
             });
 
@@ -167,6 +165,7 @@ namespace ShareX.ImageEditor.Views
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
                         vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                        vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
                     }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
@@ -191,6 +190,10 @@ namespace ShareX.ImageEditor.Views
                     {
                         vm.FillColor = ellipse.FillColor;
                     }
+                    else if (vm.SelectedAnnotation is BaseEffectAnnotation effect)
+                    {
+                        vm.EffectStrength = (int)effect.Amount;
+                    }
                 }
             }
         }
@@ -210,10 +213,10 @@ namespace ShareX.ImageEditor.Views
         protected override void OnLoaded(RoutedEventArgs e)
         {
             base.OnLoaded(e);
-            
+
             // Check clipboard initially
             _ = CheckClipboardStatus();
-            
+
             // Listen for window activation to check clipboard (as close as we get to ClipboardChanged)
             if (TopLevel.GetTopLevel(this) is Window window)
             {
@@ -234,36 +237,6 @@ namespace ShareX.ImageEditor.Views
                 vm.PasteRequested += OnPasteRequested;
                 vm.DuplicateRequested += OnDuplicateRequested;
                 vm.ZoomToFitRequested += OnZoomToFitRequested;
-
-                vm.SnapshotRequested += async () =>
-                {
-                    // Render current state to bitmap
-                    if (vm.PreviewImage == null) return null;
-                    return await RenderSnapshot();
-                };
-
-                vm.SaveAsRequested += async () =>
-                {
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel == null) return null;
-
-                    var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                    {
-                        Title = "Save Image",
-                        FileTypeChoices = new[]
-                        {
-                            new FilePickerFileType("PNG Image") { Patterns = new[] { "*.png" } },
-                            new FilePickerFileType("JPEG Image") { Patterns = new[] { "*.jpg", "*.jpeg" } },
-                            new FilePickerFileType("Bitmap Image") { Patterns = new[] { "*.bmp" } },
-                            new FilePickerFileType("GIF Image") { Patterns = new[] { "*.gif" } },
-                            new FilePickerFileType("WebP Image") { Patterns = new[] { "*.webp" } },
-                            new FilePickerFileType("TIFF Image") { Patterns = new[] { "*.tiff", "*.tif" } } // Added TIFF support
-                        },
-                        DefaultExtension = ".png"
-                    });
-
-                    return file?.Path.LocalPath;
-                };
 
                 // Original code subscribed to vm.PropertyChanged
                 vm.PropertyChanged += OnViewModelPropertyChanged;
@@ -411,7 +384,7 @@ namespace ShareX.ImageEditor.Views
             if (_canvasControl == null) return;
             // Hybrid rendering: Render only background + raster effects from Core
             // Vector annotations are handled by Avalonia Canvas
-            _canvasControl.Draw(canvas => _editorCore.Render(canvas, false));
+            _canvasControl.Draw(canvas => _editorCore.Render(canvas));
         }
 
         /// <summary>
@@ -508,69 +481,111 @@ namespace ShareX.ImageEditor.Views
                         e.Handled = true;
                     }
                 }
-                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.Z)
+                else if (e.KeyModifiers.HasFlag(KeyModifiers.Control | KeyModifiers.Shift))
                 {
-                    vm.RedoCommand.Execute(null);
-                    e.Handled = true;
+                    switch (e.Key)
+                    {
+                        case Key.Z: vm.RedoCommand.Execute(null); e.Handled = true; break;
+                        case Key.C: vm.CopyCommand.Execute(null); e.Handled = true; break;
+                        case Key.S: vm.SaveAsCommand.Execute(null); e.Handled = true; break;
+                    }
                 }
                 else if (e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
-                    if (e.Key == Key.Z)
-                    {
-                        vm.UndoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.Y)
-                    {
-                        vm.RedoCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.X)
-                    {
-                        vm.CutAnnotationCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.C)
-                    {
-                        vm.CopyAnnotationCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.V)
-                    {
-                        vm.PasteCommand.Execute(null);
-                        e.Handled = true;
-                    }
-                    else if (e.Key == Key.D)
-                    {
-                        DuplicateSelectedAnnotation();
-                        e.Handled = true;
-                    }
-                }
-                else if (e.KeyModifiers == KeyModifiers.None)
-                {
-                    // Tool shortcuts
                     switch (e.Key)
                     {
-                        case Key.Home: _editorCore.BringToFront(); e.Handled = true; break;
-                        case Key.End: _editorCore.SendToBack(); e.Handled = true; break;
-                        case Key.PageUp: _editorCore.BringForward(); e.Handled = true; break;
-                        case Key.PageDown: _editorCore.SendBackward(); e.Handled = true; break;
-
-                        case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
-                        case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
-                        case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
-                        case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
-                        case Key.L: vm.SelectToolCommand.Execute(EditorTool.Line); e.Handled = true; break;
-                        case Key.T: vm.SelectToolCommand.Execute(EditorTool.Text); e.Handled = true; break;
-                        case Key.S: vm.SelectToolCommand.Execute(EditorTool.Spotlight); e.Handled = true; break;
-                        case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
-                        case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
-                        case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
-                        case Key.F: vm.SelectToolCommand.Execute(EditorTool.Freehand); e.Handled = true; break; // Freehand
-                        case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlight); e.Handled = true; break;
-                        case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
-                        case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
+                        case Key.Z: vm.UndoCommand.Execute(null); e.Handled = true; break;
+                        case Key.Y: vm.RedoCommand.Execute(null); e.Handled = true; break;
+                        case Key.X: vm.CutAnnotationCommand.Execute(null); e.Handled = true; break;
+                        case Key.C: vm.CopyAnnotationCommand.Execute(null); e.Handled = true; break;
+                        case Key.V: vm.PasteCommand.Execute(null); e.Handled = true; break;
+                        case Key.D: DuplicateSelectedAnnotation(); e.Handled = true; break;
+                        case Key.S: vm.SaveCommand.Execute(null); e.Handled = true; break;
+                        case Key.P: vm.PinToScreenCommand.Execute(null); e.Handled = true; break;
+                        case Key.U: vm.UploadCommand.Execute(null); e.Handled = true; break;
                     }
+                }
+                else if (e.KeyModifiers == KeyModifiers.None || e.KeyModifiers == KeyModifiers.Shift)
+                {
+                    double step = e.KeyModifiers == KeyModifiers.Shift ? 10 : 1;
+
+                    if ((e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right) && _selectionController.SelectedShape != null)
+                    {
+                        double dx = e.Key == Key.Left ? -step : (e.Key == Key.Right ? step : 0);
+                        double dy = e.Key == Key.Up ? -step : (e.Key == Key.Down ? step : 0);
+                        _selectionController.MoveSelectedShape(dx, dy);
+                        e.Handled = true;
+                    }
+                    else if (e.KeyModifiers == KeyModifiers.None)
+                    {
+                        // Tool shortcuts
+                        switch (e.Key)
+                        {
+                            case Key.Home: _editorCore.BringToFront(); e.Handled = true; break;
+                            case Key.End: _editorCore.SendToBack(); e.Handled = true; break;
+                            case Key.PageUp: _editorCore.BringForward(); e.Handled = true; break;
+                            case Key.PageDown: _editorCore.SendBackward(); e.Handled = true; break;
+
+                            case Key.V: vm.SelectToolCommand.Execute(EditorTool.Select); e.Handled = true; break;
+                            case Key.R: vm.SelectToolCommand.Execute(EditorTool.Rectangle); e.Handled = true; break;
+                            case Key.E: vm.SelectToolCommand.Execute(EditorTool.Ellipse); e.Handled = true; break;
+                            case Key.L: vm.SelectToolCommand.Execute(EditorTool.Line); e.Handled = true; break;
+                            case Key.A: vm.SelectToolCommand.Execute(EditorTool.Arrow); e.Handled = true; break;
+                            case Key.F: vm.SelectToolCommand.Execute(EditorTool.Freehand); e.Handled = true; break; // Freehand
+                            case Key.T: vm.SelectToolCommand.Execute(EditorTool.Text); e.Handled = true; break;
+                            case Key.O: vm.SelectToolCommand.Execute(EditorTool.SpeechBalloon); e.Handled = true; break;
+                            case Key.N: vm.SelectToolCommand.Execute(EditorTool.Step); e.Handled = true; break;
+                            case Key.W: vm.SelectToolCommand.Execute(EditorTool.SmartEraser); e.Handled = true; break;
+                            case Key.S: vm.SelectToolCommand.Execute(EditorTool.Spotlight); e.Handled = true; break;
+                            case Key.B: vm.SelectToolCommand.Execute(EditorTool.Blur); e.Handled = true; break;
+                            case Key.P: vm.SelectToolCommand.Execute(EditorTool.Pixelate); e.Handled = true; break;
+                            case Key.I: vm.SelectToolCommand.Execute(EditorTool.Image); e.Handled = true; break;
+                            case Key.H: vm.SelectToolCommand.Execute(EditorTool.Highlight); e.Handled = true; break;
+                            case Key.M: vm.SelectToolCommand.Execute(EditorTool.Magnify); e.Handled = true; break;
+                            case Key.C: vm.SelectToolCommand.Execute(EditorTool.Crop); e.Handled = true; break;
+                            case Key.U: vm.SelectToolCommand.Execute(EditorTool.CutOut); e.Handled = true; break;
+
+                            case Key.Enter:
+                                if (vm.TaskMode)
+                                {
+                                    vm.ContinueCommand.Execute(null);
+                                    e.Handled = true;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Source is TextBox) return;
+
+            if (DataContext is MainViewModel vm && e.KeyModifiers == KeyModifiers.None)
+            {
+                switch (e.Key)
+                {
+                    case Key.Escape:
+                        if (_selectionController.SelectedShape != null)
+                        {
+                            _selectionController.ClearSelection();
+                            e.Handled = true;
+                        }
+                        else if (vm.TaskMode)
+                        {
+                            vm.CancelCommand.Execute(null);
+                            e.Handled = true;
+                        }
+                        else
+                        {
+                            if (TopLevel.GetTopLevel(this) is Avalonia.Controls.Window window)
+                            {
+                                window.Close();
+                                e.Handled = true;
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -677,118 +692,26 @@ namespace ShareX.ImageEditor.Views
 
         private Control? CreateControlForAnnotation(Annotation annotation)
         {
-            // Factory for restoring vector visuals
-            if (annotation is RectangleAnnotation rect)
+            var control = AnnotationVisualFactory.CreateVisualControl(annotation, AnnotationVisualMode.Persisted);
+            if (control == null)
             {
-                var r = rect.CreateVisual();
-                Canvas.SetLeft(r, rect.GetBounds().Left);
-                Canvas.SetTop(r, rect.GetBounds().Top);
-                r.Width = rect.GetBounds().Width;
-                r.Height = rect.GetBounds().Height;
-                return r;
-            }
-            else if (annotation is EllipseAnnotation ellipse)
-            {
-                var e = ellipse.CreateVisual();
-                Canvas.SetLeft(e, ellipse.GetBounds().Left);
-                Canvas.SetTop(e, ellipse.GetBounds().Top);
-                e.Width = ellipse.GetBounds().Width;
-                e.Height = ellipse.GetBounds().Height;
-                return e;
-            }
-            else if (annotation is LineAnnotation line)
-            {
-                return line.CreateVisual();
-            }
-            else if (annotation is ArrowAnnotation arrow)
-            {
-                return arrow.CreateVisual();
-            }
-            else if (annotation is TextAnnotation text)
-            {
-                var tb = text.CreateVisual();
-                Canvas.SetLeft(tb, text.StartPoint.X);
-                Canvas.SetTop(tb, text.StartPoint.Y);
-                return tb;
-            }
-            else if (annotation is SpotlightAnnotation spotlight)
-            {
-                var s = new SpotlightControl { Annotation = spotlight, Tag = spotlight, IsHitTestVisible = false };
-                Canvas.SetLeft(s, 0);
-                Canvas.SetTop(s, 0);
-                s.Width = spotlight.CanvasSize.Width;
-                s.Height = spotlight.CanvasSize.Height;
-                return s;
-            }
-            // Effect annotations (Blur, Pixelate, Magnify, Highlight)
-            else if (annotation is BaseEffectAnnotation effect)
-            {
-                Control? factorControl = null;
-
-                // Use CreateVisual() which properly sets up the Fill for each type
-                if (annotation is BlurAnnotation blur) factorControl = blur.CreateVisual();
-                else if (annotation is PixelateAnnotation pix) factorControl = pix.CreateVisual();
-                else if (annotation is MagnifyAnnotation mag) factorControl = mag.CreateVisual();
-                else if (annotation is HighlightAnnotation high) factorControl = high.CreateVisual();
-
-                if (factorControl != null)
-                {
-                    Canvas.SetLeft(factorControl, effect.GetBounds().Left);
-                    Canvas.SetTop(factorControl, effect.GetBounds().Top);
-                    factorControl.Width = effect.GetBounds().Width;
-                    factorControl.Height = effect.GetBounds().Height;
-
-                    // Trigger visual update for all effect annotations
-                    OnRequestUpdateEffect(factorControl);
-                    return factorControl;
-                }
-            }
-            else if (annotation is SpeechBalloonAnnotation balloon)
-            {
-                var b = new SpeechBalloonControl { Annotation = balloon, Tag = balloon };
-                Canvas.SetLeft(b, balloon.GetBounds().Left);
-                Canvas.SetTop(b, balloon.GetBounds().Top);
-                b.Width = balloon.GetBounds().Width;
-                b.Height = balloon.GetBounds().Height;
-                return b;
-            }
-            else if (annotation is NumberAnnotation number)
-            {
-                var grid = number.CreateVisual();
-                Canvas.SetLeft(grid, number.StartPoint.X - number.Radius);
-                Canvas.SetTop(grid, number.StartPoint.Y - number.Radius);
-                return grid;
-            }
-            else if (annotation is ImageAnnotation imgAnn)
-            {
-                var img = new Image { Tag = imgAnn };
-                if (imgAnn.ImageBitmap != null)
-                {
-                    img.Source = BitmapConversionHelpers.ToAvaloniBitmap(imgAnn.ImageBitmap);
-                    img.Width = imgAnn.ImageBitmap.Width;
-                    img.Height = imgAnn.ImageBitmap.Height;
-                }
-                Canvas.SetLeft(img, imgAnn.StartPoint.X);
-                Canvas.SetTop(img, imgAnn.StartPoint.Y);
-                return img;
-            }
-            else if (annotation is FreehandAnnotation freehand)
-            {
-                return freehand.CreateVisual();
-            }
-            else if (annotation is SmartEraserAnnotation eraser)
-            {
-                var polyline = new Polyline
-                {
-                    Stroke = new SolidColorBrush(Color.Parse(eraser.StrokeColor)),
-                    StrokeThickness = 10, // hardcoded in input logic
-                    Points = new Points(eraser.Points.Select(p => new Point(p.X, p.Y))),
-                    Tag = eraser
-                };
-                return polyline;
+                return null;
             }
 
-            return null;
+            AnnotationVisualFactory.UpdateVisualControl(
+                control,
+                annotation,
+                AnnotationVisualMode.Persisted,
+                _editorCore.CanvasSize.Width,
+                _editorCore.CanvasSize.Height);
+
+            // Effect annotations require bitmap-backed fills from current source image.
+            if (annotation is BaseEffectAnnotation)
+            {
+                OnRequestUpdateEffect(control);
+            }
+
+            return control;
         }
 
         private Color SKColorToAvalonia(SKColor color)
@@ -857,10 +780,58 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
+        public SkiaSharp.SKBitmap? GetSource()
+        {
+            if (_editorCore.SourceImage != null)
+            {
+                return _editorCore.SourceImage.Copy();
+            }
+
+            return null;
+        }
+
         public SkiaSharp.SKBitmap? GetSnapshot()
         {
-            // Use EditorCore to get snapshot without selection handles
-            return _editorCore.GetSnapshot();
+            if (_editorCore.SourceImage == null) return null;
+
+            var canvasContainer = this.FindControl<Grid>("CanvasContainer");
+            var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
+            if (canvasContainer == null) return _editorCore.GetSnapshot();
+
+            // Hide OverlayCanvas (selection handles, crop overlay) during capture
+            bool overlayWasVisible = overlayCanvas?.IsVisible ?? false;
+            if (overlayCanvas != null) overlayCanvas.IsVisible = false;
+
+            try
+            {
+                int width = _editorCore.SourceImage.Width;
+                int height = _editorCore.SourceImage.Height;
+
+                // Force layout at native resolution (un-zoomed)
+                canvasContainer.Measure(new Size(width, height));
+                canvasContainer.Arrange(new Rect(0, 0, width, height));
+
+                // Render Avalonia visual tree to bitmap
+                var rtb = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+                rtb.Render(canvasContainer);
+
+                // Convert Avalonia RenderTargetBitmap → SKBitmap
+                using var stream = new System.IO.MemoryStream();
+                rtb.Save(stream);
+                stream.Position = 0;
+                var skBitmap = SkiaSharp.SKBitmap.Decode(stream);
+
+                return skBitmap;
+            }
+            finally
+            {
+                // Restore OverlayCanvas visibility
+                if (overlayCanvas != null) overlayCanvas.IsVisible = overlayWasVisible;
+
+                // Re-trigger layout with current zoom
+                canvasContainer.InvalidateMeasure();
+                canvasContainer.InvalidateArrange();
+            }
         }
 
         public Task<Bitmap?> RenderSnapshot()
@@ -1201,6 +1172,11 @@ namespace ShareX.ImageEditor.Views
             var selected = _selectionController.SelectedShape;
             if (selected == null) return;
 
+            if (selected.Tag is Annotation annotation)
+            {
+                annotation.StrokeWidth = width;
+            }
+
             switch (selected)
             {
                 case Shape shape:
@@ -1477,12 +1453,6 @@ namespace ShareX.ImageEditor.Views
             }
 
             int coreAnnotationCount = _editorCore.Annotations.Count;
-
-            if (uiAnnotationCount != coreAnnotationCount)
-            {
-                var message = $"[SYNC WARNING] Annotation count mismatch: UI={uiAnnotationCount}, Core={coreAnnotationCount}";
-                System.Diagnostics.Debug.WriteLine(message);
-            }
         }
 
         // --- Image Paste & Drag-Drop ---
@@ -1496,16 +1466,12 @@ namespace ShareX.ImageEditor.Views
             var canvas = this.FindControl<Canvas>("AnnotationCanvas");
             if (canvas == null || DataContext is not MainViewModel vm)
             {
-                System.Diagnostics.Debug.WriteLine($"[DROP] InsertImageAnnotation aborted: CanvasNull={canvas == null}, HasMainViewModel={DataContext is MainViewModel}");
                 return;
             }
 
             // Calculate position: drop point or center of canvas
             var posX = dropPosition?.X ?? (_editorCore.CanvasSize.Width / 2 - skBitmap.Width / 2);
             var posY = dropPosition?.Y ?? (_editorCore.CanvasSize.Height / 2 - skBitmap.Height / 2);
-            System.Diagnostics.Debug.WriteLine(
-                $"[DROP] InsertImageAnnotation: Bitmap={skBitmap.Width}x{skBitmap.Height}, Drop={dropPosition?.ToString() ?? "null"}, " +
-                $"Final=({posX:F1},{posY:F1}), CanvasBounds={canvas.Bounds.Width:F1}x{canvas.Bounds.Height:F1}, CoreCanvas={_editorCore.CanvasSize.Width:F1}x{_editorCore.CanvasSize.Height:F1}");
 
             var annotation = new ImageAnnotation();
             annotation.SetImage(skBitmap);
@@ -1527,8 +1493,6 @@ namespace ShareX.ImageEditor.Views
 
             canvas.Children.Add(imageControl);
             _editorCore.AddAnnotation(annotation);
-            System.Diagnostics.Debug.WriteLine($"[DROP] InsertImageAnnotation complete: UiChildren={canvas.Children.Count}, CoreAnnotations={_editorCore.Annotations.Count}");
-
             vm.HasAnnotations = true;
             vm.ActiveTool = EditorTool.Select; // Auto-switch to Select tool
             _selectionController.SetSelectedShape(imageControl);
@@ -1587,9 +1551,8 @@ namespace ShareX.ImageEditor.Views
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"[PASTE] Failed to paste image: {ex.Message}");
             }
         }
 
@@ -1609,11 +1572,7 @@ namespace ShareX.ImageEditor.Views
         /// </summary>
         private async void OnDrop(object? sender, DragEventArgs e)
         {
-            var formatSummary = string.Join(", ", e.DataTransfer.Formats.Select(x => x.ToString()));
-            System.Diagnostics.Debug.WriteLine($"[DROP] OnDrop: Formats=[{formatSummary}], RawItems={e.DataTransfer.Items.Count}");
-
             var droppedItems = e.DataTransfer.TryGetFiles()?.ToList() ?? new List<IStorageItem>();
-            System.Diagnostics.Debug.WriteLine($"[DROP] TryGetFiles resolved {droppedItems.Count} item(s).");
 
             // Fallback for providers that expose files only through raw items.
             if (droppedItems.Count == 0)
@@ -1625,8 +1584,6 @@ namespace ShareX.ImageEditor.Views
                         droppedItems.Add(storageItem);
                     }
                 }
-
-                System.Diagnostics.Debug.WriteLine($"[DROP] Raw fallback resolved {droppedItems.Count} item(s).");
             }
 
             if (droppedItems.Count > 0)
@@ -1637,12 +1594,6 @@ namespace ShareX.ImageEditor.Views
                 if (canvas != null)
                 {
                     dropPos = e.GetPosition(canvas);
-                    System.Diagnostics.Debug.WriteLine(
-                        $"[DROP] Canvas drop position=({dropPos.Value.X:F1},{dropPos.Value.Y:F1}), CanvasBounds={canvas.Bounds.Width:F1}x{canvas.Bounds.Height:F1}");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("[DROP] AnnotationCanvas not found.");
                 }
 
                 foreach (var item in droppedItems)
@@ -1650,7 +1601,7 @@ namespace ShareX.ImageEditor.Views
                     if (item is IStorageFile file)
                     {
                         var ext = System.IO.Path.GetExtension(file.Name)?.ToLowerInvariant();
-                        System.Diagnostics.Debug.WriteLine($"[DROP] File item: Name='{file.Name}', Path='{file.Path}', Ext='{ext}'");
+
                         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".webp" || ext == ".ico" || ext == ".tiff" || ext == ".tif")
                         {
                             try
@@ -1662,13 +1613,10 @@ namespace ShareX.ImageEditor.Views
                                 var skBitmap = SKBitmap.Decode(memStream);
                                 if (skBitmap != null)
                                 {
-                                    System.Diagnostics.Debug.WriteLine($"[DROP] Decoded bitmap: {skBitmap.Width}x{skBitmap.Height}");
-
                                     // If there's no base image yet (common in embedded MainWindow editor),
                                     // use the dropped file as the main preview image.
                                     if (DataContext is MainViewModel vm && !vm.HasPreviewImage)
                                     {
-                                        System.Diagnostics.Debug.WriteLine("[DROP] No preview image present. Loading dropped image as main canvas.");
                                         vm.UpdatePreview(skBitmap, clearAnnotations: true);
                                         return;
                                     }
@@ -1679,106 +1627,89 @@ namespace ShareX.ImageEditor.Views
                                         : (Point?)null;
                                     InsertImageAnnotation(skBitmap, centeredPos);
                                 }
-                                else
-                                {
-                                    System.Diagnostics.Debug.WriteLine($"[DROP] SKBitmap.Decode returned null for '{file.Name}'.");
-                                }
                             }
-                            catch (Exception ex)
+                            catch
                             {
-                                System.Diagnostics.Debug.WriteLine($"[DROP] Failed to load dropped file '{file.Name}': {ex.Message}");
                             }
                         }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[DROP] Skipped unsupported extension for '{file.Name}'.");
-                        }
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[DROP] Skipped non-file storage item: Type={item.GetType().Name}, Name='{item.Name}'");
                     }
                 }
             }
-            else
+        }
+
+        /// <summary>
+        /// Duplicates the currently selected annotation with a deep copy.
+        /// The duplicate is offset by 20px and becomes the new selection.
+        /// </summary>
+        private void DuplicateSelectedAnnotation()
+        {
+            var selectedControl = _selectionController.SelectedShape;
+            if (selectedControl == null) return;
+
+            var annotation = selectedControl.Tag as Annotation;
+            if (annotation == null) return;
+
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null) return;
+
+            // Deep clone the annotation (ImageAnnotation.Clone deep-copies the bitmap)
+            var clone = annotation.Clone();
+
+            // Offset the duplicate by 20px
+            const float offset = 20f;
+            clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
+            clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
+
+            // Offset freehand/eraser points if applicable
+            if (clone is FreehandAnnotation freehandClone)
             {
-                System.Diagnostics.Debug.WriteLine("[DROP] No files resolved from drop payload.");
+                for (int i = 0; i < freehandClone.Points.Count; i++)
+                {
+                    var pt = freehandClone.Points[i];
+                    freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+                }
+            }
+            else if (clone is SmartEraserAnnotation eraserClone)
+            {
+                for (int i = 0; i < eraserClone.Points.Count; i++)
+                {
+                    var pt = eraserClone.Points[i];
+                    eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
+                }
+            }
+
+            // Add to EditorCore (captures undo history before adding)
+            _editorCore.AddAnnotation(clone);
+
+            // Create the UI control for the cloned annotation
+            var control = CreateControlForAnnotation(clone);
+            if (control != null)
+            {
+                canvas.Children.Add(control);
+                _selectionController.SetSelectedShape(control);
+            }
+
+            // Update clipboard status after internal copy
+            _ = CheckClipboardStatus();
+
+            // Update HasAnnotations state
+            if (DataContext is MainViewModel vm)
+            {
+                vm.HasAnnotations = true;
             }
         }
-
-    /// <summary>
-    /// Duplicates the currently selected annotation with a deep copy.
-    /// The duplicate is offset by 20px and becomes the new selection.
-    /// </summary>
-    private void DuplicateSelectedAnnotation()
-    {
-        var selectedControl = _selectionController.SelectedShape;
-        if (selectedControl == null) return;
-
-        var annotation = selectedControl.Tag as Annotation;
-        if (annotation == null) return;
-
-        var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-        if (canvas == null) return;
-
-        // Deep clone the annotation (ImageAnnotation.Clone deep-copies the bitmap)
-        var clone = annotation.Clone();
-
-        // Offset the duplicate by 20px
-        const float offset = 20f;
-        clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
-        clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
-
-        // Offset freehand/eraser points if applicable
-        if (clone is FreehandAnnotation freehandClone)
-        {
-            for (int i = 0; i < freehandClone.Points.Count; i++)
-            {
-                var pt = freehandClone.Points[i];
-                freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
-            }
-        }
-        else if (clone is SmartEraserAnnotation eraserClone)
-        {
-            for (int i = 0; i < eraserClone.Points.Count; i++)
-            {
-                var pt = eraserClone.Points[i];
-                eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
-            }
-        }
-
-        // Add to EditorCore (captures undo history before adding)
-        _editorCore.AddAnnotation(clone);
-
-        // Create the UI control for the cloned annotation
-        var control = CreateControlForAnnotation(clone);
-        if (control != null)
-        {
-            canvas.Children.Add(control);
-            _selectionController.SetSelectedShape(control);
-        }
-
-        // Update clipboard status after internal copy
-        _ = CheckClipboardStatus();
-
-        // Update HasAnnotations state
-        if (DataContext is MainViewModel vm)
-        {
-            vm.HasAnnotations = true;
-        }
-    }
         private async void OnCutRequested(object? sender, EventArgs e)
         {
             if (_selectionController.SelectedShape?.Tag is Annotation annotation)
             {
                 // Copy to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
-                
+
                 // Update clipboard status
                 _ = CheckClipboardStatus();
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
                 try
                 {
@@ -1804,12 +1735,12 @@ namespace ShareX.ImageEditor.Views
             {
                 // Deep clone to internal clipboard
                 _clipboardAnnotation = annotation.Clone();
-                
+
                 // Update clipboard status
                 _ = CheckClipboardStatus();
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
-                
+
                 // Clear system clipboard to avoid ambiguity when pasting back
                 // This ensures that if the user pastes, we know to use the internal clipboard
                 // unless they subsequently copy something externally
@@ -1861,9 +1792,8 @@ namespace ShareX.ImageEditor.Views
                     return;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"[PASTE] Failed to paste: {ex.Message}");
             }
         }
 
@@ -1876,15 +1806,15 @@ namespace ShareX.ImageEditor.Views
 
             // Offset position so it's visible (10px offset)
             const float offset = 20f;
-            
+
             // Adjust points based on type
             if (newAnnotation is ImageAnnotation img)
             {
                 // Check if the image bitmap is valid (disposed?)
                 if (img.ImageBitmap == null && _clipboardAnnotation is ImageAnnotation clipImg)
                 {
-                   // Resurrect bitmap if needed (unlikely if deep cloned correctly)
-                   // But Clone() manages it.
+                    // Resurrect bitmap if needed (unlikely if deep cloned correctly)
+                    // But Clone() manages it.
                 }
             }
 
@@ -1894,22 +1824,22 @@ namespace ShareX.ImageEditor.Views
 
             if (newAnnotation is FreehandAnnotation freehand)
             {
-                 for (int i = 0; i < freehand.Points.Count; i++)
-                 {
-                     freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
-                 }
+                for (int i = 0; i < freehand.Points.Count; i++)
+                {
+                    freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
+                }
             }
             else if (newAnnotation is SmartEraserAnnotation eraser)
             {
-                 for (int i = 0; i < eraser.Points.Count; i++)
-                 {
-                     eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
-                 }
+                for (int i = 0; i < eraser.Points.Count; i++)
+                {
+                    eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
+                }
             }
 
             // Add to Core
             _editorCore.AddAnnotation(newAnnotation);
-            
+
             // Create UI
             var control = CreateControlForAnnotation(newAnnotation);
             if (control != null)
@@ -1918,7 +1848,7 @@ namespace ShareX.ImageEditor.Views
                 if (canvas != null)
                 {
                     canvas.Children.Add(control);
-                    
+
                     // Update selection to the pasted object
                     _selectionController.SetSelectedShape(control);
                 }
@@ -1943,14 +1873,13 @@ namespace ShareX.ImageEditor.Views
 
         public void OpenContextMenu(Control target)
         {
-            var menu = this.Resources["EditorContextMenu"] as ContextMenu;
-            if (menu != null)
+            if (this.Resources["EditorContextMenu"] is ContextMenu menu)
             {
                 menu.PlacementTarget = target;
                 menu.Open(target);
             }
         }
-        
+
         /// <summary>
         /// Checks if there is content on the system clipboard or internal clipboard
         /// and updates the ViewModel's CanPaste property.
@@ -1979,14 +1908,14 @@ namespace ShareX.ImageEditor.Views
                         var files = await clipboard.TryGetFilesAsync();
                         if (files != null && files.Any())
                         {
-                             canPaste = true;
+                            canPaste = true;
                         }
                         else
                         {
                             // Check for bitmap
                             var formats = await clipboard.GetDataFormatsAsync();
-                            if (formats.Any(f => f.ToString() == "PNG") || 
-                                formats.Any(f => f.ToString() == "Bitmap") || 
+                            if (formats.Any(f => f.ToString() == "PNG") ||
+                                formats.Any(f => f.ToString() == "Bitmap") ||
                                 formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
                             {
                                 canPaste = true;
@@ -1996,7 +1925,7 @@ namespace ShareX.ImageEditor.Views
                     catch { }
                 }
             }
-            
+
             vm.CanPaste = canPaste;
         }
     }

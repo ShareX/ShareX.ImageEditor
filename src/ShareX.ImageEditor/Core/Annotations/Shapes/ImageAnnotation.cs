@@ -45,49 +45,7 @@ public class ImageAnnotation : Annotation, IDisposable
         _imageBitmap = bitmap;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        if (_imageBitmap != null)
-        {
-            canvas.DrawBitmap(_imageBitmap, rect);
-        }
-        else
-        {
-            // Placeholder
-            using var dashPaint = new SKPaint
-            {
-                Color = SKColors.Gray,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                PathEffect = SKPathEffect.CreateDash(new float[] { 5, 5 }, 0)
-            };
-            canvas.DrawRect(rect, dashPaint);
-
-            // Draw "Image" text placeholder
-            using var textPaint = new SKPaint
-            {
-                Color = SKColors.Gray,
-                TextSize = 12,
-                TextAlign = SKTextAlign.Center,
-                IsAntialias = true
-            };
-            canvas.DrawText("Image", rect.MidX, rect.MidY, textPaint);
-        }
-
-        if (IsSelected)
-        {
-            using var selectPaint = new SKPaint
-            {
-                Color = SKColors.DodgerBlue,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, selectPaint);
-        }
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

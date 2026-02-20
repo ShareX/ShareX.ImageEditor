@@ -15,39 +15,8 @@ public partial class BlurAnnotation : BaseEffectAnnotation
         Amount = 10; // Default blur radius
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        if (EffectBitmap != null)
-        {
-            // Draw the pre-calculated blurred image
-            canvas.DrawBitmap(EffectBitmap, rect.Left, rect.Top);
-        }
-        else
-        {
-            // Fallback: draw translucent placeholder if effect not generated yet
-            using var paint = new SKPaint
-            {
-                Color = new SKColor(128, 128, 128, 77), // Gray with 30% opacity
-                Style = SKPaintStyle.Fill
-            };
-            canvas.DrawRect(rect, paint);
-        }
 
-        // Draw selection border if selected
-        if (IsSelected)
-        {
-            using var selectPaint = new SKPaint
-            {
-                Color = SKColors.DodgerBlue,
-                StrokeWidth = 2,
-                Style = SKPaintStyle.Stroke,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, selectPaint);
-        }
-    }
 
     /// <summary>
     /// Update the internal blurred bitmap based on the source image

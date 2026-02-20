@@ -23,8 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using System.ComponentModel;
 using ShareX.ImageEditor.Annotations;
+using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Abstractions;
 

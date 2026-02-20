@@ -41,10 +41,13 @@ public partial class ArrowAnnotation
         {
             Stroke = brush,
             StrokeThickness = StrokeWidth,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
             Fill = brush,
             Tag = this
         };
 
+        // Populate the arrow geometry using the annotation's points
         path.Data = CreateArrowGeometry(
             new Point(StartPoint.X, StartPoint.Y),
             new Point(EndPoint.X, EndPoint.Y),
@@ -66,47 +69,26 @@ public partial class ArrowAnnotation
 
     /// <summary>
     /// Creates arrow geometry for the Avalonia Path.
-    /// Matches the rendering style of the Render() method for consistency.
+    /// Consumes <see cref="ComputeArrowPoints"/> to guarantee identical shape with <see cref="Render"/>.
     /// </summary>
     public Geometry CreateArrowGeometry(Point start, Point end, double headSize)
     {
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
         {
-            var dx = end.X - start.X;
-            var dy = end.Y - start.Y;
-            var length = Math.Sqrt(dx * dx + dy * dy);
+            var pts = ComputeArrowPoints(
+                (float)start.X, (float)start.Y,
+                (float)end.X, (float)end.Y,
+                headSize);
 
-            if (length > 0)
+            if (pts is { } p)
             {
-                var ux = dx / length;
-                var uy = dy / length;
-
-                // Match Render() method: 20 degrees for sleeker look
-                var arrowAngle = Math.PI / 9;
-                var angle = Math.Atan2(dy, dx);
-
-                // Calculate arrowhead base point (matches Render() logic)
-                var arrowBase = new Point(
-                    end.X - headSize * ux,
-                    end.Y - headSize * uy);
-
-                // Arrow head wing points
-                var point1 = new Point(
-                    end.X - headSize * Math.Cos(angle - arrowAngle),
-                    end.Y - headSize * Math.Sin(angle - arrowAngle));
-
-                var point2 = new Point(
-                    end.X - headSize * Math.Cos(angle + arrowAngle),
-                    end.Y - headSize * Math.Sin(angle + arrowAngle));
-
-                // Draw line from start to arrow base, then arrow head triangle
                 ctx.BeginFigure(start, true);
-                ctx.LineTo(arrowBase);
-                ctx.LineTo(point1);
+                ctx.LineTo(new Point(p.ShaftEndLeft.X, p.ShaftEndLeft.Y));
+                ctx.LineTo(new Point(p.WingLeft.X, p.WingLeft.Y));
                 ctx.LineTo(end);
-                ctx.LineTo(point2);
-                ctx.LineTo(arrowBase);
+                ctx.LineTo(new Point(p.WingRight.X, p.WingRight.Y));
+                ctx.LineTo(new Point(p.ShaftEndRight.X, p.ShaftEndRight.Y));
                 ctx.EndFigure(true);
             }
             else

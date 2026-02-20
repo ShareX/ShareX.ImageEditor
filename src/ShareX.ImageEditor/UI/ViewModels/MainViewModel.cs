@@ -26,6 +26,7 @@
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Abstractions;
@@ -46,6 +47,14 @@ namespace ShareX.ImageEditor.ViewModels
             public required IBrush Brush { get; init; }
         }
 
+        public enum EditorTaskResult
+        {
+            None,
+            Continue,
+            ContinueNoSave,
+            Cancel
+        }
+
         private readonly EditorOptions _options;
         public EditorOptions Options => _options;
         public IAnnotationToolbarAdapter ToolbarAdapter { get; }
@@ -53,7 +62,7 @@ namespace ShareX.ImageEditor.ViewModels
         private const string OutputRatioAuto = "Auto";
 
         [ObservableProperty]
-        private string _exportState = "";
+        private bool _isDirty;
 
         private bool _isSyncingFromCore;
 
@@ -74,6 +83,107 @@ namespace ShareX.ImageEditor.ViewModels
         public event EventHandler? CutAnnotationRequested;
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
+        public event EventHandler? CloseRequested;
+
+        [ObservableProperty]
+        private bool _taskMode;
+
+        [ObservableProperty]
+        private EditorTaskResult _taskResult = EditorTaskResult.None;
+
+        [RelayCommand]
+        private void Continue()
+        {
+            TaskResult = EditorTaskResult.Continue;
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        [RelayCommand]
+        private void Cancel()
+        {
+            TaskResult = EditorTaskResult.Cancel;
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RequestClose()
+        {
+            if (IsDirty)
+            {
+                ShowConfirmationDialog();
+            }
+            else
+            {
+                TaskResult = EditorTaskResult.Continue;
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void ShowConfirmationDialog()
+        {
+            var dialog = new ConfirmationDialogViewModel(
+                onYes: () =>
+                {
+                    Save();
+                    TaskResult = EditorTaskResult.Continue;
+                    IsModalOpen = false;
+                    CloseRequested?.Invoke(this, EventArgs.Empty);
+                },
+                onNo: () =>
+                {
+                    TaskResult = EditorTaskResult.ContinueNoSave;
+                    IsModalOpen = false;
+                    CloseRequested?.Invoke(this, EventArgs.Empty);
+                },
+                onCancel: () =>
+                {
+                    IsModalOpen = false;
+                }
+            );
+
+            ModalContent = dialog;
+            IsModalOpen = true;
+        }
+
+        // Export events
+        private Action? _copyRequested;
+        public event Action? CopyRequested
+        {
+            add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
+            remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanCopy() => _copyRequested != null;
+
+        private Action? _saveRequested;
+        public event Action? SaveRequested
+        {
+            add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
+            remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanSave() => _saveRequested != null;
+
+        private Action? _saveAsRequested;
+        public event Action? SaveAsRequested
+        {
+            add { _saveAsRequested += value; SaveAsCommand.NotifyCanExecuteChanged(); }
+            remove { _saveAsRequested -= value; SaveAsCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanSaveAs() => _saveAsRequested != null;
+
+        private Action? _pinRequested;
+        public event Action? PinRequested
+        {
+            add { _pinRequested += value; PinToScreenCommand.NotifyCanExecuteChanged(); }
+            remove { _pinRequested -= value; PinToScreenCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanPinToScreen() => _pinRequested != null;
+
+        private Action? _uploadRequested;
+        public event Action? UploadRequested
+        {
+            add { _uploadRequested += value; UploadCommand.NotifyCanExecuteChanged(); }
+            remove { _uploadRequested -= value; UploadCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanUpload() => _uploadRequested != null;
 
         private Bitmap? _previewImage;
         public Bitmap? PreviewImage
@@ -148,6 +258,12 @@ namespace ShareX.ImageEditor.ViewModels
                 ImageWidth = value.Size.Width;
                 ImageHeight = value.Size.Height;
                 HasPreviewImage = true;
+
+                if (!_isSyncingFromCore && !_isApplyingSmartPadding)
+                {
+                    IsDirty = true;
+                }
+
                 OnPropertyChanged(nameof(SmartPaddingColor));
 
                 // Apply smart padding crop if enabled (but not if we're already applying it)
@@ -733,6 +849,20 @@ namespace ShareX.ImageEditor.ViewModels
             ModalContent = null;
         }
 
+        [RelayCommand]
+        private void SetTheme(string themeName)
+        {
+            var theme = themeName switch
+            {
+                "Dark" => ThemeVariant.Dark,
+                "Light" => ThemeVariant.Light,
+                "ShareXDark" => ThemeManager.ShareXDark,
+                "ShareXLight" => ThemeManager.ShareXLight,
+                _ => ThemeVariant.Default
+            };
+            ThemeManager.SetTheme(theme);
+        }
+
         [ObservableProperty]
         private IBrush _canvasBackground;
 
@@ -746,12 +876,6 @@ namespace ShareX.ImageEditor.ViewModels
 
         [ObservableProperty]
         private BoxShadows _canvasShadow;
-
-        // Event for View to provide flattened image
-        public event Func<Task<Bitmap?>>? SnapshotRequested;
-
-        // Event for View to show SaveAs dialog and return selected path
-        public event Func<Task<string?>>? SaveAsRequested;
 
         [ObservableProperty]
         private string? _lastSavedPath;
@@ -1105,9 +1229,8 @@ namespace ShareX.ImageEditor.ViewModels
                 PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(cropped);
                 ImageDimensions = $"{cropped.Width} x {cropped.Height}";
             }
-            catch (Exception ex)
+            catch
             {
-                DebugHelper.WriteLine($"Smart padding crop failed: {ex.Message}");
             }
             finally
             {
@@ -1390,186 +1513,34 @@ namespace ShareX.ImageEditor.ViewModels
             ClearAnnotationsRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        // Event for View to handle clipboard copy (requires TopLevel access)
-        public event Func<Bitmap, Task>? CopyRequested;
-
-        // Event for host app to handle image upload (passes Bitmap for UploadImage)
-        public event Func<Bitmap, Task>? UploadRequested;
-
-        // Event for View to show error dialog
-        public event Func<string, string, Task>? ShowErrorDialog;
-
-        [RelayCommand]
-        private async Task Copy()
+        [RelayCommand(CanExecute = nameof(CanCopy))]
+        private void Copy()
         {
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            // Fallback to preview image if snapshot fails
-            var imageToUse = snapshot ?? PreviewImage;
-            if (imageToUse == null)
-            {
-                return;
-            }
-
-            if (CopyRequested != null)
-            {
-                try
-                {
-                    await CopyRequested.Invoke(imageToUse);
-                    ExportState = "Copied";
-                    DebugHelper.WriteLine("Clipboard copy: Image copied to clipboard.");
-                }
-                catch (Exception ex)
-                {
-                    var errorMessage = $"Failed to copy image to clipboard.\n\nError: {ex.Message}";
-                    DebugHelper.WriteLine($"Clipboard copy failed: {ex.Message}");
-
-                    // Show error dialog
-                    if (ShowErrorDialog != null)
-                    {
-                        await ShowErrorDialog.Invoke("Copy Failed", errorMessage);
-                    }
-                }
-            }
+            _copyRequested?.Invoke();
         }
 
-        [RelayCommand]
-        private async Task Save()
+        [RelayCommand(CanExecute = nameof(CanSave))]
+        private void Save()
         {
-            // Try get flattened image first
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            if (snapshot == null && _currentSourceImage == null) return;
-
-            try
-            {
-                // Simple quick save to Pictures/ShareX
-                var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "ShareX");
-                if (!System.IO.Directory.Exists(folder)) System.IO.Directory.CreateDirectory(folder);
-
-                var filename = $"ShareX_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png";
-                var path = System.IO.Path.Combine(folder, filename);
-
-                if (snapshot != null)
-                {
-                    snapshot.Save(path);
-                }
-                else if (_currentSourceImage != null)
-                {
-                    ImageHelpers.SaveBitmap(_currentSourceImage, path);
-                }
-
-                ExportState = "Saved";
-                DebugHelper.WriteLine($"File saved: {path}");
-            }
-            catch (Exception ex)
-            {
-                DebugHelper.WriteLine($"File save failed: {ex.Message}");
-            }
-            await Task.CompletedTask;
+            _saveRequested?.Invoke();
         }
 
-        [RelayCommand]
-        private async Task SaveAs()
+        [RelayCommand(CanExecute = nameof(CanSaveAs))]
+        private void SaveAs()
         {
-            if (SaveAsRequested == null)
-            {
-                return;
-            }
-
-            // Show file picker dialog via View
-            var path = await SaveAsRequested.Invoke();
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            var imageToSave = snapshot ?? PreviewImage;
-            if (imageToSave == null)
-            {
-                return;
-            }
-
-            try
-            {
-                // Save based on file extension
-                var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
-
-                imageToSave.Save(path);
-
-                var filename = System.IO.Path.GetFileName(path);
-                ExportState = "Saved";
-                LastSavedPath = path;
-                DebugHelper.WriteLine($"File saved (Save As): {path}");
-            }
-            catch (Exception ex)
-            {
-                DebugHelper.WriteLine($"File save failed (Save As): {ex.Message}");
-            }
+            _saveAsRequested?.Invoke();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanPinToScreen))]
         private void PinToScreen()
         {
-            // Actual window topmost logic would be bound or handled in View code-behind
+            _pinRequested?.Invoke();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
-            DebugHelper.WriteLine("Upload() called - starting upload flow");
-
-            // Get flattened image with annotations
-            Bitmap? snapshot = null;
-            if (SnapshotRequested != null)
-            {
-                snapshot = await SnapshotRequested.Invoke();
-            }
-
-            var imageToUpload = snapshot ?? PreviewImage;
-            if (imageToUpload == null)
-            {
-                DebugHelper.WriteLine("Upload: No image to upload");
-                return;
-            }
-
-            DebugHelper.WriteLine($"Upload: UploadRequested is {(UploadRequested != null ? "subscribed" : "NULL")}");
-
-            if (UploadRequested != null)
-            {
-                try
-                {
-                    ExportState = "Uploading";
-                    DebugHelper.WriteLine("Upload: About to invoke UploadRequested event");
-                    await UploadRequested.Invoke(imageToUpload);
-                    DebugHelper.WriteLine("Upload: Image passed to host for upload.");
-                }
-                catch (Exception ex)
-                {
-                    ExportState = "";
-                    DebugHelper.WriteLine($"Upload failed: {ex.Message}");
-                }
-            }
-            else
-            {
-                DebugHelper.WriteLine("Upload: UploadRequested is null - no subscriber");
-            }
+            _uploadRequested?.Invoke();
         }
 
         private SkiaSharp.SKBitmap? _currentSourceImage;
@@ -1584,7 +1555,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(source))
             {
-                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Source bitmap is null/disposed.");
                 return null;
             }
 
@@ -1592,7 +1562,6 @@ namespace ShareX.ImageEditor.ViewModels
             SkiaSharp.SKBitmap? copy = safeSource.Copy();
             if (copy == null || copy.Handle == IntPtr.Zero)
             {
-                DebugHelper.WriteLine($"[MEMORY WARNING] {context}: Failed to create bitmap copy.");
                 copy?.Dispose();
                 return null;
             }
@@ -1606,11 +1575,6 @@ namespace ShareX.ImageEditor.ViewModels
             if (IsBitmapAlive(coreSource))
             {
                 return coreSource;
-            }
-
-            if (coreSource != null)
-            {
-                DebugHelper.WriteLine("[MEMORY WARNING] Core source bitmap is disposed. Falling back to ViewModel source.");
             }
 
             if (IsBitmapAlive(_currentSourceImage))
@@ -1637,7 +1601,6 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(image))
             {
-                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreview: Ignoring disposed bitmap.");
                 return;
             }
 
@@ -1653,11 +1616,6 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 _originalSourceImage?.Dispose();
                 var copy = SafeCopyBitmap(image, "UpdatePreview");
-                if (copy == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("[MEMORY WARNING] UpdatePreview: Failed to create backup copy");
-                    // Continue without backup - smart padding might fail but image update will work
-                }
                 _originalSourceImage = copy;
             }
 
@@ -1785,16 +1743,12 @@ namespace ShareX.ImageEditor.ViewModels
                 return;
             }
 
-            if (_editorCore.ApplyImageEffect(effect) && !string.IsNullOrWhiteSpace(statusMessage))
-            {
-                ExportState = statusMessage;
-            }
+            _editorCore.ApplyImageEffect(effect);
         }
 
         // --- Effect Live Preview Logic ---
 
         private SkiaSharp.SKBitmap? _preEffectImage;
-
 
         /// <summary>
         /// Called when an effect dialog opens to store the state before previewing.
@@ -1830,19 +1784,18 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (!IsBitmapAlive(preview))
             {
-                DebugHelper.WriteLine("[MEMORY WARNING] UpdatePreviewImageOnly: Ignoring disposed bitmap.");
                 return;
             }
 
             try
             {
                 _isSyncingFromCore = true;
-                
+
                 // SIP-FIX: Calculate dimensions string BEFORE setting PreviewImage.
                 // Setting PreviewImage can trigger bindings that might dispose the source 
                 // via EditorCore updates if not handled carefully.
                 string dimStr = $"{preview.Width} x {preview.Height}";
-                
+
                 PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
                 ImageDimensions = dimStr;
 
@@ -1935,11 +1888,6 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             UpdateCanvasProperties();
             ApplySmartPaddingCrop();
-
-            if (applied && !string.IsNullOrWhiteSpace(statusMessage))
-            {
-                ExportState = statusMessage;
-            }
         }
 
         /// <summary>
@@ -1959,7 +1907,7 @@ namespace ShareX.ImageEditor.ViewModels
             // SIP-FIX: Prioritize _preEffectImage (clean state) for cancellation.
             // GetBestAvailableSourceBitmap() might return the dirty/preview state from EditorCore.
             SkiaSharp.SKBitmap? source = _preEffectImage ?? GetBestAvailableSourceBitmap();
-            
+
             if (source != null)
             {
                 UpdatePreviewImageOnly(source, syncSourceState: true);
@@ -1988,9 +1936,8 @@ namespace ShareX.ImageEditor.ViewModels
                 UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"Preview Error: {ex}");
             }
         }
 

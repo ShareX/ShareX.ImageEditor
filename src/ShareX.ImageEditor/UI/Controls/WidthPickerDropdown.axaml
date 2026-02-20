@@ -13,13 +13,13 @@
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Style Selector="Button.picker-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#374151"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
         </Style>
         <Style Selector="Button.picker-button.active">
-            <Setter Property="Background" Value="#3E83F2"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
         <Style Selector="Button.picker-button.active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#3E83F2"/>
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
     </UserControl.Styles>
 
@@ -40,7 +40,7 @@
                       Margin="0,0,6,0">
                     <Ellipse Width="{Binding SelectedWidth, ElementName=WidthPickerDropdownRoot}"
                              Height="{Binding SelectedWidth, ElementName=WidthPickerDropdownRoot}"
-                             Fill="#94A3B8"
+                             Fill="{DynamicResource ShareX.Brush.Text.Secondary}"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
                 </Grid>
@@ -51,10 +51,10 @@
                 <!-- Chevron Icon (FontAwesome ChevronDown) -->
                 <TextBlock Grid.Column="2"
                            Text="&#xf078;"
-                           FontFamily="avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Black"
                            FontSize="10"
-                           Foreground="#94A3B8"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"/>
             </Grid>
         </Button>
@@ -84,7 +84,7 @@
                                 <Grid Width="24" Height="24">
                                     <Ellipse Width="{Binding .}"
                                              Height="{Binding .}"
-                                             Fill="#94A3B8"
+                                             Fill="{DynamicResource ShareX.Brush.Text.Secondary}"
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"/>
                                 </Grid>

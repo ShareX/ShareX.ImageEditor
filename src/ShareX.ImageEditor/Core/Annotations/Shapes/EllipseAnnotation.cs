@@ -37,21 +37,7 @@ public partial class EllipseAnnotation : Annotation
         ToolType = EditorTool.Ellipse;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        // Draw fill first (if not transparent)
-        if (!string.IsNullOrEmpty(FillColor) && FillColor != "#00000000")
-        {
-            using var fillPaint = CreateFillPaint();
-            canvas.DrawOval(rect, fillPaint);
-        }
-
-        // Draw stroke on top
-        using var strokePaint = CreateStrokePaint();
-        canvas.DrawOval(rect, strokePaint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

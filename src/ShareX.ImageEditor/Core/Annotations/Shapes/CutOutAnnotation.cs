@@ -43,63 +43,7 @@ public class CutOutAnnotation : Annotation
         ToolType = EditorTool.CutOut;
     }
 
-    public override void Render(SKCanvas canvas)
-    {
-        var rect = GetBounds();
 
-        // Draw a line indicating the cut position
-        using var linePaint = new SKPaint
-        {
-            Color = new SKColor(255, 0, 0, 180), // Semi-transparent red
-            StrokeWidth = 3,
-            Style = SKPaintStyle.Stroke,
-            PathEffect = SKPathEffect.CreateDash(new float[] { 10, 5 }, 0),
-            IsAntialias = true
-        };
-
-        if (IsVertical)
-        {
-            // Draw vertical line at the X position
-            float x = rect.MidX;
-            canvas.DrawLine(x, 0, x, canvas.LocalClipBounds.Height, linePaint);
-        }
-        else
-        {
-            // Draw horizontal line at the Y position
-            float y = rect.MidY;
-            canvas.DrawLine(0, y, canvas.LocalClipBounds.Width, y, linePaint);
-        }
-
-        // Draw handles at the line
-        DrawHandle(canvas, new SKPoint(rect.MidX, rect.MidY));
-    }
-
-    private void DrawHandle(SKCanvas canvas, SKPoint center)
-    {
-        const float handleSize = 10;
-        var rect = new SKRect(
-            center.X - handleSize / 2,
-            center.Y - handleSize / 2,
-            center.X + handleSize / 2,
-            center.Y + handleSize / 2);
-
-        using var fillPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            Style = SKPaintStyle.Fill,
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, fillPaint);
-
-        using var strokePaint = new SKPaint
-        {
-            Color = new SKColor(255, 0, 0), // Red border
-            StrokeWidth = 2,
-            Style = SKPaintStyle.Stroke,
-            IsAntialias = true
-        };
-        canvas.DrawRect(rect, strokePaint);
-    }
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
