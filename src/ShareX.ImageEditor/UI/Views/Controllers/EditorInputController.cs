@@ -372,7 +372,7 @@ public class EditorInputController
                 {
                     // Restored from ref\EditorView_master.axaml.cs lines 1658-1669
                     // Sample pixel color from rendered canvas (including annotations)
-                    var sampledColor = await _view.GetPixelColorFromRenderedCanvas(_startPoint);
+                    var sampledColor = _view.EditorCore.SampleCanvasColor(ToSKPoint(_startPoint));
 
                     var smartEraser = new SmartEraserAnnotation { StrokeColor = sampledColor ?? "#FFFFFFFF", StrokeWidth = vm.StrokeWidth, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
                     path.Tag = smartEraser;

@@ -85,24 +85,15 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
             return;
         }
 
-        // Scale capture to fill the VALID portion of the annotation
-        var info = new SKImageInfo(validRect.Width, validRect.Height);
-        using var scaled = crop.Resize(info, SKFilterQuality.Medium);
-
-        if (scaled == null)
-        {
-            EffectBitmap?.Dispose();
-            EffectBitmap = result;
-            return;
-        }
-
         // Draw scaled content at the correct offset within the full-size result
         int drawX = validRect.Left - annotationRect.Left;
         int drawY = validRect.Top - annotationRect.Top;
+        var destRect = new SKRect(drawX, drawY, drawX + validRect.Width, drawY + validRect.Height);
 
         using (var resultCanvas = new SKCanvas(result))
         {
-            resultCanvas.DrawBitmap(scaled, drawX, drawY);
+            using var paint = new SKPaint { FilterQuality = SKFilterQuality.Medium };
+            resultCanvas.DrawBitmap(crop, destRect, paint);
         }
 
         EffectBitmap?.Dispose();

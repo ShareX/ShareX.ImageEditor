@@ -409,6 +409,9 @@ namespace ShareX.ImageEditor.ViewModels
         {
             switch (ActiveTool)
             {
+                case EditorTool.Text:
+                    Options.TextColor = color;
+                    break;
                 case EditorTool.Step:
                     Options.StepBorderColor = color;
                     break;
@@ -655,9 +658,15 @@ namespace ShareX.ImageEditor.ViewModels
                 case EditorTool.Line:
                 case EditorTool.Arrow:
                 case EditorTool.Freehand:
-                case EditorTool.Text:
                 case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.BorderColor;
+                    FillColorValue = Options.FillColor;
+                    StrokeWidth = Options.Thickness;
+                    ShadowEnabled = Options.Shadow;
+                    FontSize = Options.FontSize;
+                    break;
+                case EditorTool.Text:
+                    SelectedColorValue = Options.TextColor;
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
                     ShadowEnabled = Options.Shadow;
@@ -1930,18 +1939,44 @@ namespace ShareX.ImageEditor.ViewModels
             ApplySmartPaddingCrop();
         }
 
+        private System.Threading.CancellationTokenSource? _previewDebounceCts;
+
         /// <summary>
         /// Applies the effect function to the pre-effect image and updates the preview.
         /// </summary>
-        public void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
+        public async void PreviewEffect(Func<SkiaSharp.SKBitmap, SkiaSharp.SKBitmap> effect)
         {
             if (_preEffectImage == null || effect == null) return;
 
+            _previewDebounceCts?.Cancel();
+            _previewDebounceCts?.Dispose();
+            _previewDebounceCts = new System.Threading.CancellationTokenSource();
+            var token = _previewDebounceCts.Token;
+
             try
             {
-                var result = effect(_preEffectImage);
+                await System.Threading.Tasks.Task.Delay(50, token);
+                if (token.IsCancellationRequested) return;
+
+                var preEffect = _preEffectImage;
+                var result = await System.Threading.Tasks.Task.Run(() =>
+                {
+                    if (token.IsCancellationRequested) return null;
+                    return effect(preEffect);
+                }, token);
+
+                if (token.IsCancellationRequested || result == null)
+                {
+                    result?.Dispose();
+                    return;
+                }
+
                 UpdatePreviewImageOnly(result, syncSourceState: false);
                 result.Dispose();
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+                // Ignored
             }
             catch
             {

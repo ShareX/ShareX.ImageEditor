@@ -226,10 +226,10 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
-                vm.DeleteRequested += (s, args) => PerformDelete();
-                vm.UndoRequested += (s, args) => PerformUndo();
-                vm.RedoRequested += (s, args) => PerformRedo();
-                vm.ClearAnnotationsRequested += (s, args) => ClearAllAnnotations();
+                vm.DeleteRequested += OnDeleteRequested;
+                vm.UndoRequested += OnUndoRequested;
+                vm.RedoRequested += OnRedoRequested;
+                vm.ClearAnnotationsRequested += OnClearAnnotationsRequested;
 
                 // Subscribe to new context menu events
                 vm.CutAnnotationRequested += OnCutRequested;
@@ -261,9 +261,19 @@ namespace ShareX.ImageEditor.Views
 
             if (DataContext is MainViewModel vm)
             {
+                vm.DeleteRequested -= OnDeleteRequested;
+                vm.UndoRequested -= OnUndoRequested;
+                vm.RedoRequested -= OnRedoRequested;
+                vm.ClearAnnotationsRequested -= OnClearAnnotationsRequested;
+
+                vm.CutAnnotationRequested -= OnCutRequested;
+                vm.CopyAnnotationRequested -= OnCopyRequested;
+                vm.PasteRequested -= OnPasteRequested;
+                vm.DuplicateRequested -= OnDuplicateRequested;
+                vm.ZoomToFitRequested -= OnZoomToFitRequested;
+
                 vm.PropertyChanged -= OnViewModelPropertyChanged;
                 vm.DeselectRequested -= OnDeselectRequested;
-                vm.ZoomToFitRequested -= OnZoomToFitRequested;
             }
 
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
@@ -387,40 +397,7 @@ namespace ShareX.ImageEditor.Views
             _canvasControl.Draw(canvas => _editorCore.Render(canvas));
         }
 
-        /// <summary>
-        /// Sample pixel color from the rendered canvas (including annotations) at the specified canvas coordinates
-        /// </summary>
-        internal async System.Threading.Tasks.Task<string?> GetPixelColorFromRenderedCanvas(Point canvasPoint)
-        {
-            if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return null;
-
-            try
-            {
-                var container = this.FindControl<Grid>("CanvasContainer");
-                if (container == null || container.Width <= 0 || container.Height <= 0) return null;
-
-                var rtb = new global::Avalonia.Media.Imaging.RenderTargetBitmap(
-                    new PixelSize((int)container.Width, (int)container.Height),
-                    new Vector(96, 96));
-
-                rtb.Render(container);
-
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(rtb);
-
-                int x = (int)Math.Round(canvasPoint.X);
-                int y = (int)Math.Round(canvasPoint.Y);
-
-                if (x < 0 || y < 0 || x >= skBitmap.Width || y >= skBitmap.Height)
-                    return null;
-
-                var skColor = skBitmap.GetPixel(x, y);
-                return $"#{skColor.Red:X2}{skColor.Green:X2}{skColor.Blue:X2}";
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        // GetPixelColorFromRenderedCanvas removed for performance reasons. Use EditorCore.SampleCanvasColor instead.
 
         // --- Event Handlers Delegated to Controllers ---
 
@@ -599,6 +576,11 @@ namespace ShareX.ImageEditor.Views
         }
 
         // --- Private Helpers (Undo/Redo, Delete, etc that involve view state) ---
+
+        private void OnDeleteRequested(object? sender, EventArgs e) => PerformDelete();
+        private void OnUndoRequested(object? sender, EventArgs e) => PerformUndo();
+        private void OnRedoRequested(object? sender, EventArgs e) => PerformRedo();
+        private void OnClearAnnotationsRequested(object? sender, EventArgs e) => ClearAllAnnotations();
 
         private void PerformUndo()
         {
@@ -852,7 +834,9 @@ namespace ShareX.ImageEditor.Views
 
         // This is called by SelectionController/InputController via event when an effect logic needs update
         // We replicate the UpdateEffectVisual logic here or expose it
-        private void OnRequestUpdateEffect(Control shape)
+        private System.Threading.CancellationTokenSource? _updateEffectCts;
+
+        private async void OnRequestUpdateEffect(Control shape)
         {
             if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
@@ -880,12 +864,26 @@ namespace ShareX.ImageEditor.Views
                 annotation.StartPoint = new SKPoint((float)left, (float)top);
                 annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
 
-                // We don't have the cached bitmap here, create fresh or pass from controller?
-                // Original logic cached it. InputController caches it.
+                _updateEffectCts?.Cancel();
+                _updateEffectCts?.Dispose();
+                _updateEffectCts = new System.Threading.CancellationTokenSource();
+                var token = _updateEffectCts.Token;
+
+                await System.Threading.Tasks.Task.Delay(50, token);
+                if (token.IsCancellationRequested) return;
+
                 // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
                 // SelectionController doesn't have the cached bitmap.
-                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                annotation.UpdateEffect(skBitmap);
+                var previewImage = vm.PreviewImage;
+
+                await System.Threading.Tasks.Task.Run(() =>
+                {
+                    if (token.IsCancellationRequested) return;
+                    using var skBitmap = BitmapConversionHelpers.ToSKBitmap(previewImage);
+                    annotation.UpdateEffect(skBitmap);
+                }, token);
+
+                if (token.IsCancellationRequested) return;
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
@@ -896,6 +894,10 @@ namespace ShareX.ImageEditor.Views
                         SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
                     };
                 }
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+                // Ignored
             }
             catch { }
         }

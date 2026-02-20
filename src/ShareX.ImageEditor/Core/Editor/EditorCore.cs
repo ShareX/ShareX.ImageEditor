@@ -911,20 +911,26 @@ public class EditorCore : IDisposable
         }
     }
 
-    private string? SampleCanvasColor(SKPoint point)
+    public string? SampleCanvasColor(SKPoint point)
     {
-        using var snapshot = GetSnapshot();
-        if (snapshot == null) return null;
+        if (SourceImage == null) return null;
 
         int x = (int)Math.Round(point.X);
         int y = (int)Math.Round(point.Y);
 
-        if (x < 0 || y < 0 || x >= snapshot.Width || y >= snapshot.Height)
+        if (x < 0 || y < 0 || x >= SourceImage.Width || y >= SourceImage.Height)
         {
             return null;
         }
 
-        var color = snapshot.GetPixel(x, y);
+        // Render just a 1x1 region for extreme performance
+        using var bitmap = new SKBitmap(1, 1);
+        using var canvas = new SKCanvas(bitmap);
+        canvas.Translate(-x, -y);
+        
+        Render(canvas);
+
+        var color = bitmap.GetPixel(0, 0);
         return $"#{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
     }
 

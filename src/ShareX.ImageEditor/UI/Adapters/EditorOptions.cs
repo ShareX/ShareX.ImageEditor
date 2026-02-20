@@ -33,6 +33,7 @@ namespace ShareX.ImageEditor
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
         public float FontSize { get; set; } = 48;
+        public Color TextColor { get; set; } = Color.FromArgb(255, 255, 67, 67);
         public bool Shadow { get; set; } = true;
 
         public Color StepBorderColor { get; set; } = Colors.Transparent;
