@@ -799,11 +799,6 @@ public class EditorInputController
         annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
         annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
 
-        // Highlight during drag: keep the simple semi-transparent rectangle from CreateVisual();
-        // skip expensive UpdateEffect + ImageBrush on every pointer move to avoid lag (regression fix).
-        if (annotation is HighlightAnnotation)
-            return;
-
         try
         {
             annotation.UpdateEffect(_cachedSkBitmap);
