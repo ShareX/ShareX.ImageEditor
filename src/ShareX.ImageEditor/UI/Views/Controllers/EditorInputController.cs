@@ -202,20 +202,11 @@ public class EditorInputController
 
         if (vm.ActiveTool == EditorTool.Crop)
         {
-            var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
-            if (cropOverlay != null)
+            // If crop not yet active, full-image overlay + handles are shown when tool was selected (ActivateCropToFullImage).
+            // This pointer down is then for dragging a handle or moving the crop rect (handled in _cropActive block above).
+            if (!_cropActive)
             {
-                // Clamp start point to canvas bounds
-                var clampedX = Math.Max(0, Math.Min(_startPoint.X, canvas.Bounds.Width));
-                var clampedY = Math.Max(0, Math.Min(_startPoint.Y, canvas.Bounds.Height));
-                _startPoint = new Point(clampedX, clampedY);
-
-                cropOverlay.IsVisible = true;
-                Canvas.SetLeft(cropOverlay, _startPoint.X);
-                Canvas.SetTop(cropOverlay, _startPoint.Y);
-                cropOverlay.Width = 0;
-                cropOverlay.Height = 0;
-                _currentShape = cropOverlay;
+                ActivateCropToFullImage();
             }
             return;
         }
@@ -847,6 +838,31 @@ public class EditorInputController
         return true;
     }
 
+    /// <summary>
+    /// Shows the crop overlay at full image bounds with 8 handles so the user can drag them inwards immediately.
+    /// Call when the user selects the Crop tool.
+    /// </summary>
+    public void ActivateCropToFullImage()
+    {
+        var canvas = _view.FindControl<Canvas>("AnnotationCanvas");
+        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+        var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+        if (canvas == null || overlayCanvas == null || cropOverlay == null) return;
+
+        double w = canvas.Bounds.Width;
+        double h = canvas.Bounds.Height;
+        if (w <= 0 || h <= 0) return;
+
+        var fullRect = new Rect(0, 0, w, h);
+        cropOverlay.IsVisible = true;
+        Canvas.SetLeft(cropOverlay, 0);
+        Canvas.SetTop(cropOverlay, 0);
+        cropOverlay.Width = w;
+        cropOverlay.Height = h;
+        _cropActive = true;
+        ShowCropHandles(overlayCanvas, fullRect);
+    }
+
     private void ShowCropHandles(Canvas overlay, Rect cropRect)
     {
         HideCropHandles(overlay);
@@ -1007,17 +1023,18 @@ public class EditorInputController
         return panel;
     }
 
-    /// <summary>Builds an L-shape: two rays from (x0,y0) to (x1,y1) and (x0,y0) to (x2,y2).</summary>
+    /// <summary>Builds an L-shape as one path: corner (x0,y0) -> (x1,y1) -> (x2,y2). Single figure so it strokes as one L, not two rectangles.</summary>
     private static Geometry BuildLShape(double x0, double y0, double x1, double y1, double x2, double y2)
     {
-        var start = new Point(x0, y0);
-        var f1 = new PathFigure { StartPoint = start, IsClosed = false };
-        f1.Segments!.Add(new LineSegment { Point = new Point(x1, y1) });
-        var f2 = new PathFigure { StartPoint = start, IsClosed = false };
-        f2.Segments!.Add(new LineSegment { Point = new Point(x2, y2) });
+        var figure = new PathFigure
+        {
+            StartPoint = new Point(x0, y0),
+            IsClosed = false
+        };
+        figure.Segments!.Add(new LineSegment { Point = new Point(x1, y1) });
+        figure.Segments.Add(new LineSegment { Point = new Point(x2, y2) });
         var geometry = new PathGeometry();
-        geometry.Figures!.Add(f1);
-        geometry.Figures.Add(f2);
+        geometry.Figures!.Add(figure);
         return geometry;
     }
 

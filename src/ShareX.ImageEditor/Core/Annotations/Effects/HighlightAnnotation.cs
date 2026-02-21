@@ -39,28 +39,83 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
         // If specific intersection exists, process it
         if (intersect.Width > 0 && intersect.Height > 0)
         {
-            // Calculate draw offset
+            // Extract the valid region to highlight
+            using var crop = new SKBitmap(intersect.Width, intersect.Height);
+            source.ExtractSubset(crop, intersect);
+
+            // We will modify a copy of the crop (so we don't affect source)
+            using var processedCrop = crop.Copy();
+
+            var highlightColor = ParseColor(StrokeColor);
+            byte r = highlightColor.Red;
+            byte g = highlightColor.Green;
+            byte b = highlightColor.Blue;
+
+            unsafe
+            {
+                // Lock pixels for direct access
+                var pixels = (byte*)processedCrop.GetPixels();
+                int count = processedCrop.Width * processedCrop.Height;
+                var colorType = processedCrop.ColorType;
+
+                // Handle standard formats using channel-independent Min logic
+                if (colorType == SKColorType.Bgra8888 || colorType == SKColorType.Rgba8888)
+                {
+                    // For both BGRA and RGBA, the channels are just bytes.
+                    // Since specific channel order implies valid pointers, we can optimize:
+                    // We iterate all bytes 4 at a time.
+                    // For BGRA: [0]=B, [1]=G, [2]=R.
+                    // For RGBA: [0]=R, [1]=G, [2]=B.
+                    // To do this correctly without conditional loop:
+
+                    if (colorType == SKColorType.Bgra8888)
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            int offset = i * 4;
+                            pixels[offset] = Math.Min(pixels[offset], b);       // Blue
+                            pixels[offset + 1] = Math.Min(pixels[offset + 1], g); // Green
+                            pixels[offset + 2] = Math.Min(pixels[offset + 2], r); // Red
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            int offset = i * 4;
+                            pixels[offset] = Math.Min(pixels[offset], r);       // Red
+                            pixels[offset + 1] = Math.Min(pixels[offset + 1], g); // Green
+                            pixels[offset + 2] = Math.Min(pixels[offset + 2], b); // Blue
+                        }
+                    }
+                }
+                else
+                {
+                    // Fallback using safe GetPixel/SetPixel
+                    for (int x = 0; x < processedCrop.Width; x++)
+                    {
+                        for (int y = 0; y < processedCrop.Height; y++)
+                        {
+                            var c = processedCrop.GetPixel(x, y);
+                            var newC = new SKColor(
+                                Math.Min(c.Red, r),
+                                Math.Min(c.Green, g),
+                                Math.Min(c.Blue, b),
+                                c.Alpha);
+                            processedCrop.SetPixel(x, y, newC);
+                        }
+                    }
+                }
+            }
+
+            // Draw the processed crop into the result at the correct offset
+            // Offset is difference between intersection left/top and annotation left/top
             int dx = intersect.Left - skRect.Left;
             int dy = intersect.Top - skRect.Top;
 
-            var highlightColor = ParseColor(StrokeColor);
-
             using (var canvas = new SKCanvas(result))
             {
-                // 1. Draw the original image portion
-                var sourceRect = new SKRect(intersect.Left, intersect.Top, intersect.Right, intersect.Bottom);
-                var destRect = new SKRect(dx, dy, dx + intersect.Width, dy + intersect.Height);
-                canvas.DrawBitmap(source, sourceRect, destRect);
-
-                // 2. Draw the highlight color with Darken blend mode over it
-                // Darken mode effectively computes Math.Min for each color channel, matching old logic highly optimized!
-                using var highlightPaint = new SKPaint
-                {
-                    Color = highlightColor,
-                    Style = SKPaintStyle.Fill,
-                    BlendMode = SKBlendMode.Darken
-                };
-                canvas.DrawRect(destRect, highlightPaint);
+                canvas.DrawBitmap(processedCrop, dx, dy);
             }
         }
 

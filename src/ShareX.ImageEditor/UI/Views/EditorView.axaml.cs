@@ -310,6 +310,10 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.ActiveTool))
                 {
+                    if (vm.ActiveTool == EditorTool.Crop)
+                        _inputController.ActivateCropToFullImage();
+                    else
+                        _inputController.CancelCrop();
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
@@ -834,24 +838,19 @@ namespace ShareX.ImageEditor.Views
 
         // This is called by SelectionController/InputController via event when an effect logic needs update
         // We replicate the UpdateEffectVisual logic here or expose it
-        private System.Threading.CancellationTokenSource? _updateEffectCts;
-
-        private async void OnRequestUpdateEffect(Control shape)
+        private void OnRequestUpdateEffect(Control shape)
         {
             if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
-            // Logic to update effect bitmap
             try
             {
                 double left = Canvas.GetLeft(shape);
                 double top = Canvas.GetTop(shape);
-                // Use explicit Width/Height first, fallback to Bounds, then annotation bounds
                 double width = shape.Width;
                 double height = shape.Height;
                 if (double.IsNaN(width) || width <= 0) width = shape.Bounds.Width;
                 if (double.IsNaN(height) || height <= 0) height = shape.Bounds.Height;
-                // Final fallback to annotation's own bounds
                 if (width <= 0 || height <= 0)
                 {
                     var bounds = annotation.GetBounds();
@@ -860,44 +859,28 @@ namespace ShareX.ImageEditor.Views
                 }
                 if (width <= 0 || height <= 0) return;
 
-                // Map to SKPoint
                 annotation.StartPoint = new SKPoint((float)left, (float)top);
                 annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
 
-                _updateEffectCts?.Cancel();
-                _updateEffectCts?.Dispose();
-                _updateEffectCts = new System.Threading.CancellationTokenSource();
-                var token = _updateEffectCts.Token;
-
-                await System.Threading.Tasks.Task.Delay(50, token);
-                if (token.IsCancellationRequested) return;
-
                 // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
-                // SelectionController doesn't have the cached bitmap.
-                var previewImage = vm.PreviewImage;
-
-                await System.Threading.Tasks.Task.Run(() =>
-                {
-                    if (token.IsCancellationRequested) return;
-                    using var skBitmap = BitmapConversionHelpers.ToSKBitmap(previewImage);
-                    annotation.UpdateEffect(skBitmap);
-                }, token);
-
-                if (token.IsCancellationRequested) return;
+                using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
+                annotation.UpdateEffect(skBitmap);
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
+                    // Ensure control size matches so the fill covers the full rectangle (fixes move not redrawing highlight over entire area).
+                    shapeControl.Width = width;
+                    shapeControl.Height = height;
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
+                    double bw = annotation.EffectBitmap.Width;
+                    double bh = annotation.EffectBitmap.Height;
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                     {
-                        Stretch = Stretch.None,
-                        SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                        Stretch = Stretch.Fill,
+                        SourceRect = new RelativeRect(0, 0, bw, bh, RelativeUnit.Absolute)
                     };
+                    shapeControl.InvalidateVisual();
                 }
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                // Ignored
             }
             catch { }
         }
