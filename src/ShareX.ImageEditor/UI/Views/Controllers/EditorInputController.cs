@@ -784,13 +784,21 @@ public class EditorInputController
 
         if (width <= 0 || height <= 0) return;
 
-        // ISSUE-008 fix: Apply DPI scaling for high-DPI displays
-        var scaling = 1.0;
-        var topLevel = TopLevel.GetTopLevel(_view);
-        if (topLevel != null) scaling = topLevel.RenderScaling;
+        // Canvas coordinates are already in image-pixel space (AnnotationCanvas is
+        // sized to bitmap.Width/Height). No DPI scaling needed.
+        // Pixel-align bounds so effect bitmap dimensions remain stable while drawing.
+        double right = x + width;
+        double bottom = y + height;
+        double normalizedLeft = Math.Floor(Math.Min(x, right));
+        double normalizedTop = Math.Floor(Math.Min(y, bottom));
+        double normalizedRight = Math.Ceiling(Math.Max(x, right));
+        double normalizedBottom = Math.Ceiling(Math.Max(y, bottom));
 
-        annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
-        annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
+        double alignedW = Math.Max(1, normalizedRight - normalizedLeft);
+        double alignedH = Math.Max(1, normalizedBottom - normalizedTop);
+
+        annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
+        annotation.EndPoint = new SKPoint((float)(normalizedLeft + alignedW), (float)(normalizedTop + alignedH));
 
         try
         {
@@ -798,10 +806,12 @@ public class EditorInputController
             if (annotation.EffectBitmap != null && shape is Shape shapeControl)
             {
                 var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
+                double bw = annotation.EffectBitmap.Width;
+                double bh = annotation.EffectBitmap.Height;
                 shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                 {
-                    Stretch = Stretch.None,
-                    SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                    Stretch = Stretch.Fill,
+                    SourceRect = new RelativeRect(0, 0, bw, bh, RelativeUnit.Absolute)
                 };
             }
         }
