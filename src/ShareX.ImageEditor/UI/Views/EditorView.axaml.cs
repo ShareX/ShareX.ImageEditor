@@ -880,14 +880,15 @@ namespace ShareX.ImageEditor.Views
 
                 if (annotation.EffectBitmap != null && shape is Shape shapeControl)
                 {
-                    shapeControl.Width = width;
-                    shapeControl.Height = height;
                     var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                     double bw = annotation.EffectBitmap.Width;
                     double bh = annotation.EffectBitmap.Height;
+                    // Match ShareX.ImageEditor reference: shape size = effect bitmap size so current image area fills the rectangle
+                    shapeControl.Width = bw;
+                    shapeControl.Height = bh;
                     shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                     {
-                        Stretch = Stretch.Fill,
+                        Stretch = Stretch.None,
                         SourceRect = new RelativeRect(0, 0, bw, bh, RelativeUnit.Absolute)
                     };
                     shapeControl.InvalidateVisual();

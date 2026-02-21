@@ -786,7 +786,7 @@ public class EditorInputController
 
         // Canvas coordinates are already in image-pixel space (AnnotationCanvas is
         // sized to bitmap.Width/Height). No DPI scaling needed.
-        // Pixel-align bounds so effect bitmap dimensions remain stable while drawing.
+        // Pixel-align bounds so effect bitmap and shape stay in sync (matches ShareX.ImageEditor reference).
         double right = x + width;
         double bottom = y + height;
         double normalizedLeft = Math.Floor(Math.Min(x, right));
@@ -796,6 +796,12 @@ public class EditorInputController
 
         double alignedW = Math.Max(1, normalizedRight - normalizedLeft);
         double alignedH = Math.Max(1, normalizedBottom - normalizedTop);
+
+        // Sync shape position and size so the effect bitmap (generated from these bounds) fills the rectangle
+        Canvas.SetLeft(shape, normalizedLeft);
+        Canvas.SetTop(shape, normalizedTop);
+        shape.Width = alignedW;
+        shape.Height = alignedH;
 
         annotation.StartPoint = new SKPoint((float)normalizedLeft, (float)normalizedTop);
         annotation.EndPoint = new SKPoint((float)(normalizedLeft + alignedW), (float)(normalizedTop + alignedH));
@@ -808,9 +814,12 @@ public class EditorInputController
                 var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
                 double bw = annotation.EffectBitmap.Width;
                 double bh = annotation.EffectBitmap.Height;
+                // Match reference: Stretch.None and SourceRect so the current image area fills the highlight rectangle
+                shapeControl.Width = bw;
+                shapeControl.Height = bh;
                 shapeControl.Fill = new ImageBrush(avaloniaBitmap)
                 {
-                    Stretch = Stretch.Fill,
+                    Stretch = Stretch.None,
                     SourceRect = new RelativeRect(0, 0, bw, bh, RelativeUnit.Absolute)
                 };
             }

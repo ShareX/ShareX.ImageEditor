@@ -17,29 +17,27 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
 
 
 
+    /// <summary>
+    /// Updates the effect bitmap from the source image (matches ShareX.ImageEditor reference).
+    /// Renders the image region under the annotation bounds with highlight (min blend) applied
+    /// so that moving the rectangle shows the current area and the bitmap fills the shape.
+    /// </summary>
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
 
         var rect = GetBounds();
-        // Use floor/ceiling so integer annotation rect and bitmap size always match.
-        // This prevents partial coverage after moving when bounds contain fractional values.
-        int annotationLeft = (int)Math.Floor(rect.Left);
-        int annotationTop = (int)Math.Floor(rect.Top);
-        int annotationRight = (int)Math.Ceiling(rect.Right);
-        int annotationBottom = (int)Math.Ceiling(rect.Bottom);
-
-        var fullW = annotationRight - annotationLeft;
-        var fullH = annotationBottom - annotationTop;
+        var fullW = (int)rect.Width;
+        var fullH = (int)rect.Height;
 
         if (fullW <= 0 || fullH <= 0) return;
 
         // Logical intersection with image
-        var annotationRect = new SKRectI(annotationLeft, annotationTop, annotationRight, annotationBottom);
-        var intersect = annotationRect;
+        var skRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
+        var intersect = skRect;
         intersect.Intersect(new SKRectI(0, 0, source.Width, source.Height));
 
-        // Create the FULL size bitmap (matching rect)
+        // Create the FULL size bitmap (matching rect) so the result fills the highlight rectangle
         var result = new SKBitmap(fullW, fullH);
         result.Erase(SKColors.Transparent);
 
@@ -69,12 +67,8 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
                 if (colorType == SKColorType.Bgra8888 || colorType == SKColorType.Rgba8888)
                 {
                     // For both BGRA and RGBA, the channels are just bytes.
-                    // Since specific channel order implies valid pointers, we can optimize:
-                    // We iterate all bytes 4 at a time.
                     // For BGRA: [0]=B, [1]=G, [2]=R.
                     // For RGBA: [0]=R, [1]=G, [2]=B.
-                    // To do this correctly without conditional loop:
-
                     if (colorType == SKColorType.Bgra8888)
                     {
                         for (int i = 0; i < count; i++)
@@ -117,8 +111,8 @@ public partial class HighlightAnnotation : BaseEffectAnnotation
 
             // Draw the processed crop into the result at the correct offset
             // Offset is difference between intersection left/top and annotation left/top
-            int dx = intersect.Left - annotationRect.Left;
-            int dy = intersect.Top - annotationRect.Top;
+            int dx = intersect.Left - skRect.Left;
+            int dy = intersect.Top - skRect.Top;
 
             using (var canvas = new SKCanvas(result))
             {
