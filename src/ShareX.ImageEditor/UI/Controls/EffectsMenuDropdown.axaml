@@ -149,6 +149,11 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="3D Box / Extrude..." Click="OnRotate3DBoxClick">
+                             <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         
                          <Separator/>
                          

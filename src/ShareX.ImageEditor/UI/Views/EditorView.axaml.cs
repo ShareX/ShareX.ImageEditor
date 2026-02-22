@@ -1386,6 +1386,7 @@ namespace ShareX.ImageEditor.Views
         private void OnRoundedCornersRequested(object? sender, EventArgs e) => ShowEffectDialog(new RoundedCornersDialog());
         private void OnSkewRequested(object? sender, EventArgs e) => ShowEffectDialog(new SkewDialog());
         private void OnRotate3DRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DDialog());
+        private void OnRotate3DBoxRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DBoxDialog());
         private void OnBlurRequested(object? sender, EventArgs e) => ShowEffectDialog(new BlurDialog());
         private void OnPixelateRequested(object? sender, EventArgs e) => ShowEffectDialog(new PixelateDialog());
         private void OnSharpenRequested(object? sender, EventArgs e) => ShowEffectDialog(new SharpenDialog());

@@ -24,6 +24,7 @@ public static class ImageEffectRegistry
             // Manipulations - Resize (parameterized)
             new ResizeImageEffect(),
             new AutoCropImageEffect(),
+            new Rotate3DBoxImageEffect(),
             
             // Adjustments
             new BrightnessImageEffect(),

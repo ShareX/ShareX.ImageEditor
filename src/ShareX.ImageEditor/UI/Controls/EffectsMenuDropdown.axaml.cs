@@ -38,6 +38,7 @@ namespace ShareX.ImageEditor.Controls
         public event EventHandler? RoundedCornersRequested;
         public event EventHandler? SkewRequested;
         public event EventHandler? Rotate3DRequested;
+        public event EventHandler? Rotate3DBoxRequested;
 
         // Filters
         public event EventHandler? BorderRequested;
@@ -95,6 +96,7 @@ namespace ShareX.ImageEditor.Controls
         private void OnRoundedCornersClick(object? sender, RoutedEventArgs e) => Raise(RoundedCornersRequested);
         private void OnSkewClick(object? sender, RoutedEventArgs e) => Raise(SkewRequested);
         private void OnRotate3DClick(object? sender, RoutedEventArgs e) => Raise(Rotate3DRequested);
+        private void OnRotate3DBoxClick(object? sender, RoutedEventArgs e) => Raise(Rotate3DBoxRequested);
 
         // --- Filters ---
 
