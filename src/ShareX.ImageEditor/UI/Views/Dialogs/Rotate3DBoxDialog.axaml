@@ -36,7 +36,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="XAxisSlider"
-                    Minimum="-180" Maximum="180" Value="15"
+                    Minimum="-90" Maximum="90" Value="15"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
@@ -52,7 +52,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="YAxisSlider"
-                    Minimum="-180" Maximum="180" Value="-20"
+                    Minimum="-90" Maximum="90" Value="-20"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
@@ -68,7 +68,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="ZAxisSlider"
-                    Minimum="-180" Maximum="180" Value="0"
+                    Minimum="-90" Maximum="90" Value="0"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
