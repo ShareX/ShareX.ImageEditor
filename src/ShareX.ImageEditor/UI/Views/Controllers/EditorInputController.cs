@@ -1585,6 +1585,11 @@ public class EditorInputController
             MinWidth = 0
         };
 
+        // Force Avalonia's internal text box states to be transparent
+        textBox.Resources["TextControlBackground"] = Brushes.Transparent;
+        textBox.Resources["TextControlBackgroundFocused"] = Brushes.Transparent;
+        textBox.Resources["TextControlBackgroundPointerOver"] = Brushes.Transparent;
+
         if (vm.ShadowEnabled)
         {
             textBox.Effect = new Avalonia.Media.DropShadowEffect

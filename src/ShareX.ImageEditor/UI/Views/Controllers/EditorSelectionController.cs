@@ -1659,6 +1659,11 @@ public class EditorSelectionController
             MinWidth = 20
         };
 
+        // Force Avalonia's internal text box states to be transparent
+        textBox.Resources["TextControlBackground"] = Brushes.Transparent;
+        textBox.Resources["TextControlBackgroundFocused"] = Brushes.Transparent;
+        textBox.Resources["TextControlBackgroundPointerOver"] = Brushes.Transparent;
+
         // Apply rotation to make editing match display
         if (annotation.RotationAngle != 0)
         {
