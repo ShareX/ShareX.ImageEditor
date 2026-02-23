@@ -1650,8 +1650,8 @@ public class EditorInputController
                                 control,
                                 annotation,
                                 AnnotationVisualMode.Persisted,
-                                _view.EditorCore.CanvasSize.Width,
-                                _view.EditorCore.CanvasSize.Height);
+                                _view!.EditorCore!.CanvasSize.Width,
+                                _view!.EditorCore!.CanvasSize.Height);
                             
                             control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                             control.InvalidateVisual();
