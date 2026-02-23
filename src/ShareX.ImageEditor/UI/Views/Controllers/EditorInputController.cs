@@ -929,67 +929,44 @@ public class EditorInputController
 
     private static readonly Color CropHandleFill = Color.FromRgb(255, 255, 255);
     private static readonly Color CropHandleStroke = Color.FromRgb(20, 20, 20);
-    private static readonly Color CropHandleHatchLine = Color.FromArgb(100, 0, 0, 0);
-    private static readonly Color CropHandleHoverBg = Color.FromRgb(180, 215, 255);
+    private static readonly Color CropHandleGlowColor = Color.FromArgb(160, 80, 160, 255);
+    private static readonly Color CropHandleGlowHoverColor = Color.FromArgb(255, 50, 130, 255);
     private static readonly Color CropShadeFill = Color.FromArgb(140, 0, 0, 0);
     private static readonly Color CropGuideStroke = Color.FromArgb(210, 255, 255, 255);
 
-    private static IBrush? s_cropHatchNormalBrush;
-    private static IBrush? s_cropHatchHoverBrush;
-
     /// <summary>
-    /// Gets the normal hatch fill brush (white + diagonal gray lines). Lazily created.
+    /// Creates the normal-state glow effect for crop handles (subtle blue glow).
     /// </summary>
-    private static IBrush CropHandleNormalBrush
-        => s_cropHatchNormalBrush ??= CreateCropHatchBrush(CropHandleFill, CropHandleHatchLine);
-
-    /// <summary>
-    /// Gets the hover fill brush (solid light blue). Lazily created.
-    /// </summary>
-    private static IBrush CropHandleHoverBrush
-        => s_cropHatchHoverBrush ??= new SolidColorBrush(CropHandleHoverBg);
-
-    /// <summary>
-    /// Creates a tiled diagonal-line hatch brush for crop handles.
-    /// </summary>
-    private static IBrush CreateCropHatchBrush(Color bgColor, Color lineColor)
+    private static DropShadowEffect CreateNormalGlow() => new()
     {
-        const double tile = 5;
-        var canvas = new Canvas
-        {
-            Width = tile,
-            Height = tile,
-            Background = new SolidColorBrush(bgColor),
-            ClipToBounds = true
-        };
-        canvas.Children.Add(new Line
-        {
-            StartPoint = new Point(-1, tile + 1),
-            EndPoint = new Point(tile + 1, -1),
-            Stroke = new SolidColorBrush(lineColor),
-            StrokeThickness = 1,
-            IsHitTestVisible = false
-        });
-        return new VisualBrush
-        {
-            Visual = canvas,
-            TileMode = TileMode.Tile,
-            SourceRect = new RelativeRect(0, 0, tile, tile, RelativeUnit.Absolute),
-            DestinationRect = new RelativeRect(0, 0, tile, tile, RelativeUnit.Absolute)
-        };
-    }
+        OffsetX = 0,
+        OffsetY = 0,
+        BlurRadius = 10,
+        Color = CropHandleGlowColor
+    };
 
     /// <summary>
-    /// Updates the fill brush on all shape children inside a crop handle.
+    /// Creates the hover-state glow effect for crop handles (brighter blue glow).
     /// </summary>
-    private static void SetCropHandleChildFill(Border handle, IBrush brush)
+    private static DropShadowEffect CreateHoverGlow() => new()
+    {
+        OffsetX = 0,
+        OffsetY = 0,
+        BlurRadius = 16,
+        Color = CropHandleGlowHoverColor
+    };
+
+    /// <summary>
+    /// Toggles the glow effect on all shape children inside a crop handle.
+    /// </summary>
+    private static void SetCropHandleGlow(Border handle, bool isHover)
     {
         if (handle.Child is Canvas c)
         {
             foreach (var child in c.Children)
             {
                 if (child is Shape shape && !shape.IsHitTestVisible)
-                    shape.Fill = brush;
+                    shape.Effect = isHover ? CreateHoverGlow() : CreateNormalGlow();
             }
         }
     }
@@ -1217,9 +1194,9 @@ public class EditorInputController
         };
         handle.SetValue(Panel.ZIndexProperty, CropHandleZIndex);
 
-        // Hover feedback: light blue on hover to signal draggability
-        handle.PointerEntered += (_, _) => SetCropHandleChildFill(handle, CropHandleHoverBrush);
-        handle.PointerExited += (_, _) => SetCropHandleChildFill(handle, CropHandleNormalBrush);
+        // Hover feedback: glow becomes brighter on hover to signal draggability
+        handle.PointerEntered += (_, _) => SetCropHandleGlow(handle, true);
+        handle.PointerExited += (_, _) => SetCropHandleGlow(handle, false);
 
         Canvas.SetLeft(handle, posX);
         Canvas.SetTop(handle, posY);
@@ -1306,19 +1283,20 @@ public class EditorInputController
             };
         }
 
-        var hatchBrush = CropHandleNormalBrush;
+        var fillBrush = new SolidColorBrush(CropHandleFill);
         var outlineBrush = new SolidColorBrush(CropHandleStroke);
 
         var panel = new Canvas { Width = size, Height = size, IsHitTestVisible = false, ClipToBounds = false };
 
-        // Hatched L with 1px black border
+        // Solid white L with 1px black border and blue glow
         var poly = new Polygon
         {
             Points = new Avalonia.Collections.AvaloniaList<Point>(points),
-            Fill = hatchBrush,
+            Fill = fillBrush,
             Stroke = outlineBrush,
             StrokeThickness = 1,
-            IsHitTestVisible = false
+            IsHitTestVisible = false,
+            Effect = CreateNormalGlow()
         };
         panel.Children.Add(poly);
 
@@ -1348,7 +1326,7 @@ public class EditorInputController
             rh = Math.Max(4, height - 4);
         }
 
-        var hatchBrush = CropHandleNormalBrush;
+        var fillBrush = new SolidColorBrush(CropHandleFill);
         var outlineBrush = new SolidColorBrush(CropHandleStroke);
 
         double cx = (width - rw) / 2;
@@ -1356,17 +1334,18 @@ public class EditorInputController
 
         var canvas = new Canvas { Width = width, Height = height, IsHitTestVisible = false };
 
-        // Hatched bar with 1px black border, sharp corners
+        // Solid white bar with 1px black border, sharp corners, and blue glow
         var rect = new Rectangle
         {
             Width = rw,
             Height = rh,
-            Fill = hatchBrush,
+            Fill = fillBrush,
             Stroke = outlineBrush,
             StrokeThickness = 1,
             RadiusX = 0,
             RadiusY = 0,
-            IsHitTestVisible = false
+            IsHitTestVisible = false,
+            Effect = CreateNormalGlow()
         };
         Canvas.SetLeft(rect, cx);
         Canvas.SetTop(rect, cy);
