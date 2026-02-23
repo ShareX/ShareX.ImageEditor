@@ -282,6 +282,10 @@ namespace ShareX.ImageEditor.Views
                 {
                     ApplySelectedStrokeWidth(vm.StrokeWidth);
                 }
+                else if (e.PropertyName == nameof(MainViewModel.FillColorValue))
+                {
+                    ApplySelectedFillColor(vm.FillColor);
+                }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
                     _zoomController.ResetScrollViewerOffset();
@@ -1156,8 +1160,8 @@ namespace ShareX.ImageEditor.Views
                         balloon.InvalidateVisual();
                     }
                     break;
-                case TextBox textBox:
-                    textBox.Foreground = brush;
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateVisual();
                     break;
                 case Grid grid:
                     foreach (var child in grid.Children)
@@ -1167,6 +1171,43 @@ namespace ShareX.ImageEditor.Views
                             ellipse.Stroke = brush;
                         }
                     }
+                    break;
+                case SpeechBalloonControl balloonControl:
+                    balloonControl.InvalidateVisual();
+                    break;
+            }
+
+            // ISSUE-LIVE-UPDATE: Update active text editor if present
+            _selectionController.UpdateActiveTextEditorProperties();
+        }
+
+        private void ApplySelectedFillColor(string colorHex)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            // Ensure the annotation model property is updated so changes persist and effects render correctly
+            if (selected.Tag is Annotation annotation)
+            {
+                annotation.FillColor = colorHex;
+            }
+
+            var brush = new SolidColorBrush(Color.Parse(colorHex));
+
+            switch (selected)
+            {
+                case Shape shape:
+                    if (shape is global::Avalonia.Controls.Shapes.Path path)
+                    {
+                        path.Fill = brush;
+                    }
+                    else if (shape is global::Avalonia.Controls.Shapes.Rectangle || shape is global::Avalonia.Controls.Shapes.Ellipse)
+                    {
+                        shape.Fill = brush;
+                    }
+                    break;
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateVisual();
                     break;
                 case SpeechBalloonControl balloonControl:
                     balloonControl.InvalidateVisual();
@@ -1192,9 +1233,9 @@ namespace ShareX.ImageEditor.Views
                 case Shape shape:
                     shape.StrokeThickness = width;
                     break;
-                case TextBox textBox:
-                    textBox.FontSize = Math.Max(12, width * 4);
-                    textBox.BorderThickness = new Thickness(Math.Max(1, width / 2));
+                case OutlinedTextControl textBox:
+                    textBox.InvalidateMeasure();
+                    textBox.InvalidateVisual();
                     break;
                 case Grid grid:
                     foreach (var child in grid.Children)

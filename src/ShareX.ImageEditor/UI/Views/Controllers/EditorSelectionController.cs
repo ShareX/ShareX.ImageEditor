@@ -165,11 +165,9 @@ public class EditorSelectionController
 
                 if (hitTarget == _selectedShape)
                 {
-                    if (hitTarget is TextBox tb && e.ClickCount == 2)
+                    if (hitTarget is OutlinedTextControl otc && e.ClickCount == 2)
                     {
-                        tb.IsHitTestVisible = true;
-                        tb.Focus();
-                        AttachTextBoxEditHandlers(tb);
+                        ShowTextEditor(otc, canvas);
                         e.Handled = true;
                         return true;
                     }
@@ -207,7 +205,7 @@ public class EditorSelectionController
                 }
 
                 var manualHit = HitTestShape(canvas, point);
-                if (manualHit is SpotlightControl || manualHit is TextBox)
+                if (manualHit is SpotlightControl || manualHit is OutlinedTextControl)
                 {
                     hitTarget = manualHit;
                 }
@@ -226,11 +224,9 @@ public class EditorSelectionController
 
                 if (hitTarget != null)
                 {
-                    if (hitTarget is TextBox tb && e.ClickCount == 2)
+                    if (hitTarget is OutlinedTextControl otc && e.ClickCount == 2)
                     {
-                        tb.IsHitTestVisible = true;
-                        tb.Focus();
-                        AttachTextBoxEditHandlers(tb);
+                        ShowTextEditor(otc, canvas);
                         e.Handled = true;
                         return true;
                     }
@@ -256,11 +252,9 @@ public class EditorSelectionController
                 {
                     if (manualHit != null)
                     {
-                        if (manualHit is TextBox tb && e.ClickCount == 2)
+                        if (manualHit is OutlinedTextControl otc && e.ClickCount == 2)
                         {
-                            tb.IsHitTestVisible = true;
-                            tb.Focus();
-                            AttachTextBoxEditHandlers(tb);
+                            ShowTextEditor(otc, canvas);
                             e.Handled = true;
                             return true;
                         }
@@ -420,8 +414,8 @@ public class EditorSelectionController
             return;
         }
 
-        // Rotation handling for TextBox (Text annotation)
-        if (_selectedShape is TextBox rotateTextBox && handleTag == "Rotate")
+        // Rotation handling for OutlinedTextControl (Text annotation)
+        if (_selectedShape is OutlinedTextControl rotateTextBox && handleTag == "Rotate")
         {
             if (rotateTextBox.Tag is TextAnnotation rotateTextAnn)
             {
@@ -512,7 +506,7 @@ public class EditorSelectionController
             return;
         }
 
-        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid || _selectedShape is TextBox)
+        if (_selectedShape is global::Avalonia.Controls.Shapes.Rectangle || _selectedShape is global::Avalonia.Controls.Shapes.Ellipse || _selectedShape is Grid || _selectedShape is OutlinedTextControl)
         {
             double newLeft = left;
             double newTop = top;
@@ -760,15 +754,19 @@ public class EditorSelectionController
             return;
         }
 
-        // TextBox (Text annotation): resize handles + rotation handle
-        if (_selectedShape is TextBox textBox)
+        // OutlinedTextControl (Text annotation): resize handles + rotation handle
+        if (_selectedShape is OutlinedTextControl textBox)
         {
             var tbLeft = Canvas.GetLeft(textBox);
             var tbTop = Canvas.GetTop(textBox);
             var tbWidth = textBox.Bounds.Width;
             var tbHeight = textBox.Bounds.Height;
-            if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = textBox.Width;
-            if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = textBox.Height;
+            
+            if (tbWidth <= 0) tbWidth = textBox.DesiredSize.Width;
+            if (tbHeight <= 0) tbHeight = textBox.DesiredSize.Height;
+
+            if (double.IsNaN(tbWidth) || tbWidth <= 0) tbWidth = 20;
+            if (double.IsNaN(tbHeight) || tbHeight <= 0) tbHeight = 20;
 
             // Get rotation angle from the annotation
             double rotAngle = 0;
@@ -1617,6 +1615,112 @@ public class EditorSelectionController
         _balloonTextEditor.Resources["TextControlBorderBrushPointerOver"] = Avalonia.Media.Brushes.Transparent;
     }
 
+    private void ShowTextEditor(OutlinedTextControl textControl, Canvas canvas)
+    {
+        if (textControl.Annotation is not TextAnnotation annotation) return;
+
+        var overlay = _view.FindControl<Canvas>("OverlayCanvas");
+        if (overlay == null) return;
+
+        // Hide the original control while editing
+        textControl.IsVisible = false;
+
+        // Create a temporary TextBox for editing
+        string fillColor = annotation.FillColor;
+        if (string.IsNullOrEmpty(fillColor) || fillColor == "#00000000")
+        {
+            // Fallback to black for editing if text is transparent
+            // Only if stroke isn't set. Actually if FillColor is transparent but StrokeColor is set, text is stroke-only.
+            // Using StrokeColor for the editor text if Fill is transparent makes sense so it's visible.
+            string strokeColor = annotation.StrokeColor;
+            if (string.IsNullOrEmpty(strokeColor) || strokeColor == "#00000000")
+            {
+                fillColor = "#FF000000";
+            }
+            else
+            {
+                fillColor = strokeColor;
+            }
+        }
+
+        var textBox = new TextBox
+        {
+            Text = annotation.Text,
+            Foreground = new SolidColorBrush(Avalonia.Media.Color.Parse(fillColor)),
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(1),
+            BorderBrush = Brushes.Gray,
+            FontSize = annotation.FontSize,
+            FontWeight = annotation.IsBold ? FontWeight.Bold : FontWeight.Normal,
+            FontStyle = annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
+            Padding = new Thickness(4),
+            AcceptsReturn = false,
+            TextWrapping = TextWrapping.NoWrap,
+            MinWidth = 20
+        };
+
+        // Apply rotation to make editing match display
+        if (annotation.RotationAngle != 0)
+        {
+            textBox.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+            textBox.RenderTransform = new RotateTransform(annotation.RotationAngle);
+        }
+
+        Canvas.SetLeft(textBox, annotation.StartPoint.X);
+        Canvas.SetTop(textBox, annotation.StartPoint.Y);
+
+        EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
+        EventHandler<KeyEventArgs>? keyDownHandler = null;
+
+        void CompleteEditing()
+        {
+            if (lostFocusHandler != null) textBox.LostFocus -= lostFocusHandler;
+            if (keyDownHandler != null) textBox.KeyDown -= keyDownHandler;
+
+            annotation.Text = textBox.Text ?? string.Empty;
+            
+            // Remove from overlay
+            overlay.Children.Remove(textBox);
+            
+            // Unhide the original control and measure it to compute correct sizes
+            textControl.IsVisible = true;
+            textControl.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            textControl.InvalidateVisual();
+
+            // Fire RequestUpdateEffect to save new state if needed
+            RequestUpdateEffect?.Invoke(textControl);
+
+            // Sync Bounds based on new measured dimension
+            var newWidth = textControl.DesiredSize.Width > 0 ? textControl.DesiredSize.Width : 20;
+            var newHeight = textControl.DesiredSize.Height > 0 ? textControl.DesiredSize.Height : 20;
+
+            annotation.EndPoint = new SKPoint(
+                (float)(Canvas.GetLeft(textControl) + newWidth),
+                (float)(Canvas.GetTop(textControl) + newHeight)
+            );
+
+            UpdateSelectionHandles();
+            UpdateHoverOutline();
+        }
+
+        lostFocusHandler = (s, args) => CompleteEditing();
+        
+        keyDownHandler = (s, args) =>
+        {
+            if (args.Key == Key.Enter)
+            {
+                args.Handled = true;
+                _view.Focus();
+            }
+        };
+
+        textBox.LostFocus += lostFocusHandler;
+        textBox.KeyDown += keyDownHandler;
+
+        overlay.Children.Add(textBox);
+        textBox.Focus();
+    }
+
     private void UpdateBoundsObserver()
     {
         if (_observedShape != null && _boundsHandler != null)
@@ -1626,7 +1730,7 @@ public class EditorSelectionController
             _boundsHandler = null;
         }
 
-        if (_selectedShape is TextBox tb && tb.Tag is TextAnnotation textAnn)
+        if (_selectedShape is OutlinedTextControl tb && tb.Tag is TextAnnotation textAnn)
         {
             _observedShape = tb;
             _boundsHandler = (s, args) =>

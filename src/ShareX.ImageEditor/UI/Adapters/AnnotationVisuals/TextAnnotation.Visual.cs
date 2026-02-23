@@ -36,35 +36,15 @@ public partial class TextAnnotation
     /// </summary>
     public Control CreateVisual()
     {
-        var brush = new SolidColorBrush(Color.Parse(StrokeColor));
-        var textBox = new TextBox
+        var control = new ShareX.ImageEditor.Controls.OutlinedTextControl
         {
-            Foreground = brush,
-            Background = Brushes.Transparent,
-            FontSize = FontSize,
-            FontWeight = IsBold ? FontWeight.Bold : FontWeight.Normal,
-            FontStyle = IsItalic ? FontStyle.Italic : FontStyle.Normal,
-            BorderBrush = Brushes.Transparent,
-            BorderThickness = new Thickness(0),
-            Padding = new Thickness(4),
-            AcceptsReturn = false,
-            Text = Text,
+            Annotation = this,
             Tag = this,
-            MinWidth = 0,
             IsHitTestVisible = false
         };
 
-        if (ShadowEnabled)
-        {
-            textBox.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
+        // Rotation is handled by AnnotationVisualFactory.UpdateVisualControl
 
-        return textBox;
+        return control;
     }
 }

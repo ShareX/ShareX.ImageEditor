@@ -112,24 +112,26 @@ public static class AnnotationVisualFactory
                 ApplyBoundsControl(control, text.GetBounds(), ensureMinimumSize: true);
                 break;
 
-            case TextAnnotation text when control is TextBox textBox:
-                Canvas.SetLeft(textBox, text.StartPoint.X);
-                Canvas.SetTop(textBox, text.StartPoint.Y);
-                textBox.Text = text.Text;
-                textBox.FontSize = text.FontSize;
-                textBox.FontWeight = text.IsBold ? FontWeight.Bold : FontWeight.Normal;
-                textBox.FontStyle = text.IsItalic ? FontStyle.Italic : FontStyle.Normal;
+            case TextAnnotation text when control is OutlinedTextControl textControl:
+                Canvas.SetLeft(textControl, text.StartPoint.X);
+                Canvas.SetTop(textControl, text.StartPoint.Y);
+                
+                // Note: The text content, font size, bold/italic, etc. are handled automatically by the control's rendering
+                // using the bound Annotation property, but we must apply the transform and invalidate it explicitly here.
 
                 // Apply rotation transform if set
                 if (text.RotationAngle != 0)
                 {
-                    textBox.RenderTransformOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative);
-                    textBox.RenderTransform = new RotateTransform(text.RotationAngle);
+                    textControl.RenderTransformOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative);
+                    textControl.RenderTransform = new RotateTransform(text.RotationAngle);
                 }
                 else
                 {
-                    textBox.RenderTransform = null;
+                    textControl.RenderTransform = null;
                 }
+
+                textControl.InvalidateVisual();
+                textControl.InvalidateMeasure();
                 break;
 
             case SpeechBalloonAnnotation balloon when mode == AnnotationVisualMode.Preview && control is Rectangle:

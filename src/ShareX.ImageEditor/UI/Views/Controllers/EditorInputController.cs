@@ -1546,17 +1546,23 @@ public class EditorInputController
         var vm = ViewModel;
         if (vm == null) return;
 
-        // Use a visible default when current color is transparent (user feedback: text was invisible).
-        string strokeColor = vm.SelectedColor;
-        if (Avalonia.Media.Color.TryParse(strokeColor, out var parsed) && parsed.A == 0)
+        // For Text, FillColor is the text color, StrokeColor is the outline.
+        // If FillColor is transparent, set it to the default text color (often black/white or Options.TextColor)
+        string fillColor = vm.FillColor;
+        if (Avalonia.Media.Color.TryParse(fillColor, out var parsedFill) && parsedFill.A == 0)
         {
             var fallback = vm.Options?.TextColor ?? Avalonia.Media.Color.FromArgb(255, 0, 0, 0);
-            strokeColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
+            fillColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
+            vm.FillColorValue = fallback; // Sync back to the UI so the user sees it
         }
+        
+        // Stroke is the outline color. If stroke width is 0, outline is effectively disabled.
+        string strokeColor = vm.SelectedColor;
 
         var textAnnotation = new TextAnnotation
         {
             StrokeColor = strokeColor,
+            FillColor = fillColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
             ShadowEnabled = vm.ShadowEnabled,
@@ -1564,7 +1570,7 @@ public class EditorInputController
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
         };
 
-        var textBrush = Avalonia.Media.Color.TryParse(strokeColor, out var c) ? new SolidColorBrush(c) : brush;
+        var textBrush = Avalonia.Media.Color.TryParse(fillColor, out var c) ? new SolidColorBrush(c) : brush;
         var textBox = new TextBox
         {
             Foreground = textBrush,
@@ -1626,19 +1632,29 @@ public class EditorInputController
                         {
                             viewModel.HasAnnotations = true;
                         }
+
+                        // Replace temporary TextBox with OutlinedTextControl
+                        var control = AnnotationVisualFactory.CreateVisualControl(annotation, AnnotationVisualMode.Persisted);
+                        if (control != null)
+                        {
+                            var panel = tb.Parent as Panel;
+                            panel?.Children.Remove(tb);
+                            panel?.Children.Add(control);
+                            
+                            AnnotationVisualFactory.UpdateVisualControl(
+                                control,
+                                annotation,
+                                AnnotationVisualMode.Persisted,
+                                _view.EditorCore.CanvasSize.Width,
+                                _view.EditorCore.CanvasSize.Height);
+                            
+                            control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                            control.InvalidateVisual();
+                            
+                            // Auto-select the newly created text
+                            _selectionController.SetSelectedShape(control);
+                        }
                     }
-
-                    // Auto-select the newly created text
-                    _selectionController.SetSelectedShape(tb);
-
-                    // Convert to display mode (select-only)
-                    tb.IsHitTestVisible = false;
-
-                    // Attach standard LostFocus handler for future edits (via double-click)
-                    tb.LostFocus += (sender, e) =>
-                    {
-                        if (sender is TextBox t) t.IsHitTestVisible = false;
-                    };
                 }
             }
         }
