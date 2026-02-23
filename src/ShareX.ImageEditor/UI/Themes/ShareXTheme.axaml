@@ -13,8 +13,8 @@
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
 
-            <Color x:Key="ShareX.Color.Text">#E7E9EA</Color>
-            <Color x:Key="ShareX.Color.Text.Secondary">#9CA3AF</Color>
+            <Color x:Key="ShareX.Color.Text">#DEE0E1</Color>
+            <Color x:Key="ShareX.Color.Text.Secondary">#DEE0E1</Color>
 
             <Color x:Key="ShareX.Color.Background.Main">#272727</Color>
             <Color x:Key="ShareX.Color.Background.Panel">#242424</Color>
