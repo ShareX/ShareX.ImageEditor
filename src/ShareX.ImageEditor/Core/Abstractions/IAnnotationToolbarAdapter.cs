@@ -36,6 +36,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     EditorTool ActiveTool { get; set; }
     string StrokeColor { get; set; }
     string FillColor { get; set; }
+    string TextColor { get; set; }
     int StrokeWidth { get; set; }
     float FontSize { get; set; }
     float EffectStrength { get; set; }
@@ -45,6 +46,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool HasSelection { get; }
     bool ShowBorderColor { get; }
     bool ShowFillColor { get; }
+    bool ShowTextColor { get; }
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
     bool ShowStrength { get; }

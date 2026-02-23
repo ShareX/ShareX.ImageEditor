@@ -65,6 +65,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.FillColor = value;
     }
 
+    public string TextColor
+    {
+        get => _viewModel.TextColor;
+        set => _viewModel.TextColor = value;
+    }
+
     public int StrokeWidth
     {
         get => _viewModel.StrokeWidth;
@@ -99,6 +105,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public bool ShowFillColor => _viewModel.ShowFillColor;
 
+    public bool ShowTextColor => _viewModel.ShowTextColor;
+
     public bool ShowThickness => _viewModel.ShowThickness;
 
     public bool ShowFontSize => _viewModel.ShowFontSize;
@@ -120,6 +128,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     {
         get => _viewModel.FillColorBrush;
         set => _viewModel.FillColorBrush = value;
+    }
+
+    public IBrush TextColorBrush
+    {
+        get => _viewModel.TextColorBrush;
+        set => _viewModel.TextColorBrush = value;
     }
 
     public bool IsSettingsPanelOpen
@@ -176,8 +190,15 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
                 OnPropertyChanged(nameof(FillColor));
                 OnPropertyChanged(nameof(FillColorBrush));
                 break;
+            case nameof(MainViewModel.TextColor):
+                OnPropertyChanged(nameof(TextColor));
+                OnPropertyChanged(nameof(TextColorBrush));
+                break;
             case nameof(MainViewModel.HasSelectedAnnotation):
                 OnPropertyChanged(nameof(HasSelection));
+                break;
+            case nameof(MainViewModel.ShowTextColor):
+                OnPropertyChanged(nameof(ShowTextColor));
                 break;
             case nameof(MainViewModel.ShowToolOptionsSeparator):
                 OnPropertyChanged(nameof(ShowToolOptions));
