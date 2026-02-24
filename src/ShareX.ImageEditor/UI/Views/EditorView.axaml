@@ -631,9 +631,12 @@
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
 
                         <!-- Effects Menu Dropdown -->
+                        <!-- XIP0039 Pain Point 3: dialog effects route through EffectDialogRequested;
+                             only non-dialog (immediate/special-init) events are listed individually. -->
                         <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
                             Height="40"
                             ToolTip.Tip="Effects"
+                            EffectDialogRequested="OnEffectDialogRequested"
                             ResizeImageRequested="OnResizeImageRequested"
                             ResizeCanvasRequested="OnResizeCanvasRequested"
                             CropImageRequested="OnCropImageRequested"
@@ -644,34 +647,9 @@
                             RotateCustomAngleRequested="OnRotateCustomAngleRequested"
                             FlipHorizontalRequested="OnFlipHorizontalRequested"
                             FlipVerticalRequested="OnFlipVerticalRequested"
-                            BrightnessRequested="OnBrightnessRequested"
-                            ContrastRequested="OnContrastRequested"
-                            HueRequested="OnHueRequested"
-                            SaturationRequested="OnSaturationRequested"
-                            GammaRequested="OnGammaRequested"
-                            AlphaRequested="OnAlphaRequested"
-                            ColorizeRequested="OnColorizeRequested"
-                            SelectiveColorRequested="OnSelectiveColorRequested"
-                            ReplaceColorRequested="OnReplaceColorRequested"
-                            GrayscaleRequested="OnGrayscaleRequested"
                             InvertRequested="OnInvertRequested"
                             BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                            SepiaRequested="OnSepiaRequested"
-                            PolaroidRequested="OnPolaroidRequested"
-                            BorderRequested="OnBorderRequested"
-                            OutlineRequested="OnOutlineRequested"
-                            ShadowRequested="OnShadowRequested"
-                            GlowRequested="OnGlowRequested"
-                            ReflectionRequested="OnReflectionRequested"
-                            TornEdgeRequested="OnTornEdgeRequested"
-                            SliceRequested="OnSliceRequested"
-                            RoundedCornersRequested="OnRoundedCornersRequested"
-                            SkewRequested="OnSkewRequested"
-                            Rotate3DRequested="OnRotate3DRequested"
-                            Rotate3DBoxRequested="OnRotate3DBoxRequested"
-                            BlurRequested="OnBlurRequested"
-                            PixelateRequested="OnPixelateRequested"
-                            SharpenRequested="OnSharpenRequested"/>
+                            PolaroidRequested="OnPolaroidRequested"/>
 
                     </StackPanel>
                 </ScrollViewer>

@@ -75,7 +75,6 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm && vm.PreviewImage != null)
             {
                 var dialog = new ResizeCanvasDialog();
-                // Get edge color from image for "Match image edge" option
                 SKColor? edgeColor = null;
                 try
                 {
@@ -114,10 +113,8 @@ namespace ShareX.ImageEditor.Views
 
                 dialog.ApplyRequested += (s, args) =>
                 {
-                    // vm.CropImage(args.X, args.Y, args.Width, args.Height);
                     // SIP-FIX: Use Core crop to handle annotation adjustment and history unified
                     _editorCore.Crop(new SKRect(args.X, args.Y, args.X + args.Width, args.Y + args.Height));
-
                     vm.CloseEffectsPanelCommand.Execute(null);
                 };
 
@@ -190,70 +187,71 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
-        // --- Effects Menu Handlers ---
+        // --- Immediate effects (no dialog) ---
 
-        private void OnBrightnessRequested(object? sender, EventArgs e) => ShowEffectDialog(new BrightnessDialog());
-        private void OnContrastRequested(object? sender, EventArgs e) => ShowEffectDialog(new ContrastDialog());
-        private void OnHueRequested(object? sender, EventArgs e) => ShowEffectDialog(new HueDialog());
-        private void OnSaturationRequested(object? sender, EventArgs e) => ShowEffectDialog(new SaturationDialog());
-        private void OnGammaRequested(object? sender, EventArgs e) => ShowEffectDialog(new GammaDialog());
-        private void OnAlphaRequested(object? sender, EventArgs e) => ShowEffectDialog(new AlphaDialog());
-        private void OnColorizeRequested(object? sender, EventArgs e) => ShowEffectDialog(new ColorizeDialog());
-        private void OnSelectiveColorRequested(object? sender, EventArgs e) => ShowEffectDialog(new SelectiveColorDialog());
-        private void OnReplaceColorRequested(object? sender, EventArgs e) => ShowEffectDialog(new ReplaceColorDialog());
-        private void OnGrayscaleRequested(object? sender, EventArgs e) => ShowEffectDialog(new GrayscaleDialog());
+        private void OnInvertRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null);
+        }
 
-        private void OnInvertRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null); }
-        private void OnBlackAndWhiteRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null); }
-        private void OnSepiaRequested(object? sender, EventArgs e) => ShowEffectDialog(new SepiaDialog());
-        private void OnPolaroidRequested(object? sender, EventArgs e) { if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null); }
+        private void OnBlackAndWhiteRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null);
+        }
 
-        // Filter handlers
-        private void OnBorderRequested(object? sender, EventArgs e) => ShowEffectDialog(new BorderDialog());
-        private void OnOutlineRequested(object? sender, EventArgs e) => ShowEffectDialog(new OutlineDialog());
-        private void OnShadowRequested(object? sender, EventArgs e) => ShowEffectDialog(new ShadowDialog());
-        private void OnGlowRequested(object? sender, EventArgs e) => ShowEffectDialog(new GlowDialog());
-        private void OnReflectionRequested(object? sender, EventArgs e) => ShowEffectDialog(new ReflectionDialog());
-        private void OnTornEdgeRequested(object? sender, EventArgs e) => ShowEffectDialog(new TornEdgeDialog());
-        private void OnSliceRequested(object? sender, EventArgs e) => ShowEffectDialog(new SliceDialog());
-        private void OnRoundedCornersRequested(object? sender, EventArgs e) => ShowEffectDialog(new RoundedCornersDialog());
-        private void OnSkewRequested(object? sender, EventArgs e) => ShowEffectDialog(new SkewDialog());
-        private void OnRotate3DRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DDialog());
-        private void OnRotate3DBoxRequested(object? sender, EventArgs e) => ShowEffectDialog(new Rotate3DBoxDialog());
-        private void OnBlurRequested(object? sender, EventArgs e) => ShowEffectDialog(new BlurDialog());
-        private void OnPixelateRequested(object? sender, EventArgs e) => ShowEffectDialog(new PixelateDialog());
-        private void OnSharpenRequested(object? sender, EventArgs e) => ShowEffectDialog(new SharpenDialog());
+        private void OnPolaroidRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
+        }
 
-        private void ShowEffectDialog<T>(T dialog) where T : UserControl, IEffectDialog
+        // --- XIP0039 Pain Point 3: Registry-driven dialog dispatch ---
+
+        /// <summary>
+        /// Single handler for all registry-backed effect dialogs.
+        /// Adding a new dialog-based effect requires only an <see cref="EffectDialogRegistry"/>
+        /// entry plus a menu item that calls <c>RaiseDialog("id")</c> — no new method here.
+        /// </summary>
+        private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
+        {
+            if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
+                return;
+
+            if (dialog is IEffectDialog effectDialog)
+                ShowEffectDialog(dialog, effectDialog);
+        }
+
+        /// <summary>
+        /// Wires preview/apply/cancel lifecycle for a dialog-based effect and opens the effects panel.
+        /// </summary>
+        private void ShowEffectDialog(UserControl dialog, IEffectDialog effectDialog)
         {
             var vm = DataContext as MainViewModel;
             if (vm == null) return;
 
-            // Initialize logic
             vm.StartEffectPreview();
 
-            // Wire events using interface instead of dynamic
-            dialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
-            dialog.ApplyRequested += (s, e) =>
+            effectDialog.PreviewRequested += (s, e) => vm.PreviewEffect(e.EffectOperation);
+            effectDialog.ApplyRequested += (s, e) =>
             {
                 vm.ApplyEffect(e.EffectOperation, e.StatusMessage);
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
-            dialog.CancelRequested += (s, e) =>
+            effectDialog.CancelRequested += (s, e) =>
             {
                 vm.CancelEffectPreview();
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
 
-            // If left sidebar is open, close it to avoid clutter? 
-            // The request says "Side bar at right side won't cover the image preview at center".
-            // So we can keep left sidebar open or close it. 
-            // Usually only one "main" panel is active or both sidebars. 
-            // Let's keep existing behavior for SettingsPanel (left) but ensure EffectsPanel (right) opens.
-
             vm.EffectsPanelContent = dialog;
             vm.IsEffectsPanelOpen = true;
         }
+
+        /// <summary>
+        /// Convenience overload that accepts a strongly-typed combined dialog/control.
+        /// Kept for any internal call sites that construct dialogs directly.
+        /// </summary>
+        private void ShowEffectDialog<T>(T dialog) where T : UserControl, IEffectDialog
+            => ShowEffectDialog(dialog, dialog);
 
         private void OnModalBackgroundPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
         {
@@ -274,7 +272,6 @@ namespace ShareX.ImageEditor.Views
             var canvas = this.FindControl<Canvas>("AnnotationCanvas");
             if (canvas == null) return;
 
-            // Count UI annotations (exclude non-annotation controls like CropOverlay)
             int uiAnnotationCount = 0;
             foreach (var child in canvas.Children)
             {
