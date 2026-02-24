@@ -46,7 +46,7 @@ namespace ShareX.ImageEditor
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
 
-        // Speech balloon
+        // Speech Balloon
         public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;
         public Color SpeechBalloonFillColor { get; set; } = PrimaryColor;
         public Color SpeechBalloonTextColor { get; set; } = SecondaryColor;
@@ -59,6 +59,9 @@ namespace ShareX.ImageEditor
         public Color StepTextColor { get; set; } = SecondaryColor;
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
+
+        // Smart Eraser
+        public int SmartEraserThickness { get; set; } = 10;
 
         // Highlighter
         public Color HighlighterColor { get; set; } = Colors.Yellow;

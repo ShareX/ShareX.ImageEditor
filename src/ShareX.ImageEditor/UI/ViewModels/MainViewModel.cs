@@ -446,11 +446,16 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 Options.TextThickness = value;
             }
+            else if (ActiveTool == EditorTool.SmartEraser)
+            {
+                Options.SmartEraserThickness = value;
+            }
             else if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
             {
                 if (SelectedAnnotation is NumberAnnotation) Options.StepThickness = value;
                 else if (SelectedAnnotation is SpeechBalloonAnnotation) Options.SpeechBalloonThickness = value;
                 else if (SelectedAnnotation is TextAnnotation) Options.TextThickness = value;
+                else if (SelectedAnnotation is SmartEraserAnnotation) Options.SmartEraserThickness = value;
                 else Options.Thickness = value;
             }
             else
@@ -792,6 +797,9 @@ namespace ShareX.ImageEditor.ViewModels
                     break;
                 case EditorTool.Highlight:
                     SelectedColorValue = Options.HighlighterColor;
+                    break;
+                case EditorTool.SmartEraser:
+                    StrokeWidth = Options.SmartEraserThickness;
                     break;
                 case EditorTool.Blur:
                     EffectStrength = Options.BlurStrength;
