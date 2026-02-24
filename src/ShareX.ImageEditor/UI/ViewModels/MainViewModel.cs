@@ -607,10 +607,10 @@ namespace ShareX.ImageEditor.ViewModels
         {
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step or EditorTool.Highlight => true,
                 _ => false
             },
-            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step => true,
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Text or EditorTool.Step or EditorTool.Highlight => true,
             _ => false
         };
 
@@ -767,7 +767,6 @@ namespace ShareX.ImageEditor.ViewModels
                     break;
                 case EditorTool.Highlight:
                     SelectedColorValue = Options.HighlighterColor;
-                    StrokeWidth = Options.Thickness;
                     break;
                 case EditorTool.Blur:
                     EffectStrength = Options.BlurStrength;

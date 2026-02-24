@@ -32,6 +32,7 @@ namespace ShareX.ImageEditor
         public static readonly Color PrimaryColor = Color.FromArgb(255, 242, 60, 60);
         public static readonly Color SecondaryColor = Color.FromArgb(255, 250, 250, 250);
 
+        // Shared options
         public Color BorderColor { get; set; } = PrimaryColor;
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
@@ -39,19 +40,23 @@ namespace ShareX.ImageEditor
         public float ShadowBlur { get; set; } = 30;
         public Color ShadowColor { get; set; } = Color.FromArgb(128, 0, 0, 0);
 
+        // Text tool
         public Color TextColor { get; set; } = SecondaryColor;
         public float TextFontSize { get; set; } = 48;
 
+        // Speech balloon tool
         public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;
         public Color SpeechBalloonFillColor { get; set; } = PrimaryColor;
         public Color SpeechBalloonTextColor { get; set; } = SecondaryColor;
         public float SpeechBalloonFontSize { get; set; } = 48;
 
+        // Step tool
         public Color StepBorderColor { get; set; } = Colors.Transparent;
         public Color StepFillColor { get; set; } = PrimaryColor;
         public Color StepTextColor { get; set; } = SecondaryColor;
         public float StepFontSize { get; set; } = 30;
 
+        // Highlighter tool
         public Color HighlighterColor { get; set; } = Colors.Yellow;
 
         public float BlurStrength { get; set; } = 30;
