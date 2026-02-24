@@ -164,8 +164,14 @@ namespace ShareX.ImageEditor.Views
                     if (vm.SelectedAnnotation is not ImageAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
-                        vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
-                        vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
+                        
+                        // Effect annotations have StrokeWidth = 0 and no shadows
+                        // Don't sync them, otherwise they'll clobber global options
+                        if (vm.SelectedAnnotation is not BaseEffectAnnotation)
+                        {
+                            vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                            vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
+                        }
                     }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
