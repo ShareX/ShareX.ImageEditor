@@ -590,7 +590,6 @@ public class EditorInputController
 
             if (_currentShape.Tag is RectangleAnnotation rectAnn) { rectAnn.StartPoint = ToSKPoint(new Point(left, top)); rectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
             else if (_currentShape.Tag is EllipseAnnotation ellAnn) { ellAnn.StartPoint = ToSKPoint(new Point(left, top)); ellAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
-            // Update bounds for all effect annotations (Blur, Pixelate, Magnify, Highlight)
             else if (_currentShape.Tag is BaseEffectAnnotation effectAnn) { effectAnn.StartPoint = ToSKPoint(new Point(left, top)); effectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
@@ -785,24 +784,19 @@ public class EditorInputController
 
         if (width <= 0 || height <= 0) return;
 
-        // ISSUE-008 fix: Apply DPI scaling for high-DPI displays
-        var scaling = 1.0;
-        var topLevel = TopLevel.GetTopLevel(_view);
-        if (topLevel != null) scaling = topLevel.RenderScaling;
-
-        annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
-        annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
+        annotation.StartPoint = new SKPoint((float)x, (float)y);
+        annotation.EndPoint = new SKPoint((float)(x + width), (float)(y + height));
 
         try
         {
-            annotation.UpdateEffect(_cachedSkBitmap);
+            if (_cachedSkBitmap != null)
+                annotation.UpdateEffect(_cachedSkBitmap);
             if (annotation.EffectBitmap != null && shape is Shape shapeControl)
             {
-                var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                shapeControl.Fill = new ImageBrush(avaloniaBitmap)
+                shapeControl.Fill = new ImageBrush(BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap))
                 {
-                    Stretch = Stretch.None,
-                    SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                    Stretch = Stretch.Fill,
+                    SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
                 };
             }
         }

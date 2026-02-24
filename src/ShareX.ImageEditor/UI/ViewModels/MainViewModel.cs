@@ -276,7 +276,10 @@ namespace ShareX.ImageEditor.ViewModels
                     ApplySmartPaddingCrop();
                 }
 
-                WindowTitle = $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}";
+                var ver = ShareX.ImageEditor.Helpers.AppVersion.GetVersionString();
+                WindowTitle = string.IsNullOrEmpty(ver)
+                    ? $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}"
+                    : $"ShareX - Image Editor - v{ver} - {ImageWidth}x{ImageHeight}";
             }
             else
             {
