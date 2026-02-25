@@ -427,10 +427,10 @@ namespace ShareX.ImageEditor.ViewModels
 
         public bool ShowTextStyle => ActiveTool switch
         {
-            EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Text => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                EditorTool.Text => true,
                 _ => false
             },
             _ => false
