@@ -41,61 +41,6 @@ namespace ShareX.ImageEditor.Controls
         public event EventHandler? FlipHorizontalRequested;
         public event EventHandler? FlipVerticalRequested;
 
-        // --- Legacy per-effect events retained for source compatibility.
-        //     They are no longer raised by this control for dialog effects;
-        //     subscribe to EffectDialogRequested instead. ---
-
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? BrightnessRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? ContrastRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? HueRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SaturationRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? GammaRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? AlphaRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? ColorizeRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SelectiveColorRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? ReplaceColorRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? GrayscaleRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SepiaRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? RoundedCornersRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SkewRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? Rotate3DRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? Rotate3DBoxRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? BorderRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? OutlineRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? ShadowRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? GlowRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? ReflectionRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? TornEdgeRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SliceRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? BlurRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? PixelateRequested;
-        [Obsolete("XIP0039: Subscribe to EffectDialogRequested instead.", DiagnosticId = "XIP0039_P3")]
-        public event EventHandler? SharpenRequested;
-
         public EffectsMenuDropdown()
         {
             AvaloniaXamlLoader.Load(this);
