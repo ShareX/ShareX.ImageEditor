@@ -184,6 +184,9 @@ namespace ShareX.ImageEditor.Views
                     else if (vm.SelectedAnnotation is TextAnnotation text)
                     {
                         vm.FontSize = text.FontSize;
+                        vm.TextBold = text.IsBold;
+                        vm.TextItalic = text.IsItalic;
+                        vm.TextUnderline = text.IsUnderline;
                         if (!string.IsNullOrEmpty(text.TextColor))
                             vm.TextColorValue = Avalonia.Media.Color.Parse(text.TextColor);
                     }
