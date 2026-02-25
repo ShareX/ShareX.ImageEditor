@@ -56,6 +56,7 @@ namespace ShareX.ImageEditor.Loader
                 {
                     vm.TaskMode = true;
                     LoadExampleImage(vm);
+                    //GenerateSampleImage(vm, 4000, 2000);
 
                     vm.CopyRequested += async () =>
                     {
@@ -87,49 +88,35 @@ namespace ShareX.ImageEditor.Loader
 
         private void LoadExampleImage(MainViewModel vm)
         {
-            try
-            {
-                // Path to the asset - since we set CopyToOutputDirectory, it should be in the bin folder under Assets/
-                var location = AppDomain.CurrentDomain.BaseDirectory;
-                var path = Path.Combine(location, "Assets", "Sample.png");
+            string location = AppDomain.CurrentDomain.BaseDirectory;
+            string path = Path.Combine(location, "Assets", "Sample.png");
 
-                if (File.Exists(path))
-                {
-                    using (var stream = File.OpenRead(path))
-                    {
-                        // Use SKBitmap.Decode to load file
-                        var skBitmap = SKBitmap.Decode(stream);
-                        vm.UpdatePreview(skBitmap);
-                    }
-                }
-                else
-                {
-                    // Fallback to generated if file missing
-                    GenerateSampleImage(vm);
-                }
-            }
-            catch (Exception)
+            if (File.Exists(path))
             {
-                GenerateSampleImage(vm);
+                using (FileStream stream = File.OpenRead(path))
+                {
+                    SKBitmap skBitmap = SKBitmap.Decode(stream);
+
+                    vm.UpdatePreview(skBitmap);
+                }
             }
         }
 
-        private void GenerateSampleImage(MainViewModel vm)
+        private void GenerateSampleImage(MainViewModel vm, int width, int height)
         {
-            // Create a sample SKBitmap
-            var width = 800;
-            var height = 600;
-            var info = new SKImageInfo(width, height);
-            var skBitmap = new SKBitmap(info);
+            SKImageInfo info = new SKImageInfo(width, height);
+            SKBitmap skBitmap = new SKBitmap(info);
 
-            using (var canvas = new SKCanvas(skBitmap))
+            using (SKCanvas canvas = new SKCanvas(skBitmap))
             {
                 canvas.Clear(SKColors.Transparent);
-                using (var paint = new SKPaint { Color = SKColors.LightBlue, IsAntialias = true })
+
+                using (SKPaint paint = new SKPaint { Color = SKColors.LightBlue, IsAntialias = true })
                 {
-                    canvas.DrawCircle(width / 2, height / 2, 100, paint);
+                    canvas.DrawCircle(width / 2, height / 2, width / 3, paint);
                 }
             }
+
             vm.UpdatePreview(skBitmap);
         }
     }
