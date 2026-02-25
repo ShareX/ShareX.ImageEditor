@@ -85,9 +85,10 @@ namespace ShareX.ImageEditor.Views
                 if (selected?.Tag is TextAnnotation textAnn)
                 {
                     textAnn.FontSize = fontSize;
-                    if (selected is TextBox textBox)
+                    if (selected is OutlinedTextControl outlinedText)
                     {
-                        textBox.FontSize = fontSize;
+                        outlinedText.InvalidateMeasure();
+                        outlinedText.InvalidateVisual();
                     }
                 }
                 else if (selected?.Tag is NumberAnnotation numAnn)
