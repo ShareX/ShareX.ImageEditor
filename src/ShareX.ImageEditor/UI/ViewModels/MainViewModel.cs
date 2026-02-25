@@ -573,7 +573,6 @@ namespace ShareX.ImageEditor.ViewModels
             _strokeWidth = _options.Thickness;
             _fontSize = _options.TextFontSize;
             _shadowEnabled = _options.Shadow;
-            _shadowBlur = _options.ShadowBlur;
 
             // Get version from assembly
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;

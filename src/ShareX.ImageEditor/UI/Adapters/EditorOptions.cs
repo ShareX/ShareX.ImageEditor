@@ -37,8 +37,6 @@ namespace ShareX.ImageEditor
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
         public bool Shadow { get; set; } = true;
-        public float ShadowBlur { get; set; } = 30;
-        public Color ShadowColor { get; set; } = Color.FromArgb(128, 0, 0, 0);
 
         // Text
         public Color TextBorderColor { get; set; } = PrimaryColor;

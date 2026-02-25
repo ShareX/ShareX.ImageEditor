@@ -115,30 +115,6 @@ namespace ShareX.ImageEditor.Controls
                 }
             }
 
-            // Draw shadow if enabled
-            if (Annotation.ShadowEnabled)
-            {
-                var shadowOffset = new Point(3 + padding.Left, 3 + padding.Top);
-                var shadowGeometry = formattedText.BuildGeometry(shadowOffset);
-                if (shadowGeometry != null)
-                {
-                    var shadowBrush = new SolidColorBrush(Color.FromArgb(128, 0, 0, 0));
-                    
-                    // If there's a stroke, we should draw the shadow of the stroked geometry too
-                    if (strokePen != null)
-                    {
-                        // Avalonia drawing context doesn't easily let us stroke the shadow with BlurRadius in a simple way
-                        // But we can just draw the shadow geometry filled. The drop shadow effect on TextBox blurred the bounds.
-                        // For pure geometry, drawing it offset is decent.
-                        context.DrawGeometry(shadowBrush, new Pen(shadowBrush, Annotation.StrokeWidth, lineJoin: PenLineJoin.Round), shadowGeometry);
-                    }
-                    else
-                    {
-                        context.DrawGeometry(shadowBrush, null, shadowGeometry);
-                    }
-                }
-            }
-
             // Draw main text (Stroke then Fill, so fill is on top of stroke)
             // Avalonia's DrawGeometry draws stroke on top of fill by default.
             // To get the stroke BEHIND the fill (standard typography outline), we must draw the stroke geometry first, then fill geometry.
