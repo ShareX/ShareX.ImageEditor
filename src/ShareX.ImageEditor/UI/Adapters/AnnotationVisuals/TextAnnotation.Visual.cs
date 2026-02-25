@@ -43,6 +43,17 @@ public partial class TextAnnotation
             IsHitTestVisible = false
         };
 
+        if (ShadowEnabled)
+        {
+            control.Effect = new Avalonia.Media.DropShadowEffect
+            {
+                OffsetX = 3,
+                OffsetY = 3,
+                BlurRadius = 4,
+                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
+            };
+        }
+
         // Rotation is handled by AnnotationVisualFactory.UpdateVisualControl
 
         return control;
