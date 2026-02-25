@@ -43,6 +43,9 @@ namespace ShareX.ImageEditor
         public Color TextTextColor { get; set; } = SecondaryColor;
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
+        public bool TextBold { get; set; } = true;
+        public bool TextItalic { get; set; } = false;
+        public bool TextUnderline { get; set; } = false;
 
         // Speech Balloon
         public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;

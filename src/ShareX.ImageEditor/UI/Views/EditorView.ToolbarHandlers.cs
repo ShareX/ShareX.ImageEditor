@@ -185,6 +185,62 @@ namespace ShareX.ImageEditor.Views
                 }
             }
         }
+        private void OnBoldButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.TextBold = !vm.TextBold;
+
+                var selected = _selectionController.SelectedShape;
+                if (selected?.Tag is TextAnnotation textAnn)
+                {
+                    textAnn.IsBold = vm.TextBold;
+                    if (selected is OutlinedTextControl otc)
+                    {
+                        otc.InvalidateMeasure();
+                        otc.InvalidateVisual();
+                    }
+                }
+            }
+        }
+
+        private void OnItalicButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.TextItalic = !vm.TextItalic;
+
+                var selected = _selectionController.SelectedShape;
+                if (selected?.Tag is TextAnnotation textAnn)
+                {
+                    textAnn.IsItalic = vm.TextItalic;
+                    if (selected is OutlinedTextControl otc)
+                    {
+                        otc.InvalidateMeasure();
+                        otc.InvalidateVisual();
+                    }
+                }
+            }
+        }
+
+        private void OnUnderlineButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.TextUnderline = !vm.TextUnderline;
+
+                var selected = _selectionController.SelectedShape;
+                if (selected?.Tag is TextAnnotation textAnn)
+                {
+                    textAnn.IsUnderline = vm.TextUnderline;
+                    if (selected is OutlinedTextControl otc)
+                    {
+                        otc.InvalidateMeasure();
+                        otc.InvalidateVisual();
+                    }
+                }
+            }
+        }
 
         private void OnWidthChanged(object? sender, int width)
         {

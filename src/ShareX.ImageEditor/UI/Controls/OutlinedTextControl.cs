@@ -127,6 +127,18 @@ namespace ShareX.ImageEditor.Controls
             {
                 context.DrawGeometry(fillBrush, null, textGeometry);
             }
+
+            // Draw underline if enabled
+            if (Annotation.IsUnderline)
+            {
+                var underlineBrush = fillBrush ?? (strokePen?.Brush) ?? Brushes.Black;
+                var underlineThickness = Math.Max(1.0, Annotation.FontSize / 14.0);
+                var underlineY = padding.Top + formattedText.Height * 0.95;
+                var underlinePen = new Pen(underlineBrush, underlineThickness);
+                context.DrawLine(underlinePen,
+                    new Point(padding.Left, underlineY),
+                    new Point(padding.Left + formattedText.Width, underlineY));
+            }
         }
 
         protected override Size MeasureOverride(Size availableSize)

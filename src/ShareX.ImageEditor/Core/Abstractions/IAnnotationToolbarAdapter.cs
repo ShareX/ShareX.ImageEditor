@@ -41,6 +41,9 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     float FontSize { get; set; }
     float EffectStrength { get; set; }
     bool ShadowEnabled { get; set; }
+    bool TextBold { get; set; }
+    bool TextItalic { get; set; }
+    bool TextUnderline { get; set; }
     bool CanUndo { get; }
     bool CanRedo { get; }
     bool HasSelection { get; }
@@ -50,6 +53,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
     bool ShowStrength { get; }
+    bool ShowTextStyle { get; }
     bool ShowShadow { get; }
     bool ShowToolOptions { get; }
     void Undo();

@@ -62,6 +62,11 @@ public partial class TextAnnotation : Annotation
     /// </summary>
     public bool IsItalic { get; set; }
 
+    /// <summary>
+    /// Underline style
+    /// </summary>
+    public bool IsUnderline { get; set; }
+
     public TextAnnotation()
     {
         ToolType = EditorTool.Text;

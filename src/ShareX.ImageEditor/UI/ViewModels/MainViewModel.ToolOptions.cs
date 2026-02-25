@@ -319,6 +319,30 @@ namespace ShareX.ImageEditor.ViewModels
             Options.Shadow = value;
         }
 
+        [ObservableProperty]
+        private bool _textBold = true;
+
+        partial void OnTextBoldChanged(bool value)
+        {
+            Options.TextBold = value;
+        }
+
+        [ObservableProperty]
+        private bool _textItalic;
+
+        partial void OnTextItalicChanged(bool value)
+        {
+            Options.TextItalic = value;
+        }
+
+        [ObservableProperty]
+        private bool _textUnderline;
+
+        partial void OnTextUnderlineChanged(bool value)
+        {
+            Options.TextUnderline = value;
+        }
+
         // Visibility computed properties based on ActiveTool
         public bool ShowBorderColor => ActiveTool switch
         {
@@ -401,6 +425,17 @@ namespace ShareX.ImageEditor.ViewModels
             _ => false
         };
 
+        public bool ShowTextStyle => ActiveTool switch
+        {
+            EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
+            {
+                EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                _ => false
+            },
+            _ => false
+        };
+
         // Track selected annotation for Select tool visibility logic
         private Annotation? _selectedAnnotation;
         public Annotation? SelectedAnnotation
@@ -423,11 +458,12 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowThickness));
             OnPropertyChanged(nameof(ShowFontSize));
             OnPropertyChanged(nameof(ShowStrength));
+            OnPropertyChanged(nameof(ShowTextStyle));
             OnPropertyChanged(nameof(ShowShadow));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStrength || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStrength || ShowTextStyle || ShowShadow;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -465,6 +501,9 @@ namespace ShareX.ImageEditor.ViewModels
                     StrokeWidth = Options.TextThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.TextFontSize;
+                    TextBold = Options.TextBold;
+                    TextItalic = Options.TextItalic;
+                    TextUnderline = Options.TextUnderline;
                     break;
                 case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.SpeechBalloonBorderColor;
@@ -473,6 +512,9 @@ namespace ShareX.ImageEditor.ViewModels
                     StrokeWidth = Options.SpeechBalloonThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.SpeechBalloonFontSize;
+                    TextBold = Options.TextBold;
+                    TextItalic = Options.TextItalic;
+                    TextUnderline = Options.TextUnderline;
                     break;
                 case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
@@ -481,6 +523,9 @@ namespace ShareX.ImageEditor.ViewModels
                     StrokeWidth = Options.StepThickness;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.StepFontSize;
+                    TextBold = Options.TextBold;
+                    TextItalic = Options.TextItalic;
+                    TextUnderline = Options.TextUnderline;
                     break;
                 case EditorTool.Highlight:
                     FillColorValue = Options.HighlightFillColor;

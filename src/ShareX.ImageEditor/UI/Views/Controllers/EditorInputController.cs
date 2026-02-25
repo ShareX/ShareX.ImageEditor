@@ -1551,7 +1551,7 @@ public class EditorInputController
             textColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
             vm.TextColorValue = fallback; // Sync back to the UI so the user sees it
         }
-        
+
         // Stroke is the outline color. If stroke width is 0, outline is effectively disabled.
         string strokeColor = vm.SelectedColor;
         string fillColor = vm.FillColor;
@@ -1563,6 +1563,9 @@ public class EditorInputController
             TextColor = textColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
+            IsBold = vm.TextBold,
+            IsItalic = vm.TextItalic,
+            IsUnderline = vm.TextUnderline,
             ShadowEnabled = vm.ShadowEnabled,
             StartPoint = ToSKPoint(_startPoint),
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
@@ -1576,6 +1579,8 @@ public class EditorInputController
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.White,
             FontSize = vm.FontSize,
+            FontWeight = vm.TextBold ? Avalonia.Media.FontWeight.Bold : Avalonia.Media.FontWeight.Normal,
+            FontStyle = vm.TextItalic ? Avalonia.Media.FontStyle.Italic : Avalonia.Media.FontStyle.Normal,
             Text = string.Empty,
             Padding = new Thickness(4),
             AcceptsReturn = false,
@@ -1643,17 +1648,17 @@ public class EditorInputController
                             var panel = tb.Parent as Panel;
                             panel?.Children.Remove(tb);
                             panel?.Children.Add(control);
-                            
+
                             AnnotationVisualFactory.UpdateVisualControl(
                                 control,
                                 annotation,
                                 AnnotationVisualMode.Persisted,
                                 _view!.EditorCore!.CanvasSize.Width,
                                 _view!.EditorCore!.CanvasSize.Height);
-                            
+
                             control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                             control.InvalidateVisual();
-                            
+
                             // Auto-select the newly created text
                             _selectionController.SetSelectedShape(control);
                         }

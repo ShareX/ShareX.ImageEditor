@@ -709,6 +709,32 @@
                             IsVisible="{Binding ShowStrength}"
                             ToolTip.Tip="Effect Strength"/>
 
+                        <!-- Bold Toggle Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding TextBold}"
+                                Click="OnBoldButtonClick"
+                                IsVisible="{Binding ShowTextStyle}"
+                                ToolTip.Tip="Toggle Bold"
+                                FontWeight="Black" FontSize="16" Content="B"/>
+
+                        <!-- Italic Toggle Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding TextItalic}"
+                                Click="OnItalicButtonClick"
+                                IsVisible="{Binding ShowTextStyle}"
+                                ToolTip.Tip="Toggle Italic"
+                                FontStyle="Italic" FontSize="16" Content="I"/>
+
+                        <!-- Underline Toggle Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding TextUnderline}"
+                                Click="OnUnderlineButtonClick"
+                                IsVisible="{Binding ShowTextStyle}"
+                                ToolTip.Tip="Toggle Underline"
+                                FontSize="16">
+                            <TextBlock Text="U" TextDecorations="Underline"/>
+                        </Button>
+
                         <!-- Shadow Toggle Button -->
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ShadowEnabled}"
