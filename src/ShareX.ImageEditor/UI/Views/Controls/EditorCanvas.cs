@@ -35,16 +35,10 @@ namespace ShareX.ImageEditor.Views.Controls;
 /// Avalonia control that hosts EditorCore and renders via SkiaSharp.
 /// </summary>
 /// <remarks>
-/// <strong>XIP0039 Guardrail 8 – NON-PRODUCTION HOST PATH</strong><br/>
-/// <c>EditorCanvas</c> implements a direct <c>EditorCore.OnPointer*</c> forwarding pipeline that
-/// is no longer used by the production host.  The active production host is <c>EditorView</c>,
-/// which routes pointer events through <c>EditorInputController</c> and
-/// <c>EditorSelectionController</c> to an Avalonia visual-tree annotation pipeline.<br/>
-/// <br/>
-/// The pointer-forwarding overrides (<see cref="OnPointerPressed"/>, <see cref="OnPointerMoved"/>,
-/// <see cref="OnPointerReleased"/>) are kept here for reference but are marked
-/// <see cref="ObsoleteAttribute"/> so that any accidental production usage will surface as a
-/// build warning.  They will be removed after parity validation confirms no remaining callers.
+/// <strong>NON-PRODUCTION HOST PATH</strong><br/>
+/// The active production host is <c>EditorView</c>, which routes pointer events through
+/// <c>EditorInputController</c> and <c>EditorSelectionController</c> to an Avalonia
+/// visual-tree annotation pipeline. This control is retained for standalone rendering/testing.
 /// </remarks>
 public class EditorCanvas : Control
 {
@@ -126,62 +120,6 @@ public class EditorCanvas : Control
         context.DrawImage(writeableBitmap, new Rect(0, 0, width, height), destRect);
     }
 
-    /// <inheritdoc/>
-    /// <remarks>
-    /// XIP0039 Guardrail 8: Dormant direct-core host path – NOT USED in production.
-    /// The production path is EditorView → EditorInputController → EditorSelectionController.
-    /// </remarks>
-    [Obsolete("XIP0039: EditorCanvas direct-pointer forwarding is the dormant host path. Use EditorView for production hosting.")]
-    protected override void OnPointerPressed(PointerPressedEventArgs e)
-    {
-        base.OnPointerPressed(e);
-
-        var point = e.GetPosition(this);
-        var props = e.GetCurrentPoint(this).Properties;
-
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerPressed(canvasPoint, props.IsRightButtonPressed);
-
-        e.Pointer.Capture(this);
-        e.Handled = true;
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>
-    /// XIP0039 Guardrail 8: Dormant direct-core host path – NOT USED in production.
-    /// </remarks>
-    [Obsolete("XIP0039: EditorCanvas direct-pointer forwarding is the dormant host path. Use EditorView for production hosting.")]
-    protected override void OnPointerMoved(PointerEventArgs e)
-    {
-        base.OnPointerMoved(e);
-
-        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed &&
-            !e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
-            return;
-
-        var point = e.GetPosition(this);
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerMoved(canvasPoint);
-    }
-
-    /// <inheritdoc/>
-    /// <remarks>
-    /// XIP0039 Guardrail 8: Dormant direct-core host path – NOT USED in production.
-    /// </remarks>
-    [Obsolete("XIP0039: EditorCanvas direct-pointer forwarding is the dormant host path. Use EditorView for production hosting.")]
-    protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    {
-        base.OnPointerReleased(e);
-
-        var point = e.GetPosition(this);
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerReleased(canvasPoint);
-
-        e.Pointer.Capture(null);
-    }
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
