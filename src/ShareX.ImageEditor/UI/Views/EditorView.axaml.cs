@@ -159,19 +159,14 @@ namespace ShareX.ImageEditor.Views
                     // Prevent feedback loop: UI update -> VM Property Changed -> Apply to Annotation (redundant)
                     // But Apply... methods limit damage.
 
-                    // Don't sync stroke properties from ImageAnnotation — it has StrokeWidth=0
-                    // which would clobber Options.Thickness and break other tools
-                    if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not HighlightAnnotation)
+                    // Don't sync stroke properties from ImageAnnotation or effect annotations —
+                    // they have StrokeWidth=0 / transparent stroke which would clobber
+                    // Options.Thickness and break other tools
+                    if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not BaseEffectAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
-
-                        // Effect annotations have StrokeWidth = 0 and no shadows
-                        // Don't sync them, otherwise they'll clobber global options
-                        if (vm.SelectedAnnotation is not BaseEffectAnnotation)
-                        {
-                            vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
-                            vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
-                        }
+                        vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
+                        vm.ShadowEnabled = vm.SelectedAnnotation.ShadowEnabled;
                     }
 
                     if (vm.SelectedAnnotation is NumberAnnotation num)
