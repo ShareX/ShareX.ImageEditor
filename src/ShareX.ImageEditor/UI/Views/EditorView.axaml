@@ -681,6 +681,7 @@
                             ColorChanged="OnColorChanged"
                             Height="40"
                             IsVisible="{Binding ShowBorderColor}"
+                            ShowBorderHole="True"
                             ToolTip.Tip="Border Color"/>
 
                         <!-- Fill Color Picker Dropdown -->
@@ -697,6 +698,7 @@
                             ColorChanged="OnTextColorChanged"
                             Height="40"
                             IsVisible="{Binding ShowTextColor}"
+                            ShowTextLabel="True"
                             ToolTip.Tip="Text Color"/>
 
                         <!-- Thickness Picker Dropdown -->

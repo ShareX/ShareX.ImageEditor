@@ -23,6 +23,19 @@ namespace ShareX.ImageEditor.Controls
             AvaloniaProperty.Register<ColorPickerDropdown, HsvColor>(
                 nameof(SelectedHsvColor));
 
+        public static readonly StyledProperty<bool> ShowBorderHoleProperty =
+            AvaloniaProperty.Register<ColorPickerDropdown, bool>(
+                nameof(ShowBorderHole));
+
+        public static readonly StyledProperty<bool> ShowTextLabelProperty =
+            AvaloniaProperty.Register<ColorPickerDropdown, bool>(
+                nameof(ShowTextLabel));
+
+        public static readonly StyledProperty<IBrush> IconForegroundProperty =
+            AvaloniaProperty.Register<ColorPickerDropdown, IBrush>(
+                nameof(IconForeground),
+                defaultValue: new SolidColorBrush(Color.FromArgb(128, 0, 0, 0)));
+
         public IBrush SelectedColor
         {
             get => GetValue(SelectedColorProperty);
@@ -39,6 +52,24 @@ namespace ShareX.ImageEditor.Controls
         {
             get => GetValue(SelectedHsvColorProperty);
             set => SetValue(SelectedHsvColorProperty, value);
+        }
+
+        public bool ShowBorderHole
+        {
+            get => GetValue(ShowBorderHoleProperty);
+            set => SetValue(ShowBorderHoleProperty, value);
+        }
+
+        public bool ShowTextLabel
+        {
+            get => GetValue(ShowTextLabelProperty);
+            set => SetValue(ShowTextLabelProperty, value);
+        }
+
+        public IBrush IconForeground
+        {
+            get => GetValue(IconForegroundProperty);
+            set => SetValue(IconForegroundProperty, value);
         }
 
         public event EventHandler<IBrush>? ColorChanged;
@@ -61,6 +92,7 @@ namespace ShareX.ImageEditor.Controls
                 {
                     var newBrush = new SolidColorBrush(color);
                     s.SelectedColor = newBrush;
+                    s.UpdateIconForeground(color);
                     s.ColorChanged?.Invoke(s, newBrush);
                 }
             });
@@ -72,6 +104,8 @@ namespace ShareX.ImageEditor.Controls
 
             Loaded += (s, e) =>
             {
+                UpdateIconForeground(SelectedColorValue);
+
                 var colorView = this.FindControl<Avalonia.Controls.ColorView>("ColorViewControl");
                 if (colorView?.PaletteColors != null)
                 {
@@ -82,6 +116,25 @@ namespace ShareX.ImageEditor.Controls
                     colorView.PaletteColors = paletteColors;
                 }
             };
+        }
+
+        private void UpdateIconForeground(Color color)
+        {
+            IconForeground = IsLightColor(color)
+                ? new SolidColorBrush(Color.FromArgb(128, 0, 0, 0))
+                : new SolidColorBrush(Color.FromArgb(128, 255, 255, 255));
+        }
+
+        public static bool IsLightColor(Color color)
+        {
+            // Low-alpha colors show the checkered background through, treat as light
+            if (color.A < 128)
+            {
+                return true;
+            }
+
+            double luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B;
+            return luminance > 128;
         }
 
         private void OnDropdownButtonClick(object? sender, RoutedEventArgs e)
