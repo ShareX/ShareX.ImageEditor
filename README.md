@@ -1,6 +1,6 @@
-# ShareX.Editor
+# ShareX.ImageEditor
 
-**ShareX.Editor** is a powerful, cross-platform image editor component designed for the ShareX ecosystem. It provides a rich set of annotation tools, image manipulation effects, and a modern, responsive user interface built with Avalonia UI.
+**ShareX.ImageEditor** is a powerful, cross-platform image editor component designed for the ShareX ecosystem. It provides a rich set of annotation tools, image manipulation effects, and a modern, responsive user interface built with Avalonia UI.
 
 ## 🚀 Features
 
@@ -32,18 +32,18 @@ Organized into three main categories for enhanced control:
 
 ## 🏗️ Architecture
 
-ShareX.Editor employs a **Hybrid Rendering** architecture to balance performance and flexibility:
+ShareX.ImageEditor employs a **Hybrid Rendering** architecture to balance performance and flexibility:
 
 1.  **Interactive Layer (Avalonia)**: The editing surface (`EditorView`) utilizes Avalonia's native vector graphics and controls for fluid, responsive user interaction. Annotations are represented as Avalonia `Control`s or `Shape`s, allowing for styling, hit-testing, and event handling managed directly by the UI framework.
 2.  **Processing Layer (SkiaSharp)**: Underlying image manipulations (such as cropping and applying filters) are handled directly by SkiaSharp bitmaps. This ensures high-fidelity output and efficient processing of pixel data.
 
 ## 📂 Project Structure
 
-*   **ShareX.Editor**: The core library containing the editor logic and UI components.
+*   **ShareX.ImageEditor**: The core library containing the editor logic and UI components.
     *   `Annotations`: Logic for individual tools (shapes, text, etc.).
     *   `ImageEffects`: Image processing logic split into Adjustments, Filters, and Manipulations.
     *   `Views`: Avalonia UserControls for the editor interface.
-*   **ShareX.Editor.Loader**: A standalone executable for testing and running the editor during development.
+*   **ShareX.ImageEditor.Loader**: A standalone executable for testing and running the editor during development.
 
 ## 📦 Integration
 
@@ -51,7 +51,7 @@ The editor is designed to be easily hosted within Avalonia applications.
 
 ```csharp
 // Example usage in an Avalonia View
-<UserControl xmlns:editor="using:ShareX.Editor.Views" ...>
+<UserControl xmlns:editor="using:ShareX.ImageEditor.Views" ...>
     <editor:EditorView />
 </UserControl>
 ```

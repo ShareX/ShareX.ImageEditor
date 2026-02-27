@@ -295,19 +295,19 @@ public static class ImageHelpers
         return new BorderImageEffect(type, size, dashStyle, color).Apply(source);
     }
 
-    public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, SKColor color)
+    public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, bool outlineOnly, SKColor color)
     {
-        return new OutlineImageEffect(size, padding, color).Apply(source);
+        return new OutlineImageEffect(size, padding, outlineOnly, color).Apply(source);
     }
 
-    public static SKBitmap ApplyShadow(SKBitmap source, float opacity, int size, float darkness, SKColor color, int offsetX, int offsetY, bool autoResize)
+    public static SKBitmap ApplyShadow(SKBitmap source, float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
-        return new ShadowImageEffect(opacity, size, darkness, color, offsetX, offsetY, autoResize).Apply(source);
+        return new ShadowImageEffect(opacity, size, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
-    public static SKBitmap ApplyGlow(SKBitmap source, int size, float strength, SKColor color, int offsetX, int offsetY)
+    public static SKBitmap ApplyGlow(SKBitmap source, int size, float strength, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
-        return new GlowImageEffect(size, strength, color, offsetX, offsetY).Apply(source);
+        return new GlowImageEffect(size, strength, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)

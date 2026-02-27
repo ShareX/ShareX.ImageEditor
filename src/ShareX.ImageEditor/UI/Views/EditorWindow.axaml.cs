@@ -48,6 +48,7 @@ namespace ShareX.ImageEditor.Views
 
             _viewModel = new MainViewModel(options);
             DataContext = _viewModel;
+            _viewModel.WindowTitle = GetWindowTitle(null);
 
             // Defer image loading until EditorView is loaded and subscribed
             this.Loaded += OnWindowLoaded;
@@ -123,7 +124,7 @@ namespace ShareX.ImageEditor.Views
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
-                _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
             }
             catch
@@ -147,12 +148,21 @@ namespace ShareX.ImageEditor.Views
                 var bitmap = new Bitmap(stream);
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
-                _viewModel.WindowTitle = $"ShareX - Image Editor - {_viewModel.ImageDimensions}";
+                _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);
                 _viewModel.IsDirty = false;
             }
             catch
             {
             }
+        }
+
+        private static string GetWindowTitle(string? dimensions)
+        {
+            var ver = AppVersion.GetVersionString();
+            var versionPart = string.IsNullOrEmpty(ver) ? "" : $" - v{ver}";
+            return string.IsNullOrEmpty(dimensions)
+                ? $"ShareX - Image Editor{versionPart}"
+                : $"ShareX - Image Editor{versionPart} - {dimensions}";
         }
 
         /// <summary>

@@ -19,7 +19,7 @@
                                    Foreground="#E7E9EA"/>
                     </Border>
                 </Grid>
-                <Slider x:Name="PercentageSlider" Minimum="1" Maximum="100" Value="50" ValueChanged="OnValueChanged"
+                <Slider x:Name="PercentageSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
                         Background="#374151"/>
             </StackPanel>
 
@@ -32,7 +32,7 @@
                                    Foreground="#E7E9EA"/>
                     </Border>
                 </Grid>
-                <Slider x:Name="MaxAlphaSlider" Minimum="0" Maximum="255" Value="200" ValueChanged="OnValueChanged"
+                <Slider x:Name="MaxAlphaSlider" Minimum="0" Maximum="255" Value="255" ValueChanged="OnValueChanged"
                         Background="#374151"/>
             </StackPanel>
 

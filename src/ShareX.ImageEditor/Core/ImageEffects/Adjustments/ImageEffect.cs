@@ -30,20 +30,34 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
         return result;
     }
 
-    protected static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)
+    protected unsafe static SKBitmap ApplyPixelOperation(SKBitmap source, Func<SKColor, SKColor> operation)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
         SKBitmap result = new SKBitmap(source.Width, source.Height, source.ColorType, source.AlphaType);
 
-        for (int x = 0; x < source.Width; x++)
+        if (source.ColorType == SKColorType.Bgra8888)
         {
-            for (int y = 0; y < source.Height; y++)
+            int count = source.Width * source.Height;
+            SKColor* srcPtr = (SKColor*)source.GetPixels();
+            SKColor* dstPtr = (SKColor*)result.GetPixels();
+
+            for (int i = 0; i < count; i++)
             {
-                SKColor original = source.GetPixel(x, y);
-                SKColor modified = operation(original);
-                result.SetPixel(x, y, modified);
+                *dstPtr++ = operation(*srcPtr++);
             }
+        }
+        else
+        {
+            var srcPixels = source.Pixels;
+            var dstPixels = new SKColor[srcPixels.Length];
+
+            for (int i = 0; i < srcPixels.Length; i++)
+            {
+                dstPixels[i] = operation(srcPixels[i]);
+            }
+            
+            result.Pixels = dstPixels;
         }
 
         return result;

@@ -140,7 +140,7 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Rotate custom angle..." Click="OnRotateCustomAngleClick">
+                        <MenuItem Header="Rotate..." Click="OnRotateCustomAngleClick">
                              <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconSliders}"/>
                             </MenuItem.Icon>

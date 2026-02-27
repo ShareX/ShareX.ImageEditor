@@ -37,6 +37,28 @@
                     <!-- Color Overlay -->
                     <Border Background="{Binding SelectedColor, ElementName=ColorPickerDropdownRoot}"
                             CornerRadius="4"/>
+                    
+                    <!-- Border Color: Hole in center showing checkered through -->
+                    <Border IsVisible="{Binding ShowBorderHole, ElementName=ColorPickerDropdownRoot}"
+                            Margin="5"
+                            CornerRadius="2"
+                            ClipToBounds="True"
+                            IsHitTestVisible="False">
+                        <Border.Background>
+                            <DynamicResource ResourceKey="ShareX.Brush.Checkered.Small"/>
+                        </Border.Background>
+                    </Border>
+                    
+                    <!-- Text Color: Plain 'A' label -->
+                    <TextBlock Text="A"
+                               IsVisible="{Binding ShowTextLabel, ElementName=ColorPickerDropdownRoot}"
+                               FontFamily="Segoe UI"
+                               FontWeight="Bold"
+                               FontSize="14"
+                               Foreground="{Binding IconForeground, ElementName=ColorPickerDropdownRoot}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False"/>
                 </Grid>
 
                 <!-- Spacer -->

@@ -23,39 +23,29 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
+using System.Reflection;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Helpers;
 
-public partial class TextAnnotation
+/// <summary>
+/// Provides application version information for the window title (e.g. to confirm the running build).
+/// </summary>
+public static class AppVersion
 {
     /// <summary>
-    /// Creates the Avalonia visual for this annotation (TextBox for editing)
+    /// Gets the version string of the entry assembly (e.g. ImageEditor.Loader when run standalone).
+    /// Returns an empty string if the entry assembly or version cannot be determined.
     /// </summary>
-    public Control CreateVisual()
+    public static string GetVersionString()
     {
-        var control = new ShareX.ImageEditor.Controls.OutlinedTextControl
-        {
-            Annotation = this,
-            Tag = this,
-            IsHitTestVisible = false
-        };
+        var asm = Assembly.GetEntryAssembly();
+        if (asm == null) return string.Empty;
 
-        if (ShadowEnabled)
-        {
-            control.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
-        }
+        var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        if (!string.IsNullOrEmpty(info?.InformationalVersion))
+            return info.InformationalVersion;
 
-        // Rotation is handled by AnnotationVisualFactory.UpdateVisualControl
-
-        return control;
+        var version = asm.GetName().Version;
+        return version?.ToString() ?? string.Empty;
     }
 }

@@ -26,6 +26,12 @@ public class Rotate3DImageEffect : ImageEffect
     /// </summary>
     public float RotateZ { get; set; } = 0;
 
+    /// <summary>
+    /// When true, the output canvas expands to fit the full transformed image.
+    /// When false, the output keeps the original dimensions.
+    /// </summary>
+    public bool AutoResize { get; set; } = true;
+
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
@@ -96,15 +102,22 @@ public class Rotate3DImageEffect : ImageEffect
             maxY = Math.Max(maxY, point.Y);
         }
 
-        int newWidth = (int)Math.Ceiling(maxX - minX);
-        int newHeight = (int)Math.Ceiling(maxY - minY);
+        int newWidth, newHeight;
 
-        // Ensure minimum size
-        newWidth = Math.Max(1, newWidth);
-        newHeight = Math.Max(1, newHeight);
+        if (AutoResize)
+        {
+            newWidth = Math.Max(1, (int)Math.Ceiling(maxX - minX));
+            newHeight = Math.Max(1, (int)Math.Ceiling(maxY - minY));
 
-        // Adjust translation to fit in new bounds
-        matrix44.PostConcat(SKMatrix44.CreateTranslation(-minX, -minY, 0));
+            // Adjust translation to fit in new bounds
+            matrix44.PostConcat(SKMatrix44.CreateTranslation(-minX, -minY, 0));
+        }
+        else
+        {
+            newWidth = (int)width;
+            newHeight = (int)height;
+        }
+
         matrix = matrix44.Matrix;
 
         SKBitmap result = new SKBitmap(newWidth, newHeight, source.ColorType, source.AlphaType);

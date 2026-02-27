@@ -37,14 +37,15 @@ namespace ShareX.ImageEditor
         public Color FillColor { get; set; } = Colors.Transparent;
         public int Thickness { get; set; } = 4;
         public bool Shadow { get; set; } = true;
-        public float ShadowBlur { get; set; } = 30;
-        public Color ShadowColor { get; set; } = Color.FromArgb(128, 0, 0, 0);
 
         // Text
         public Color TextBorderColor { get; set; } = PrimaryColor;
         public Color TextTextColor { get; set; } = SecondaryColor;
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
+        public bool TextBold { get; set; } = true;
+        public bool TextItalic { get; set; } = false;
+        public bool TextUnderline { get; set; } = false;
 
         // Speech Balloon
         public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;

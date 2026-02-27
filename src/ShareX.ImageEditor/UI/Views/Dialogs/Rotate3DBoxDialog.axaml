@@ -20,7 +20,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="DepthSlider"
-                    Minimum="0" Maximum="200" Value="50"
+                    Minimum="0" Maximum="300" Value="50"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
@@ -52,7 +52,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="YAxisSlider"
-                    Minimum="-90" Maximum="90" Value="-20"
+                    Minimum="-90" Maximum="90" Value="25"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
@@ -76,7 +76,7 @@
 
         <!-- CheckBoxes -->
         <StackPanel Spacing="8" Margin="0,12,0,0">
-            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto Resize Output" IsChecked="True" Foreground="#E7E9EA" Checked="OnAutoResizeChanged" Unchecked="OnAutoResizeChanged"/>
+            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" Foreground="#E7E9EA" Checked="OnAutoResizeChanged" Unchecked="OnAutoResizeChanged"/>
         </StackPanel>
 
         <!-- Buttons -->

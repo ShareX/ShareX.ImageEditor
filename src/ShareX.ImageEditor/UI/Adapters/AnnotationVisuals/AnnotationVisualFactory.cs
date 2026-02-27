@@ -113,8 +113,9 @@ public static class AnnotationVisualFactory
                 break;
 
             case TextAnnotation text when control is OutlinedTextControl textControl:
-                Canvas.SetLeft(textControl, text.StartPoint.X);
-                Canvas.SetTop(textControl, text.StartPoint.Y);
+                var textBounds = text.GetBounds();
+                Canvas.SetLeft(textControl, textBounds.Left);
+                Canvas.SetTop(textControl, textBounds.Top);
                 
                 // Note: The text content, font size, bold/italic, etc. are handled automatically by the control's rendering
                 // using the bound Annotation property, but we must apply the transform and invalidate it explicitly here.
@@ -170,8 +171,9 @@ public static class AnnotationVisualFactory
                     imageControl.Height = imageAnnotation.ImageBitmap.Height;
                 }
 
-                Canvas.SetLeft(imageControl, imageAnnotation.StartPoint.X);
-                Canvas.SetTop(imageControl, imageAnnotation.StartPoint.Y);
+                var imageBounds = imageAnnotation.GetBounds();
+                Canvas.SetLeft(imageControl, imageBounds.Left);
+                Canvas.SetTop(imageControl, imageBounds.Top);
                 break;
 
             default:

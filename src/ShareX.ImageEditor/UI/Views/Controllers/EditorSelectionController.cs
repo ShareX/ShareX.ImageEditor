@@ -296,7 +296,7 @@ public class EditorSelectionController
 
         if (_isDraggingHandle && _draggedHandle != null && _selectedShape != null)
         {
-            HandleResize(currentPoint);
+            HandleResize(currentPoint, e.KeyModifiers.HasFlag(KeyModifiers.Shift));
             e.Handled = true;
             return true;
         }
@@ -344,7 +344,7 @@ public class EditorSelectionController
         return false;
     }
 
-    private void HandleResize(Point currentPoint)
+    private void HandleResize(Point currentPoint, bool isShiftHeld = false)
     {
         if (_selectedShape == null || _draggedHandle == null)
         {
@@ -363,8 +363,20 @@ public class EditorSelectionController
         // Special handling for Line endpoints
         if (_selectedShape is global::Avalonia.Controls.Shapes.Line targetLine)
         {
-            if (handleTag == "LineStart") targetLine.StartPoint = currentPoint;
-            else if (handleTag == "LineEnd") targetLine.EndPoint = currentPoint;
+            if (handleTag == "LineStart")
+            {
+                var snappedStart = isShiftHeld
+                    ? EditorInputController.SnapTo45Degrees(targetLine.EndPoint, currentPoint)
+                    : currentPoint;
+                targetLine.StartPoint = snappedStart;
+            }
+            else if (handleTag == "LineEnd")
+            {
+                var snappedEnd = isShiftHeld
+                    ? EditorInputController.SnapTo45Degrees(targetLine.StartPoint, currentPoint)
+                    : currentPoint;
+                targetLine.EndPoint = snappedEnd;
+            }
 
             // Sync annotation points for hit testing
             if (targetLine.Tag is LineAnnotation lineAnnotation)
@@ -386,8 +398,18 @@ public class EditorSelectionController
                 Point arrowStart = endpoints.Start;
                 Point arrowEnd = endpoints.End;
 
-                if (handleTag == "ArrowStart") arrowStart = currentPoint;
-                else if (handleTag == "ArrowEnd") arrowEnd = currentPoint;
+                if (handleTag == "ArrowStart")
+                {
+                    arrowStart = isShiftHeld
+                        ? EditorInputController.SnapTo45Degrees(arrowEnd, currentPoint)
+                        : currentPoint;
+                }
+                else if (handleTag == "ArrowEnd")
+                {
+                    arrowEnd = isShiftHeld
+                        ? EditorInputController.SnapTo45Degrees(arrowStart, currentPoint)
+                        : currentPoint;
+                }
 
                 _shapeEndpoints[arrowPath] = (arrowStart, arrowEnd);
 
@@ -1671,8 +1693,9 @@ public class EditorSelectionController
             textBox.RenderTransform = new RotateTransform(annotation.RotationAngle);
         }
 
-        Canvas.SetLeft(textBox, annotation.StartPoint.X);
-        Canvas.SetTop(textBox, annotation.StartPoint.Y);
+        var annotationBounds = annotation.GetBounds();
+        Canvas.SetLeft(textBox, annotationBounds.Left);
+        Canvas.SetTop(textBox, annotationBounds.Top);
 
         EventHandler<global::Avalonia.Interactivity.RoutedEventArgs>? lostFocusHandler = null;
         EventHandler<KeyEventArgs>? keyDownHandler = null;

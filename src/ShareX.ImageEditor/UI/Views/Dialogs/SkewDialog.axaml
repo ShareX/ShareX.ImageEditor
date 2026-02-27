@@ -42,6 +42,15 @@
                     ValueChanged="OnValueChanged"/>
         </StackPanel>
 
+        <!-- Auto Resize Checkbox -->
+        <CheckBox x:Name="AutoResizeCheckBox"
+                  IsChecked="True"
+                  Content="Auto resize"
+                  Foreground="#9CA3AF"
+                  Margin="0,8,0,0"
+                  Checked="OnAutoResizeChanged"
+                  Unchecked="OnAutoResizeChanged"/>
+
         <!-- Buttons -->
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
             <Button Classes="editor-button" Content="Cancel" Click="OnCancelClick" Margin="0,0,4,0" HorizontalAlignment="Stretch"/>

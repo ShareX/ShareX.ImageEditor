@@ -130,12 +130,18 @@ public abstract class Annotation
     /// Creates a deep clone of this annotation for undo/redo history.
     /// Derived classes should override to handle reference-type properties.
     /// </summary>
+    /// <remarks>
+    /// XIP0039 Guardrail 3: Clones preserve the original Id so that
+    /// <see cref="EditorHistory"/> mementos can restore selection by Id after undo/redo.
+    /// Clones live only inside history snapshots and are never added to a live canvas
+    /// alongside their source, so Id uniqueness within the active canvas is maintained.
+    /// </remarks>
     public virtual Annotation Clone()
     {
         // MemberwiseClone handles value types (SKPoint, float, int, etc.) correctly
         // Derived classes override to deep copy reference types (lists, bitmaps)
         var clone = (Annotation)MemberwiseClone();
-        clone.Id = Guid.NewGuid(); // New identity for the clone
+        // Id is preserved (not regenerated) so history can match SelectedAnnotationId on restore.
         return clone;
     }
 

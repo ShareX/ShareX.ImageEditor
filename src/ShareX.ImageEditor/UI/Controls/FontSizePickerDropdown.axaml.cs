@@ -85,17 +85,21 @@ namespace ShareX.ImageEditor.Controls
             if (sender is Button button && button.CommandParameter is float selectedSize)
             {
                 SelectedFontSize = selectedSize;
-                FontSizeChanged?.Invoke(this, selectedSize);
 
-                // Update active states before closing
-                UpdateActiveStates();
-
-                // Close the popup
-                var popup = this.FindControl<Popup>("FontSizePopup");
-                if (popup != null)
+                // Defer popup close and event firing to after the current input cycle.
+                // Closing the popup synchronously during a Click handler disposes the
+                // PopupRoot's native window while PointerReleased is still being dispatched
+                // through it, causing "PlatformImpl is null" warnings.
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    popup.IsOpen = false;
-                }
+                    var popup = this.FindControl<Popup>("FontSizePopup");
+                    if (popup != null)
+                    {
+                        popup.IsOpen = false;
+                    }
+
+                    FontSizeChanged?.Invoke(this, selectedSize);
+                }, Avalonia.Threading.DispatcherPriority.Input);
             }
         }
 

@@ -20,7 +20,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="SizeSlider"
-                    Minimum="2" Maximum="50" Value="10"
+                    Minimum="2" Maximum="200" Value="10"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>

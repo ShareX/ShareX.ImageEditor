@@ -590,23 +590,28 @@ public class EditorInputController
 
             if (_currentShape.Tag is RectangleAnnotation rectAnn) { rectAnn.StartPoint = ToSKPoint(new Point(left, top)); rectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
             else if (_currentShape.Tag is EllipseAnnotation ellAnn) { ellAnn.StartPoint = ToSKPoint(new Point(left, top)); ellAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
-            // Update bounds for all effect annotations (Blur, Pixelate, Magnify, Highlight)
             else if (_currentShape.Tag is BaseEffectAnnotation effectAnn) { effectAnn.StartPoint = ToSKPoint(new Point(left, top)); effectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
         {
-            line.EndPoint = currentPoint;
-            if (line.Tag is LineAnnotation lineAnn) lineAnn.EndPoint = ToSKPoint(currentPoint);
+            var lineEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
+                ? SnapTo45Degrees(_startPoint, currentPoint)
+                : currentPoint;
+            line.EndPoint = lineEnd;
+            if (line.Tag is LineAnnotation lineAnn) lineAnn.EndPoint = ToSKPoint(lineEnd);
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Path path) // Arrow
         {
+            var arrowEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
+                ? SnapTo45Degrees(_startPoint, currentPoint)
+                : currentPoint;
             if (path.Tag is ArrowAnnotation arrowAnn)
             {
-                arrowAnn.EndPoint = ToSKPoint(currentPoint);
+                arrowAnn.EndPoint = ToSKPoint(arrowEnd);
                 AnnotationVisualFactory.UpdateVisualControl(path, arrowAnn);
             }
 
-            _selectionController.RegisterArrowEndpoint(path, _startPoint, currentPoint);
+            _selectionController.RegisterArrowEndpoint(path, _startPoint, arrowEnd);
         }
         else if (_currentShape is ShareX.ImageEditor.Controls.SpotlightControl spotlight)
         {
@@ -629,6 +634,14 @@ public class EditorInputController
                 balloonAnn.EndPoint = ToSKPoint(new Point(left + width, top + height));
             }
             balloon.InvalidateVisual();
+        }
+        else if (_currentShape is Grid && _currentShape.Tag is NumberAnnotation numberAnn)
+        {
+            // Allow dragging the step shape immediately after inserting it
+            var numberRadius = numberAnn.Radius;
+            Canvas.SetLeft(_currentShape, currentPoint.X - numberRadius);
+            Canvas.SetTop(_currentShape, currentPoint.Y - numberRadius);
+            numberAnn.StartPoint = ToSKPoint(currentPoint);
         }
     }
 
@@ -785,24 +798,19 @@ public class EditorInputController
 
         if (width <= 0 || height <= 0) return;
 
-        // ISSUE-008 fix: Apply DPI scaling for high-DPI displays
-        var scaling = 1.0;
-        var topLevel = TopLevel.GetTopLevel(_view);
-        if (topLevel != null) scaling = topLevel.RenderScaling;
-
-        annotation.StartPoint = new SKPoint((float)(x * scaling), (float)(y * scaling));
-        annotation.EndPoint = new SKPoint((float)((x + width) * scaling), (float)((y + height) * scaling));
+        annotation.StartPoint = new SKPoint((float)x, (float)y);
+        annotation.EndPoint = new SKPoint((float)(x + width), (float)(y + height));
 
         try
         {
-            annotation.UpdateEffect(_cachedSkBitmap);
+            if (_cachedSkBitmap != null)
+                annotation.UpdateEffect(_cachedSkBitmap);
             if (annotation.EffectBitmap != null && shape is Shape shapeControl)
             {
-                var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                shapeControl.Fill = new ImageBrush(avaloniaBitmap)
+                shapeControl.Fill = new ImageBrush(BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap))
                 {
-                    Stretch = Stretch.None,
-                    SourceRect = new RelativeRect(0, 0, width, height, RelativeUnit.Absolute)
+                    Stretch = Stretch.Fill,
+                    SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
                 };
             }
         }
@@ -1478,24 +1486,25 @@ public class EditorInputController
         {
             if (cutOverlay.Width > 0 && cutOverlay.Height > 0 && _cutOutDirection.HasValue)
             {
-                var scaling = 1.0;
-                var topLevel = TopLevel.GetTopLevel(_view);
-                if (topLevel != null) scaling = topLevel.RenderScaling;
-
+                // XIP0039 Guardrail 1: Annotation model coordinates are logical image pixels.
+                // AnnotationCanvas is sized 1:1 with the source bitmap in logical pixels,
+                // so no RenderScaling factor is needed — consistent with the Crop path.
+                // The previous code incorrectly multiplied by RenderScaling, which caused
+                // CutOut bounds to be scaled by the display DPI factor on high-DPI screens.
                 if (_cutOutDirection.Value) // Vertical
                 {
                     var left = Canvas.GetLeft(cutOverlay);
                     var w = cutOverlay.Width;
-                    int startX = (int)(left * scaling);
-                    int endX = (int)((left + w) * scaling);
+                    int startX = (int)Math.Round(left);
+                    int endX = (int)Math.Round(left + w);
                     vm.CutOutImage(startX, endX, true);
                 }
                 else // Horizontal
                 {
                     var top = Canvas.GetTop(cutOverlay);
                     var h = cutOverlay.Height;
-                    int startY = (int)(top * scaling);
-                    int endY = (int)((top + h) * scaling);
+                    int startY = (int)Math.Round(top);
+                    int endY = (int)Math.Round(top + h);
                     vm.CutOutImage(startY, endY, false);
                 }
             }
@@ -1556,7 +1565,7 @@ public class EditorInputController
             textColor = $"#{fallback.A:X2}{fallback.R:X2}{fallback.G:X2}{fallback.B:X2}";
             vm.TextColorValue = fallback; // Sync back to the UI so the user sees it
         }
-        
+
         // Stroke is the outline color. If stroke width is 0, outline is effectively disabled.
         string strokeColor = vm.SelectedColor;
         string fillColor = vm.FillColor;
@@ -1568,6 +1577,9 @@ public class EditorInputController
             TextColor = textColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
+            IsBold = vm.TextBold,
+            IsItalic = vm.TextItalic,
+            IsUnderline = vm.TextUnderline,
             ShadowEnabled = vm.ShadowEnabled,
             StartPoint = ToSKPoint(_startPoint),
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
@@ -1581,6 +1593,11 @@ public class EditorInputController
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.White,
             FontSize = vm.FontSize,
+            FontWeight = vm.TextBold ? Avalonia.Media.FontWeight.Bold : Avalonia.Media.FontWeight.Normal,
+            FontStyle = vm.TextItalic ? Avalonia.Media.FontStyle.Italic : Avalonia.Media.FontStyle.Normal,
+            TextAlignment = Avalonia.Media.TextAlignment.Center,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
             Text = string.Empty,
             Padding = new Thickness(4),
             AcceptsReturn = false,
@@ -1648,17 +1665,17 @@ public class EditorInputController
                             var panel = tb.Parent as Panel;
                             panel?.Children.Remove(tb);
                             panel?.Children.Add(control);
-                            
+
                             AnnotationVisualFactory.UpdateVisualControl(
                                 control,
                                 annotation,
                                 AnnotationVisualMode.Persisted,
                                 _view!.EditorCore!.CanvasSize.Width,
                                 _view!.EditorCore!.CanvasSize.Height);
-                            
+
                             control.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                             control.InvalidateVisual();
-                            
+
                             // Auto-select the newly created text
                             _selectionController.SetSelectedShape(control);
                         }
@@ -1695,4 +1712,24 @@ public class EditorInputController
 
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);
     private static SKSize ToSKSize(Size size) => new((float)size.Width, (float)size.Height);
+
+    /// <summary>
+    /// Snaps the endpoint so the line from <paramref name="start"/> to <paramref name="end"/>
+    /// is locked to the nearest 45-degree increment (0°, 45°, 90°, 135°, etc.).
+    /// The distance from start to end is preserved.
+    /// </summary>
+    internal static Point SnapTo45Degrees(Point start, Point end)
+    {
+        double dx = end.X - start.X;
+        double dy = end.Y - start.Y;
+        double distance = Math.Sqrt(dx * dx + dy * dy);
+        if (distance < 0.001) return end;
+
+        double angle = Math.Atan2(dy, dx);
+        double snapped = Math.Round(angle / (Math.PI / 4)) * (Math.PI / 4);
+
+        return new Point(
+            start.X + distance * Math.Cos(snapped),
+            start.Y + distance * Math.Sin(snapped));
+    }
 }

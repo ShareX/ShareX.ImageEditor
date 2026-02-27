@@ -6,7 +6,6 @@ public class ShadowImageEffect : ImageEffect
 {
     public float Opacity { get; set; }
     public int Size { get; set; }
-    public float Darkness { get; set; }
     public SKColor Color { get; set; }
     public int OffsetX { get; set; }
     public int OffsetY { get; set; }
@@ -15,11 +14,10 @@ public class ShadowImageEffect : ImageEffect
     public override string Name => "Shadow";
     public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
-    public ShadowImageEffect(float opacity, int size, float darkness, SKColor color, int offsetX, int offsetY, bool autoResize)
+    public ShadowImageEffect(float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
         Opacity = opacity;
         Size = size;
-        Darkness = darkness;
         Color = color;
         OffsetX = offsetX;
         OffsetY = offsetY;
@@ -29,28 +27,32 @@ public class ShadowImageEffect : ImageEffect
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
-        if (Size <= 0 && !AutoResize) return source.Copy();
 
-        int expandX = AutoResize ? Math.Abs(OffsetX) + Size : 0;
-        int expandY = AutoResize ? Math.Abs(OffsetY) + Size : 0;
-        int newWidth = source.Width + expandX * 2;
-        int newHeight = source.Height + expandY * 2;
+        // Compute one-sided canvas expansion based on offset direction:
+        // Positive offset → shadow extends right/down → expand right/bottom.
+        // Negative offset → shadow extends left/up  → expand left/top.
+        int blurPad = Size;  // room needed for blur to not get clipped
+
+        int expandLeft   = AutoResize ? Math.Max(0, -OffsetX) + blurPad : 0;
+        int expandRight  = AutoResize ? Math.Max(0,  OffsetX) + blurPad : 0;
+        int expandTop    = AutoResize ? Math.Max(0, -OffsetY) + blurPad : 0;
+        int expandBottom = AutoResize ? Math.Max(0,  OffsetY) + blurPad : 0;
+
+        int newWidth  = source.Width  + expandLeft + expandRight;
+        int newHeight = source.Height + expandTop  + expandBottom;
 
         SKBitmap result = new SKBitmap(newWidth, newHeight);
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
 
-        int imageX = expandX + (AutoResize && OffsetX < 0 ? -OffsetX : 0);
-        int imageY = expandY + (AutoResize && OffsetY < 0 ? -OffsetY : 0);
+        // The original image is always placed at (expandLeft, expandTop).
+        int imageX = expandLeft;
+        int imageY = expandTop;
         int shadowX = imageX + OffsetX;
         int shadowY = imageY + OffsetY;
 
-        // Create shadow
-        SKColor shadowColor = new SKColor(
-            (byte)(Color.Red * Darkness),
-            (byte)(Color.Green * Darkness),
-            (byte)(Color.Blue * Darkness),
-            (byte)(255 * Opacity / 100f));
+        // Shadow color: chosen Color with Opacity as alpha.
+        SKColor shadowColor = new SKColor(Color.Red, Color.Green, Color.Blue, (byte)(255 * Opacity / 100f));
 
         using SKPaint shadowPaint = new SKPaint
         {

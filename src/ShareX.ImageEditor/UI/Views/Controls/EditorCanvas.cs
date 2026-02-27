@@ -34,6 +34,12 @@ namespace ShareX.ImageEditor.Views.Controls;
 /// <summary>
 /// Avalonia control that hosts EditorCore and renders via SkiaSharp.
 /// </summary>
+/// <remarks>
+/// <strong>NON-PRODUCTION HOST PATH</strong><br/>
+/// The active production host is <c>EditorView</c>, which routes pointer events through
+/// <c>EditorInputController</c> and <c>EditorSelectionController</c> to an Avalonia
+/// visual-tree annotation pipeline. This control is retained for standalone rendering/testing.
+/// </remarks>
 public class EditorCanvas : Control
 {
     private readonly EditorCore _editor = new();
@@ -114,46 +120,6 @@ public class EditorCanvas : Control
         context.DrawImage(writeableBitmap, new Rect(0, 0, width, height), destRect);
     }
 
-    protected override void OnPointerPressed(PointerPressedEventArgs e)
-    {
-        base.OnPointerPressed(e);
-
-        var point = e.GetPosition(this);
-        var props = e.GetCurrentPoint(this).Properties;
-
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerPressed(canvasPoint, props.IsRightButtonPressed);
-
-        e.Pointer.Capture(this);
-        e.Handled = true;
-    }
-
-    protected override void OnPointerMoved(PointerEventArgs e)
-    {
-        base.OnPointerMoved(e);
-
-        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed &&
-            !e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
-            return;
-
-        var point = e.GetPosition(this);
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerMoved(canvasPoint);
-    }
-
-    protected override void OnPointerReleased(PointerReleasedEventArgs e)
-    {
-        base.OnPointerReleased(e);
-
-        var point = e.GetPosition(this);
-        var canvasPoint = new SKPoint((float)(point.X / Zoom), (float)(point.Y / Zoom));
-
-        _editor.OnPointerReleased(canvasPoint);
-
-        e.Pointer.Capture(null);
-    }
 
     protected override void OnKeyDown(KeyEventArgs e)
     {

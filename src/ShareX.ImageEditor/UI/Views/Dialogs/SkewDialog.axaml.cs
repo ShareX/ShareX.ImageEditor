@@ -23,18 +23,32 @@ namespace ShareX.ImageEditor.Views.Dialogs
             RequestPreview();
         }
 
+        private void OnAutoResizeChanged(object? sender, RoutedEventArgs e)
+        {
+            if (!this.IsLoaded) return;
+            RequestPreview();
+        }
+
+        private bool GetAutoResize() => this.FindControl<CheckBox>("AutoResizeCheckBox")?.IsChecked ?? true;
+
         private void RequestPreview()
         {
             int horizontal = (int)(this.FindControl<Slider>("HorizontalSlider")?.Value ?? 0);
             int vertical = (int)(this.FindControl<Slider>("VerticalSlider")?.Value ?? 0);
-            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new SkewImageEffect { Horizontally = horizontal, Vertically = vertical }.Apply(img), "Skew"));
+            bool autoResize = GetAutoResize();
+            PreviewRequested?.Invoke(this, new EffectEventArgs(
+                img => new SkewImageEffect { Horizontally = horizontal, Vertically = vertical, AutoResize = autoResize }.Apply(img),
+                "Skew"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
             int horizontal = (int)(this.FindControl<Slider>("HorizontalSlider")?.Value ?? 0);
             int vertical = (int)(this.FindControl<Slider>("VerticalSlider")?.Value ?? 0);
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new SkewImageEffect { Horizontally = horizontal, Vertically = vertical }.Apply(img), "Applied Skew"));
+            bool autoResize = GetAutoResize();
+            ApplyRequested?.Invoke(this, new EffectEventArgs(
+                img => new SkewImageEffect { Horizontally = horizontal, Vertically = vertical, AutoResize = autoResize }.Apply(img),
+                "Applied Skew"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)

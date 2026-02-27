@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -14,6 +15,33 @@ public partial class BorderDialog : UserControl, IEffectDialog
     public event EventHandler<EffectEventArgs>? ApplyRequested;
     public event EventHandler? CancelRequested;
 
+    public static readonly StyledProperty<IBrush> BorderColorBrushProperty =
+        AvaloniaProperty.Register<BorderDialog, IBrush>(nameof(BorderColorBrush), Brushes.Black);
+
+    public static readonly StyledProperty<Color> BorderColorValueProperty =
+        AvaloniaProperty.Register<BorderDialog, Color>(nameof(BorderColorValue), Colors.Black);
+
+    public static readonly StyledProperty<string> BorderColorTextProperty =
+        AvaloniaProperty.Register<BorderDialog, string>(nameof(BorderColorText), "#FF000000");
+
+    public IBrush BorderColorBrush
+    {
+        get => GetValue(BorderColorBrushProperty);
+        set => SetValue(BorderColorBrushProperty, value);
+    }
+
+    public Color BorderColorValue
+    {
+        get => GetValue(BorderColorValueProperty);
+        set => SetValue(BorderColorValueProperty, value);
+    }
+
+    public string BorderColorText
+    {
+        get => GetValue(BorderColorTextProperty);
+        set => SetValue(BorderColorTextProperty, value);
+    }
+
     private SKColor _color = SKColors.Black;
     private bool _isLoaded = false;
 
@@ -21,8 +49,14 @@ public partial class BorderDialog : UserControl, IEffectDialog
     private ComboBox? _typeComboBox;
     private ComboBox? _dashStyleComboBox;
     private Slider? _sizeSlider;
-    private TextBox? _colorTextBox;
-    private Border? _colorPreview;
+
+    static BorderDialog()
+    {
+        BorderColorValueProperty.Changed.AddClassHandler<BorderDialog>((s, e) =>
+        {
+            s.OnBorderColorValueChanged();
+        });
+    }
 
     public BorderDialog()
     {
@@ -32,8 +66,9 @@ public partial class BorderDialog : UserControl, IEffectDialog
         _typeComboBox = this.FindControl<ComboBox>("TypeComboBox");
         _dashStyleComboBox = this.FindControl<ComboBox>("DashStyleComboBox");
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
-        _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
-        _colorPreview = this.FindControl<Border>("ColorPreview");
+
+        UpdateColorBrush();
+        UpdateColorText();
 
         Loaded += OnLoaded;
     }
@@ -77,18 +112,39 @@ public partial class BorderDialog : UserControl, IEffectDialog
         if (_isLoaded) RaisePreview();
     }
 
-    private void OnColorTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnBorderColorValueChanged()
     {
-        if (_colorTextBox != null && _colorPreview != null)
+        var color = BorderColorValue;
+        _color = new SKColor(color.R, color.G, color.B, color.A);
+        UpdateColorBrush();
+        UpdateColorText();
+        if (_isLoaded) RaisePreview();
+    }
+
+    private void OnColorButtonClick(object? sender, RoutedEventArgs e)
+    {
+        var popup = this.FindControl<Popup>("ColorPopup");
+        if (popup != null)
         {
-            try
-            {
-                var color = Color.Parse(_colorTextBox.Text ?? "#000000");
-                _colorPreview.Background = new SolidColorBrush(color);
-                _color = new SKColor(color.R, color.G, color.B, color.A);
-                if (_isLoaded) RaisePreview();
-            }
-            catch { }
+            popup.IsOpen = !popup.IsOpen;
+        }
+    }
+
+    private void UpdateColorBrush()
+    {
+        BorderColorBrush = new SolidColorBrush(
+            Color.FromArgb(_color.Alpha, _color.Red, _color.Green, _color.Blue));
+    }
+
+    private void UpdateColorText()
+    {
+        if (_color.Alpha == 0)
+        {
+            BorderColorText = "Transparent";
+        }
+        else
+        {
+            BorderColorText = $"#{_color.Alpha:X2}{_color.Red:X2}{_color.Green:X2}{_color.Blue:X2}";
         }
     }
 

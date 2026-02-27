@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -23,6 +24,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
 
         public static readonly StyledProperty<IBrush> CanvasColorBrushProperty =
             AvaloniaProperty.Register<ResizeCanvasDialog, IBrush>(nameof(CanvasColorBrush), Brushes.Transparent);
+
+        public static readonly StyledProperty<Color> CanvasColorValueProperty =
+            AvaloniaProperty.Register<ResizeCanvasDialog, Color>(nameof(CanvasColorValue), Colors.Transparent);
+
+        public static readonly StyledProperty<string> CanvasColorTextProperty =
+            AvaloniaProperty.Register<ResizeCanvasDialog, string>(nameof(CanvasColorText), "Transparent");
 
         public int TopPadding
         {
@@ -54,51 +61,70 @@ namespace ShareX.ImageEditor.Views.Dialogs
             set => SetValue(CanvasColorBrushProperty, value);
         }
 
+        public Color CanvasColorValue
+        {
+            get => GetValue(CanvasColorValueProperty);
+            set => SetValue(CanvasColorValueProperty, value);
+        }
+
+        public string CanvasColorText
+        {
+            get => GetValue(CanvasColorTextProperty);
+            set => SetValue(CanvasColorTextProperty, value);
+        }
+
         private SKColor _canvasColor = SKColors.Transparent;
-        private SKColor? _edgeColor;
 
         public event EventHandler<ResizeCanvasEventArgs>? ApplyRequested;
         public event EventHandler? CancelRequested;
+
+        static ResizeCanvasDialog()
+        {
+            CanvasColorValueProperty.Changed.AddClassHandler<ResizeCanvasDialog>((s, e) =>
+            {
+                s.OnCanvasColorValueChanged();
+            });
+        }
 
         public ResizeCanvasDialog()
         {
             AvaloniaXamlLoader.Load(this);
             UpdateColorBrush();
+            UpdateColorText();
         }
 
-        public void Initialize(SKColor? edgeColor = null)
+        private void OnCanvasColorValueChanged()
         {
-            _edgeColor = edgeColor;
-        }
-
-        private void OnColorPresetChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            var combo = sender as ComboBox;
-            if (combo == null) return;
-
-            _canvasColor = combo.SelectedIndex switch
-            {
-                0 => SKColors.Transparent,
-                1 => SKColors.White,
-                2 => SKColors.Black,
-                3 => _edgeColor ?? SKColors.Transparent,
-                _ => SKColors.Transparent
-            };
-
+            var color = CanvasColorValue;
+            _canvasColor = new SKColor(color.R, color.G, color.B, color.A);
             UpdateColorBrush();
+            UpdateColorText();
+        }
+
+        private void OnColorButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var popup = this.FindControl<Popup>("ColorPopup");
+            if (popup != null)
+            {
+                popup.IsOpen = !popup.IsOpen;
+            }
         }
 
         private void UpdateColorBrush()
         {
+            CanvasColorBrush = new SolidColorBrush(
+                Color.FromArgb(_canvasColor.Alpha, _canvasColor.Red, _canvasColor.Green, _canvasColor.Blue));
+        }
+
+        private void UpdateColorText()
+        {
             if (_canvasColor.Alpha == 0)
             {
-                // Checkerboard pattern for transparent
-                CanvasColorBrush = new SolidColorBrush(Color.FromArgb(50, 128, 128, 128));
+                CanvasColorText = "Transparent";
             }
             else
             {
-                CanvasColorBrush = new SolidColorBrush(
-                    Color.FromArgb(_canvasColor.Alpha, _canvasColor.Red, _canvasColor.Green, _canvasColor.Blue));
+                CanvasColorText = $"#{_canvasColor.Alpha:X2}{_canvasColor.Red:X2}{_canvasColor.Green:X2}{_canvasColor.Blue:X2}";
             }
         }
 

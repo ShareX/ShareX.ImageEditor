@@ -20,7 +20,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="RadiusSlider"
-                    Minimum="0" Maximum="100" Value="20"
+                    Minimum="0" Maximum="500" Value="20"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>

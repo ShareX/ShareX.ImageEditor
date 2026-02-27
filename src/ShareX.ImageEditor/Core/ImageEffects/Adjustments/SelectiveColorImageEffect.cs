@@ -41,6 +41,19 @@ public class SelectiveColorImageEffect : ImageEffect
     {
         if (Adjustments == null || Adjustments.Count == 0) return source.Copy();
 
+        var adjArray = new SelectiveColorAdjustment[9];
+        bool hasChanges = false;
+        foreach (var kvp in Adjustments)
+        {
+            adjArray[(int)kvp.Key] = kvp.Value;
+            if (kvp.Value.Hue != 0 || kvp.Value.Saturation != 0 || kvp.Value.Lightness != 0)
+            {
+                hasChanges = true;
+            }
+        }
+
+        if (!hasChanges) return source.Copy();
+
         return ApplyPixelOperation(source, (c) =>
         {
             c.ToHsl(out float h, out float s, out float l);
@@ -64,8 +77,9 @@ public class SelectiveColorImageEffect : ImageEffect
                 else if (hDeg >= 270 && hDeg < 330) range = SelectiveColorRange.Magentas;
             }
 
-            if (range.HasValue && Adjustments.TryGetValue(range.Value, out var adj))
+            if (range.HasValue)
             {
+                ref var adj = ref adjArray[(int)range.Value];
                 if (adj.Hue != 0 || adj.Saturation != 0 || adj.Lightness != 0)
                 {
                     h = (h + adj.Hue) % 360;

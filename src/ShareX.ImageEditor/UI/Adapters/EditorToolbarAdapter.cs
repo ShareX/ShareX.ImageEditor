@@ -95,6 +95,24 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.ShadowEnabled = value;
     }
 
+    public bool TextBold
+    {
+        get => _viewModel.TextBold;
+        set => _viewModel.TextBold = value;
+    }
+
+    public bool TextItalic
+    {
+        get => _viewModel.TextItalic;
+        set => _viewModel.TextItalic = value;
+    }
+
+    public bool TextUnderline
+    {
+        get => _viewModel.TextUnderline;
+        set => _viewModel.TextUnderline = value;
+    }
+
     public bool CanUndo => _viewModel.CanUndo;
 
     public bool CanRedo => _viewModel.CanRedo;
@@ -112,6 +130,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     public bool ShowFontSize => _viewModel.ShowFontSize;
 
     public bool ShowStrength => _viewModel.ShowStrength;
+
+    public bool ShowTextStyle => _viewModel.ShowTextStyle;
 
     public bool ShowShadow => _viewModel.ShowShadow;
 
@@ -135,6 +155,10 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         get => _viewModel.TextColorBrush;
         set => _viewModel.TextColorBrush = value;
     }
+
+    public string ActiveToolIcon => _viewModel.ActiveToolIcon;
+
+    public string ActiveToolName => _viewModel.ActiveToolName;
 
     public bool IsSettingsPanelOpen
     {

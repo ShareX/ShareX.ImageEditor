@@ -23,13 +23,22 @@ namespace ShareX.ImageEditor.Views.Dialogs
             RequestPreview();
         }
 
+        private void OnAutoResizeChanged(object? sender, RoutedEventArgs e)
+        {
+            if (!this.IsLoaded) return;
+            RequestPreview();
+        }
+
+        private bool GetAutoResize() => this.FindControl<CheckBox>("AutoResizeCheckBox")?.IsChecked ?? true;
+
         private void RequestPreview()
         {
             float rotateX = (float)(this.FindControl<Slider>("XAxisSlider")?.Value ?? 0);
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
+            bool autoResize = GetAutoResize();
             PreviewRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img),
+                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize }.Apply(img),
                 "Rotate 3D"));
         }
 
@@ -38,8 +47,9 @@ namespace ShareX.ImageEditor.Views.Dialogs
             float rotateX = (float)(this.FindControl<Slider>("XAxisSlider")?.Value ?? 0);
             float rotateY = (float)(this.FindControl<Slider>("YAxisSlider")?.Value ?? 0);
             float rotateZ = (float)(this.FindControl<Slider>("ZAxisSlider")?.Value ?? 0);
+            bool autoResize = GetAutoResize();
             ApplyRequested?.Invoke(this, new EffectEventArgs(
-                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ }.Apply(img),
+                img => new Rotate3DImageEffect { RotateX = rotateX, RotateY = rotateY, RotateZ = rotateZ, AutoResize = autoResize }.Apply(img),
                 "Applied Rotate 3D"));
         }
 
