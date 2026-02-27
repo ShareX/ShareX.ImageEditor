@@ -3,10 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
-using SkiaSharp;
+using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.Services;
+using SkiaSharp;
 
 namespace ShareX.ImageEditor.Controls;
 
@@ -18,7 +18,10 @@ public class SKCanvasControl : Control
 {
     private WriteableBitmap? _bitmap;
     private object _lock = new object();
-    private bool _lastRenderHadGpu = false;
+
+    // Cached lease feature and provider — registered once on first GPU-backed render.
+    private ISkiaSharpApiLeaseFeature? _cachedLeaseFeature;
+    private IEffectGpuLeaseProvider? _cachedLeaseProvider;
 
     /// <summary>
     /// Initializes or resizes the backing store.
@@ -33,7 +36,6 @@ public class SKCanvasControl : Control
                 return;
 
             _bitmap?.Dispose();
-            // Create a WriteableBitmap with Bgra8888 which is standard for Skia/Avalonia interop
             _bitmap = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Premul);
         }
 
@@ -42,55 +44,20 @@ public class SKCanvasControl : Control
 
     public override void Render(DrawingContext context)
     {
-        // Capture GPU context via a custom draw operation.
-        // In Avalonia 11, DrawingContext.PlatformImpl is not public; use ICustomDrawOperation
-        // + ISkiaSharpApiLeaseFeature to access the active GRContext from within the render pipeline.
-        context.Custom(new GpuContextCapture(this));
+        // Capture the GPU lease feature on the first render that exposes one.
+        // ISkiaSharpApiLeaseFeature is backed by the long-lived GPU backend; each
+        // Lease() call acquires the GL context lock and makes the context current
+        // on the calling thread for the duration of the lease — safe from any thread.
+        var leaseFeature = (context as IOptionalFeatureProvider)?.TryGetFeature<ISkiaSharpApiLeaseFeature>();
+        if (leaseFeature != null && leaseFeature != _cachedLeaseFeature)
+        {
+            _cachedLeaseFeature = leaseFeature;
+            _cachedLeaseProvider = new SkiaSharpLeaseProvider(leaseFeature);
+            ImageEffect.SetGpuLeaseProvider(_cachedLeaseProvider);
+        }
 
-        // Draw the bitmap to the control's bounds
-        // We use the full bounds to ensure the image stretches if needed, though usually this control size matches image size
         if (_bitmap != null)
-        {
             context.DrawImage(_bitmap, new Rect(0, 0, Bounds.Width, Bounds.Height));
-        }
-    }
-
-    /// <summary>
-    /// Zero-size custom draw op that runs inside Avalonia's render pipeline to capture
-    /// the active <see cref="GRContext"/> and forward it to the ImageEffect pipeline.
-    /// </summary>
-    private sealed class GpuContextCapture : ICustomDrawOperation
-    {
-        private readonly SKCanvasControl _owner;
-        public GpuContextCapture(SKCanvasControl owner) => _owner = owner;
-
-        public Rect Bounds => new Rect(0, 0, _owner.Bounds.Width, _owner.Bounds.Height);
-        public bool HitTest(Point p) => false;
-        public bool Equals(ICustomDrawOperation? other) => false;
-        public void Dispose() { }
-
-        public void Render(ImmediateDrawingContext context)
-        {
-            GRContext? grContext = null;
-            var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-            if (leaseFeature != null)
-            {
-                using var lease = leaseFeature.Lease();
-                grContext = lease?.GrContext;
-            }
-
-            ShareX.ImageEditor.ImageEffects.Adjustments.ImageEffect.SetGpuContext(grContext);
-
-            // Log state changes only — not every frame — so the developer can confirm the active backend
-            bool hasGpu = grContext != null;
-            if (hasGpu != _owner._lastRenderHadGpu)
-            {
-                EditorServices.ReportInformation(nameof(SKCanvasControl), hasGpu
-                    ? "GPU backend detected; GRContext assigned to ImageEffect pipeline."
-                    : "No GPU backend (software renderer); ImageEffect pipeline will use CPU path.");
-                _owner._lastRenderHadGpu = hasGpu;
-            }
-        }
     }
 
     /// <summary>
@@ -113,25 +80,44 @@ public class SKCanvasControl : Control
                 using (var surface = SKSurface.Create(info, buffer.Address, buffer.RowBytes))
                 {
                     if (surface != null)
-                    {
                         drawAction(surface.Canvas);
-                    }
                 }
             }
         }
 
-        // Try to invalidate only if on UI thread, otherwise dispatcher?
-        // Render method is called by UI thread. Draw might be called from Core.
-        // We need to request invalidation on UI thread.
         Avalonia.Threading.Dispatcher.UIThread.Post(InvalidateVisual, Avalonia.Threading.DispatcherPriority.Render);
     }
 
     /// <summary>
-    /// Releases resources
+    /// Releases resources.
     /// </summary>
     public void Dispose()
     {
         _bitmap?.Dispose();
         _bitmap = null;
+    }
+
+    /// <summary>
+    /// Adapts <see cref="ISkiaSharpApiLeaseFeature"/> to <see cref="IEffectGpuLeaseProvider"/>.
+    /// Each <see cref="TryWithGrContext"/> call acquires a fresh GL context lease via
+    /// <see cref="ISkiaSharpApiLeaseFeature.Lease()"/>, which makes the context current on
+    /// the calling thread and releases it on dispose.
+    /// </summary>
+    private sealed class SkiaSharpLeaseProvider : IEffectGpuLeaseProvider
+    {
+        private readonly ISkiaSharpApiLeaseFeature _leaseFeature;
+
+        public SkiaSharpLeaseProvider(ISkiaSharpApiLeaseFeature leaseFeature)
+            => _leaseFeature = leaseFeature;
+
+        public SKBitmap? TryWithGrContext(Func<GRContext, SKBitmap?> gpuWork)
+        {
+            using var lease = _leaseFeature.Lease();
+            var grContext = lease?.GrContext;
+            if (grContext == null || grContext.IsAbandoned)
+                return null;
+
+            return gpuWork(grContext);
+        }
     }
 }

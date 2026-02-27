@@ -34,6 +34,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Controls;
+using ShareX.ImageEditor.ImageEffects.Adjustments;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
@@ -266,6 +267,8 @@ namespace ShareX.ImageEditor.Views
         protected override void OnUnloaded(RoutedEventArgs e)
         {
             base.OnUnloaded(e);
+
+            ImageEffect.SetGpuLeaseProvider(null);
 
             if (DataContext is MainViewModel vm)
             {
