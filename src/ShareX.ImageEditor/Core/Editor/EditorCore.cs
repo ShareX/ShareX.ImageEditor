@@ -207,7 +207,7 @@ public class EditorCore : IDisposable
     /// <param name="operation">Operation that takes current source image and returns the mutated image.</param>
     /// <param name="clearAnnotations">Whether annotations should be cleared after mutation.</param>
     /// <returns>True if operation succeeded and image changed.</returns>
-    public bool ApplyImageOperation(Func<SKBitmap, SKBitmap> operation, bool clearAnnotations = false)
+    public bool ApplyImageOperation(Func<SKBitmap, SKBitmap> operation, bool clearAnnotations = false, Action? transformAnnotations = null)
     {
         if (SourceImage == null || operation == null)
         {
@@ -256,6 +256,7 @@ public class EditorCore : IDisposable
         }
         else
         {
+            transformAnnotations?.Invoke();
             RefreshAnnotationsForCurrentImage();
         }
 
@@ -280,46 +281,88 @@ public class EditorCore : IDisposable
             return false;
         }
 
+        float scaleX = SourceImage == null ? 1f : (float)newWidth / SourceImage.Width;
+        float scaleY = SourceImage == null ? 1f : (float)newHeight / SourceImage.Height;
+
         return ApplyImageOperation(
             img => ImageHelpers.Resize(img, newWidth, newHeight, maintainAspectRatio: false, quality),
-            clearAnnotations: true);
+            clearAnnotations: false,
+            transformAnnotations: () => ScaleAnnotations(scaleX, scaleY));
     }
 
     public bool ResizeCanvas(int top, int right, int bottom, int left, SKColor backgroundColor)
     {
         return ApplyImageOperation(
             img => ImageHelpers.ResizeCanvas(img, left, top, right, bottom, backgroundColor),
-            clearAnnotations: true);
+            clearAnnotations: false,
+            transformAnnotations: () => TranslateAnnotations(left, top));
     }
 
     public bool Rotate90Clockwise()
     {
-        return ApplyImageOperation(ImageHelpers.Rotate90Clockwise, clearAnnotations: true);
+        int oldW = SourceImage?.Width ?? 0;
+        int oldH = SourceImage?.Height ?? 0;
+        return ApplyImageOperation(
+            ImageHelpers.Rotate90Clockwise, 
+            clearAnnotations: false,
+            transformAnnotations: () => RotateAnnotationsOrthogonal(90, oldW, oldH));
     }
 
     public bool Rotate90CounterClockwise()
     {
-        return ApplyImageOperation(ImageHelpers.Rotate90CounterClockwise, clearAnnotations: true);
+        int oldW = SourceImage?.Width ?? 0;
+        int oldH = SourceImage?.Height ?? 0;
+        return ApplyImageOperation(
+            ImageHelpers.Rotate90CounterClockwise, 
+            clearAnnotations: false,
+            transformAnnotations: () => RotateAnnotationsOrthogonal(270, oldW, oldH));
     }
 
     public bool Rotate180()
     {
-        return ApplyImageOperation(ImageHelpers.Rotate180, clearAnnotations: true);
+        int oldW = SourceImage?.Width ?? 0;
+        int oldH = SourceImage?.Height ?? 0;
+        return ApplyImageOperation(
+            ImageHelpers.Rotate180, 
+            clearAnnotations: false,
+            transformAnnotations: () => RotateAnnotationsOrthogonal(180, oldW, oldH));
     }
 
     public bool RotateCustomAngle(float angle, bool autoResize = true)
     {
-        return ApplyImageOperation(img => RotateImageEffect.Custom(angle, autoResize).Apply(img), clearAnnotations: true);
+        int oldW = SourceImage?.Width ?? 0;
+        int oldH = SourceImage?.Height ?? 0;
+        int newW = -1;
+        int newH = -1;
+
+        return ApplyImageOperation(
+            img => {
+                var effect = RotateImageEffect.Custom(angle, autoResize);
+                var result = effect.Apply(img);
+                newW = result.Width;
+                newH = result.Height;
+                return result;
+            }, 
+            clearAnnotations: false,
+            transformAnnotations: () => RotateAnnotationsArbitrary(angle, oldW, oldH, newW, newH, autoResize));
     }
 
     public bool FlipHorizontal()
     {
-        return ApplyImageOperation(ImageHelpers.FlipHorizontal, clearAnnotations: true);
+        int w = SourceImage?.Width ?? 0;
+        return ApplyImageOperation(
+            ImageHelpers.FlipHorizontal, 
+            clearAnnotations: false,
+            transformAnnotations: () => FlipAnnotations(true, false, w, 0));
     }
 
     public bool FlipVertical()
     {
-        return ApplyImageOperation(ImageHelpers.FlipVertical, clearAnnotations: true);
+        int h = SourceImage?.Height ?? 0;
+        return ApplyImageOperation(
+            ImageHelpers.FlipVertical, 
+            clearAnnotations: false,
+            transformAnnotations: () => FlipAnnotations(false, true, 0, h));
     }
 
     /// <summary>
@@ -346,8 +389,161 @@ public class EditorCore : IDisposable
         }
 
         SKColor topLeft = SourceImage.GetPixel(0, 0);
-        return ApplyImageOperation(img => ImageHelpers.AutoCrop(img, topLeft, tolerance), clearAnnotations: true);
+        int w = SourceImage.Width;
+        int h = SourceImage.Height;
+        int minX = w, minY = h, maxX = 0, maxY = 0;
+        bool hasContent = false;
+
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                SKColor pixel = SourceImage.GetPixel(x, y);
+                if (!ImageHelpers.ColorsMatch(pixel, topLeft, tolerance))
+                {
+                    hasContent = true;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (!hasContent) minX = minY = 0;
+
+        return ApplyImageOperation(
+            img => ImageHelpers.AutoCrop(img, topLeft, tolerance), 
+            clearAnnotations: false,
+            transformAnnotations: () => TranslateAnnotations(-minX, -minY));
     }
+
+    #region Annotation Transformations
+
+    private void TransformAnnotations(Func<SKPoint, SKPoint> transformPoint)
+    {
+        foreach (var ann in _annotations)
+        {
+            ann.StartPoint = transformPoint(ann.StartPoint);
+            ann.EndPoint = transformPoint(ann.EndPoint);
+
+            if (ann is FreehandAnnotation freehand)
+            {
+                for (int i = 0; i < freehand.Points.Count; i++)
+                    freehand.Points[i] = transformPoint(freehand.Points[i]);
+            }
+            else if (ann is SmartEraserAnnotation eraser)
+            {
+                for (int i = 0; i < eraser.Points.Count; i++)
+                    eraser.Points[i] = transformPoint(eraser.Points[i]);
+            }
+            else if (ann is SpeechBalloonAnnotation balloon)
+            {
+                balloon.TailPoint = transformPoint(balloon.TailPoint);
+            }
+        }
+    }
+
+    private void TranslateAnnotations(float dx, float dy)
+    {
+        TransformAnnotations(p => new SKPoint(p.X + dx, p.Y + dy));
+    }
+
+    private void ScaleAnnotations(float scaleX, float scaleY)
+    {
+        TransformAnnotations(p => new SKPoint(p.X * scaleX, p.Y * scaleY));
+        foreach (var ann in _annotations)
+        {
+            ann.StrokeWidth *= Math.Min(scaleX, scaleY);
+            if (ann is TextAnnotation text)
+            {
+                text.FontSize *= scaleY;
+            }
+        }
+    }
+
+    private void RotateAnnotationsOrthogonal(int angleDegrees, int oldWidth, int oldHeight)
+    {
+        TransformAnnotations(p =>
+        {
+            return angleDegrees switch
+            {
+                90 => new SKPoint(oldHeight - p.Y, p.X),
+                180 => new SKPoint(oldWidth - p.X, oldHeight - p.Y),
+                270 => new SKPoint(p.Y, oldWidth - p.X),
+                _ => p
+            };
+        });
+
+        foreach (var ann in _annotations)
+        {
+            ann.RotationAngle += angleDegrees;
+            while (ann.RotationAngle >= 360) ann.RotationAngle -= 360;
+            while (ann.RotationAngle < 0) ann.RotationAngle += 360;
+        }
+    }
+
+    private void RotateAnnotationsArbitrary(float angleDegrees, int oldWidth, int oldHeight, int newWidth, int newHeight, bool autoResize)
+    {
+        float rad = angleDegrees * (float)Math.PI / 180f;
+        float cos = (float)Math.Cos(rad);
+        float sin = (float)Math.Sin(rad);
+
+        float cx = oldWidth / 2f;
+        float cy = oldHeight / 2f;
+
+        float targetCx = newWidth / 2f;
+        float targetCy = newHeight / 2f;
+
+        TransformAnnotations(p =>
+        {
+            float nx = cx + (p.X - cx) * cos - (p.Y - cy) * sin;
+            float ny = cy + (p.X - cx) * sin + (p.Y - cy) * cos;
+
+            if (autoResize)
+            {
+                // Mapped to new container center
+                return new SKPoint(nx - cx + targetCx, ny - cy + targetCy);
+            }
+            else
+            {
+                return new SKPoint(nx, ny);
+            }
+        });
+
+        foreach (var ann in _annotations)
+        {
+            ann.RotationAngle += angleDegrees;
+            while (ann.RotationAngle >= 360) ann.RotationAngle -= 360;
+            while (ann.RotationAngle < 0) ann.RotationAngle += 360;
+        }
+    }
+
+    private void FlipAnnotations(bool flipH, bool flipV, int width, int height)
+    {
+        TransformAnnotations(p =>
+        {
+            float nx = flipH ? width - p.X : p.X;
+            float ny = flipV ? height - p.Y : p.Y;
+            return new SKPoint(nx, ny);
+        });
+
+        foreach (var ann in _annotations)
+        {
+            if (flipH)
+            {
+                ann.RotationAngle = 360 - ann.RotationAngle;
+            }
+            if (flipV)
+            {
+                ann.RotationAngle = 360 - ann.RotationAngle;
+            }
+            while (ann.RotationAngle >= 360) ann.RotationAngle -= 360;
+            while (ann.RotationAngle < 0) ann.RotationAngle += 360;
+        }
+    }
+
+    #endregion
 
     /// <summary>
     /// Perform cut-out operation with explicit start/end coordinates.
