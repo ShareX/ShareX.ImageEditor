@@ -52,7 +52,9 @@ public class ResizeImageEffect : ImageEffect
         }
 
         SKImageInfo info = new SKImageInfo(width, height, source.ColorType, source.AlphaType, source.ColorSpace);
-        return source.Resize(info, new SKSamplingOptions(SKCubicResampler.Mitchell));
+#pragma warning disable CS0618 // SKFilterQuality is the correct 2.88.x API; SKSamplingOptions is 3.x only
+        return source.Resize(info, SKFilterQuality.High);
+#pragma warning restore CS0618
     }
 }
 
