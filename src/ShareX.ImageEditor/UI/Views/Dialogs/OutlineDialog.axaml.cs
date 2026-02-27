@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -14,24 +15,57 @@ public partial class OutlineDialog : UserControl, IEffectDialog
     public event EventHandler<EffectEventArgs>? ApplyRequested;
     public event EventHandler? CancelRequested;
 
+    public static readonly StyledProperty<IBrush> OutlineColorBrushProperty =
+        AvaloniaProperty.Register<OutlineDialog, IBrush>(nameof(OutlineColorBrush), Brushes.Black);
+
+    public static readonly StyledProperty<Color> OutlineColorValueProperty =
+        AvaloniaProperty.Register<OutlineDialog, Color>(nameof(OutlineColorValue), Colors.Black);
+
+    public static readonly StyledProperty<string> OutlineColorTextProperty =
+        AvaloniaProperty.Register<OutlineDialog, string>(nameof(OutlineColorText), "#FF000000");
+
+    public IBrush OutlineColorBrush
+    {
+        get => GetValue(OutlineColorBrushProperty);
+        set => SetValue(OutlineColorBrushProperty, value);
+    }
+
+    public Color OutlineColorValue
+    {
+        get => GetValue(OutlineColorValueProperty);
+        set => SetValue(OutlineColorValueProperty, value);
+    }
+
+    public string OutlineColorText
+    {
+        get => GetValue(OutlineColorTextProperty);
+        set => SetValue(OutlineColorTextProperty, value);
+    }
+
     private SKColor _color = SKColors.Black;
     private bool _isLoaded = false;
 
     // Control references
     private Slider? _sizeSlider;
     private Slider? _paddingSlider;
-    private TextBox? _colorTextBox;
-    private Border? _colorPreview;
+
+    static OutlineDialog()
+    {
+        OutlineColorValueProperty.Changed.AddClassHandler<OutlineDialog>((s, e) =>
+        {
+            s.OnOutlineColorValueChanged();
+        });
+    }
 
     public OutlineDialog()
     {
         InitializeComponent();
 
-        // Find controls after XAML is loaded
         _sizeSlider = this.FindControl<Slider>("SizeSlider");
         _paddingSlider = this.FindControl<Slider>("PaddingSlider");
-        _colorTextBox = this.FindControl<TextBox>("ColorTextBox");
-        _colorPreview = this.FindControl<Border>("ColorPreview");
+
+        UpdateColorBrush();
+        UpdateColorText();
 
         Loaded += OnLoaded;
     }
@@ -55,19 +89,32 @@ public partial class OutlineDialog : UserControl, IEffectDialog
         if (_isLoaded) RaisePreview();
     }
 
-    private void OnColorTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnOutlineColorValueChanged()
     {
-        if (_colorTextBox != null && _colorPreview != null)
-        {
-            try
-            {
-                var color = Color.Parse(_colorTextBox.Text ?? "#000000");
-                _colorPreview.Background = new SolidColorBrush(color);
-                _color = new SKColor(color.R, color.G, color.B, color.A);
-                if (_isLoaded) RaisePreview();
-            }
-            catch { }
-        }
+        var color = OutlineColorValue;
+        _color = new SKColor(color.R, color.G, color.B, color.A);
+        UpdateColorBrush();
+        UpdateColorText();
+        if (_isLoaded) RaisePreview();
+    }
+
+    private void OnColorButtonClick(object? sender, RoutedEventArgs e)
+    {
+        var popup = this.FindControl<Popup>("ColorPopup");
+        if (popup != null) popup.IsOpen = !popup.IsOpen;
+    }
+
+    private void UpdateColorBrush()
+    {
+        OutlineColorBrush = new SolidColorBrush(
+            Color.FromArgb(_color.Alpha, _color.Red, _color.Green, _color.Blue));
+    }
+
+    private void UpdateColorText()
+    {
+        OutlineColorText = _color.Alpha == 0
+            ? "Transparent"
+            : $"#{_color.Alpha:X2}{_color.Red:X2}{_color.Green:X2}{_color.Blue:X2}";
     }
 
     private void RaisePreview()

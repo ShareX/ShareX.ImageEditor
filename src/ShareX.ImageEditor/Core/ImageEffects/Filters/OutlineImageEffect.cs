@@ -31,25 +31,26 @@ public class OutlineImageEffect : ImageEffect
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
 
-        // Create outline by drawing image multiple times offset in all directions
-        using SKPaint outlinePaint = new SKPaint { ColorFilter = SKColorFilter.CreateBlendMode(Color, SKBlendMode.SrcIn) };
+        // --- Optimised outline: single-pass morphological dilation ---
+        // SKImageFilter.CreateDilate expands every opaque pixel by (Size) in all
+        // directions entirely on the GPU / CPU via Skia's own convolution, replacing
+        // the old O(Size²) loop that re-drew the full bitmap for every offset pixel.
+        using SKImageFilter dilateFilter = SKImageFilter.CreateDilate(Size, Size);
+        using SKImageFilter colorFilter = SKImageFilter.CreateColorFilter(
+            SKColorFilter.CreateBlendMode(Color, SKBlendMode.SrcIn));
+        using SKImageFilter outlineFilter = SKImageFilter.CreateCompose(colorFilter, dilateFilter);
 
-        // Draw outline copies
-        for (int dx = -Size; dx <= Size; dx++)
+        using SKPaint outlinePaint = new SKPaint
         {
-            for (int dy = -Size; dy <= Size; dy++)
-            {
-                if (dx * dx + dy * dy <= Size * Size) // Circular outline
-                {
-                    canvas.DrawBitmap(source, totalExpand + dx, totalExpand + dy, outlinePaint);
-                }
-            }
-        }
+            ImageFilter = outlineFilter
+        };
 
-        // Draw original image on top
+        // Draw the dilated + tinted outline first…
+        canvas.DrawBitmap(source, totalExpand, totalExpand, outlinePaint);
+
+        // …then the original on top.
         canvas.DrawBitmap(source, totalExpand, totalExpand);
 
         return result;
     }
 }
-
