@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Skia;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Controls;
@@ -38,6 +39,10 @@ public class SKCanvasControl : Control
 
     public override void Render(DrawingContext context)
     {
+        // Capture GPU context for effect processing (null when software rendering)
+        if (context.PlatformImpl is ISkiaDrawingContextImpl skia)
+            ShareX.ImageEditor.ImageEffects.Adjustments.ImageEffect.SetGpuContext(skia.GrContext);
+
         // Draw the bitmap to the control's bounds
         // We use the full bounds to ensure the image stretches if needed, though usually this control size matches image size
         if (_bitmap != null)
