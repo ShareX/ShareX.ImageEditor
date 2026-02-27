@@ -121,6 +121,10 @@
                     </Popup>
                 </Grid>
             </StackPanel>
+
+            <!-- Auto Resize -->
+            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" Foreground="#E7E9EA" 
+                      Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
         </StackPanel>
 
         <!-- Buttons -->

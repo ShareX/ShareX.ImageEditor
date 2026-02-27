@@ -50,6 +50,7 @@ public partial class GlowDialog : UserControl, IEffectDialog
     private Slider? _strengthSlider;
     private Slider? _offsetXSlider;
     private Slider? _offsetYSlider;
+    private CheckBox? _autoResizeCheckBox;
 
     static GlowDialog()
     {
@@ -67,6 +68,7 @@ public partial class GlowDialog : UserControl, IEffectDialog
         _strengthSlider = this.FindControl<Slider>("StrengthSlider");
         _offsetXSlider = this.FindControl<Slider>("OffsetXSlider");
         _offsetYSlider = this.FindControl<Slider>("OffsetYSlider");
+        _autoResizeCheckBox = this.FindControl<CheckBox>("AutoResizeCheckBox");
 
         UpdateColorBrush();
         UpdateColorText();
@@ -89,8 +91,14 @@ public partial class GlowDialog : UserControl, IEffectDialog
     private float GetStrength() => (float)(_strengthSlider?.Value ?? 80);
     private int GetOffsetX() => (int)(_offsetXSlider?.Value ?? 0);
     private int GetOffsetY() => (int)(_offsetYSlider?.Value ?? 0);
+    private bool GetAutoResize() => _autoResizeCheckBox?.IsChecked ?? true;
 
     private void OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (_isLoaded) RaisePreview();
+    }
+
+    private void OnCheckChanged(object? sender, RoutedEventArgs e)
     {
         if (_isLoaded) RaisePreview();
     }
@@ -126,14 +134,14 @@ public partial class GlowDialog : UserControl, IEffectDialog
     private void RaisePreview()
     {
         PreviewRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyGlow(img, GetSize(), GetStrength(), _color, GetOffsetX(), GetOffsetY()),
+            img => ImageHelpers.ApplyGlow(img, GetSize(), GetStrength(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
             "Glow applied"));
     }
 
     private void OnApplyClick(object? sender, RoutedEventArgs e)
     {
         ApplyRequested?.Invoke(this, new EffectEventArgs(
-            img => ImageHelpers.ApplyGlow(img, GetSize(), GetStrength(), _color, GetOffsetX(), GetOffsetY()),
+            img => ImageHelpers.ApplyGlow(img, GetSize(), GetStrength(), _color, GetOffsetX(), GetOffsetY(), GetAutoResize()),
             "Glow applied"));
     }
 

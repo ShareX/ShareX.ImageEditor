@@ -305,9 +305,9 @@ public static class ImageHelpers
         return new ShadowImageEffect(opacity, size, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
-    public static SKBitmap ApplyGlow(SKBitmap source, int size, float strength, SKColor color, int offsetX, int offsetY)
+    public static SKBitmap ApplyGlow(SKBitmap source, int size, float strength, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
-        return new GlowImageEffect(size, strength, color, offsetX, offsetY).Apply(source);
+        return new GlowImageEffect(size, strength, color, offsetX, offsetY, autoResize).Apply(source);
     }
 
     public static SKBitmap ApplyReflection(SKBitmap source, int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
