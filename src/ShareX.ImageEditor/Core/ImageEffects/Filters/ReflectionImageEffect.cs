@@ -32,7 +32,13 @@ public class ReflectionImageEffect : ImageEffect
         int reflectionHeight = (int)(source.Height * Percentage / 100f);
         int newHeight = source.Height + Offset + reflectionHeight;
 
-        SKBitmap result = new SKBitmap(source.Width, newHeight);
+        int newWidth = source.Width;
+        if (Skew && SkewSize > 0)
+        {
+            newWidth += (int)(reflectionHeight * (SkewSize / 100f));
+        }
+
+        SKBitmap result = new SKBitmap(newWidth, newHeight);
         using SKCanvas canvas = new SKCanvas(result);
         canvas.Clear(SKColors.Transparent);
 
@@ -68,18 +74,19 @@ public class ReflectionImageEffect : ImageEffect
             rc.DrawRect(new SKRect(0, 0, source.Width, reflectionHeight), gradientPaint);
         }
 
-        // Apply skew if needed
+        // Apply skew and draw reflection
         if (Skew && SkewSize > 0)
         {
             canvas.Save();
+            // Move origin to the top-left of the reflection (bottom-left of the image + offset)
+            canvas.Translate(0, source.Height + Offset);
             canvas.Skew(SkewSize / 100f, 0);
-        }
-
-        canvas.DrawBitmap(reflectionBitmap, 0, source.Height + Offset);
-
-        if (Skew && SkewSize > 0)
-        {
+            canvas.DrawBitmap(reflectionBitmap, 0, 0);
             canvas.Restore();
+        }
+        else
+        {
+            canvas.DrawBitmap(reflectionBitmap, 0, source.Height + Offset);
         }
 
         return result;
