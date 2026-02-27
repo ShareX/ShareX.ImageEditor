@@ -11,41 +11,36 @@
         <TextBlock Text="Crop Image" Foreground="#9CA3AF" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
-            <TextBlock Text="Crop region coordinates" Foreground="#9CA3AF" FontSize="12"/>
-
-            <!-- X and Y Inputs -->
-            <Grid ColumnDefinitions="*,8,*">
-                <StackPanel Grid.Column="0" Spacing="4">
+            <!-- Crop Inputs - one per row: X, Y, Width, Height -->
+            <StackPanel Spacing="8">
+                <StackPanel Spacing="4">
                     <TextBlock Text="X" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="XInput" 
                                    Value="{Binding CropX, ElementName=CropImageDialogRoot}"
                                    Minimum="0" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Spacing="4">
+                <StackPanel Spacing="4">
                     <TextBlock Text="Y" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="YInput" 
                                    Value="{Binding CropY, ElementName=CropImageDialogRoot}"
                                    Minimum="0" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
-            </Grid>
 
-            <!-- Width and Height Inputs -->
-            <Grid ColumnDefinitions="*,8,*">
-                <StackPanel Grid.Column="0" Spacing="4">
+                <StackPanel Spacing="4">
                     <TextBlock Text="Width" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="WidthInput" 
                                    Value="{Binding CropWidth, ElementName=CropImageDialogRoot}"
                                    Minimum="1" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Spacing="4">
+                <StackPanel Spacing="4">
                     <TextBlock Text="Height" Foreground="#9CA3AF"/>
                     <NumericUpDown x:Name="HeightInput" 
                                    Value="{Binding CropHeight, ElementName=CropImageDialogRoot}"
                                    Minimum="1" Maximum="10000" Increment="1" FormatString="0" HorizontalAlignment="Stretch"/>
                 </StackPanel>
-            </Grid>
+            </StackPanel>
 
             <!-- Info text -->
             <TextBlock x:Name="InfoText"
