@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -16,28 +17,87 @@ namespace ShareX.ImageEditor.Views.Dialogs
 
         private bool _suppressPreview = false;
 
+        public static readonly StyledProperty<IBrush> TargetColorBrushProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, IBrush>(nameof(TargetColorBrush), Brushes.White);
+
+        public static readonly StyledProperty<Color> TargetColorValueProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, Color>(nameof(TargetColorValue), Colors.White);
+
+        public static readonly StyledProperty<string> TargetColorTextProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, string>(nameof(TargetColorText), "#FFFFFFFF");
+
+        public static readonly StyledProperty<IBrush> ReplaceColorBrushProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, IBrush>(nameof(ReplaceColorBrush), Brushes.Black);
+
+        public static readonly StyledProperty<Color> ReplaceColorValueProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, Color>(nameof(ReplaceColorValue), Colors.Black);
+
+        public static readonly StyledProperty<string> ReplaceColorTextProperty =
+            AvaloniaProperty.Register<ReplaceColorDialog, string>(nameof(ReplaceColorText), "#FF000000");
+
+        public IBrush TargetColorBrush
+        {
+            get => GetValue(TargetColorBrushProperty);
+            set => SetValue(TargetColorBrushProperty, value);
+        }
+
+        public Color TargetColorValue
+        {
+            get => GetValue(TargetColorValueProperty);
+            set => SetValue(TargetColorValueProperty, value);
+        }
+
+        public string TargetColorText
+        {
+            get => GetValue(TargetColorTextProperty);
+            set => SetValue(TargetColorTextProperty, value);
+        }
+
+        public IBrush ReplaceColorBrush
+        {
+            get => GetValue(ReplaceColorBrushProperty);
+            set => SetValue(ReplaceColorBrushProperty, value);
+        }
+
+        public Color ReplaceColorValue
+        {
+            get => GetValue(ReplaceColorValueProperty);
+            set => SetValue(ReplaceColorValueProperty, value);
+        }
+
+        public string ReplaceColorText
+        {
+            get => GetValue(ReplaceColorTextProperty);
+            set => SetValue(ReplaceColorTextProperty, value);
+        }
+
+        private SKColor _targetColor = SKColors.White;
+        private SKColor _replaceColor = SKColors.Black;
+
+        static ReplaceColorDialog()
+        {
+            TargetColorValueProperty.Changed.AddClassHandler<ReplaceColorDialog>((s, e) =>
+            {
+                s.OnTargetColorValueChanged();
+            });
+
+            ReplaceColorValueProperty.Changed.AddClassHandler<ReplaceColorDialog>((s, e) =>
+            {
+                s.OnReplaceColorValueChanged();
+            });
+        }
+
         public ReplaceColorDialog()
         {
             AvaloniaXamlLoader.Load(this);
 
-            var t1 = this.FindControl<TextBox>("TargetColorHex");
-            if (t1 != null) t1.PropertyChanged += OnColorTextChanged;
+            UpdateTargetColorBrush();
+            UpdateTargetColorText();
+            UpdateReplaceColorBrush();
+            UpdateReplaceColorText();
 
-            var t2 = this.FindControl<TextBox>("ReplaceColorHex");
-            if (t2 != null) t2.PropertyChanged += OnColorTextChanged;
-
-            UpdateColorPreviews();
             // We'll request preview once loaded to ensure VM is ready
             this.AttachedToVisualTree += (s, e) => RequestPreview();
-        }
-
-        private void OnColorTextChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            if (e.Property == TextBox.TextProperty)
-            {
-                UpdateColorPreviews();
-                if (!_suppressPreview && this.IsLoaded) RequestPreview();
-            }
         }
 
         private void OnValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -46,22 +106,75 @@ namespace ShareX.ImageEditor.Views.Dialogs
             RequestPreview();
         }
 
-        private void UpdateColorPreviews()
+        private void OnTargetColorValueChanged()
         {
-            UpdateBrush("TargetColorHex", "TargetColorPreview");
-            UpdateBrush("ReplaceColorHex", "ReplaceColorPreview");
+            var color = TargetColorValue;
+            _targetColor = new SKColor(color.R, color.G, color.B, color.A);
+            UpdateTargetColorBrush();
+            UpdateTargetColorText();
+            if (!_suppressPreview && this.IsLoaded) RequestPreview();
         }
 
-        private void UpdateBrush(string textBoxName, string borderName)
+        private void OnReplaceColorValueChanged()
         {
-            var txt = this.FindControl<TextBox>(textBoxName)?.Text;
-            var border = this.FindControl<Border>(borderName);
-            if (border != null && !string.IsNullOrEmpty(txt))
+            var color = ReplaceColorValue;
+            _replaceColor = new SKColor(color.R, color.G, color.B, color.A);
+            UpdateReplaceColorBrush();
+            UpdateReplaceColorText();
+            if (!_suppressPreview && this.IsLoaded) RequestPreview();
+        }
+
+        private void OnTargetColorButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var popup = this.FindControl<Popup>("TargetColorPopup");
+            if (popup != null)
             {
-                if (Color.TryParse(txt, out Color c))
-                {
-                    border.Background = new SolidColorBrush(c);
-                }
+                popup.IsOpen = !popup.IsOpen;
+            }
+        }
+
+        private void OnReplaceColorButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var popup = this.FindControl<Popup>("ReplaceColorPopup");
+            if (popup != null)
+            {
+                popup.IsOpen = !popup.IsOpen;
+            }
+        }
+
+        private void UpdateTargetColorBrush()
+        {
+            TargetColorBrush = new SolidColorBrush(
+                Color.FromArgb(_targetColor.Alpha, _targetColor.Red, _targetColor.Green, _targetColor.Blue));
+        }
+
+        private void UpdateTargetColorText()
+        {
+            if (_targetColor.Alpha == 0)
+            {
+                TargetColorText = "Transparent";
+            }
+            else
+            {
+                TargetColorText = $"#{_targetColor.Alpha:X2}{_targetColor.Red:X2}{_targetColor.Green:X2}{_targetColor.Blue:X2}";
+            }
+        }
+
+        private void UpdateReplaceColorBrush()
+        {
+            ReplaceColorBrush = new SolidColorBrush(
+                Color.FromArgb(_replaceColor.Alpha, _replaceColor.Red, _replaceColor.Green, _replaceColor.Blue));
+        }
+
+        private void UpdateReplaceColorText()
+        {
+            if (_replaceColor.Alpha == 0)
+            {
+                ReplaceColorText = "Transparent";
+            }
+            else
+            {
+                ReplaceColorText = $"#{_replaceColor.Alpha:X2}{_replaceColor.Red:X2}{_replaceColor.Green:X2}{_replaceColor.Blue:X2}";
             }
         }
 
@@ -69,34 +182,16 @@ namespace ShareX.ImageEditor.Views.Dialogs
         {
             if (!this.IsLoaded) return;
 
-            SKColor target = ParseColor(this.FindControl<TextBox>("TargetColorHex")?.Text);
-            SKColor replace = ParseColor(this.FindControl<TextBox>("ReplaceColorHex")?.Text);
             float tolerance = (float)(this.FindControl<Slider>("ToleranceSlider")?.Value ?? 0);
 
-            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), $"Replace Color"));
-        }
-
-        private SKColor ParseColor(string? hex)
-        {
-            if (string.IsNullOrEmpty(hex)) return SKColors.Transparent;
-            try
-            {
-                if (Color.TryParse(hex, out Color c))
-                {
-                    return new SKColor(c.R, c.G, c.B, c.A);
-                }
-            }
-            catch { }
-            return SKColors.Transparent;
+            PreviewRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = _targetColor, ReplaceColor = _replaceColor, Tolerance = tolerance }.Apply(img), $"Replace Color"));
         }
 
         private void OnApplyClick(object? sender, RoutedEventArgs e)
         {
-            SKColor target = ParseColor(this.FindControl<TextBox>("TargetColorHex")?.Text);
-            SKColor replace = ParseColor(this.FindControl<TextBox>("ReplaceColorHex")?.Text);
             float tolerance = (float)(this.FindControl<Slider>("ToleranceSlider")?.Value ?? 0);
 
-            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = target, ReplaceColor = replace, Tolerance = tolerance }.Apply(img), "Applied Replace Color"));
+            ApplyRequested?.Invoke(this, new EffectEventArgs(img => new ReplaceColorImageEffect { TargetColor = _targetColor, ReplaceColor = _replaceColor, Tolerance = tolerance }.Apply(img), "Applied Replace Color"));
         }
 
         private void OnCancelClick(object? sender, RoutedEventArgs e)
