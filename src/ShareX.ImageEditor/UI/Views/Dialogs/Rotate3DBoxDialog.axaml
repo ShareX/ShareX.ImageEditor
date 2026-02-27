@@ -20,7 +20,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="DepthSlider"
-                    Minimum="0" Maximum="200" Value="50"
+                    Minimum="0" Maximum="300" Value="50"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
@@ -52,7 +52,7 @@
                 </Border>
             </Grid>
             <Slider x:Name="YAxisSlider"
-                    Minimum="-90" Maximum="90" Value="-20"
+                    Minimum="-90" Maximum="90" Value="25"
                     TickFrequency="1" IsSnapToTickEnabled="True"
                     Background="#374151"
                     ValueChanged="OnValueChanged"/>
