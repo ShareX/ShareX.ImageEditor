@@ -23,10 +23,16 @@ public class SliceImageEffect : ImageEffect
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
-        if (MinHeight <= 0 || MaxHeight <= MinHeight) return source.Copy();
+        if (MinHeight <= 0 && MaxHeight <= 0) return source.Copy();
+
+        int minSliceHeight = Math.Max(1, Math.Min(MinHeight, MaxHeight));
+        int maxSliceHeight = Math.Max(minSliceHeight, Math.Max(MinHeight, MaxHeight));
+        
+        int minSliceShift = Math.Min(Math.Abs(MinShift), Math.Abs(MaxShift));
+        int maxSliceShift = Math.Max(Math.Abs(MinShift), Math.Abs(MaxShift));
 
         Random rand = new Random();
-        int maxAbsShift = Math.Max(Math.Abs(MinShift), Math.Abs(MaxShift));
+        int maxAbsShift = maxSliceShift;
         int newWidth = source.Width + maxAbsShift * 2;
 
         SKBitmap result = new SKBitmap(newWidth, source.Height);
@@ -36,10 +42,18 @@ public class SliceImageEffect : ImageEffect
         int y = 0;
         while (y < source.Height)
         {
-            int sliceHeight = rand.Next(MinHeight, MaxHeight + 1);
+            int sliceHeight = rand.Next(minSliceHeight, maxSliceHeight + 1);
             sliceHeight = Math.Min(sliceHeight, source.Height - y);
 
-            int shift = rand.Next(MinShift, MaxShift + 1);
+            int shift;
+            if (rand.Next(2) == 0) // Shift left
+            {
+                shift = rand.Next(-maxSliceShift, -minSliceShift + 1);
+            }
+            else // Shift right
+            {
+                shift = rand.Next(minSliceShift, maxSliceShift + 1);
+            }
 
             SKRect srcRect = new SKRect(0, y, source.Width, y + sliceHeight);
             SKRect dstRect = new SKRect(maxAbsShift + shift, y, maxAbsShift + shift + source.Width, y + sliceHeight);
