@@ -666,15 +666,18 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <!-- Active Tool Icon -->
-                        <TextBlock Text="{Binding ActiveToolIcon}"
-                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
-                                   FontSize="16" FontWeight="Black"
-                                   Foreground="{DynamicResource ShareX.Brush.Separator}"
-                                   VerticalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Width="20"
-                                   Margin="6,0"
-                                   ToolTip.Tip="{Binding ActiveToolName}"/>
+                        <Border Background="Transparent"
+                                VerticalAlignment="Center"
+                                Padding="6,0"
+                                ToolTip.Tip="{Binding ActiveToolName}">
+                            <TextBlock Text="{Binding ActiveToolIcon}"
+                                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                       FontSize="16" FontWeight="Black"
+                                       Foreground="{DynamicResource ShareX.Brush.Separator}"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Width="20"/>
+                        </Border>
 
                         <!-- Border Color Picker Dropdown -->
                         <controls:ColorPickerDropdown x:Name="ColorPickerDropdown"
