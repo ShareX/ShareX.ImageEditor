@@ -115,11 +115,6 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Flip..." Click="OnFlipClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
                         
                         <Separator/>
                         
@@ -177,6 +172,11 @@
                         <MenuItem Header="Flip vertical" Click="OnFlipVerticalClick">
                              <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsV}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Flip..." Click="OnFlipClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         
