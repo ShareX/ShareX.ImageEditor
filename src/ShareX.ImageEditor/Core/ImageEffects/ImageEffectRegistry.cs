@@ -20,9 +20,11 @@ public static class ImageEffectRegistry
             // Manipulations - Flip
             FlipImageEffect.Horizontal,
             FlipImageEffect.Vertical,
+            new FlipImageEffect(),
             
             // Manipulations - Resize (parameterized)
             new ResizeImageEffect(),
+            new ScaleImageEffect(),
             new AutoCropImageEffect(),
             new Rotate3DBoxImageEffect(),
             

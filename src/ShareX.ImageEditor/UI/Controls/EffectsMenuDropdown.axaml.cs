@@ -86,6 +86,8 @@ namespace ShareX.ImageEditor.Controls
 
         private void OnResizeImageClick(object? sender, RoutedEventArgs e)      => Raise(ResizeImageRequested);
         private void OnResizeCanvasClick(object? sender, RoutedEventArgs e)     => Raise(ResizeCanvasRequested);
+        private void OnScaleClick(object? sender, RoutedEventArgs e)            => RaiseDialog("scale");
+        private void OnFlipClick(object? sender, RoutedEventArgs e)             => RaiseDialog("flip");
         private void OnCropImageClick(object? sender, RoutedEventArgs e)        => Raise(CropImageRequested);
         private void OnAutoCropImageClick(object? sender, RoutedEventArgs e)    => Raise(AutoCropImageRequested);
         private void OnRotate90CWClick(object? sender, RoutedEventArgs e)       => Raise(Rotate90CWRequested);

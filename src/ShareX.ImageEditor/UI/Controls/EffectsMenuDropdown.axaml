@@ -110,6 +110,16 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Scale..." Click="OnScaleClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResize}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Flip..." Click="OnFlipClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         
                         <Separator/>
                         

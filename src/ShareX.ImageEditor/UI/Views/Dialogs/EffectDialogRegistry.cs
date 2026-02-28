@@ -78,6 +78,8 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["skew"]            = () => new SkewDialog(),
                 ["rotate_3d"]       = () => new Rotate3DDialog(),
                 ["rotate_3d_box"]   = () => new Rotate3DBoxDialog(),
+                ["flip"]            = () => new FlipDialog(),
+                ["scale"]           = () => new ScaleDialog(),
 
                 // --- Quality ---
                 ["blur"]            = () => new BlurDialog(),
