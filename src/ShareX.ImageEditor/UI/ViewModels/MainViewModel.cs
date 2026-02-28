@@ -202,7 +202,13 @@ namespace ShareX.ImageEditor.ViewModels
         public bool HasPreviewImage
         {
             get => _hasPreviewImage;
-            set => SetProperty(ref _hasPreviewImage, value);
+            set
+            {
+                if (SetProperty(ref _hasPreviewImage, value))
+                {
+                    ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         private bool _hasSelectedAnnotation;
@@ -497,13 +503,39 @@ namespace ShareX.ImageEditor.ViewModels
         private bool _isEffectsPanelOpen;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsEffectBrowserVisible))]
+        [NotifyPropertyChangedFor(nameof(IsRightEffectsSidebarVisible))]
         private object? _effectsPanelContent;
+
+        public bool IsEffectBrowserVisible => EffectsPanelContent == null && IsEffectsPanelOpen;
+        
+        public bool IsRightEffectsSidebarVisible => EffectsPanelContent != null && IsEffectsPanelOpen;
 
         [RelayCommand]
         private void CloseEffectsPanel()
         {
             IsEffectsPanelOpen = false;
             EffectsPanelContent = null;
+            OnPropertyChanged(nameof(IsEffectBrowserVisible));
+            OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+        }
+
+        [RelayCommand(CanExecute = nameof(HasPreviewImage))]
+        private void ToggleEffectsPanel()
+        {
+            if (IsEffectsPanelOpen && EffectsPanelContent == null)
+            {
+                IsEffectsPanelOpen = false;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
+            else
+            {
+                EffectsPanelContent = null;
+                IsEffectsPanelOpen = true;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
         }
 
         // Modal Overlay Properties

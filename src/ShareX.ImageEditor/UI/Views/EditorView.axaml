@@ -511,10 +511,44 @@
                         </Grid>
                     </LayoutTransformControl>
                 </ScrollViewer>
+                
+                <!-- Center Floating Panels Overlay -->
+                <!-- Effect Browser Panel Overlay -->
+                <Border IsVisible="{Binding IsEffectBrowserVisible}"
+                        Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                        BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Margin="16"
+                        BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
+                        Width="700"
+                        MaxHeight="600">
+                    <controls:EffectBrowserPanel
+                        EffectDialogRequested="OnEffectDialogRequested"
+                        ResizeImageRequested="OnResizeImageRequested"
+                        ResizeCanvasRequested="OnResizeCanvasRequested"
+                        CropImageRequested="OnCropImageRequested"
+                        AutoCropImageRequested="OnAutoCropImageRequested"
+                        Rotate90CWRequested="OnRotate90CWRequested"
+                        Rotate90CCWRequested="OnRotate90CCWRequested"
+                        Rotate180Requested="OnRotate180Requested"
+                        RotateCustomAngleRequested="OnRotateCustomAngleRequested"
+                        FlipHorizontalRequested="OnFlipHorizontalRequested"
+                        FlipVerticalRequested="OnFlipVerticalRequested"
+                        InvertRequested="OnInvertRequested"
+                        BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                        PolaroidRequested="OnPolaroidRequested"
+                        EdgeDetectRequested="OnEdgeDetectRequested"
+                        EmbossRequested="OnEmbossRequested"
+                        MeanRemovalRequested="OnMeanRemovalRequested"
+                        SmoothRequested="OnSmoothRequested"/>
+                </Border>
             </Grid>
 
             <!-- Right Sidebar (Effects Panel) -->
-            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsEffectsPanelOpen}" Background="{DynamicResource ShareX.Brush.Background.Panel}"
+            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsRightEffectsSidebarVisible}" Background="{DynamicResource ShareX.Brush.Background.Panel}"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1,0,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -633,30 +667,12 @@
                                 ToolTip.Tip="Background"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconBackground}"/>
 
-                        <!-- Effects Menu Dropdown -->
-                        <!-- XIP0039 Pain Point 3: dialog effects route through EffectDialogRequested;
-                             only non-dialog (immediate/special-init) events are listed individually. -->
-                        <controls:EffectsMenuDropdown x:Name="EffectsMenuDropdown"
-                            Height="40"
-                            ToolTip.Tip="Effects"
-                            EffectDialogRequested="OnEffectDialogRequested"
-                            ResizeImageRequested="OnResizeImageRequested"
-                            ResizeCanvasRequested="OnResizeCanvasRequested"
-                            CropImageRequested="OnCropImageRequested"
-                            AutoCropImageRequested="OnAutoCropImageRequested"
-                            Rotate90CWRequested="OnRotate90CWRequested"
-                            Rotate90CCWRequested="OnRotate90CCWRequested"
-                            Rotate180Requested="OnRotate180Requested"
-                            RotateCustomAngleRequested="OnRotateCustomAngleRequested"
-                            FlipHorizontalRequested="OnFlipHorizontalRequested"
-                            FlipVerticalRequested="OnFlipVerticalRequested"
-                            InvertRequested="OnInvertRequested"
-                            BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                            PolaroidRequested="OnPolaroidRequested"
-                            EdgeDetectRequested="OnEdgeDetectRequested"
-                            EmbossRequested="OnEmbossRequested"
-                            MeanRemovalRequested="OnMeanRemovalRequested"
-                            SmoothRequested="OnSmoothRequested"/>
+                        <!-- Effects Panel Toggle Button -->
+                        <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding IsEffectsPanelOpen}"
+                                Command="{Binding ToggleEffectsPanelCommand}"
+                                ToolTip.Tip="Effects"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="&#xf0d0;"/>
 
                     </StackPanel>
                 </ScrollViewer>

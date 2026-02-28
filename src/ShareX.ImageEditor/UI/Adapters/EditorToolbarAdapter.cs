@@ -166,6 +166,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.IsSettingsPanelOpen = value;
     }
 
+    public bool IsEffectsPanelOpen
+    {
+        get => _viewModel.IsEffectsPanelOpen;
+        set => _viewModel.IsEffectsPanelOpen = value;
+    }
+
     public double Zoom
     {
         get => _viewModel.Zoom;
@@ -185,6 +191,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     public ICommand ClearAnnotationsCommand => _viewModel.ClearAnnotationsCommand;
 
     public ICommand ToggleSettingsPanelCommand => _viewModel.ToggleSettingsPanelCommand;
+
+    public ICommand ToggleEffectsPanelCommand => _viewModel.ToggleEffectsPanelCommand;
 
     public void Undo() => _viewModel.UndoCommand.Execute(null);
 
@@ -226,6 +234,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
                 break;
             case nameof(MainViewModel.ShowToolOptionsSeparator):
                 OnPropertyChanged(nameof(ShowToolOptions));
+                break;
+            case nameof(MainViewModel.IsEffectsPanelOpen):
+                OnPropertyChanged(nameof(IsEffectsPanelOpen));
+                break;
+            case nameof(MainViewModel.IsSettingsPanelOpen):
+                OnPropertyChanged(nameof(IsSettingsPanelOpen));
                 break;
         }
     }
