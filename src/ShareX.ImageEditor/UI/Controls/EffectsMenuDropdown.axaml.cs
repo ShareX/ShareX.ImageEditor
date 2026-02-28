@@ -132,5 +132,10 @@ namespace ShareX.ImageEditor.Controls
         private void OnPixelateClick(object? sender, RoutedEventArgs e) => RaiseDialog("pixelate");
         private void OnSharpenClick(object? sender, RoutedEventArgs e) => RaiseDialog("sharpen");
         private void OnWaveEdgeClick(object? sender, RoutedEventArgs e) => RaiseDialog("wave_edge");
+
+        private void OnExposureClick(object? sender, RoutedEventArgs e) => RaiseDialog("exposure");
+        private void OnLevelsClick(object? sender, RoutedEventArgs e) => RaiseDialog("levels");
+        private void OnShadowsHighlightsClick(object? sender, RoutedEventArgs e) => RaiseDialog("shadows_highlights");
+        private void OnTemperatureTintClick(object? sender, RoutedEventArgs e) => RaiseDialog("temperature_tint");
     }
 }

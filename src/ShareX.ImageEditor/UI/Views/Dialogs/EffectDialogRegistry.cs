@@ -58,6 +58,10 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["replace_color"] = () => new ReplaceColorDialog(),
                 ["grayscale"] = () => new GrayscaleDialog(),
                 ["sepia"] = () => new SepiaDialog(),
+                ["exposure"] = () => new ExposureDialog(),
+                ["levels"] = () => new LevelsDialog(),
+                ["shadows_highlights"] = () => new ShadowsHighlightsDialog(),
+                ["temperature_tint"] = () => new TemperatureTintDialog(),
 
                 // --- Filters ---
                 ["border"] = () => new BorderDialog(),

@@ -35,8 +35,12 @@ public static class ImageEffectRegistry
             // Adjustments
             new BrightnessImageEffect(),
             new ContrastImageEffect(),
+            new ExposureImageEffect(),
             new HueImageEffect(),
+            new LevelsImageEffect(),
             new SaturationImageEffect(),
+            new ShadowsHighlightsImageEffect(),
+            new TemperatureTintImageEffect(),
             new GammaImageEffect(),
             new AlphaImageEffect(),
             new ColorMatrixImageEffect(),

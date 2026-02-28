@@ -238,6 +238,11 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Exposure..." Click="OnExposureClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotateCW}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Gamma..." Click="OnGammaClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconRotate}"/>
@@ -256,6 +261,11 @@
                         <MenuItem Header="Invert" Click="OnInvertClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconExchangeAlt}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Levels..." Click="OnLevelsClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconResizeCanvas}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Polaroid" Click="OnPolaroidClick">
@@ -281,6 +291,16 @@
                         <MenuItem Header="Sepia..." Click="OnSepiaClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCoffee}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Shadows / Highlights..." Click="OnShadowsHighlightsClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsV}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Temperature / Tint..." Click="OnTemperatureTintClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconArrowsH}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
