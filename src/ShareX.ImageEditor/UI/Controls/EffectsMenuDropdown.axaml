@@ -201,34 +201,19 @@
                             <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
                         </MenuItem.Icon>
 
-                        <MenuItem Header="Brightness..." Click="OnBrightnessClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Contrast..." Click="OnContrastClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Hue..." Click="OnHueClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconPalette}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Saturation..." Click="OnSaturationClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Gamma..." Click="OnGammaClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
                         <MenuItem Header="Alpha..." Click="OnAlphaClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconEyeDropper}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Black &amp; White" Click="OnBlackAndWhiteClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconCube}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Brightness..." Click="OnBrightnessClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSun}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Color matrix..." Click="OnColorMatrixClick">
@@ -236,22 +221,19 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconTableCells}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-
-                        <Separator/>
-                        
-                         <MenuItem Header="Colorize..." Click="OnColorizeClick">
+                        <MenuItem Header="Colorize..." Click="OnColorizeClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconTint}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Selective Color..." Click="OnSelectiveColorClick">
+                        <MenuItem Header="Contrast..." Click="OnContrastClick">
                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconHighlighter}"/>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                         <MenuItem Header="Replace Color..." Click="OnReplaceColorClick">
+                        <MenuItem Header="Gamma..." Click="OnGammaClick">
                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconRotate}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Grayscale..." Click="OnGrayscaleClick">
@@ -259,27 +241,39 @@
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCloud}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        
-                        <Separator/>
-
+                        <MenuItem Header="Hue..." Click="OnHueClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconPalette}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Invert" Click="OnInvertClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconExchangeAlt}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                         <MenuItem Header="Black &amp; White" Click="OnBlackAndWhiteClick">
+                        <MenuItem Header="Polaroid" Click="OnPolaroidClick">
                             <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconAdjust}"/>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconImage}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Replace Color..." Click="OnReplaceColorClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconSync}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Saturation..." Click="OnSaturationClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconHighlighter}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Selective Color..." Click="OnSelectiveColorClick">
+                            <MenuItem.Icon>
+                                <TextBlock Classes="menu-icon" Text="{StaticResource IconMagic}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Sepia..." Click="OnSepiaClick">
                             <MenuItem.Icon>
                                 <TextBlock Classes="menu-icon" Text="{StaticResource IconCoffee}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                         <MenuItem Header="Polaroid" Click="OnPolaroidClick">
-                            <MenuItem.Icon>
-                                <TextBlock Classes="menu-icon" Text="{StaticResource IconImage}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
