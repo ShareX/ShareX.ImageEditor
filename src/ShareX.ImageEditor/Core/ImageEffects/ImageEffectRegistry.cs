@@ -33,6 +33,7 @@ public static class ImageEffectRegistry
             new SaturationImageEffect(),
             new GammaImageEffect(),
             new AlphaImageEffect(),
+            new ColorMatrixImageEffect(),
             new ColorizeImageEffect(),
             new SelectiveColorImageEffect(),
             new ReplaceColorImageEffect(),

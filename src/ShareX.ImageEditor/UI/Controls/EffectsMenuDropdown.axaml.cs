@@ -69,6 +69,7 @@ namespace ShareX.ImageEditor.Controls
         private void OnSaturationClick(object? sender, RoutedEventArgs e)       => RaiseDialog("saturation");
         private void OnGammaClick(object? sender, RoutedEventArgs e)            => RaiseDialog("gamma");
         private void OnAlphaClick(object? sender, RoutedEventArgs e)            => RaiseDialog("alpha");
+        private void OnColorMatrixClick(object? sender, RoutedEventArgs e)      => RaiseDialog("color_matrix");
         private void OnColorizeClick(object? sender, RoutedEventArgs e)         => RaiseDialog("colorize");
         private void OnSelectiveColorClick(object? sender, RoutedEventArgs e)   => RaiseDialog("selective_color");
         private void OnReplaceColorClick(object? sender, RoutedEventArgs e)     => RaiseDialog("replace_color");

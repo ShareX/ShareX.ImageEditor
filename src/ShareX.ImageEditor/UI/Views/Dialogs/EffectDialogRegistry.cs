@@ -52,6 +52,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["saturation"]      = () => new SaturationDialog(),
                 ["gamma"]           = () => new GammaDialog(),
                 ["alpha"]           = () => new AlphaDialog(),
+                ["color_matrix"]    = () => new ColorMatrixDialog(),
                 ["colorize"]        = () => new ColorizeDialog(),
                 ["selective_color"] = () => new SelectiveColorDialog(),
                 ["replace_color"]   = () => new ReplaceColorDialog(),
