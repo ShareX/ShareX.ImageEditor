@@ -62,6 +62,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["sepia"] = () => new SepiaDialog(),
                 ["solarize"] = () => new SolarizeDialog(),
                 ["exposure"] = () => new ExposureDialog(),
+                ["film_emulation"] = () => new FilmEmulationDialog(),
                 ["levels"] = () => new LevelsDialog(),
                 ["shadows_highlights"] = () => new ShadowsHighlightsDialog(),
                 ["temperature_tint"] = () => new TemperatureTintDialog(),
@@ -87,8 +88,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["median_filter"] = () => new MedianFilterDialog(),
                 ["motion_blur"] = () => new MotionBlurDialog(),
                 ["rgb_split"] = () => new RGBSplitDialog(),
+                ["crystal_prism"] = () => new CrystalPrismDialog(),
+                ["hologram_scan"] = () => new HologramScanDialog(),
+                ["rainy_window"] = () => new RainyWindowDialog(),
                 ["stained_glass"] = () => new StainedGlassDialog(),
                 ["unsharp_mask"] = () => new UnsharpMaskDialog(),
+                ["vintage_print_damage"] = () => new VintagePrintDamageDialog(),
                 ["vignette"] = () => new VignetteDialog(),
 
                 // --- Drawings ---
