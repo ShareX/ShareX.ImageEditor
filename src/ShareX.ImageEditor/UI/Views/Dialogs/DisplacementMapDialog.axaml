@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="230"
              x:Class="ShareX.ImageEditor.Views.Dialogs.DisplacementMapDialog"
              x:Name="DisplacementMapDialogRoot">
@@ -10,25 +11,9 @@
         <TextBlock Text="Displacement Map" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Amount X (px)" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=AmountXSlider, Path=Value, StringFormat='{}{0:0}'}" Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="AmountXSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
-            </StackPanel>
+            <controls:EffectSlider Label="Amount X (px)" ValueStringFormat="{}{0:0}" x:Name="AmountXSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
 
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Amount Y (px)" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=AmountYSlider, Path=Value, StringFormat='{}{0:0}'}" Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="AmountYSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
-            </StackPanel>
+            <controls:EffectSlider Label="Amount Y (px)" ValueStringFormat="{}{0:0}" x:Name="AmountYSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
 
             <TextBlock Text="Uses source Red channel for X offset and Green channel for Y offset."
                        Foreground="#9CA3AF"
@@ -42,3 +27,4 @@
         </Grid>
     </StackPanel>
 </UserControl>
+

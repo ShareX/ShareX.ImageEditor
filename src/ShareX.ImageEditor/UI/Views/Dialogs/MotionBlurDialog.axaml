@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="280"
              x:Class="ShareX.ImageEditor.Views.Dialogs.MotionBlurDialog"
              x:Name="MotionBlurDialogRoot">
@@ -10,27 +11,21 @@
         <TextBlock Text="Motion blur" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <StackPanel Spacing="4">
-                <TextBlock Text="Distance" Foreground="#9CA3AF"/>
-                <Slider x:Name="DistanceSlider"
+            <controls:EffectSlider Label="Distance" ValueStringFormat="{}{0:0}" x:Name="DistanceSlider"
                         Minimum="1"
                         Maximum="200"
                         Value="12"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
-            <StackPanel Spacing="4">
-                <TextBlock Text="Angle" Foreground="#9CA3AF"/>
-                <Slider x:Name="AngleSlider"
+            <controls:EffectSlider Label="Angle" ValueStringFormat="{}{0:0}" x:Name="AngleSlider"
                         Minimum="-360"
                         Maximum="360"
                         Value="0"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
@@ -39,3 +34,4 @@
         </Grid>
     </StackPanel>
 </UserControl>
+

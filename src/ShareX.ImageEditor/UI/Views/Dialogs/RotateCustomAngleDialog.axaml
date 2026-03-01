@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:ShareX.ImageEditor.ViewModels"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
              x:Class="ShareX.ImageEditor.Views.Dialogs.RotateCustomAngleDialog"
              x:Name="RotateCustomAngleDialogRoot"
@@ -11,26 +12,21 @@
     <StackPanel Spacing="0">
         <!-- Header -->
         <TextBlock Text="Rotate" Foreground="#9CA3AF" Margin="0,0,0,8"/>
-        
+
         <StackPanel Spacing="12">
             <!-- Angle Section -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Angle (degrees)" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding RotateAngleDegrees, StringFormat='{}{0:0}°'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                
-                <Slider x:Name="AngleSlider"
-                        Minimum="-360" Maximum="360" 
-                        Value="{Binding RotateAngleDegrees}"
-                        TickFrequency="1" IsSnapToTickEnabled="True" Background="#374151"/>
-            </StackPanel>
-            
+            <controls:EffectSlider x:Name="AngleSlider"
+                                   Label="Angle (degrees)"
+                                   ValueStringFormat="{}{0:0}&#176;"
+                                   Minimum="-360"
+                                   Maximum="360"
+                                   Value="{Binding RotateAngleDegrees}"
+                                   TickFrequency="1"
+                                   IsSnapToTickEnabled="True"
+                                   Background="#374151"/>
+
             <!-- Auto Resize Checkbox -->
-            <CheckBox x:Name="AutoResizeCheckBox" 
+            <CheckBox x:Name="AutoResizeCheckBox"
                       IsChecked="{Binding RotateAutoResize}"
                       Content="Auto resize"
                       Foreground="#9CA3AF"/>
@@ -40,10 +36,10 @@
                 <Button Classes="editor-button" Click="OnResetClick" ToolTip.Tip="Reset" Padding="8,4" Width="40">
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf021;" FontSize="14"/>
                 </Button>
-                <Button Classes="editor-button" Click="OnRotateLeftClick" ToolTip.Tip="-90°" Padding="8,4" Width="40">
+                <Button Classes="editor-button" Click="OnRotateLeftClick" ToolTip.Tip="-90&#176;" Padding="8,4" Width="40">
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf0e2;" FontSize="14"/>
                 </Button>
-                <Button Classes="editor-button" Click="OnRotateRightClick" ToolTip.Tip="+90°" Padding="8,4" Width="40">
+                <Button Classes="editor-button" Click="OnRotateRightClick" ToolTip.Tip="+90&#176;" Padding="8,4" Width="40">
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf01e;" FontSize="14"/>
                 </Button>
             </StackPanel>

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="320"
              x:Class="ShareX.ImageEditor.Views.Dialogs.UnsharpMaskDialog"
              x:Name="UnsharpMaskDialogRoot">
@@ -10,38 +11,29 @@
         <TextBlock Text="Unsharp mask" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <StackPanel Spacing="4">
-                <TextBlock Text="Radius" Foreground="#9CA3AF"/>
-                <Slider x:Name="RadiusSlider"
+            <controls:EffectSlider Label="Radius" ValueStringFormat="{}{0:0.#}" x:Name="RadiusSlider"
                         Minimum="1"
                         Maximum="100"
                         Value="5"
                         TickFrequency="0.5"
                         IsSnapToTickEnabled="False"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
-            <StackPanel Spacing="4">
-                <TextBlock Text="Amount (%)" Foreground="#9CA3AF"/>
-                <Slider x:Name="AmountSlider"
+            <controls:EffectSlider Label="Amount (%)" ValueStringFormat="{}{0:0}%" x:Name="AmountSlider"
                         Minimum="0"
                         Maximum="500"
                         Value="150"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
-            <StackPanel Spacing="4">
-                <TextBlock Text="Threshold" Foreground="#9CA3AF"/>
-                <Slider x:Name="ThresholdSlider"
+            <controls:EffectSlider Label="Threshold" ValueStringFormat="{}{0:0}" x:Name="ThresholdSlider"
                         Minimum="0"
                         Maximum="255"
                         Value="0"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
@@ -50,3 +42,4 @@
         </Grid>
     </StackPanel>
 </UserControl>
+

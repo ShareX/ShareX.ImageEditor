@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260"
              x:Class="ShareX.ImageEditor.Views.Dialogs.OilPaintDialog"
              x:Name="OilPaintDialogRoot">
@@ -10,23 +11,21 @@
         <TextBlock Text="Oil paint" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <TextBlock Text="Radius" Foreground="#9CA3AF"/>
-            <Slider x:Name="RadiusSlider"
-                    Minimum="1"
-                    Maximum="6"
-                    Value="3"
-                    TickFrequency="1"
-                    IsSnapToTickEnabled="True"
-                    ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Radius" ValueStringFormat="{}{0:0}" x:Name="RadiusSlider"
+                                   Minimum="1"
+                                   Maximum="6"
+                                   Value="3"
+                                   TickFrequency="1"
+                                   IsSnapToTickEnabled="True"
+                                   ValueChanged="OnValueChanged"/>
 
-            <TextBlock Text="Levels" Foreground="#9CA3AF"/>
-            <Slider x:Name="LevelsSlider"
-                    Minimum="8"
-                    Maximum="64"
-                    Value="24"
-                    TickFrequency="1"
-                    IsSnapToTickEnabled="True"
-                    ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Levels" ValueStringFormat="{}{0:0}" x:Name="LevelsSlider"
+                                   Minimum="8"
+                                   Maximum="64"
+                                   Value="24"
+                                   TickFrequency="1"
+                                   IsSnapToTickEnabled="True"
+                                   ValueChanged="OnValueChanged"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
@@ -35,4 +34,5 @@
         </Grid>
     </StackPanel>
 </UserControl>
+
 

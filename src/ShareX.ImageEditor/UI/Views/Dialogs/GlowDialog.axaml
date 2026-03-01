@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
              x:Class="ShareX.ImageEditor.Views.Dialogs.GlowDialog"
@@ -16,55 +17,19 @@
         
         <StackPanel Spacing="12">
             <!-- Size -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Size" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=SizeSlider, Path=Value, StringFormat='{}{0:0}'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="SizeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
+            <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
                         Background="#374151"/>
-            </StackPanel>
 
             <!-- Strength -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Strength" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="StrengthSlider" Minimum="1" Maximum="100" Value="80" ValueChanged="OnValueChanged"
+            <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider" Minimum="1" Maximum="100" Value="80" ValueChanged="OnValueChanged"
                         Background="#374151"/>
-            </StackPanel>
 
             <!-- Offset X/Y -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Offset X" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=OffsetXSlider, Path=Value, StringFormat='{}{0:0}'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
+            <controls:EffectSlider Label="Offset X" ValueStringFormat="{}{0:0}" x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
                         Background="#374151"/>
-            </StackPanel>
             
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Offset Y" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=OffsetYSlider, Path=Value, StringFormat='{}{0:0}'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
+            <controls:EffectSlider Label="Offset Y" ValueStringFormat="{}{0:0}" x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
                         Background="#374151"/>
-            </StackPanel>
 
             <!-- Color -->
             <StackPanel Spacing="4">
@@ -134,3 +99,4 @@
         </Grid>
     </StackPanel>
 </UserControl>
+

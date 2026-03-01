@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
              x:Class="ShareX.ImageEditor.Views.Dialogs.ColorizeDialog"
              x:Name="ColorizeDialogRoot">
@@ -15,52 +16,25 @@
         
         <StackPanel Spacing="12">
             <!-- Hue Slider -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Hue" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=HueSlider, Path=Value, StringFormat='{}{0:0}°'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="HueSlider"
+            <controls:EffectSlider Label="Hue" ValueStringFormat="{}{0:0}°" x:Name="HueSlider"
                         Minimum="0" Maximum="360" Value="180"
                         TickFrequency="30" IsSnapToTickEnabled="False"
                          Background="#374151"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
             <!-- Saturation Slider -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Saturation" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=SaturationSlider, Path=Value, StringFormat='{}{0:0}%'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="SaturationSlider"
+            <controls:EffectSlider Label="Saturation" ValueStringFormat="{}{0:0}%" x:Name="SaturationSlider"
                         Minimum="0" Maximum="100" Value="50"
                         TickFrequency="10" IsSnapToTickEnabled="False"
                          Background="#374151"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
             <!-- Strength Slider -->
-            <StackPanel Spacing="0">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Strength" Foreground="#9CA3AF"/>
-                    <Border Grid.Column="1" Classes="capsule">
-                        <TextBlock Text="{Binding ElementName=StrengthSlider, Path=Value, StringFormat='{}{0:0}%'}"
-                                   Foreground="#E7E9EA"/>
-                    </Border>
-                </Grid>
-                <Slider x:Name="StrengthSlider"
+            <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider"
                         Minimum="0" Maximum="100" Value="100"
                         TickFrequency="10" IsSnapToTickEnabled="False"
                          Background="#374151"
                         ValueChanged="OnValueChanged"/>
-            </StackPanel>
 
             <!-- Color Preview -->
             <StackPanel Spacing="4">
@@ -80,3 +54,4 @@
         </Grid>
     </StackPanel>
 </UserControl>
+

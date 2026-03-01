@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="260"
              x:Class="ShareX.ImageEditor.Views.Dialogs.VignetteDialog"
              x:Name="VignetteDialogRoot">
@@ -10,23 +11,21 @@
         <TextBlock Text="Vignette" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <TextBlock Text="Strength" Foreground="#9CA3AF"/>
-            <Slider x:Name="StrengthSlider"
-                    Minimum="0"
-                    Maximum="1"
-                    Value="0.5"
-                    TickFrequency="0.01"
-                    IsSnapToTickEnabled="False"
-                    ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0.##}" x:Name="StrengthSlider"
+                                   Minimum="0"
+                                   Maximum="1"
+                                   Value="0.5"
+                                   TickFrequency="0.01"
+                                   IsSnapToTickEnabled="False"
+                                   ValueChanged="OnValueChanged"/>
 
-            <TextBlock Text="Radius" Foreground="#9CA3AF"/>
-            <Slider x:Name="RadiusSlider"
-                    Minimum="0.05"
-                    Maximum="1"
-                    Value="0.75"
-                    TickFrequency="0.01"
-                    IsSnapToTickEnabled="False"
-                    ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Radius" ValueStringFormat="{}{0:0.##}" x:Name="RadiusSlider"
+                                   Minimum="0.05"
+                                   Maximum="1"
+                                   Value="0.75"
+                                   TickFrequency="0.01"
+                                   IsSnapToTickEnabled="False"
+                                   ValueChanged="OnValueChanged"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
@@ -35,4 +34,3 @@
         </Grid>
     </StackPanel>
 </UserControl>
-
