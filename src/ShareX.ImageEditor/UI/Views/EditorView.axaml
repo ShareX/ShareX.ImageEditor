@@ -530,11 +530,10 @@
                             BorderThickness="1"
                             CornerRadius="8"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Margin="16,150,16,16"
+                            VerticalAlignment="Center"
+                            Margin="16,125,16,125"
                             BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
-                            Width="700"
-                            MaxHeight="600">
+                            Width="800">
 
                         <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"
                             EffectDialogRequested="OnEffectDialogRequested"
