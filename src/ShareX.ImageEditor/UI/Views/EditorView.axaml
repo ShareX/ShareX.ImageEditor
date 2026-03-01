@@ -514,50 +514,6 @@
                     </LayoutTransformControl>
                 </ScrollViewer>
                 
-                <!-- Center Floating Panels Overlay -->
-                <!-- Effect Browser Panel Overlay -->
-                <Grid IsVisible="{Binding IsEffectBrowserVisible}"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch">
-                    
-                    <!-- Click-away background to close the panel -->
-                    <Grid Background="Transparent"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          PointerPressed="OnEffectBrowserOverlayPointerPressed" />
-                            
-                    <!-- The Panel Itself -->
-                    <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
-                            BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Margin="16,125,16,125"
-                            BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
-                            Width="800">
-
-                        <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"
-                            EffectDialogRequested="OnEffectDialogRequested"
-                            ResizeImageRequested="OnResizeImageRequested"
-                            ResizeCanvasRequested="OnResizeCanvasRequested"
-                            CropImageRequested="OnCropImageRequested"
-                            AutoCropImageRequested="OnAutoCropImageRequested"
-                            Rotate90CWRequested="OnRotate90CWRequested"
-                            Rotate90CCWRequested="OnRotate90CCWRequested"
-                            Rotate180Requested="OnRotate180Requested"
-                            RotateCustomAngleRequested="OnRotateCustomAngleRequested"
-                            FlipHorizontalRequested="OnFlipHorizontalRequested"
-                            FlipVerticalRequested="OnFlipVerticalRequested"
-                            InvertRequested="OnInvertRequested"
-                            BlackAndWhiteRequested="OnBlackAndWhiteRequested"
-                            PolaroidRequested="OnPolaroidRequested"
-                            EdgeDetectRequested="OnEdgeDetectRequested"
-                            EmbossRequested="OnEmbossRequested"
-                            MeanRemovalRequested="OnMeanRemovalRequested"
-                            SmoothRequested="OnSmoothRequested"/>
-                    </Border>
-                </Grid>
             </Grid>
 
             <!-- Right Sidebar (Effects Panel) -->
@@ -903,6 +859,52 @@
                 </Button>
             </StackPanel>
         </Border>
+
+        <!-- Effect Browser Panel Overlay -->
+        <Grid Grid.Row="0"
+              IsVisible="{Binding IsEffectBrowserVisible}"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              ZIndex="30">
+
+            <!-- Click-away background to close the panel -->
+            <Grid Background="#30000000"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  PointerPressed="OnEffectBrowserOverlayPointerPressed" />
+
+            <!-- The Panel Itself -->
+            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="16,125,16,125"
+                    BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
+                    Width="800">
+
+                <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"
+                    EffectDialogRequested="OnEffectDialogRequested"
+                    ResizeImageRequested="OnResizeImageRequested"
+                    ResizeCanvasRequested="OnResizeCanvasRequested"
+                    CropImageRequested="OnCropImageRequested"
+                    AutoCropImageRequested="OnAutoCropImageRequested"
+                    Rotate90CWRequested="OnRotate90CWRequested"
+                    Rotate90CCWRequested="OnRotate90CCWRequested"
+                    Rotate180Requested="OnRotate180Requested"
+                    RotateCustomAngleRequested="OnRotateCustomAngleRequested"
+                    FlipHorizontalRequested="OnFlipHorizontalRequested"
+                    FlipVerticalRequested="OnFlipVerticalRequested"
+                    InvertRequested="OnInvertRequested"
+                    BlackAndWhiteRequested="OnBlackAndWhiteRequested"
+                    PolaroidRequested="OnPolaroidRequested"
+                    EdgeDetectRequested="OnEdgeDetectRequested"
+                    EmbossRequested="OnEmbossRequested"
+                    MeanRemovalRequested="OnMeanRemovalRequested"
+                    SmoothRequested="OnSmoothRequested"/>
+            </Border>
+        </Grid>
 
         <!-- Modal Overlay -->
         <Border Grid.Row="0" Grid.RowSpan="1"
