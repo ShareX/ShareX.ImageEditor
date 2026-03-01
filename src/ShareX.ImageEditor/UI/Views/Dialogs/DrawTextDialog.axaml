@@ -9,8 +9,7 @@
     <StackPanel Spacing="0">
         <TextBlock Text="Text" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
-        <ScrollViewer MaxHeight="460"
-                      HorizontalScrollBarVisibility="Disabled"
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="10">
                 <StackPanel Spacing="4">
