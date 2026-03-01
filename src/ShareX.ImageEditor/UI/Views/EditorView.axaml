@@ -536,7 +536,7 @@
                             Width="700"
                             MaxHeight="600">
 
-                        <controls:EffectBrowserPanel
+                        <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"
                             EffectDialogRequested="OnEffectDialogRequested"
                             ResizeImageRequested="OnResizeImageRequested"
                             ResizeCanvasRequested="OnResizeCanvasRequested"

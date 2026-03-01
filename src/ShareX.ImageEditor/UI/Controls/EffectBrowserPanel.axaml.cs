@@ -135,6 +135,21 @@ namespace ShareX.ImageEditor.Controls
             }
         }
 
+        public void FocusSearchBox()
+        {
+            var searchBox = this.FindControl<TextBox>("SearchBox");
+            if (searchBox != null)
+            {
+                // Clear existing search
+                searchBox.Text = string.Empty;
+                // Focus using Dispatcher to ensure it happens after layout/visibility logic
+                System.Threading.Tasks.Task.Delay(50).ContinueWith(_ =>
+                {
+                    Dispatcher.UIThread.Post(() => searchBox.Focus(), DispatcherPriority.Input);
+                });
+            }
+        }
+
         private void Raise(EventHandler? handler)
         {
             Dispatcher.UIThread.Post(() => handler?.Invoke(this, EventArgs.Empty));

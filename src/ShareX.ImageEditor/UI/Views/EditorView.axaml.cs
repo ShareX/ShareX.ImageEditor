@@ -330,6 +330,14 @@ namespace ShareX.ImageEditor.Views
                     _selectionController.ClearSelection();
                     UpdateCursorForTool(); // ISSUE-018 fix: Update cursor feedback for active tool
                 }
+                else if (e.PropertyName == nameof(MainViewModel.IsEffectBrowserVisible))
+                {
+                    if (vm.IsEffectBrowserVisible)
+                    {
+                        var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
+                        effectPanel?.FocusSearchBox();
+                    }
+                }
             }
         }
 
