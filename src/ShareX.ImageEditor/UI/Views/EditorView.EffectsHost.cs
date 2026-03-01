@@ -110,6 +110,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AutoCropImageCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -118,6 +119,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate90ClockwiseCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -126,6 +128,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate90CounterClockwiseCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -134,6 +137,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.Rotate180Command.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -153,6 +157,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FlipHorizontalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -161,6 +166,7 @@ namespace ShareX.ImageEditor.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FlipVerticalCommand.Execute(null);
+                vm.CloseEffectsPanelCommand.Execute(null);
             }
         }
 
@@ -168,37 +174,65 @@ namespace ShareX.ImageEditor.Views
 
         private void OnInvertRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.InvertColorsCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.InvertColorsCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnBlackAndWhiteRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.BlackAndWhiteCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.BlackAndWhiteCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnPolaroidRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.PolaroidCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.PolaroidCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnEdgeDetectRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.EdgeDetectCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.EdgeDetectCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnEmbossRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.EmbossCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.EmbossCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnMeanRemovalRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.MeanRemovalCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.MeanRemovalCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         private void OnSmoothRequested(object? sender, EventArgs e)
         {
-            if (DataContext is MainViewModel vm) vm.SmoothCommand.Execute(null);
+            if (DataContext is MainViewModel vm)
+            {
+                 vm.SmoothCommand.Execute(null);
+                 vm.CloseEffectsPanelCommand.Execute(null);
+            }
         }
 
         // --- XIP0039 Pain Point 3: Registry-driven dialog dispatch ---
