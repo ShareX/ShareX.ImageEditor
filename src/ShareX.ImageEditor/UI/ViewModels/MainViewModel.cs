@@ -511,9 +511,19 @@ namespace ShareX.ImageEditor.ViewModels
 
         public bool IsRightEffectsSidebarVisible => EffectsPanelContent != null && IsEffectsPanelOpen;
 
+        private void CancelPendingEffectPreviewIfAny()
+        {
+            if (_preEffectImage != null)
+            {
+                // Ensure dialog preview is reverted when switching away from the dialog host.
+                CancelEffectPreview();
+            }
+        }
+
         [RelayCommand]
         private void CloseEffectsPanel()
         {
+            CancelPendingEffectPreviewIfAny();
             IsEffectsPanelOpen = false;
             EffectsPanelContent = null;
             OnPropertyChanged(nameof(IsEffectBrowserVisible));
@@ -526,6 +536,16 @@ namespace ShareX.ImageEditor.ViewModels
             if (IsEffectsPanelOpen && EffectsPanelContent == null)
             {
                 IsEffectsPanelOpen = false;
+                OnPropertyChanged(nameof(IsEffectBrowserVisible));
+                OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
+            }
+            else if (IsEffectsPanelOpen && EffectsPanelContent != null)
+            {
+                // Switching from dialog sidebar back to browser should cancel live preview.
+                CancelPendingEffectPreviewIfAny();
+
+                EffectsPanelContent = null;
+                IsEffectsPanelOpen = true;
                 OnPropertyChanged(nameof(IsEffectBrowserVisible));
                 OnPropertyChanged(nameof(IsRightEffectsSidebarVisible));
             }
