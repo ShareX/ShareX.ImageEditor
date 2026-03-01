@@ -530,7 +530,7 @@
                             BorderThickness="1"
                             CornerRadius="8"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
+                            VerticalAlignment="Top"
                             Margin="16,125,16,125"
                             BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
                             Width="800">
