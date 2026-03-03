@@ -35,6 +35,7 @@ using ShareX.ImageEditor.Annotations;
 using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace ShareX.ImageEditor.ViewModels
 {
@@ -281,7 +282,7 @@ namespace ShareX.ImageEditor.ViewModels
                     ApplySmartPaddingCrop();
                 }
 
-                var ver = ShareX.ImageEditor.Helpers.AppVersion.GetVersionString();
+                var ver = GetVersionString();
                 WindowTitle = string.IsNullOrEmpty(ver)
                     ? $"ShareX - Image Editor - {ImageWidth}x{ImageHeight}"
                     : $"ShareX - Image Editor - v{ver} - {ImageWidth}x{ImageHeight}";
@@ -634,6 +635,20 @@ namespace ShareX.ImageEditor.ViewModels
             _appVersion = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
 
             UpdateCanvasProperties();
+        }
+
+        private static string GetVersionString()
+        {
+            var asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (!string.IsNullOrEmpty(info?.InformationalVersion))
+            {
+                return info.InformationalVersion;
+            }
+
+            var version = asm.GetName().Version;
+            return version?.ToString() ?? string.Empty;
         }
 
         public void AttachEditorCore(EditorCore editorCore)

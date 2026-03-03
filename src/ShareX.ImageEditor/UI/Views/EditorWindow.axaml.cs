@@ -30,6 +30,7 @@ using ShareX.ImageEditor.Helpers;
 using ShareX.ImageEditor.Services;
 using ShareX.ImageEditor.ViewModels;
 using SkiaSharp;
+using System.Reflection;
 
 namespace ShareX.ImageEditor.Views
 {
@@ -161,11 +162,25 @@ namespace ShareX.ImageEditor.Views
 
         private static string GetWindowTitle(string? dimensions)
         {
-            var ver = AppVersion.GetVersionString();
+            var ver = GetVersionString();
             var versionPart = string.IsNullOrEmpty(ver) ? "" : $" - v{ver}";
             return string.IsNullOrEmpty(dimensions)
                 ? $"ShareX - Image Editor{versionPart}"
                 : $"ShareX - Image Editor{versionPart} - {dimensions}";
+        }
+
+        private static string GetVersionString()
+        {
+            var asm = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (!string.IsNullOrEmpty(info?.InformationalVersion))
+            {
+                return info.InformationalVersion;
+            }
+
+            var version = asm.GetName().Version;
+            return version?.ToString() ?? string.Empty;
         }
 
         /// <summary>
