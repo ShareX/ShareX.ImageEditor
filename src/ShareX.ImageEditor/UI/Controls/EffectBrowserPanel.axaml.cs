@@ -525,12 +525,14 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Halftone...", "\uf111", "Creates a comic-style CMYK dot print pattern.", () => RaiseDialog("halftone"));
             fil.AddEffect("Halation...", "\uf185", "Adds warm cinematic glow around intense highlights.", () => RaiseDialog("halation"));
             fil.AddEffect("Hologram scan...", "\uf233", "Adds scanlines, glitch offsets and cyan glow.", () => RaiseDialog("hologram_scan"));
+            fil.AddEffect("Lens blur (bokeh)...", "\uf06e", "Simulates circular aperture blur with weighted highlight bloom.", () => RaiseDialog("lens_blur"), "lens_blur");
             fil.AddEffect("Liquid glass...", "\uf043", "Applies refractive liquid-like glass distortion and gloss.", () => RaiseDialog("liquid_glass"));
             fil.AddEffect("Matrix digital rain...", "\uf233", "Rebuilds the image with glowing falling terminal glyphs.", () => RaiseDialog("matrix_digital_rain"));
             fil.AddEffect("Mean removal", "\uf1de", "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Median filter...", "\uf1de", "Applies a median filter for noise reduction.", () => RaiseDialog("median_filter"));
             fil.AddEffect("Mosaic polygon...", "\uf5ee", "Pixelates with tessellated hexagon or triangle polygons.", () => RaiseDialog("mosaic_polygon"));
             fil.AddEffect("Motion blur...", "\uf068", "Applies a motion blur effect.", () => RaiseDialog("motion_blur"));
+            fil.AddEffect("Spin blur...", "\uf021", "Blurs pixels along an arc around a custom center point.", () => RaiseDialog("spin_blur"), "spin_blur");
             fil.AddEffect("Neon edge glow...", "\uf0e7", "Detects edges and renders a neon glow around them.", () => RaiseDialog("neon_edge_glow"));
             fil.AddEffect("Oil paint...", "\uf304", "Makes the image look like an oil painting.", () => RaiseDialog("oil_paint"));
             fil.AddEffect("Outline...", "\uf0c8", "Applies an outline effect.", () => RaiseDialog("outline"));
@@ -547,6 +549,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Sobel edge...", "\uf061", "Applies a Sobel edge detection filter.", () => RaiseDialog("sobel_edge"));
             fil.AddEffect("Smooth", "\uf1fc", "Applies a smoothing effect.", () => Raise(SmoothRequested));
             fil.AddEffect("Stained glass...", "\uf0db", "Turns the image into stained glass-style tiles.", () => RaiseDialog("stained_glass"));
+            fil.AddEffect("Surface blur...", "\uf1fc", "Softens regions while preserving stronger local edges.", () => RaiseDialog("surface_blur"), "surface_blur");
             fil.AddEffect("Thermal vision...", "\uf06d", "Maps image intensity to an infrared heatmap gradient.", () => RaiseDialog("thermal_vision"));
             fil.AddEffect("Tilt-shift (miniature)...", "\uf030", "Adds selective blur and saturation for toy-like miniature scenes.", () => RaiseDialog("tilt_shift"));
             fil.AddEffect("Torn edge...", "\uf12d", "Adds a torn edge border effect.", () => RaiseDialog("torn_edge"));
@@ -555,6 +558,7 @@ namespace ShareX.ImageEditor.Controls
             fil.AddEffect("Vignette...", "\uf111", "Applies a vignette effect.", () => RaiseDialog("vignette"));
             fil.AddEffect("Watercolor / Kuwahara...", "\uf53f", "Simplifies local color regions for watercolor-like strokes.", () => RaiseDialog("watercolor_kuwahara"));
             fil.AddEffect("Wave edge...", "\uf068", "Adds a wavy edge to the image.", () => RaiseDialog("wave_edge"));
+            fil.AddEffect("Zoom blur...", "\uf00e", "Creates radial streak blur toward a chosen center point.", () => RaiseDialog("zoom_blur"), "zoom_blur");
             Categories.Add(fil);
 
             var drawings = new EffectCategory("Drawings");

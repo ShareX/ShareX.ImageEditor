@@ -92,9 +92,12 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["gaussian_blur"] = () => new GaussianBlurDialog(),
                 ["bloom"] = () => new BloomDialog(),
                 ["dithering"] = () => new DitheringDialog(),
+                ["lens_blur"] = () => new LensBlurDialog(),
                 ["median_filter"] = () => new MedianFilterDialog(),
                 ["matrix_digital_rain"] = () => new MatrixDigitalRainDialog(),
                 ["motion_blur"] = () => new MotionBlurDialog(),
+                ["spin_blur"] = () => new SpinBlurDialog(),
+                ["surface_blur"] = () => new SurfaceBlurDialog(),
                 ["halation"] = () => new HalationDialog(),
                 ["pixel_sorting"] = () => new PixelSortingDialog(),
                 ["rgb_split"] = () => new RGBSplitDialog(),
@@ -113,6 +116,7 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["thermal_vision"] = () => new ThermalVisionDialog(),
                 ["tilt_shift"] = () => new TiltShiftDialog(),
                 ["watercolor_kuwahara"] = () => new WatercolorKuwaharaDialog(),
+                ["zoom_blur"] = () => new ZoomBlurDialog(),
 
                 // --- Drawings ---
                 ["draw_background"] = () => new DrawBackgroundDialog(),
