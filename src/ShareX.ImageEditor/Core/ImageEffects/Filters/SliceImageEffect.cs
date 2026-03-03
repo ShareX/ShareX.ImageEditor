@@ -10,7 +10,6 @@ public class SliceImageEffect : ImageEffect
     public int MaxShift { get; set; }
 
     public override string Name => "Slice";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public SliceImageEffect(int minHeight, int maxHeight, int minShift, int maxShift)
     {

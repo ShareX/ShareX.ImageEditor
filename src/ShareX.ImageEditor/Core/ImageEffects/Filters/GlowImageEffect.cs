@@ -13,8 +13,6 @@ public class GlowImageEffect : ImageEffect
 
     public override string Name => "Glow";
 
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
-
     public GlowImageEffect(int size, float strength, SKColor color, int offsetX, int offsetY, bool autoResize)
     {
         Size = size;

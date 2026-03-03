@@ -10,7 +10,6 @@ public class OutlineImageEffect : ImageEffect
     public SKColor Color { get; set; }
 
     public override string Name => "Outline";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public OutlineImageEffect(int size, int padding, bool outlineOnly, SKColor color)
     {

@@ -12,7 +12,6 @@ public class WaveEdgeImageEffect : ImageEffect
     public bool Left { get; set; } = true;
 
     public override string Name => "Wave edge";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public WaveEdgeImageEffect()
     {

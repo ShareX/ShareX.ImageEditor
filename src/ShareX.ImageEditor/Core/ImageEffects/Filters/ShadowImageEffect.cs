@@ -12,7 +12,6 @@ public class ShadowImageEffect : ImageEffect
     public bool AutoResize { get; set; }
 
     public override string Name => "Shadow";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public ShadowImageEffect(float opacity, int size, SKColor color, int offsetX, int offsetY, bool autoResize)
     {

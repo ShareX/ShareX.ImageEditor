@@ -12,7 +12,6 @@ public class ReflectionImageEffect : ImageEffect
     public int SkewSize { get; set; }
 
     public override string Name => "Reflection";
-    public override ImageEffectCategory Category => ImageEffectCategory.Filters;
 
     public ReflectionImageEffect(int percentage, int maxAlpha, int minAlpha, int offset, bool skew, int skewSize)
     {
