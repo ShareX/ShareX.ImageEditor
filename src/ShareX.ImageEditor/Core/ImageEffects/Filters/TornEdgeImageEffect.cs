@@ -41,7 +41,7 @@ public class TornEdgeImageEffect : ImageEffect
         }
 
         List<SKPoint> points = new List<SKPoint>();
-        Random rand = new Random();
+        var rand = Random.Shared;
 
         // Top edge
         if (Top && horizontalTornCount > 1)
