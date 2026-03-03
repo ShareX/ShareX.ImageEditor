@@ -25,7 +25,7 @@ public class TwirlImageEffect : ImageEffect
         float radius = Math.Max(1f, Math.Min(width, height) * Math.Clamp(RadiusPercentage, 1f, 100f) / 100f);
         float cx = Math.Clamp(CenterXPercentage, 0f, 100f) / 100f * right;
         float cy = Math.Clamp(CenterYPercentage, 0f, 100f) / 100f * bottom;
-        float angleRad = Math.Clamp(Angle, -720f, 720f) * MathF.PI / 180f;
+        float angleRad = Angle * MathF.PI / 180f;
 
         if (Math.Abs(angleRad) < 0.0001f)
         {

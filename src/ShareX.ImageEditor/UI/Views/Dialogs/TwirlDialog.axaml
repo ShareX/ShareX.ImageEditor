@@ -11,7 +11,7 @@
         <TextBlock Text="Twirl" Foreground="#9CA3AF" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <controls:EffectSlider Label="Angle" ValueStringFormat="{}{0:0}°" x:Name="AngleSlider" Minimum="-360" Maximum="360" Value="90" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Angle" ValueStringFormat="{}{0:0}°" x:Name="AngleSlider" Minimum="-1080" Maximum="1080" Value="90" Background="#374151" ValueChanged="OnValueChanged"/>
 
             <controls:EffectSlider Label="Radius (%)" ValueStringFormat="{}{0:0}%" x:Name="RadiusSlider" Minimum="1" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
 
