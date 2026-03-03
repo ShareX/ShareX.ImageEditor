@@ -766,6 +766,7 @@
                 <controls:ZoomPickerDropdown
                     SelectedZoom="{Binding Zoom}"
                     ZoomChanged="OnZoomChanged"
+                    ZoomToFitRequested="OnZoomPickerZoomToFitRequested"
                     Height="40"
                     ToolTip.Tip="Zoom (Ctrl + Wheel)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5"/>
 

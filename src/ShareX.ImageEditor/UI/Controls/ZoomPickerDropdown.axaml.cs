@@ -31,6 +31,7 @@ namespace ShareX.ImageEditor.Controls
         }
 
         public event EventHandler<double>? ZoomChanged;
+        public event EventHandler? ZoomToFitRequested;
 
         public ZoomPickerDropdown()
         {
@@ -60,6 +61,17 @@ namespace ShareX.ImageEditor.Controls
                     popup.IsOpen = false;
                 }
             }
+        }
+
+        private void OnZoomToFitSelected(object? sender, RoutedEventArgs e)
+        {
+            var popup = this.FindControl<Popup>("ZoomPopup");
+            if (popup != null)
+            {
+                popup.IsOpen = false;
+            }
+
+            ZoomToFitRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private static IEnumerable<double> GetDefaultZoomLevels()

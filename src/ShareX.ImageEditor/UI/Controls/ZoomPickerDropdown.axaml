@@ -43,30 +43,47 @@
                IsLightDismissEnabled="True"
                VerticalOffset="-4">
             <Border Classes="popup-border">
-                <ItemsControl ItemsSource="{Binding ZoomLevels, ElementName=ZoomPickerDropdownRoot}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" Spacing="2"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Height="32"
-                                    MinWidth="60"
-                                    Margin="0"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="OnZoomSelected"
-                                    CommandParameter="{Binding .}">
-                                <TextBlock Text="{Binding ., StringFormat='{}{0:P0}'}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <StackPanel Orientation="Vertical" Spacing="0">
+                    <ItemsControl ItemsSource="{Binding ZoomLevels, ElementName=ZoomPickerDropdownRoot}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" Spacing="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Height="32"
+                                        MinWidth="60"
+                                        Margin="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="OnZoomSelected"
+                                        CommandParameter="{Binding .}">
+                                    <TextBlock Text="{Binding ., StringFormat='{}{0:P0}'}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!-- Separator -->
+                    <Border Height="1" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,4"/>
+                    <!-- Zoom to Fit -->
+                    <Button Height="32"
+                            MinWidth="60"
+                            Margin="0,0,0,2"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="OnZoomToFitSelected">
+                        <TextBlock Text="Zoom to Fit"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
             </Border>
         </Popup>
     </Grid>

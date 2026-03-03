@@ -247,6 +247,14 @@ namespace ShareX.ImageEditor.Views
             }
         }
 
+        private void OnZoomPickerZoomToFitRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.ZoomToFitCommand.Execute(null);
+            }
+        }
+
         private void OnSidebarScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
             // TODO: Restore sidebar scrollbar overlay logic
