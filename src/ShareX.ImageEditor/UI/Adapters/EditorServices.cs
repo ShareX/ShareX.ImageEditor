@@ -37,6 +37,14 @@ public static class EditorServices
     public static IClipboardService? Clipboard { get; set; }
 
     /// <summary>
+    /// Optional GPU context provider for off-screen image effects (Option B).
+    /// When set, ImageEffect.ApplyColorFilter will prefer this provider for
+    /// large images and fall back to CPU (or the legacy render-lease provider)
+    /// when it returns null.
+    /// </summary>
+    public static IEditorGpuContextProvider? GpuContextProvider { get; set; }
+
+    /// <summary>
     /// Optional diagnostics sink for exception/messages emitted by ImageEditor.
     /// </summary>
     public static IEditorDiagnosticsSink? Diagnostics { get; set; }

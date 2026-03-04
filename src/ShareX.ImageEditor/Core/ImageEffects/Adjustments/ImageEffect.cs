@@ -55,13 +55,37 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
         if (source is null) throw new ArgumentNullException(nameof(source));
 
         int pixels = source.Width * source.Height;
-        IEffectGpuLeaseProvider? leaseProvider = _gpuLeaseProvider;
 
-        // GPU path — attempted when a provider is registered and the image is large enough.
+        // First preference: host-provided Option B GPU context (persistent off-screen GRContext).
+        var hostGpuProvider = EditorServices.GpuContextProvider;
+        if (hostGpuProvider != null && pixels >= GpuPixelThreshold)
+        {
+            try
+            {
+                var gpuResult = hostGpuProvider.TryRunColorFilter(source, filter, pixels, nameof(ApplyColorFilter));
+                if (gpuResult != null)
+                {
+                    ReportInformationOnce(ref _gpuSuccessDiagnosticSent,
+                        "ApplyColorFilter GPU path succeeded via host GPU context provider (Option B).");
+                    return gpuResult;
+                }
+
+                EditorServices.ReportWarning(nameof(ImageEffect),
+                    "ApplyColorFilter host GPU context provider returned null; falling back to legacy GPU/CPU path.");
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(ImageEffect),
+                    "ApplyColorFilter host GPU context provider threw; falling back to legacy GPU/CPU path.", ex);
+            }
+        }
+
+        // Legacy GPU path — render-thread lease provider (Option A), kept as a secondary path.
+        IEffectGpuLeaseProvider? leaseProvider = _gpuLeaseProvider;
         if (leaseProvider != null && pixels >= GpuPixelThreshold)
         {
             EditorServices.ReportInformation(nameof(ImageEffect),
-                $"ApplyColorFilter attempting GPU path ({source.Width}x{source.Height}, {pixels:N0} px).");
+                $"ApplyColorFilter attempting GPU path via render-thread lease provider ({source.Width}x{source.Height}, {pixels:N0} px).");
 
             try
             {
@@ -98,25 +122,26 @@ public abstract class ImageEffect : ShareX.ImageEditor.ImageEffects.ImageEffect
                 if (gpuResult != null)
                 {
                     ReportInformationOnce(ref _gpuSuccessDiagnosticSent,
-                        "ApplyColorFilter GPU path succeeded; effects are being processed with GPU acceleration.");
+                        "ApplyColorFilter GPU path succeeded via render-thread lease provider.");
                     return gpuResult;
                 }
 
                 EditorServices.ReportWarning(nameof(ImageEffect),
-                    "ApplyColorFilter GPU path returned null; falling back to CPU.");
+                    "ApplyColorFilter render-thread lease provider returned null; falling back to CPU.");
             }
             catch (Exception ex)
             {
                 EditorServices.ReportWarning(nameof(ImageEffect),
-                    "ApplyColorFilter GPU exception; falling back to CPU.", ex);
+                    "ApplyColorFilter render-thread lease provider threw; falling back to CPU.", ex);
             }
         }
-        else if (leaseProvider == null)
+
+        if (leaseProvider == null && hostGpuProvider == null)
         {
             ReportInformationOnce(ref _cpuNoProviderDiagnosticSent,
-                "ApplyColorFilter using CPU path because no GPU lease provider is registered.");
+                "ApplyColorFilter using CPU path because no GPU provider is registered.");
         }
-        else
+        else if (pixels < GpuPixelThreshold)
         {
             ReportInformationOnce(ref _cpuSmallImageDiagnosticSent,
                 $"ApplyColorFilter using CPU path for small images below {GpuPixelThreshold:N0} px.");
