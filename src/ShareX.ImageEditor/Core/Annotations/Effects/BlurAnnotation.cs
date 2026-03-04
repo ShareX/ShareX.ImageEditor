@@ -15,9 +15,6 @@ public partial class BlurAnnotation : BaseEffectAnnotation
         Amount = 10; // Default blur radius
     }
 
-
-
-
     /// <summary>
     /// Update the internal blurred bitmap based on the source image
     /// </summary>

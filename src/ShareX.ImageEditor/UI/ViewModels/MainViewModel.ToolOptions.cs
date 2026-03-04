@@ -450,7 +450,7 @@ namespace ShareX.ImageEditor.ViewModels
                     EditorTool.Text => "\uf031",
                     EditorTool.SpeechBalloon => "\uf4ad",
                     EditorTool.Step => "\uf0cb",
-                    EditorTool.Blur => "\uf1fc",
+                    EditorTool.Blur => "\uf043",
                     EditorTool.Pixelate => "\uf009",
                     EditorTool.Magnify => "\uf00e",
                     EditorTool.Spotlight => "\uf0eb",

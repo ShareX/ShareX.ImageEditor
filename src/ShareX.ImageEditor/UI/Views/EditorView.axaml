@@ -34,7 +34,7 @@
         <x:String x:Key="IconText">&#xf031;</x:String>
         <x:String x:Key="IconSpeechBalloon">&#xf4ad;</x:String>
         <x:String x:Key="IconNumber">&#xf0cb;</x:String>
-        <x:String x:Key="IconBlur">&#xf1fc;</x:String>
+        <x:String x:Key="IconBlur">&#xf043;</x:String>
         <x:String x:Key="IconPixelate">&#xf009;</x:String>
         <x:String x:Key="IconMagnify">&#xf00e;</x:String>
         <x:String x:Key="IconSpotlight">&#xf0eb;</x:String>
@@ -591,6 +591,11 @@
                                 ToolTip.Tip="Step (N)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconNumber}"/>
                         <Button Classes="editor-button" Width="40"
+                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
+                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
+                                ToolTip.Tip="Highlight (H)"
+                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
+                        <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SmartEraser}"
                                 ToolTip.Tip="Smart Eraser (W)"
@@ -610,11 +615,6 @@
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Magnify}"
                                 ToolTip.Tip="Magnify (M)"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconMagnify}"/>
-                        <Button Classes="editor-button" Width="40"
-                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
-                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Highlight}"
-                                ToolTip.Tip="Highlight (H)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Black" FontSize="16" Content="{StaticResource IconHighlighter}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Spotlight}"
