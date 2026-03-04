@@ -147,6 +147,8 @@ namespace ShareX.ImageEditor.Views.Dialogs
                 ["perspective_warp"] = () => new PerspectiveWarpDialog(),
                 ["pinch_bulge"] = () => new PinchBulgeDialog(),
                 ["twirl"] = () => new TwirlDialog(),
+                ["resize_image"] = () => new ResizeImageDialog(),
+                ["resize_canvas"] = () => new ResizeCanvasDialog(),
 
                 // --- Quality ---
                 ["blur"] = () => new BlurDialog(),

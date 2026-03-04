@@ -36,51 +36,6 @@ namespace ShareX.ImageEditor.Views
     {
         // --- Edit Menu Event Handlers ---
 
-        private void OnResizeImageRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new ResizeImageDialog();
-                dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
-        }
-
-        private void OnResizeCanvasRequested(object? sender, EventArgs e)
-        {
-            if (DataContext is MainViewModel vm && vm.PreviewImage != null)
-            {
-                var dialog = new ResizeCanvasDialog();
-
-                dialog.ApplyRequested += (s, args) =>
-                {
-                    vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                dialog.CancelRequested += (s, args) =>
-                {
-                    vm.CloseEffectsPanelCommand.Execute(null);
-                };
-
-                vm.EffectsPanelContent = dialog;
-                vm.IsEffectsPanelOpen = true;
-            }
-        }
-
         private void OnCropImageRequested(object? sender, EventArgs e)
         {
             if (DataContext is MainViewModel vm && vm.PreviewImage != null)
@@ -247,8 +202,18 @@ namespace ShareX.ImageEditor.Views
             if (!EffectDialogRegistry.TryCreate(e.EffectId, out var dialog) || dialog == null)
                 return;
 
-            if (dialog is IEffectDialog effectDialog)
-                ShowEffectDialog(dialog, effectDialog);
+            switch (dialog)
+            {
+                case IEffectDialog effectDialog:
+                    ShowEffectDialog(dialog, effectDialog);
+                    break;
+                case ResizeImageDialog resizeImageDialog:
+                    ShowResizeImageDialog(resizeImageDialog);
+                    break;
+                case ResizeCanvasDialog resizeCanvasDialog:
+                    ShowResizeCanvasDialog(resizeCanvasDialog);
+                    break;
+            }
         }
 
         /// <summary>
@@ -270,6 +235,45 @@ namespace ShareX.ImageEditor.Views
             effectDialog.CancelRequested += (s, e) =>
             {
                 vm.CancelEffectPreview();
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
+        }
+
+        private void ShowResizeImageDialog(ResizeImageDialog dialog)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+                return;
+
+            dialog.Initialize((int)vm.ImageWidth, (int)vm.ImageHeight);
+            dialog.ApplyRequested += (s, args) =>
+            {
+                vm.ResizeImage(args.NewWidth, args.NewHeight, args.Quality);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+            dialog.CancelRequested += (s, args) =>
+            {
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+
+            vm.EffectsPanelContent = dialog;
+            vm.IsEffectsPanelOpen = true;
+        }
+
+        private void ShowResizeCanvasDialog(ResizeCanvasDialog dialog)
+        {
+            if (DataContext is not MainViewModel vm || vm.PreviewImage == null)
+                return;
+
+            dialog.ApplyRequested += (s, args) =>
+            {
+                vm.ResizeCanvas(args.Top, args.Right, args.Bottom, args.Left, args.BackgroundColor);
+                vm.CloseEffectsPanelCommand.Execute(null);
+            };
+            dialog.CancelRequested += (s, args) =>
+            {
                 vm.CloseEffectsPanelCommand.Execute(null);
             };
 

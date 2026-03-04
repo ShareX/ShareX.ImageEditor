@@ -240,8 +240,6 @@ namespace ShareX.ImageEditor.Controls
         public event EventHandler? MeanRemovalRequested;
         public event EventHandler? SmoothRequested;
 
-        public event EventHandler? ResizeImageRequested;
-        public event EventHandler? ResizeCanvasRequested;
         public event EventHandler? CropImageRequested;
         public event EventHandler? AutoCropImageRequested;
         public event EventHandler? Rotate90CWRequested;
@@ -464,8 +462,8 @@ namespace ShareX.ImageEditor.Controls
             manip.AddEffect("Flip vertical", "\uf338", "Flips the image vertically.", () => Raise(FlipVerticalRequested));
             manip.AddEffect("Perspective warp...", "\uf061", "Warps the image perspective.", () => RaiseDialog("perspective_warp"));
             manip.AddEffect("Pinch / bulge...", "\uf00e", "Applies a pinch or bulge effect.", () => RaiseDialog("pinch_bulge"));
-            manip.AddEffect("Resize canvas...", "\uf0c8", "Resizes the canvas.", () => Raise(ResizeCanvasRequested));
-            manip.AddEffect("Resize image...", "\uf03e", "Resizes the image.", () => Raise(ResizeImageRequested));
+            manip.AddEffect("Resize canvas...", "\uf0c8", "Resizes the canvas.", () => RaiseDialog("resize_canvas"));
+            manip.AddEffect("Resize image...", "\uf03e", "Resizes the image.", () => RaiseDialog("resize_image"));
             manip.AddEffect("Rotate...", "\uf1de", "Rotates the image by a custom angle.", () => Raise(RotateCustomAngleRequested));
             manip.AddEffect("Rotate 180°", "\uf021", "Rotates the image by 180 degrees.", () => Raise(Rotate180Requested));
             manip.AddEffect("Rotate 3D...", "\uf1b2", "Rotates the image in 3D space.", () => RaiseDialog("rotate_3d"));
