@@ -27,7 +27,7 @@ using Avalonia.Media;
 
 namespace ShareX.ImageEditor
 {
-    public class EditorOptions
+    public class ImageEditorOptions
     {
         public static readonly Color PrimaryColor = Color.FromArgb(255, 242, 60, 60);
         public static readonly Color SecondaryColor = Color.FromArgb(255, 250, 250, 250);

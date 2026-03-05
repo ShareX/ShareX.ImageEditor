@@ -55,8 +55,8 @@ namespace ShareX.ImageEditor.ViewModels
             Cancel
         }
 
-        private readonly EditorOptions _options;
-        public EditorOptions Options => _options;
+        private readonly ImageEditorOptions _options;
+        public ImageEditorOptions Options => _options;
         public IAnnotationToolbarAdapter ToolbarAdapter { get; }
 
         private const string OutputRatioAuto = "Auto";
@@ -611,9 +611,9 @@ namespace ShareX.ImageEditor.ViewModels
 
         public static MainViewModel Current { get; private set; } = null!;
 
-        public MainViewModel(EditorOptions? options = null)
+        public MainViewModel(ImageEditorOptions? options = null)
         {
-            _options = options ?? new EditorOptions();
+            _options = options ?? new ImageEditorOptions();
             ToolbarAdapter = new EditorToolbarAdapter(this);
             Current = this;
             GradientPresets = BuildGradientPresets();

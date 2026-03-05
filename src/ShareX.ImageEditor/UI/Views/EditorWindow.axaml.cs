@@ -44,7 +44,7 @@ namespace ShareX.ImageEditor.Views
         {
         }
 
-        public EditorWindow(EditorOptions? options)
+        public EditorWindow(ImageEditorOptions? options)
         {
             InitializeComponent();
 

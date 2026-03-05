@@ -254,14 +254,14 @@ namespace ShareX.ImageEditor.Controls
         private readonly EffectCategory _favoritesCategory = new("Favorites", keepVisibleWhenEmpty: true, headerHint: FavoritesHeaderHint);
         private readonly Dictionary<string, EffectItem> _allEffectsById = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _favoriteEffectIds = new(StringComparer.OrdinalIgnoreCase);
-        private EditorOptions? _options;
+        private ImageEditorOptions? _options;
 
         public EffectBrowserPanel()
         {
             AvaloniaXamlLoader.Load(this);
             InitializeEffects();
             BuildEffectLookup();
-            LoadFavoriteEffects(EditorOptions.DefaultFavoriteEffects, persistToOptions: false);
+            LoadFavoriteEffects(ImageEditorOptions.DefaultFavoriteEffects, persistToOptions: false);
 
             var categoriesControl = this.FindControl<ItemsControl>("CategoriesControl");
             if (categoriesControl != null)
@@ -270,7 +270,7 @@ namespace ShareX.ImageEditor.Controls
             }
         }
 
-        public void SetOptions(EditorOptions options)
+        public void SetOptions(ImageEditorOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             LoadFavoriteEffects(options.FavoriteEffects, persistToOptions: true);
