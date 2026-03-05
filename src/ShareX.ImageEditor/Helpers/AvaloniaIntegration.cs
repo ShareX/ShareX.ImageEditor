@@ -118,7 +118,7 @@ namespace ShareX.ImageEditor
             window.Show();
         }
 
-        public static byte[]? ShowEditorDialog(Stream imageStream, EditorEvents? events = null, bool taskMode = false)
+        public static byte[]? ShowEditorDialog(Stream imageStream, ImageEditorOptions options, EditorEvents? events = null, bool taskMode = false)
         {
             byte[]? result = null;
             IEditorDiagnosticsSink? previousDiagnosticsSink = null;
@@ -156,7 +156,7 @@ namespace ShareX.ImageEditor
             }
 
             Initialize();
-            EditorWindow window = new EditorWindow();
+            EditorWindow window = new EditorWindow(options);
 
             if (imageStream != null)
             {

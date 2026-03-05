@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media;
+using Newtonsoft.Json;
 
 namespace ShareX.ImageEditor
 {
@@ -44,18 +45,33 @@ namespace ShareX.ImageEditor
             "flip_vertical"
         };
 
+        private static string ColorToHex(Color c) => $"#{c.A:X2}{c.R:X2}{c.G:X2}{c.B:X2}";
+        private static Color HexToColor(string hex) => Color.Parse(hex);
+
         // Editor
         public List<string> FavoriteEffects { get; set; } = new List<string>(DefaultFavoriteEffects);
 
         // Shared
-        public Color BorderColor { get; set; } = PrimaryColor;
-        public Color FillColor { get; set; } = Colors.Transparent;
+        public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);
+        [JsonIgnore]
+        public Color BorderColor { get => HexToColor(BorderColorHex); set => BorderColorHex = ColorToHex(value); }
+
+        public string FillColorHex { get; set; } = ColorToHex(Colors.Transparent);
+        [JsonIgnore]
+        public Color FillColor { get => HexToColor(FillColorHex); set => FillColorHex = ColorToHex(value); }
+
         public int Thickness { get; set; } = 4;
         public bool Shadow { get; set; } = false;
 
         // Text
-        public Color TextBorderColor { get; set; } = PrimaryColor;
-        public Color TextTextColor { get; set; } = SecondaryColor;
+        public string TextBorderColorHex { get; set; } = ColorToHex(PrimaryColor);
+        [JsonIgnore]
+        public Color TextBorderColor { get => HexToColor(TextBorderColorHex); set => TextBorderColorHex = ColorToHex(value); }
+
+        public string TextTextColorHex { get; set; } = ColorToHex(SecondaryColor);
+        [JsonIgnore]
+        public Color TextTextColor { get => HexToColor(TextTextColorHex); set => TextTextColorHex = ColorToHex(value); }
+
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
         public bool TextBold { get; set; } = true;
@@ -63,16 +79,34 @@ namespace ShareX.ImageEditor
         public bool TextUnderline { get; set; } = false;
 
         // Speech Balloon
-        public Color SpeechBalloonBorderColor { get; set; } = Colors.Transparent;
-        public Color SpeechBalloonFillColor { get; set; } = PrimaryColor;
-        public Color SpeechBalloonTextColor { get; set; } = SecondaryColor;
+        public string SpeechBalloonBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
+        [JsonIgnore]
+        public Color SpeechBalloonBorderColor { get => HexToColor(SpeechBalloonBorderColorHex); set => SpeechBalloonBorderColorHex = ColorToHex(value); }
+
+        public string SpeechBalloonFillColorHex { get; set; } = ColorToHex(PrimaryColor);
+        [JsonIgnore]
+        public Color SpeechBalloonFillColor { get => HexToColor(SpeechBalloonFillColorHex); set => SpeechBalloonFillColorHex = ColorToHex(value); }
+
+        public string SpeechBalloonTextColorHex { get; set; } = ColorToHex(SecondaryColor);
+        [JsonIgnore]
+        public Color SpeechBalloonTextColor { get => HexToColor(SpeechBalloonTextColorHex); set => SpeechBalloonTextColorHex = ColorToHex(value); }
+
         public int SpeechBalloonThickness { get; set; } = 4;
         public float SpeechBalloonFontSize { get; set; } = 48;
 
         // Step
-        public Color StepBorderColor { get; set; } = Colors.Transparent;
-        public Color StepFillColor { get; set; } = PrimaryColor;
-        public Color StepTextColor { get; set; } = SecondaryColor;
+        public string StepBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
+        [JsonIgnore]
+        public Color StepBorderColor { get => HexToColor(StepBorderColorHex); set => StepBorderColorHex = ColorToHex(value); }
+
+        public string StepFillColorHex { get; set; } = ColorToHex(PrimaryColor);
+        [JsonIgnore]
+        public Color StepFillColor { get => HexToColor(StepFillColorHex); set => StepFillColorHex = ColorToHex(value); }
+
+        public string StepTextColorHex { get; set; } = ColorToHex(SecondaryColor);
+        [JsonIgnore]
+        public Color StepTextColor { get => HexToColor(StepTextColorHex); set => StepTextColorHex = ColorToHex(value); }
+
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
 
@@ -80,7 +114,9 @@ namespace ShareX.ImageEditor
         public int SmartEraserThickness { get; set; } = 10;
 
         // Highlight
-        public Color HighlightFillColor { get; set; } = Colors.Yellow;
+        public string HighlightFillColorHex { get; set; } = ColorToHex(Colors.Yellow);
+        [JsonIgnore]
+        public Color HighlightFillColor { get => HexToColor(HighlightFillColorHex); set => HighlightFillColorHex = ColorToHex(value); }
 
         // Effects
         public float BlurStrength { get; set; } = 30;
