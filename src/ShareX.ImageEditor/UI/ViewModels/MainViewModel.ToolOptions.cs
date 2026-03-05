@@ -282,9 +282,43 @@ namespace ShareX.ImageEditor.ViewModels
         [ObservableProperty]
         private float _effectStrength = 10;
 
+        private const float MinEffectStrength = 1;
+        private const float MaxBlurStrength = 200;
+        private const float MaxPixelateStrength = 200;
+        private const float MaxMagnifyStrength = 10;
+        private const float MaxSpotlightStrength = 100;
+
+        public static float GetMaxEffectStrength(EditorTool tool) => tool switch
+        {
+            EditorTool.Blur => MaxBlurStrength,
+            EditorTool.Pixelate => MaxPixelateStrength,
+            EditorTool.Magnify => MaxMagnifyStrength,
+            EditorTool.Spotlight => MaxSpotlightStrength,
+            _ => 30
+        };
+
+        private EditorTool GetEffectiveStrengthTool()
+        {
+            if (ActiveTool == EditorTool.Select && _selectedAnnotation != null)
+            {
+                return _selectedAnnotation.ToolType;
+            }
+
+            return ActiveTool;
+        }
+
+        public float EffectStrengthMaximum => GetMaxEffectStrength(GetEffectiveStrengthTool());
+
         partial void OnEffectStrengthChanged(float value)
         {
-            switch (ActiveTool)
+            var clamped = Math.Clamp(value, MinEffectStrength, EffectStrengthMaximum);
+            if (Math.Abs(clamped - value) > float.Epsilon)
+            {
+                EffectStrength = clamped;
+                return;
+            }
+
+            switch (GetEffectiveStrengthTool())
             {
                 case EditorTool.Blur:
                     Options.BlurStrength = value;
@@ -526,6 +560,7 @@ namespace ShareX.ImageEditor.ViewModels
             OnPropertyChanged(nameof(ShowShadow));
             OnPropertyChanged(nameof(ActiveToolIcon));
             OnPropertyChanged(nameof(ActiveToolName));
+            OnPropertyChanged(nameof(EffectStrengthMaximum));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 

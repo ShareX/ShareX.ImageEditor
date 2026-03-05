@@ -89,6 +89,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.EffectStrength = value;
     }
 
+    public float EffectStrengthMaximum => _viewModel.EffectStrengthMaximum;
+
     public bool ShadowEnabled
     {
         get => _viewModel.ShadowEnabled;

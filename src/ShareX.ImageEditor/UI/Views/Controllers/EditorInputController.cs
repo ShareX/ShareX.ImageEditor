@@ -271,8 +271,8 @@ public class EditorInputController
                 HandleTextTool(canvas, brush, vm.StrokeWidth);
                 return;
             case EditorTool.Spotlight:
-                // Map EffectStrength (0-30) to DarkenOpacity (0-255)
-                var opacity = (byte)Math.Clamp(vm.EffectStrength / 30.0 * 255, 0, 255);
+                // Map EffectStrength (0-100) to DarkenOpacity (0-255)
+                var opacity = (byte)Math.Clamp(vm.EffectStrength / MainViewModel.GetMaxEffectStrength(EditorTool.Spotlight) * 255, 0, 255);
                 var spotlightAnnotation = new SpotlightAnnotation
                 {
                     StartPoint = ToSKPoint(_startPoint),

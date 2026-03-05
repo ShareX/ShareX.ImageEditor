@@ -128,8 +128,8 @@ namespace ShareX.ImageEditor.Views
                 }
                 else if (selected?.Tag is SpotlightAnnotation spotlightAnn)
                 {
-                    // Map EffectStrength (0-30) to DarkenOpacity (0-255)
-                    spotlightAnn.DarkenOpacity = (byte)Math.Clamp(strength / 30.0 * 255, 0, 255);
+                    // Map EffectStrength (0-100) to DarkenOpacity (0-255)
+                    spotlightAnn.DarkenOpacity = (byte)Math.Clamp(strength / MainViewModel.GetMaxEffectStrength(EditorTool.Spotlight) * 255, 0, 255);
 
                     if (selected is SpotlightControl spotlightControl)
                     {

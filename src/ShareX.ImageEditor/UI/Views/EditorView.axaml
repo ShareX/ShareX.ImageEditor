@@ -716,6 +716,7 @@
                         <!-- Strength Slider -->
                         <controls:StrengthSlider
                             SelectedStrength="{Binding EffectStrength}"
+                            Maximum="{Binding EffectStrengthMaximum}"
                             StrengthChanged="OnStrengthChanged"
                             IsVisible="{Binding ShowStrength}"
                             ToolTip.Tip="Effect Strength"/>
