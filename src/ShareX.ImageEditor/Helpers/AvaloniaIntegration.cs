@@ -56,8 +56,8 @@ namespace ShareX.ImageEditor
     public class EditorEvents
     {
         public Action<byte[]>? CopyImageRequested { get; set; }
-        public Func<byte[], string?>? SaveImageRequested { get; set; }
-        public Func<byte[], string?>? SaveImageAsRequested { get; set; }
+        public Func<byte[], string?, string?>? SaveImageRequested { get; set; }
+        public Func<byte[], string?, string?>? SaveImageAsRequested { get; set; }
         public Action<byte[]>? PinImageRequested { get; set; }
         public Action<byte[]>? UploadImageRequested { get; set; }
         public Action<EditorDiagnosticEvent>? DiagnosticReported { get; set; }
@@ -238,7 +238,7 @@ namespace ShareX.ImageEditor
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null)
                     {
-                        string? savedPath = InvokeHostSaveCallback(bytes, events.SaveImageRequested, nameof(EditorEvents.SaveImageRequested));
+                        string? savedPath = InvokeHostSaveCallback(bytes, vm.ImageFilePath, events.SaveImageRequested, nameof(EditorEvents.SaveImageRequested));
                         if (!string.IsNullOrEmpty(savedPath))
                         {
                             vm.ImageFilePath = savedPath;
@@ -254,7 +254,7 @@ namespace ShareX.ImageEditor
                     byte[]? bytes = window.GetResultBytes();
                     if (bytes != null)
                     {
-                        string? savedPath = InvokeHostSaveCallback(bytes, events.SaveImageAsRequested, nameof(EditorEvents.SaveImageAsRequested));
+                        string? savedPath = InvokeHostSaveCallback(bytes, vm.ImageFilePath, events.SaveImageAsRequested, nameof(EditorEvents.SaveImageAsRequested));
                         if (!string.IsNullOrEmpty(savedPath))
                         {
                             vm.ImageFilePath = savedPath;
@@ -312,11 +312,11 @@ namespace ShareX.ImageEditor
             }
         }
 
-        private static string? InvokeHostSaveCallback(byte[] bytes, Func<byte[], string?> callback, string callbackName)
+        private static string? InvokeHostSaveCallback(byte[] bytes, string? filePath, Func<byte[], string?, string?> callback, string callbackName)
         {
             try
             {
-                return callback(bytes);
+                return callback(bytes, filePath);
             }
             catch (Exception ex)
             {
