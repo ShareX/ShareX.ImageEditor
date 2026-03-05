@@ -156,6 +156,7 @@ namespace ShareX.ImageEditor.ViewModels
         // --- Effect Live Preview Logic ---
 
         private SkiaSharp.SKBitmap? _preEffectImage;
+        private SkiaSharp.SKBitmap? _latestEffectPreviewImage;
 
         /// <summary>
         /// Called when an effect dialog opens to store the state before previewing.
@@ -173,6 +174,12 @@ namespace ShareX.ImageEditor.ViewModels
             {
                 return;
             }
+
+            if (_latestEffectPreviewImage != null && !ReferenceEquals(_latestEffectPreviewImage, _preEffectImage))
+            {
+                _latestEffectPreviewImage.Dispose();
+            }
+            _latestEffectPreviewImage = null;
 
             // ISSUE-024 fix: Dispose previous bitmap before reassignment
             _preEffectImage?.Dispose();
@@ -234,6 +241,16 @@ namespace ShareX.ImageEditor.ViewModels
         private void CommitEffectAndCleanup(SkiaSharp.SKBitmap result, string statusMessage)
         {
             SkiaSharp.SKBitmap? preEffectImage = _preEffectImage;
+            SkiaSharp.SKBitmap? latestPreviewImage = _latestEffectPreviewImage;
+            _latestEffectPreviewImage = null;
+
+            if (latestPreviewImage != null &&
+                !ReferenceEquals(latestPreviewImage, result) &&
+                !ReferenceEquals(latestPreviewImage, preEffectImage))
+            {
+                latestPreviewImage.Dispose();
+            }
+
             bool applied = false;
             bool resultTransferred = false;
 
@@ -320,6 +337,12 @@ namespace ShareX.ImageEditor.ViewModels
                 UpdatePreviewImageOnly(source, syncSourceState: true);
             }
 
+            if (_latestEffectPreviewImage != null && !ReferenceEquals(_latestEffectPreviewImage, _preEffectImage))
+            {
+                _latestEffectPreviewImage.Dispose();
+            }
+            _latestEffectPreviewImage = null;
+
             _preEffectImage?.Dispose();
             _preEffectImage = null;
 
@@ -337,14 +360,47 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (_preEffectImage == null || effect == null) return;
 
+            SkiaSharp.SKBitmap? result = null;
+
             try
             {
-                var result = effect(_preEffectImage);
+                result = effect(_preEffectImage);
+                if (result == null)
+                {
+                    return;
+                }
+
+                if (!IsBitmapAlive(result))
+                {
+                    result.Dispose();
+                    return;
+                }
+
+                // Normalize to a distinct owned instance if operation returns the source itself.
+                if (ReferenceEquals(result, _preEffectImage))
+                {
+                    SkiaSharp.SKBitmap? copied = SafeCopyBitmap(result, "PreviewEffect.ReferenceEqual");
+                    if (copied == null)
+                    {
+                        return;
+                    }
+
+                    result = copied;
+                }
+
                 UpdatePreviewImageOnly(result, syncSourceState: false);
-                result.Dispose();
+
+                if (_latestEffectPreviewImage != null && !ReferenceEquals(_latestEffectPreviewImage, _preEffectImage))
+                {
+                    _latestEffectPreviewImage.Dispose();
+                }
+
+                _latestEffectPreviewImage = result;
+                result = null;
             }
             catch (Exception ex)
             {
+                result?.Dispose();
                 EditorServices.ReportError(nameof(MainViewModel), "Failed to render live effect preview.", ex);
             }
         }
@@ -356,8 +412,25 @@ namespace ShareX.ImageEditor.ViewModels
         {
             if (_preEffectImage == null) return;
 
-            var result = effect(_preEffectImage);
-            CommitEffectAndCleanup(result, statusMessage);
+            if (IsBitmapAlive(_latestEffectPreviewImage))
+            {
+                SkiaSharp.SKBitmap previewResult = _latestEffectPreviewImage!;
+                _latestEffectPreviewImage = null;
+                CommitEffectAndCleanup(previewResult, statusMessage);
+                return;
+            }
+
+            _latestEffectPreviewImage?.Dispose();
+            _latestEffectPreviewImage = null;
+
+            SkiaSharp.SKBitmap? result = effect(_preEffectImage);
+            if (!IsBitmapAlive(result))
+            {
+                result?.Dispose();
+                return;
+            }
+
+            CommitEffectAndCleanup(result!, statusMessage);
         }
 
         // --- Rotate Custom Angle Feature ---
