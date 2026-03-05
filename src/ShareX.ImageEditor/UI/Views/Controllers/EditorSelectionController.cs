@@ -912,6 +912,9 @@ public class EditorSelectionController
             Background = Brushes.White,
             Tag = tag,
             Cursor = cursor,
+            // Keep handle centers stable while dragging; layout rounding can cause
+            // half-pixel positions to snap left/right on consecutive frames.
+            UseLayoutRounding = false,
             BoxShadow = new BoxShadows(new BoxShadow
             {
                 OffsetX = 0,
