@@ -389,7 +389,13 @@ namespace ShareX.ImageEditor.Controls
                 normalizedId = alias;
             }
 
-            return _allEffectsById.TryGetValue(normalizedId, out effect);
+            if (_allEffectsById.TryGetValue(normalizedId, out EffectItem? resolvedEffect) && resolvedEffect != null)
+            {
+                effect = resolvedEffect;
+                return true;
+            }
+
+            return false;
         }
 
         private bool TryAddFavorite(EffectItem effect)
