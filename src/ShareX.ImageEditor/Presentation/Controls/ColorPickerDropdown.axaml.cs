@@ -106,13 +106,14 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 UpdateIconForeground(SelectedColorValue);
 
-                var colorView = this.FindControl<Avalonia.Controls.ColorView>("ColorViewControl");
+                var colorView = this.FindControl<ColorView>("ColorViewControl");
                 if (colorView?.PaletteColors != null)
                 {
                     var paletteColors = colorView.PaletteColors.ToList();
                     int count = paletteColors.Count;
-                    paletteColors[count - 7] = Color.FromArgb(255, 235, 235, 235);
-                    paletteColors[count - 1] = Color.FromArgb(255, 20, 20, 20);
+                    paletteColors[count - 13] = Color.FromArgb(255, 235, 235, 235);
+                    paletteColors[count - 7] = Color.FromArgb(255, 20, 20, 20);
+                    paletteColors[count - 1] = Colors.Transparent;
                     colorView.PaletteColors = paletteColors;
                 }
             };
