@@ -24,13 +24,13 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.ViewModels;
-using ShareX.ImageEditor.Views.Dialogs;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views.Dialogs;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Views
+namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {

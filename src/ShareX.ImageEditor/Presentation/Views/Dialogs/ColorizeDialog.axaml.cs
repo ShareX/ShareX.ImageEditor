@@ -2,10 +2,10 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using ShareX.ImageEditor.ImageEffects.Adjustments;
+using ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     public partial class ColorizeDialog : UserControl, IEffectDialog
     {

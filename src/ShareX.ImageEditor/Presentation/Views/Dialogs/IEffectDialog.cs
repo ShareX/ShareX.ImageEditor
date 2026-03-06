@@ -1,4 +1,4 @@
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     /// <summary>
     /// Interface for effect dialog controls that provide Apply, Preview, and Cancel functionality.

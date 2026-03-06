@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
-             x:Class="ShareX.ImageEditor.Controls.ColorPickerDropdown"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.ColorPickerDropdown"
              x:Name="ColorPickerDropdownRoot">
 
     <UserControl.Styles>

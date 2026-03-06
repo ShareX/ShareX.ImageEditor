@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
 public class VibranceImageEffect : ImageEffect
 {

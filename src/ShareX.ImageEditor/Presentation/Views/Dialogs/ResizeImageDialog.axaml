@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
-             x:Class="ShareX.ImageEditor.Views.Dialogs.ResizeImageDialog"
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.ResizeImageDialog"
              x:Name="ResizeImageDialogRoot">
 
     <StackPanel Spacing="0">

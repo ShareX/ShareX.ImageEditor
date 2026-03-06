@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Manipulations;
+namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
 public class AutoCropImageEffect : ImageEffect
 {

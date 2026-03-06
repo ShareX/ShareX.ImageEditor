@@ -23,10 +23,11 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.Editor;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Core.History;
 
 /// <summary>
 /// Manages undo/redo history for the editor using the Memento pattern.

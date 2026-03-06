@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public class ViewModelBase : ObservableObject
     {

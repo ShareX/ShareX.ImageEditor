@@ -23,10 +23,10 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Core.History;
 
 /// <summary>
 /// Memento pattern implementation for storing editor state.

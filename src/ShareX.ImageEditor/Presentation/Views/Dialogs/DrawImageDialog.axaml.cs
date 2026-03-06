@@ -3,9 +3,9 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
-using ShareX.ImageEditor.ImageEffects.Drawings;
+using ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     public partial class DrawImageDialog : UserControl, IEffectDialog
     {

@@ -1,7 +1,7 @@
 using Avalonia.Controls;
-using ShareX.ImageEditor.Controls;
+using ShareX.ImageEditor.Presentation.Controls;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 public partial class SpeechBalloonAnnotation
 {

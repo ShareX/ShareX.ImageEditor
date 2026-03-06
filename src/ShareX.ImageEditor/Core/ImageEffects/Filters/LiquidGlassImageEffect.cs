@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Filters;
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
 public class LiquidGlassImageEffect : ImageEffect
 {

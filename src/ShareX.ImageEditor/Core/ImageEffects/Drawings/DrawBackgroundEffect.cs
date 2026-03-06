@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Drawings;
+namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
 public sealed class DrawBackgroundEffect : ImageEffect
 {

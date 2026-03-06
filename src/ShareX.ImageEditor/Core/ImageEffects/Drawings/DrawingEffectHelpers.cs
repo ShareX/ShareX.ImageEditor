@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Drawings;
+namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
 internal static class DrawingEffectHelpers
 {

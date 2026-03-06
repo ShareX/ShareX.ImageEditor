@@ -25,7 +25,7 @@
 
 using Avalonia.Controls;
 
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     /// <summary>
     /// XIP0039 Pain Point 3: Centralizes effect dialog factories so new effects can be

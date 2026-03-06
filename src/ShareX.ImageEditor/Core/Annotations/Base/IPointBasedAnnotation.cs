@@ -25,7 +25,7 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Interface for annotations that store a collection of points (freehand, polyline, etc.)

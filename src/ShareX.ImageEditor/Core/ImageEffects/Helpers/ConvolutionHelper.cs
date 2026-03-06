@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Helpers;
+namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 internal static class ConvolutionHelper
 {

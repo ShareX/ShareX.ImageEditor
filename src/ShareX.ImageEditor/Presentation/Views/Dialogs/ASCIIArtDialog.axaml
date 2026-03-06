@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="420"
-             x:Class="ShareX.ImageEditor.Views.Dialogs.ASCIIArtDialog"
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.ASCIIArtDialog"
              x:Name="ASCIIArtDialogRoot">
 
     <StackPanel Spacing="0">

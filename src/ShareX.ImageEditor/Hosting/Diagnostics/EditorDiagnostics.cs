@@ -23,7 +23,7 @@
 
 #endregion License Information (GPL v3)
 
-namespace ShareX.ImageEditor.Services;
+namespace ShareX.ImageEditor.Hosting.Diagnostics;
 
 public enum EditorDiagnosticLevel
 {

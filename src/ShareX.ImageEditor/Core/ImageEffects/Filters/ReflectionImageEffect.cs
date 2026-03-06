@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Filters;
+namespace ShareX.ImageEditor.Core.ImageEffects.Filters;
 
 public class ReflectionImageEffect : ImageEffect
 {

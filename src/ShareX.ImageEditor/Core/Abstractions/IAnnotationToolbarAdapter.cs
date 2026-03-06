@@ -23,10 +23,10 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
 using System.ComponentModel;
 
-namespace ShareX.ImageEditor.Abstractions;
+namespace ShareX.ImageEditor.Core.Abstractions;
 
 /// <summary>
 /// Core-facing contract for annotation toolbar state and actions.

@@ -27,11 +27,12 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.Services;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Presentation.Rendering;
+using ShareX.ImageEditor.Hosting;
 using System.Collections.ObjectModel;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {

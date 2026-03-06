@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using System.Globalization;
 
-namespace ShareX.ImageEditor.Controls
+namespace ShareX.ImageEditor.Presentation.Controls
 {
     public class EffectSlider : Slider
     {

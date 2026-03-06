@@ -4,13 +4,13 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor;
+using ShareX.ImageEditor.Hosting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace ShareX.ImageEditor.Controls
+namespace ShareX.ImageEditor.Presentation.Controls
 {
     public sealed class EffectDialogRequestedEventArgs : EventArgs
     {

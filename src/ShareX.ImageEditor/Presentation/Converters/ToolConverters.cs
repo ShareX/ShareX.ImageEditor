@@ -24,10 +24,10 @@
 #endregion License Information (GPL v3)
 using Avalonia.Data.Converters;
 using Avalonia.Media;
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
 using System.Globalization;
 
-namespace ShareX.ImageEditor.Converters
+namespace ShareX.ImageEditor.Presentation.Converters
 {
     /// <summary>
     /// Converts EditorTool comparison to background color for tool button highlighting

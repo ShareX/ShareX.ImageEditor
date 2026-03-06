@@ -1,9 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
 
-namespace ShareX.ImageEditor.Controls
+namespace ShareX.ImageEditor.Presentation.Controls
 {
     /// <summary>
     /// Custom control for rendering spotlight annotations with proper darkening effect

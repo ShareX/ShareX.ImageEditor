@@ -26,7 +26,7 @@
 using Avalonia;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Helpers;
+namespace ShareX.ImageEditor.Presentation.Rendering;
 
 /// <summary>
 /// XIP0039 Guardrail 1: Centralises the coordinate-space contract for annotation model values.

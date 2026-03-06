@@ -4,7 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     public partial class ResizeImageDialog : UserControl
     {

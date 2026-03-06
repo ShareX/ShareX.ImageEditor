@@ -23,7 +23,9 @@
 
 #endregion License Information (GPL v3)
 
-namespace ShareX.ImageEditor.Services;
+using ShareX.ImageEditor.Hosting.Diagnostics;
+
+namespace ShareX.ImageEditor.Hosting;
 
 /// <summary>
 /// Service locator for Editor services that must be provided by the host application.

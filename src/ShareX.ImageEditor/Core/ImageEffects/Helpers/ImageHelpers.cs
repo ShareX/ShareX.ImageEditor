@@ -23,11 +23,11 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.ImageEffects.Filters;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Core.ImageEffects.Filters;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Helpers;
+namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 /// <summary>
 /// Image manipulation utilities for the Editor library.

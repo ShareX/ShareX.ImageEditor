@@ -29,14 +29,14 @@ using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.Abstractions;
-using ShareX.ImageEditor.Adapters;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.Services;
+using ShareX.ImageEditor.Core.Abstractions;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.Editor;
+using ShareX.ImageEditor.Presentation.Theming;
+using ShareX.ImageEditor.Hosting;
 using System.Collections.ObjectModel;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {

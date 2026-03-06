@@ -5,13 +5,13 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Rendering;
+using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Views.Controllers;
+namespace ShareX.ImageEditor.Presentation.Views.Controllers;
 
 public class EditorInputController
 {
@@ -613,7 +613,7 @@ public class EditorInputController
 
             _selectionController.RegisterArrowEndpoint(path, _startPoint, arrowEnd);
         }
-        else if (_currentShape is ShareX.ImageEditor.Controls.SpotlightControl spotlight)
+        else if (_currentShape is ShareX.ImageEditor.Presentation.Controls.SpotlightControl spotlight)
         {
             if (spotlight.Annotation is SpotlightAnnotation spotAnn)
             {

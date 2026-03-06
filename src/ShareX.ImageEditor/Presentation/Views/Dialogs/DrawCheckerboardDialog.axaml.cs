@@ -3,11 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.ImageEffects.Drawings;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Core.ImageEffects.Drawings;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Views.Dialogs
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs
 {
     public partial class DrawCheckerboardDialog : UserControl, IEffectDialog
     {

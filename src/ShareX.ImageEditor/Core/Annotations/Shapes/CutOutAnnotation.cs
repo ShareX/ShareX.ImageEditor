@@ -25,7 +25,7 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// CutOut annotation - cuts out a horizontal or vertical section and joins remaining parts

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="40"
-             x:Class="ShareX.ImageEditor.Controls.StrengthSlider"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.StrengthSlider"
              x:Name="StrengthSliderRoot">
 
     <Grid ColumnDefinitions="Auto,*" Height="40" VerticalAlignment="Center">

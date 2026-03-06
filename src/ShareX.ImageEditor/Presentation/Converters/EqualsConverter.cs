@@ -26,7 +26,7 @@
 using Avalonia.Data.Converters;
 using System.Globalization;
 
-namespace ShareX.ImageEditor.Converters
+namespace ShareX.ImageEditor.Presentation.Converters
 {
     public class EqualsConverter : IValueConverter
     {

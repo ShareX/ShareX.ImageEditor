@@ -5,7 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
-namespace ShareX.ImageEditor.Controls
+namespace ShareX.ImageEditor.Presentation.Controls
 {
     public partial class FontSizePickerDropdown : UserControl
     {

@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class ConfirmationDialogViewModel : ObservableObject
     {

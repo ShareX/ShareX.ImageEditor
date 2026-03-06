@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ShareX.ImageEditor.Views
+namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class ConfirmationDialogView : UserControl
     {

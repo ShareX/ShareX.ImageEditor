@@ -29,16 +29,17 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.Services;
-using ShareX.ImageEditor.ViewModels;
-using ShareX.ImageEditor.Views.Controllers;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.Editor;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Rendering;
+using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
 
-namespace ShareX.ImageEditor.Views
+namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {

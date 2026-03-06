@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
-             x:Class="ShareX.ImageEditor.Views.Dialogs.ResizeCanvasDialog"
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.ResizeCanvasDialog"
              x:Name="ResizeCanvasDialogRoot">
 
     <UserControl.Styles>

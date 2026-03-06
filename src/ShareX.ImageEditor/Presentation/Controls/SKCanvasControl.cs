@@ -5,7 +5,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Controls;
+namespace ShareX.ImageEditor.Presentation.Controls;
 
 /// <summary>
 /// A control that allows direct SkiaSharp rendering into a WriteableBitmap.

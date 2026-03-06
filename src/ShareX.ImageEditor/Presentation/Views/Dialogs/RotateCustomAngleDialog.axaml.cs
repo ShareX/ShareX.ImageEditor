@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Presentation.ViewModels;
 
-namespace ShareX.ImageEditor.Views.Dialogs;
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs;
 
 public partial class RotateCustomAngleDialog : UserControl
 {

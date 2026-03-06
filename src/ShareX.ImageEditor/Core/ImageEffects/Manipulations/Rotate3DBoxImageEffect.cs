@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Manipulations;
+namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
 public class Rotate3DBoxImageEffect : ImageEffect
 {

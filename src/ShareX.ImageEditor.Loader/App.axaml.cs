@@ -27,7 +27,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System;
 using System.IO;
@@ -49,7 +49,7 @@ namespace ShareX.ImageEditor.Loader
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var window = new ShareX.ImageEditor.Views.EditorWindow();
+                var window = new ShareX.ImageEditor.Presentation.Views.EditorWindow();
                 desktop.MainWindow = window;
 
                 if (window.DataContext is MainViewModel vm)

@@ -25,7 +25,7 @@
 
 using Avalonia.Controls;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 public partial class TextAnnotation
 {
@@ -34,7 +34,7 @@ public partial class TextAnnotation
     /// </summary>
     public Control CreateVisual()
     {
-        var control = new ShareX.ImageEditor.Controls.OutlinedTextControl
+        var control = new ShareX.ImageEditor.Presentation.Controls.OutlinedTextControl
         {
             Annotation = this,
             Tag = this,

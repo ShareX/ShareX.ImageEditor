@@ -27,11 +27,12 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Rendering;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Presentation.Rendering;
 
 /// <summary>
 /// Indicates how an annotation visual is used by the host.

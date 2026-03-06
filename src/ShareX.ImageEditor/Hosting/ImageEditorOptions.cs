@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
@@ -26,7 +26,7 @@
 using Avalonia.Media;
 using Newtonsoft.Json;
 
-namespace ShareX.ImageEditor
+namespace ShareX.ImageEditor.Hosting
 {
     public class ImageEditorOptions
     {

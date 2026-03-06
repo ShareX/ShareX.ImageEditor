@@ -26,13 +26,13 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.Services;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Presentation.Theming;
+using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System.Reflection;
 
-namespace ShareX.ImageEditor.Views
+namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorWindow : Window
     {

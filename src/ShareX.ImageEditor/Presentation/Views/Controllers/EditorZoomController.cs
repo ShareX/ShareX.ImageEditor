@@ -2,9 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Presentation.ViewModels;
 
-namespace ShareX.ImageEditor.Views.Controllers;
+namespace ShareX.ImageEditor.Presentation.Views.Controllers;
 
 public class EditorZoomController
 {

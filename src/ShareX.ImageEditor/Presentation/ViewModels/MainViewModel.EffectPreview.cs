@@ -25,12 +25,13 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ShareX.ImageEditor.ImageEffects.Adjustments;
-using ShareX.ImageEditor.ImageEffects.Filters;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
-using ShareX.ImageEditor.Services;
+using ShareX.ImageEditor.Core.ImageEffects.Adjustments;
+using ShareX.ImageEditor.Core.ImageEffects.Filters;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Rendering;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
@@ -210,7 +211,7 @@ namespace ShareX.ImageEditor.ViewModels
                 // via EditorCore updates if not handled carefully.
                 string dimStr = $"{preview.Width} x {preview.Height}";
 
-                PreviewImage = Helpers.BitmapConversionHelpers.ToAvaloniBitmap(preview);
+                PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(preview);
                 ImageDimensions = dimStr;
 
                 if (syncSourceState)

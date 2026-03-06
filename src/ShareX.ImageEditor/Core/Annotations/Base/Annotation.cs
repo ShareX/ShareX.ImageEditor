@@ -26,7 +26,7 @@
 using SkiaSharp;
 using System.Text.Json.Serialization;
 
-namespace ShareX.ImageEditor.Annotations;
+namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Base class for all annotation types

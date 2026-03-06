@@ -26,7 +26,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace ShareX.ImageEditor.Extensions;
+namespace ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 public static class TypeExtensions
 {

@@ -23,7 +23,7 @@
 
 #endregion License Information (GPL v3)
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Hosting;
 
 /*
  * ============================================================================

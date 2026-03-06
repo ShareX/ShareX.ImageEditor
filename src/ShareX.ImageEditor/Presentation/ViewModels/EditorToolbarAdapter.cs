@@ -24,13 +24,13 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media;
-using ShareX.ImageEditor.Abstractions;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Core.Abstractions;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.ViewModels;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace ShareX.ImageEditor.Adapters;
+namespace ShareX.ImageEditor.Presentation.ViewModels;
 
 /// <summary>
 /// Bridges <see cref="MainViewModel"/> to the core-facing toolbar contract.

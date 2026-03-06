@@ -2,9 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
-namespace ShareX.ImageEditor.Views.Dialogs;
+namespace ShareX.ImageEditor.Presentation.Views.Dialogs;
 
 public partial class SliceDialog : UserControl, IEffectDialog
 {

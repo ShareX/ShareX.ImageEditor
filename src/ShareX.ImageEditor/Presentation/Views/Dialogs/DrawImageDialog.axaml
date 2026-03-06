@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace:ShareX.ImageEditor.Controls"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="520"
-             x:Class="ShareX.ImageEditor.Views.Dialogs.DrawImageDialog">
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawImageDialog">
 
     <StackPanel Spacing="0">
         <TextBlock Text="Image" Foreground="#9CA3AF" Margin="0,0,0,8"/>

@@ -28,11 +28,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
-using ShareX.ImageEditor.Services;
-using ShareX.ImageEditor.ViewModels;
-using ShareX.ImageEditor.Views;
+using ShareX.ImageEditor.Hosting.Diagnostics;
+using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views;
 
-namespace ShareX.ImageEditor
+namespace ShareX.ImageEditor.Hosting
 {
     public class AvaloniaApp : Application
     {

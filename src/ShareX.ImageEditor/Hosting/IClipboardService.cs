@@ -25,7 +25,7 @@
 
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Services;
+namespace ShareX.ImageEditor.Hosting;
 
 /// <summary>
 /// Interface for clipboard operations. Host applications should provide an implementation.

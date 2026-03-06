@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Styling;
 
-namespace ShareX.ImageEditor.Helpers
+namespace ShareX.ImageEditor.Presentation.Theming
 {
     public static class ThemeManager
     {

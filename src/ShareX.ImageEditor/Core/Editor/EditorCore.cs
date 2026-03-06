@@ -23,13 +23,14 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Helpers;
-using ShareX.ImageEditor.ImageEffects.Manipulations;
-using ShareX.ImageEditor.Services;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.History;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
+using ShareX.ImageEditor.Hosting;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor;
+namespace ShareX.ImageEditor.Core.Editor;
 
 /// <summary>
 /// Platform-agnostic image editor core. Handles all editing logic including:

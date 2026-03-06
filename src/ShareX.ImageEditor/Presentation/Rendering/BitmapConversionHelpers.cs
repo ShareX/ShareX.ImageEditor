@@ -1,7 +1,7 @@
 using Avalonia.Media.Imaging;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Helpers
+namespace ShareX.ImageEditor.Presentation.Rendering
 {
     /// <summary>
     /// Helper class for converting between Avalonia Bitmap and SKBitmap

@@ -26,11 +26,11 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using ShareX.ImageEditor.Annotations;
-using ShareX.ImageEditor.Controls;
-using ShareX.ImageEditor.ViewModels;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.ViewModels;
 
-namespace ShareX.ImageEditor.Views
+namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {

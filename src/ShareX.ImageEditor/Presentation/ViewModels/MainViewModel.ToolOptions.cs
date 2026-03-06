@@ -25,9 +25,9 @@
 
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ShareX.ImageEditor.Annotations;
+using ShareX.ImageEditor.Core.Annotations;
 
-namespace ShareX.ImageEditor.ViewModels
+namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {

@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:ShareX.ImageEditor.ViewModels"
+             xmlns:vm="clr-namespace:ShareX.ImageEditor.Presentation.ViewModels"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
-             x:Class="ShareX.ImageEditor.Views.ConfirmationDialogView"
+             x:Class="ShareX.ImageEditor.Presentation.Views.ConfirmationDialogView"
              x:DataType="vm:ConfirmationDialogViewModel">
 
     <Border Background="{DynamicResource ShareX.Brush.Background.Popup}" 

@@ -1,7 +1,7 @@
-using ShareX.ImageEditor.Helpers;
+using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.ImageEffects.Adjustments;
+namespace ShareX.ImageEditor.Core.ImageEffects.Adjustments;
 
 public class ReplaceColorImageEffect : ImageEffect
 {
