@@ -35,7 +35,7 @@ using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
-using ShareX.ImageEditor.Presentation.Views.Controllers;
+using ShareX.ImageEditor.Presentation.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
 

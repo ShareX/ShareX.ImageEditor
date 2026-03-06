@@ -11,7 +11,7 @@ using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 
-namespace ShareX.ImageEditor.Presentation.Views.Controllers;
+namespace ShareX.ImageEditor.Presentation.Controllers;
 
 public class EditorSelectionController
 {
