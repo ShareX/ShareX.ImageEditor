@@ -41,7 +41,6 @@ public class EditorSelectionController
 
     // Store arrow/line endpoints for editing
     private Dictionary<Control, (Point Start, Point End)> _shapeEndpoints = new();
-    private Dictionary<Control, Point> _speechBalloonTailPoints = new();
     private TextBox? _balloonTextEditor;
 
     public Control? SelectedShape => _selectedShape;
@@ -430,7 +429,7 @@ public class EditorSelectionController
         // Special handling for SpeechBalloonControl tail dragging
         if (_selectedShape is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloon && handleTag == "BalloonTail")
         {
-            balloon.TailPoint = new SKPoint((float)currentPoint.X, (float)currentPoint.Y);
+            balloon.SetTailPoint(new SKPoint((float)currentPoint.X, (float)currentPoint.Y));
             balloonControl.InvalidateVisual();
             _startPoint = currentPoint;
             UpdateSelectionHandles();
@@ -627,6 +626,7 @@ public class EditorSelectionController
         {
             var currentStart = balloon.StartPoint;
             var currentEnd = balloon.EndPoint;
+            var currentTailPoint = balloon.GetEffectiveTailPoint();
 
             var newStartPoint = new SKPoint(currentStart.X + (float)deltaX, currentStart.Y + (float)deltaY);
             var newEndPoint = new SKPoint(currentEnd.X + (float)deltaX, currentEnd.Y + (float)deltaY);
@@ -634,7 +634,7 @@ public class EditorSelectionController
             balloon.StartPoint = newStartPoint;
             balloon.EndPoint = newEndPoint;
 
-            balloon.TailPoint = new SKPoint(balloon.TailPoint.X + (float)deltaX, balloon.TailPoint.Y + (float)deltaY);
+            balloon.SetTailPoint(new SKPoint(currentTailPoint.X + (float)deltaX, currentTailPoint.Y + (float)deltaY));
 
             var newLeft = Canvas.GetLeft(balloonControl) + deltaX;
             var newTop = Canvas.GetTop(balloonControl) + deltaY;
@@ -752,17 +752,15 @@ public class EditorSelectionController
             CreateHandle(balloonLeft, balloonTop + balloonHeight, "BottomLeft");
             CreateHandle(balloonLeft, balloonTop + balloonHeight / 2, "LeftCenter");
 
-            if (balloon.TailPoint.X == 0 && balloon.TailPoint.Y == 0)
+            if (!balloon.HasTailPoint)
             {
-                balloon.TailPoint = new SKPoint(
-                    balloon.StartPoint.X + (balloon.EndPoint.X - balloon.StartPoint.X) / 2,
-                    balloon.EndPoint.Y + 30
-                );
+                balloon.EnsureTailPointInitialized();
                 balloonControl.InvalidateVisual();
             }
 
-            var tailX = (double)balloon.TailPoint.X;
-            var tailY = (double)balloon.TailPoint.Y;
+            var tailPoint = balloon.GetEffectiveTailPoint();
+            var tailX = (double)tailPoint.X;
+            var tailY = (double)tailPoint.Y;
             CreateHandle(tailX, tailY, "BalloonTail");
             UpdateHoverOutline();
             return;
@@ -951,11 +949,11 @@ public class EditorSelectionController
 
 
 
-        var annotation = balloonControl.Annotation;
-        var balloonLeft = Canvas.GetLeft(balloonControl);
-        var balloonTop = Canvas.GetTop(balloonControl);
-        var balloonWidth = balloonControl.Width;
-        var balloonHeight = balloonControl.Height;
+            var annotation = balloonControl.Annotation;
+            var balloonLeft = Canvas.GetLeft(balloonControl);
+            var balloonTop = Canvas.GetTop(balloonControl);
+            var balloonWidth = balloonControl.Width;
+            var balloonHeight = balloonControl.Height;
 
         // Check if balloon is too small (e.g. user just clicked without dragging)
         if (balloonWidth < 50 || balloonHeight < 30)
@@ -972,13 +970,10 @@ public class EditorSelectionController
             );
 
             // Fix Tail Point if it was at 0,0 or default
-            if (annotation.TailPoint.X == 0 && annotation.TailPoint.Y == 0 ||
+            if (!annotation.HasTailPoint ||
                (Math.Abs(annotation.TailPoint.X - annotation.StartPoint.X) < 1 && Math.Abs(annotation.TailPoint.Y - annotation.StartPoint.Y) < 1))
             {
-                annotation.TailPoint = new SKPoint(
-                    annotation.StartPoint.X + (float)balloonWidth / 2,
-                    annotation.StartPoint.Y + (float)balloonHeight + 30
-                );
+                annotation.SetTailPoint(annotation.GetDefaultTailPoint());
             }
 
             balloonControl.InvalidateVisual();
@@ -1266,6 +1261,11 @@ public class EditorSelectionController
                     minX -= 5; minY -= 5; maxX += 5; maxY += 5;
                 }
                 shapeBounds = new Rect(minX, minY, maxX - minX, maxY - minY);
+            }
+
+            if (child is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
+            {
+                shapeBounds = ToRect(balloonAnnotation.GetInteractionBounds(5));
             }
 
             // Start with rough bounds check

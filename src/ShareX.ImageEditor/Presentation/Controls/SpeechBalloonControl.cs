@@ -27,7 +27,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
-using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Controls
 {
@@ -62,24 +61,27 @@ namespace ShareX.ImageEditor.Presentation.Controls
             var width = Math.Max(annotationBounds.Width, 20);
             var height = Math.Max(annotationBounds.Height, 20);
 
-            // Create the speech balloon path using Avalonia geometry
-            var geometry = CreateSpeechBalloonGeometry(width, height, Annotation.TailPoint);
+            var bodyGeometry = CreateBodyGeometry(width, height);
+            var tailGeometry = CreateTailGeometry(Annotation);
+            Geometry geometry = tailGeometry != null
+                ? new CombinedGeometry(GeometryCombineMode.Union, bodyGeometry, tailGeometry)
+                : bodyGeometry;
 
             // Parse colors
             var strokeColor = Color.Parse(Annotation.StrokeColor);
             var fillColor = Color.Parse(Annotation.FillColor);
+            var fillBrush = new SolidColorBrush(fillColor);
+            var strokePen = new Pen(new SolidColorBrush(strokeColor), Annotation.StrokeWidth);
 
-            // Draw fill
             context.DrawGeometry(
-                new SolidColorBrush(fillColor),
+                fillBrush,
                 null,
                 geometry
             );
 
-            // Draw stroke
             context.DrawGeometry(
                 null,
-                new Pen(new SolidColorBrush(strokeColor), Annotation.StrokeWidth),
+                strokePen,
                 geometry
             );
 
@@ -114,101 +116,22 @@ namespace ShareX.ImageEditor.Presentation.Controls
             }
         }
 
-        private Geometry CreateSpeechBalloonGeometry(float width, float height, SKPoint tailPoint)
+        private static Geometry CreateBodyGeometry(double width, double height)
         {
             var geometry = new StreamGeometry();
 
             using (var ctx = geometry.Open())
             {
-                float radius = 10;
-                float left = 0;
-                float top = 0;
-                float right = width;
-                float bottom = height;
-
-                // Default tail point if not set - place it below and centered
-                var absoluteTailPoint = tailPoint == default
-                    ? new SKPoint(Annotation!.StartPoint.X + width / 2, Annotation!.StartPoint.Y + height + 30)
-                    : tailPoint;
-
-                // Convert tail point to relative coordinates (relative to the balloon's top-left corner)
-                var renderTailPoint = new Point(
-                    absoluteTailPoint.X - Annotation!.StartPoint.X,
-                    absoluteTailPoint.Y - Annotation!.StartPoint.Y
-                );
-
-                float tailX = (float)renderTailPoint.X;
-                float tailY = (float)renderTailPoint.Y;
-
-                // Determine which edge the tail should connect to based on tail position
-                // Strategy: Find which edge is closest to the tail point
-                float centerX = width / 2;
-                float centerY = height / 2;
-
-                // Calculate distances to each edge
-                float distToTop = Math.Abs(tailY - top);
-                float distToBottom = Math.Abs(tailY - bottom);
-                float distToLeft = Math.Abs(tailX - left);
-                float distToRight = Math.Abs(tailX - right);
-
-                // Determine primary direction: use angle from center to tail
-                float dx = tailX - centerX;
-                float dy = tailY - centerY;
-
-                // Determine which edge to connect to based on angle
-                // Use a simplified approach: check if tail is more horizontal or vertical
-                bool isMoreHorizontal = Math.Abs(dx) > Math.Abs(dy);
-
-                bool tailOnTop = false;
-                bool tailOnBottom = false;
-                bool tailOnLeft = false;
-                bool tailOnRight = false;
-
-                if (isMoreHorizontal)
-                {
-                    // Horizontal - choose left or right
-                    if (dx < 0)
-                        tailOnLeft = true;
-                    else
-                        tailOnRight = true;
-                }
-                else
-                {
-                    // Vertical - choose top or bottom
-                    if (dy < 0)
-                        tailOnTop = true;
-                    else
-                        tailOnBottom = true;
-                }
-
-                float baseTailWidth = 20;
-                float minConnectionMargin = radius + 5;
+                const double radius = 10;
+                double left = 0;
+                double top = 0;
+                double right = width;
+                double bottom = height;
 
                 // Start at top-left after the rounded corner
                 ctx.BeginFigure(new Point(left + radius, top), true);
 
-                // Top edge - check if tail connects here
-                if (tailOnTop)
-                {
-                    float minX = left + minConnectionMargin;
-                    float maxX = right - minConnectionMargin;
-                    if (minX > maxX) minX = maxX = (left + right) / 2;
-
-                    float connectionX = Math.Clamp(tailX, minX, maxX);
-                    float halfTailWidth = baseTailWidth / 2;
-                    float tailStartX = Math.Max(minX, connectionX - halfTailWidth);
-                    float tailEndX = Math.Min(maxX, connectionX + halfTailWidth);
-
-                    // Draw to tail start, then to tail point (outside), then to tail end
-                    ctx.LineTo(new Point(tailStartX, top));
-                    ctx.LineTo(renderTailPoint); // Tail point is outside
-                    ctx.LineTo(new Point(tailEndX, top));
-                    ctx.LineTo(new Point(right - radius, top));
-                }
-                else
-                {
-                    ctx.LineTo(new Point(right - radius, top));
-                }
+                ctx.LineTo(new Point(right - radius, top));
 
                 // Top-right corner
                 ctx.ArcTo(
@@ -219,27 +142,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Right edge - check if tail connects here
-                if (tailOnRight)
-                {
-                    float minY = top + minConnectionMargin;
-                    float maxY = bottom - minConnectionMargin;
-                    if (minY > maxY) minY = maxY = (top + bottom) / 2;
-
-                    float connectionY = Math.Clamp(tailY, minY, maxY);
-                    float halfTailWidth = baseTailWidth / 2;
-                    float tailStartY = Math.Max(minY, connectionY - halfTailWidth);
-                    float tailEndY = Math.Min(maxY, connectionY + halfTailWidth);
-
-                    ctx.LineTo(new Point(right, tailStartY));
-                    ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(new Point(right, tailEndY));
-                    ctx.LineTo(new Point(right, bottom - radius));
-                }
-                else
-                {
-                    ctx.LineTo(new Point(right, bottom - radius));
-                }
+                ctx.LineTo(new Point(right, bottom - radius));
 
                 // Bottom-right corner
                 ctx.ArcTo(
@@ -250,29 +153,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Bottom edge - check if tail connects here
-                if (tailOnBottom)
-                {
-                    float minX = left + minConnectionMargin;
-                    float maxX = right - minConnectionMargin;
-                    if (minX > maxX) minX = maxX = (left + right) / 2;
-
-                    float connectionX = Math.Clamp(tailX, minX, maxX);
-                    float halfTailWidth = baseTailWidth / 2;
-
-                    // For bottom edge, draw from right to left, so reverse order
-                    float tailStartX = Math.Min(maxX, connectionX + halfTailWidth);
-                    float tailEndX = Math.Max(minX, connectionX - halfTailWidth);
-
-                    ctx.LineTo(new Point(tailStartX, bottom));
-                    ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(new Point(tailEndX, bottom));
-                    ctx.LineTo(new Point(left + radius, bottom));
-                }
-                else
-                {
-                    ctx.LineTo(new Point(left + radius, bottom));
-                }
+                ctx.LineTo(new Point(left + radius, bottom));
 
                 // Bottom-left corner
                 ctx.ArcTo(
@@ -283,29 +164,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                     SweepDirection.Clockwise
                 );
 
-                // Left edge - check if tail connects here
-                if (tailOnLeft)
-                {
-                    float minY = top + minConnectionMargin;
-                    float maxY = bottom - minConnectionMargin;
-                    if (minY > maxY) minY = maxY = (top + bottom) / 2;
-
-                    float connectionY = Math.Clamp(tailY, minY, maxY);
-                    float halfTailWidth = baseTailWidth / 2;
-
-                    // For left edge, draw from bottom to top, so reverse order
-                    float tailStartY = Math.Min(maxY, connectionY + halfTailWidth);
-                    float tailEndY = Math.Max(minY, connectionY - halfTailWidth);
-
-                    ctx.LineTo(new Point(left, tailStartY));
-                    ctx.LineTo(renderTailPoint);
-                    ctx.LineTo(new Point(left, tailEndY));
-                    ctx.LineTo(new Point(left, top + radius));
-                }
-                else
-                {
-                    ctx.LineTo(new Point(left, top + radius));
-                }
+                ctx.LineTo(new Point(left, top + radius));
 
                 // Top-left corner
                 ctx.ArcTo(
@@ -320,6 +179,31 @@ namespace ShareX.ImageEditor.Presentation.Controls
             }
 
             return geometry;
+        }
+
+        private Geometry? CreateTailGeometry(SpeechBalloonAnnotation annotation)
+        {
+            if (!annotation.TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+            {
+                return null;
+            }
+
+            var geometry = new StreamGeometry();
+            using (var ctx = geometry.Open())
+            {
+                ctx.BeginFigure(ToRenderPoint(annotation, tailBaseStart), true);
+                ctx.LineTo(ToRenderPoint(annotation, tailTip));
+                ctx.LineTo(ToRenderPoint(annotation, tailBaseEnd));
+                ctx.EndFigure(true);
+            }
+
+            return geometry;
+        }
+
+        private static Point ToRenderPoint(SpeechBalloonAnnotation annotation, SkiaSharp.SKPoint point)
+        {
+            var bounds = annotation.GetBounds();
+            return new Point(point.X - bounds.Left, point.Y - bounds.Top);
         }
     }
 }

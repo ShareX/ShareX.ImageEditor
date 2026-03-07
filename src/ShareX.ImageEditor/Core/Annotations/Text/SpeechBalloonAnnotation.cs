@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json.Serialization;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.Annotations;
@@ -7,11 +9,22 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public partial class SpeechBalloonAnnotation : Annotation
 {
+    public const float DefaultTailOffset = 30f;
+    public const float TailWidthMultiplier = 0.3f;
+    private const float GeometryEpsilon = 0.001f;
+
     public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Tail point (absolute position)
     /// </summary>
     public SKPoint TailPoint { get; set; }
+
+    /// <summary>
+    /// Tracks whether the tail point was explicitly initialized.
+    /// This preserves intentional 0,0 tail positions while still allowing
+    /// legacy/uninitialized balloons to fall back to the default tail placement.
+    /// </summary>
+    public bool TailPointInitialized { get; set; }
 
     /// <summary>
     /// Optional text content inside the balloon
@@ -40,7 +53,114 @@ public partial class SpeechBalloonAnnotation : Annotation
         FillColor = "#FFFFFFFF"; // Default to white
     }
 
+    [JsonIgnore]
+    public bool HasTailPoint => TailPointInitialized || TailPoint != default;
 
+    public SKPoint GetDefaultTailPoint()
+    {
+        var bounds = GetBounds();
+        return new SKPoint(bounds.MidX, bounds.Bottom + DefaultTailOffset);
+    }
+
+    public SKPoint GetEffectiveTailPoint() => HasTailPoint ? TailPoint : GetDefaultTailPoint();
+
+    public void SetTailPoint(SKPoint tailPoint)
+    {
+        TailPoint = tailPoint;
+        TailPointInitialized = true;
+    }
+
+    public void EnsureTailPointInitialized()
+    {
+        if (!HasTailPoint)
+        {
+            SetTailPoint(GetDefaultTailPoint());
+        }
+        else if (!TailPointInitialized && TailPoint != default)
+        {
+            TailPointInitialized = true;
+        }
+    }
+
+    public bool IsTailVisible()
+    {
+        var bounds = GetBounds();
+        var tailPoint = GetEffectiveTailPoint();
+        return !bounds.Contains(tailPoint.X, tailPoint.Y);
+    }
+
+    public SKRect GetInteractionBounds(float tolerance = 0)
+    {
+        var interactionBounds = GetBounds();
+
+        if (TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+        {
+            var tailBounds = new SKRect(
+                MathF.Min(tailBaseStart.X, MathF.Min(tailTip.X, tailBaseEnd.X)),
+                MathF.Min(tailBaseStart.Y, MathF.Min(tailTip.Y, tailBaseEnd.Y)),
+                MathF.Max(tailBaseStart.X, MathF.Max(tailTip.X, tailBaseEnd.X)),
+                MathF.Max(tailBaseStart.Y, MathF.Max(tailTip.Y, tailBaseEnd.Y)));
+            interactionBounds = SKRect.Union(interactionBounds, tailBounds);
+        }
+
+        if (tolerance > 0)
+        {
+            interactionBounds = SKRect.Inflate(interactionBounds, tolerance, tolerance);
+        }
+
+        return interactionBounds;
+    }
+
+    public bool TryGetTailPolygon(out SKPoint tailBaseStart, out SKPoint tailTip, out SKPoint tailBaseEnd)
+    {
+        tailBaseStart = default;
+        tailTip = default;
+        tailBaseEnd = default;
+
+        var bounds = GetBounds();
+        if (bounds.Width <= 0 || bounds.Height <= 0)
+        {
+            return false;
+        }
+
+        tailTip = GetEffectiveTailPoint();
+        if (bounds.Contains(tailTip.X, tailTip.Y))
+        {
+            return false;
+        }
+
+        var center = new SKPoint(bounds.MidX, bounds.MidY);
+        float directionX = tailTip.X - center.X;
+        float directionY = tailTip.Y - center.Y;
+        float directionLength = MathF.Sqrt(directionX * directionX + directionY * directionY);
+        if (directionLength <= GeometryEpsilon)
+        {
+            return false;
+        }
+
+        float normalizedDirectionX = directionX / directionLength;
+        float normalizedDirectionY = directionY / directionLength;
+
+        float rectAverageSize = (bounds.Width + bounds.Height) / 2f;
+        float tailWidth = TailWidthMultiplier * rectAverageSize;
+        tailWidth = MathF.Min(tailWidth, MathF.Min(bounds.Width, bounds.Height));
+        if (tailWidth <= GeometryEpsilon)
+        {
+            return false;
+        }
+
+        float halfTailWidth = tailWidth / 2f;
+        var perpendicular = new SKPoint(-normalizedDirectionY, normalizedDirectionX);
+        var baseStart = new SKPoint(
+            center.X + perpendicular.X * halfTailWidth,
+            center.Y + perpendicular.Y * halfTailWidth);
+        var baseEnd = new SKPoint(
+            center.X - perpendicular.X * halfTailWidth,
+            center.Y - perpendicular.Y * halfTailWidth);
+
+        return TryGetSegmentExitPoint(bounds, baseStart, tailTip, out tailBaseStart) &&
+               TryGetSegmentExitPoint(bounds, baseEnd, tailTip, out tailBaseEnd);
+    }
 
     public override SKRect GetBounds()
     {
@@ -53,14 +173,108 @@ public partial class SpeechBalloonAnnotation : Annotation
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
-        var bounds = GetBounds();
-        // Include tail in hit area by expanding to cover the tail point
-        bounds = SKRect.Union(bounds, new SKRect(
-            TailPoint.X - tolerance,
-            TailPoint.Y - tolerance,
-            TailPoint.X + tolerance,
-            TailPoint.Y + tolerance));
-        var inflated = SKRect.Inflate(bounds, tolerance, tolerance);
-        return inflated.Contains(point);
+        var bodyBounds = SKRect.Inflate(GetBounds(), tolerance, tolerance);
+        if (bodyBounds.Contains(point.X, point.Y))
+        {
+            return true;
+        }
+
+        if (!TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
+        {
+            return false;
+        }
+
+        if (PointInTriangle(point, tailBaseStart, tailTip, tailBaseEnd))
+        {
+            return true;
+        }
+
+        return DistanceToSegment(point, tailBaseStart, tailTip) <= tolerance ||
+               DistanceToSegment(point, tailTip, tailBaseEnd) <= tolerance ||
+               DistanceToSegment(point, tailBaseEnd, tailBaseStart) <= tolerance;
+    }
+
+    private static bool TryGetSegmentExitPoint(SKRect bounds, SKPoint start, SKPoint end, out SKPoint intersection)
+    {
+        float dx = end.X - start.X;
+        float dy = end.Y - start.Y;
+        float bestT = float.PositiveInfinity;
+        SKPoint bestIntersection = default;
+
+        void Consider(float t)
+        {
+            if (t < -GeometryEpsilon || t > 1f + GeometryEpsilon || t >= bestT)
+            {
+                return;
+            }
+
+            float x = start.X + dx * t;
+            float y = start.Y + dy * t;
+            if (x < bounds.Left - GeometryEpsilon || x > bounds.Right + GeometryEpsilon ||
+                y < bounds.Top - GeometryEpsilon || y > bounds.Bottom + GeometryEpsilon)
+            {
+                return;
+            }
+
+            bestT = Math.Clamp(t, 0f, 1f);
+            bestIntersection = new SKPoint(
+                Math.Clamp(x, bounds.Left, bounds.Right),
+                Math.Clamp(y, bounds.Top, bounds.Bottom));
+        }
+
+        if (MathF.Abs(dx) > GeometryEpsilon)
+        {
+            Consider((bounds.Left - start.X) / dx);
+            Consider((bounds.Right - start.X) / dx);
+        }
+
+        if (MathF.Abs(dy) > GeometryEpsilon)
+        {
+            Consider((bounds.Top - start.Y) / dy);
+            Consider((bounds.Bottom - start.Y) / dy);
+        }
+
+        intersection = bestIntersection;
+        return !float.IsPositiveInfinity(bestT);
+    }
+
+    private static bool PointInTriangle(SKPoint point, SKPoint a, SKPoint b, SKPoint c)
+    {
+        float d1 = Sign(point, a, b);
+        float d2 = Sign(point, b, c);
+        float d3 = Sign(point, c, a);
+
+        bool hasNegative = d1 < 0 || d2 < 0 || d3 < 0;
+        bool hasPositive = d1 > 0 || d2 > 0 || d3 > 0;
+
+        return !(hasNegative && hasPositive);
+    }
+
+    private static float Sign(SKPoint p1, SKPoint p2, SKPoint p3)
+    {
+        return (p1.X - p3.X) * (p2.Y - p3.Y) -
+               (p2.X - p3.X) * (p1.Y - p3.Y);
+    }
+
+    private static float DistanceToSegment(SKPoint point, SKPoint start, SKPoint end)
+    {
+        float dx = end.X - start.X;
+        float dy = end.Y - start.Y;
+        float segmentLengthSquared = dx * dx + dy * dy;
+
+        if (segmentLengthSquared <= GeometryEpsilon)
+        {
+            return MathF.Sqrt((point.X - start.X) * (point.X - start.X) + (point.Y - start.Y) * (point.Y - start.Y));
+        }
+
+        float t = ((point.X - start.X) * dx + (point.Y - start.Y) * dy) / segmentLengthSquared;
+        t = Math.Clamp(t, 0f, 1f);
+
+        float projectionX = start.X + t * dx;
+        float projectionY = start.Y + t * dy;
+        float deltaX = point.X - projectionX;
+        float deltaY = point.Y - projectionY;
+
+        return MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 }

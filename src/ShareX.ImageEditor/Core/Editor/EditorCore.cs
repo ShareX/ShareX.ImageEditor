@@ -447,7 +447,7 @@ public class EditorCore : IDisposable
             }
             else if (ann is SpeechBalloonAnnotation balloon)
             {
-                balloon.TailPoint = transformPoint(balloon.TailPoint);
+                balloon.SetTailPoint(transformPoint(balloon.GetEffectiveTailPoint()));
             }
         }
     }
@@ -1605,9 +1605,10 @@ public class EditorCore : IDisposable
             // anchored to the same visual position relative to the new canvas origin.
             if (annotation is SpeechBalloonAnnotation balloon)
             {
-                balloon.TailPoint = new SKPoint(
-                    balloon.TailPoint.X + offsetX,
-                    balloon.TailPoint.Y + offsetY);
+                var tailPoint = balloon.GetEffectiveTailPoint();
+                balloon.SetTailPoint(new SKPoint(
+                    tailPoint.X + offsetX,
+                    tailPoint.Y + offsetY));
             }
 
             // Update effect annotations with new bounds
@@ -1829,12 +1830,13 @@ public class EditorCore : IDisposable
                 // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for vertical cut
                 if (annotation is SpeechBalloonAnnotation balloon)
                 {
-                    float tailX = balloon.TailPoint.X;
+                    var tailPoint = balloon.GetEffectiveTailPoint();
+                    float tailX = tailPoint.X;
                     if (tailX >= cutEnd)
                         tailX -= cutWidth;
                     else if (tailX > cutX)
                         tailX = cutX;
-                    balloon.TailPoint = new SKPoint(tailX, balloon.TailPoint.Y);
+                    balloon.SetTailPoint(new SKPoint(tailX, tailPoint.Y));
                 }
 
                 // Update effect annotations
@@ -1914,12 +1916,13 @@ public class EditorCore : IDisposable
                 // XIP0039 Guardrail 2: Adjust SpeechBalloon tail for horizontal cut
                 if (annotation is SpeechBalloonAnnotation balloon)
                 {
-                    float tailY = balloon.TailPoint.Y;
+                    var tailPoint = balloon.GetEffectiveTailPoint();
+                    float tailY = tailPoint.Y;
                     if (tailY >= cutEnd)
                         tailY -= cutHeight;
                     else if (tailY > cutY)
                         tailY = cutY;
-                    balloon.TailPoint = new SKPoint(balloon.TailPoint.X, tailY);
+                    balloon.SetTailPoint(new SKPoint(tailPoint.X, tailY));
                 }
 
                 // Update effect annotations
