@@ -239,6 +239,14 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void OnCornerRadiusChanged(object? sender, int cornerRadius)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.CornerRadius = cornerRadius;
+            }
+        }
+
         private void OnZoomChanged(object? sender, double zoom)
         {
             if (DataContext is MainViewModel vm)
@@ -443,6 +451,33 @@ namespace ShareX.ImageEditor.Presentation.Views
                     {
                         balloon.Annotation.StrokeWidth = width;
                         balloon.InvalidateVisual();
+                    }
+                    break;
+            }
+        }
+
+        private void ApplySelectedCornerRadius(int cornerRadius)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected == null) return;
+
+            int clampedRadius = Math.Max(0, cornerRadius);
+
+            switch (selected.Tag)
+            {
+                case RectangleAnnotation rectangleAnnotation:
+                    rectangleAnnotation.CornerRadius = clampedRadius;
+                    if (selected is global::Avalonia.Controls.Shapes.Rectangle rectangle)
+                    {
+                        rectangle.RadiusX = clampedRadius;
+                        rectangle.RadiusY = clampedRadius;
+                    }
+                    break;
+                case SpeechBalloonAnnotation balloonAnnotation:
+                    balloonAnnotation.CornerRadius = clampedRadius;
+                    if (selected is SpeechBalloonControl balloonControl)
+                    {
+                        balloonControl.InvalidateVisual();
                     }
                     break;
             }

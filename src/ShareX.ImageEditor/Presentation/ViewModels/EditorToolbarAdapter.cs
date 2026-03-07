@@ -77,6 +77,12 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.StrokeWidth = value;
     }
 
+    public int CornerRadius
+    {
+        get => _viewModel.CornerRadius;
+        set => _viewModel.CornerRadius = value;
+    }
+
     public float FontSize
     {
         get => _viewModel.FontSize;
@@ -130,6 +136,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     public bool ShowThickness => _viewModel.ShowThickness;
 
     public bool ShowFontSize => _viewModel.ShowFontSize;
+
+    public bool ShowCornerRadius => _viewModel.ShowCornerRadius;
 
     public bool ShowStrength => _viewModel.ShowStrength;
 

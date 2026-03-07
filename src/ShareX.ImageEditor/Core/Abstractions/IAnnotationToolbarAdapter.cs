@@ -38,6 +38,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     string FillColor { get; set; }
     string TextColor { get; set; }
     int StrokeWidth { get; set; }
+    int CornerRadius { get; set; }
     float FontSize { get; set; }
     float EffectStrength { get; set; }
     bool ShadowEnabled { get; set; }
@@ -52,6 +53,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowTextColor { get; }
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
+    bool ShowCornerRadius { get; }
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }

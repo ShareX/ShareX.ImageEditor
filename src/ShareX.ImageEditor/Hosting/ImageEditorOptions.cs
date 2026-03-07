@@ -61,6 +61,7 @@ namespace ShareX.ImageEditor.Hosting
         public Color FillColor { get => HexToColor(FillColorHex); set => FillColorHex = ColorToHex(value); }
 
         public int Thickness { get; set; } = 4;
+        public int CornerRadius { get; set; } = 3;
         public bool Shadow { get; set; } = false;
 
         // Text

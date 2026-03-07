@@ -705,6 +705,13 @@
                             IsVisible="{Binding ShowThickness}"
                             ToolTip.Tip="Thickness"/>
 
+                        <controls:CornerRadiusPickerDropdown
+                            SelectedCornerRadius="{Binding CornerRadius}"
+                            CornerRadiusChanged="OnCornerRadiusChanged"
+                            Height="40"
+                            IsVisible="{Binding ShowCornerRadius}"
+                            ToolTip.Tip="Corner Radius"/>
+
                         <!-- Font Size Picker Dropdown -->
                         <controls:FontSizePickerDropdown
                             SelectedFontSize="{Binding FontSize}"

@@ -624,6 +624,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _fillColor = $"#{_options.FillColor.A:X2}{_options.FillColor.R:X2}{_options.FillColor.G:X2}{_options.FillColor.B:X2}";
             _selectedColor = $"#{_options.BorderColor.A:X2}{_options.BorderColor.R:X2}{_options.BorderColor.G:X2}{_options.BorderColor.B:X2}";
             _strokeWidth = _options.Thickness;
+            _cornerRadius = _options.CornerRadius;
             _fontSize = _options.TextFontSize;
             _shadowEnabled = _options.Shadow;
             _textBold = _options.TextBold;

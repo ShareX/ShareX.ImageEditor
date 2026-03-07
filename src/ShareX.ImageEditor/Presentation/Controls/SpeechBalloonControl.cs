@@ -61,7 +61,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             var width = Math.Max(annotationBounds.Width, 20);
             var height = Math.Max(annotationBounds.Height, 20);
 
-            var bodyGeometry = CreateBodyGeometry(width, height);
+            var bodyGeometry = CreateBodyGeometry(width, height, Annotation.CornerRadius);
             var tailGeometry = CreateTailGeometry(Annotation);
             Geometry geometry = tailGeometry != null
                 ? new CombinedGeometry(GeometryCombineMode.Union, bodyGeometry, tailGeometry)
@@ -116,17 +116,27 @@ namespace ShareX.ImageEditor.Presentation.Controls
             }
         }
 
-        private static Geometry CreateBodyGeometry(double width, double height)
+        private static Geometry CreateBodyGeometry(double width, double height, int cornerRadius)
         {
             var geometry = new StreamGeometry();
+            double radius = Math.Clamp(cornerRadius, 0, (int)(Math.Min(width, height) / 2d));
 
             using (var ctx = geometry.Open())
             {
-                const double radius = 10;
                 double left = 0;
                 double top = 0;
                 double right = width;
                 double bottom = height;
+
+                if (radius <= 0)
+                {
+                    ctx.BeginFigure(new Point(left, top), true);
+                    ctx.LineTo(new Point(right, top));
+                    ctx.LineTo(new Point(right, bottom));
+                    ctx.LineTo(new Point(left, bottom));
+                    ctx.EndFigure(true);
+                    return geometry;
+                }
 
                 // Start at top-left after the rounded corner
                 ctx.BeginFigure(new Point(left + radius, top), true);

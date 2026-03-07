@@ -44,6 +44,8 @@ public partial class RectangleAnnotation
             Stroke = strokeBrush,
             StrokeThickness = StrokeWidth,
             Fill = fillBrush,
+            RadiusX = Math.Max(0, CornerRadius),
+            RadiusY = Math.Max(0, CornerRadius),
             Tag = this,
             Width = 0,
             Height = 0

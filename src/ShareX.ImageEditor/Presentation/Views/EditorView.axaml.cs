@@ -187,12 +187,14 @@ namespace ShareX.ImageEditor.Presentation.Views
                     {
                         vm.FontSize = balloon.FontSize;
                         vm.FillColor = balloon.FillColor;
+                        vm.CornerRadius = balloon.CornerRadius;
                         if (!string.IsNullOrEmpty(balloon.TextColor))
                             vm.TextColorValue = Avalonia.Media.Color.Parse(balloon.TextColor);
                     }
                     else if (vm.SelectedAnnotation is RectangleAnnotation rect)
                     {
                         vm.FillColor = rect.FillColor;
+                        vm.CornerRadius = rect.CornerRadius;
                     }
                     else if (vm.SelectedAnnotation is EllipseAnnotation ellipse)
                     {
@@ -308,6 +310,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                 else if (e.PropertyName == nameof(MainViewModel.TextColorValue))
                 {
                     ApplySelectedTextColor(vm.TextColor);
+                }
+                else if (e.PropertyName == nameof(MainViewModel.CornerRadius))
+                {
+                    ApplySelectedCornerRadius(vm.CornerRadius);
                 }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {

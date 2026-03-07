@@ -138,6 +138,31 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
+        [ObservableProperty]
+        private int _cornerRadius = 3;
+
+        partial void OnCornerRadiusChanged(int value)
+        {
+            int clamped = Math.Max(0, value);
+            if (clamped != value)
+            {
+                CornerRadius = clamped;
+                return;
+            }
+
+            bool appliesToCornerRadius = ActiveTool is EditorTool.Rectangle or EditorTool.SpeechBalloon;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                appliesToCornerRadius = SelectedAnnotation is RectangleAnnotation or SpeechBalloonAnnotation;
+            }
+
+            if (appliesToCornerRadius)
+            {
+                Options.CornerRadius = value;
+            }
+        }
+
         // Tool-specific options
         [ObservableProperty]
         private string _fillColor = "#00000000"; // Transparent by default
@@ -434,6 +459,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
+        public bool ShowCornerRadius => ActiveTool switch
+        {
+            EditorTool.Rectangle or EditorTool.SpeechBalloon => true,
+            EditorTool.Select => _selectedAnnotation?.ToolType switch
+            {
+                EditorTool.Rectangle or EditorTool.SpeechBalloon => true,
+                _ => false
+            },
+            _ => false
+        };
+
         public bool ShowStrength => ActiveTool switch
         {
             EditorTool.Blur or EditorTool.Pixelate or EditorTool.Magnify or EditorTool.Spotlight => true,
@@ -564,6 +600,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowTextColor));
             OnPropertyChanged(nameof(ShowThickness));
             OnPropertyChanged(nameof(ShowFontSize));
+            OnPropertyChanged(nameof(ShowCornerRadius));
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowTextStyle));
             OnPropertyChanged(nameof(ShowShadow));
@@ -573,7 +610,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStrength || ShowTextStyle || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -617,6 +654,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     SelectedColorValue = Options.BorderColor;
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
+                    CornerRadius = Options.CornerRadius;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.TextFontSize;
                     break;
@@ -635,6 +673,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     FillColorValue = Options.SpeechBalloonFillColor;
                     TextColorValue = Options.SpeechBalloonTextColor;
                     StrokeWidth = Options.SpeechBalloonThickness;
+                    CornerRadius = Options.CornerRadius;
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.SpeechBalloonFontSize;
                     TextBold = Options.TextBold;

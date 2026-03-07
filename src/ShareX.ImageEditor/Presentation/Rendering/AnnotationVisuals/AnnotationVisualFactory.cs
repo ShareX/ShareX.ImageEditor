@@ -90,6 +90,12 @@ public static class AnnotationVisualFactory
 
         switch (annotation)
         {
+            case RectangleAnnotation rectangle when control is Rectangle rectangleControl:
+                ApplyBoundsControl(rectangleControl, rectangle.GetBounds(), ensureMinimumSize);
+                rectangleControl.RadiusX = Math.Max(0, rectangle.CornerRadius);
+                rectangleControl.RadiusY = Math.Max(0, rectangle.CornerRadius);
+                break;
+
             case LineAnnotation when control is Line line:
                 line.StartPoint = new Avalonia.Point(annotation.StartPoint.X, annotation.StartPoint.Y);
                 line.EndPoint = new Avalonia.Point(annotation.EndPoint.X, annotation.EndPoint.Y);
@@ -138,6 +144,11 @@ public static class AnnotationVisualFactory
 
             case SpeechBalloonAnnotation balloon when mode == AnnotationVisualMode.Preview && control is Rectangle:
                 ApplyBoundsControl(control, balloon.GetBounds(), ensureMinimumSize: true);
+                if (control is Rectangle balloonPreview)
+                {
+                    balloonPreview.RadiusX = Math.Max(0, balloon.CornerRadius);
+                    balloonPreview.RadiusY = Math.Max(0, balloon.CornerRadius);
+                }
                 break;
 
             case SpeechBalloonAnnotation balloon when control is SpeechBalloonControl balloonControl:
@@ -242,8 +253,8 @@ public static class AnnotationVisualFactory
             Stroke = new SolidColorBrush(Color.Parse(annotation.StrokeColor)),
             StrokeThickness = annotation.StrokeWidth,
             Fill = new SolidColorBrush(Color.FromArgb(128, 255, 255, 255)),
-            RadiusX = 10,
-            RadiusY = 10,
+            RadiusX = Math.Max(0, annotation.CornerRadius),
+            RadiusY = Math.Max(0, annotation.CornerRadius),
             Tag = annotation
         };
     }

@@ -41,6 +41,10 @@ public partial class SpeechBalloonAnnotation : Annotation
     /// </summary>
     public string TextColor { get; set; } = "#FF000000";
 
+    /// <summary>
+    /// Corner radius for the balloon body.
+    /// </summary>
+    public int CornerRadius { get; set; } = 10;
 
     /// <summary>
     /// Background color (hex) - defaults to white for speech balloon
