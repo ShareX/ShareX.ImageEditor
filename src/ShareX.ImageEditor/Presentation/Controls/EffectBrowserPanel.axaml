@@ -58,6 +58,7 @@
                                             <StackPanel Orientation="Horizontal" Spacing="8">
                                                 <TextBlock Text="{Binding Icon}" 
                                                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                                           FontWeight="Normal"
                                                            FontSize="16"
                                                            Foreground="{DynamicResource ShareX.Brush.Text}"
                                                            VerticalAlignment="Center"
