@@ -8,7 +8,7 @@
             <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
             <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
 
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
 
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
@@ -88,7 +88,7 @@
         <!-- Custom ShareX Light -->
         <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXLight}">
             <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
             <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
 
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
@@ -170,7 +170,7 @@
         <!-- Default Dark Theme -->
         <ResourceDictionary x:Key="Dark">
             <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
             <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
 
             <SolidColorBrush x:Key="ShareX.Brush.Accent" Color="{DynamicResource SystemAccentColor}" />
@@ -233,7 +233,7 @@
         <!-- Default Light Theme -->
         <ResourceDictionary x:Key="Light">
             <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI</FontFamily>
-            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#Font Awesome 7 Free</FontFamily>
+            <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
             <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
 
             <SolidColorBrush x:Key="ShareX.Brush.Accent" Color="{DynamicResource SystemAccentColor}" />

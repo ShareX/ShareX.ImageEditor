@@ -34,13 +34,13 @@
             <!-- Quick Actions -->
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                 <Button Classes="editor-button" Click="OnResetClick" ToolTip.Tip="Reset" Padding="8,4" Width="40">
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf021;" FontSize="14"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xe145;" FontSize="14" FontWeight="Normal"/>
                 </Button>
                 <Button Classes="editor-button" Click="OnRotateLeftClick" ToolTip.Tip="-90&#176;" Padding="8,4" Width="40">
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf0e2;" FontSize="14"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xe2a1;" FontSize="14" FontWeight="Normal"/>
                 </Button>
                 <Button Classes="editor-button" Click="OnRotateRightClick" ToolTip.Tip="+90&#176;" Padding="8,4" Width="40">
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xf01e;" FontSize="14"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" Text="&#xe2a0;" FontSize="14" FontWeight="Normal"/>
                 </Button>
             </StackPanel>
         </StackPanel>

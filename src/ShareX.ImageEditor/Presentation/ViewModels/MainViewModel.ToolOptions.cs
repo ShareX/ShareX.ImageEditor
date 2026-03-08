@@ -26,6 +26,7 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -506,7 +507,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         };
 
         /// <summary>
-        /// Returns the Font Awesome icon codepoint for the active tool (or selected shape's tool in Select mode).
+        /// Returns the Lucide icon glyph for the active tool (or selected shape's tool in Select mode).
         /// </summary>
         public string ActiveToolIcon
         {
@@ -520,24 +521,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
                 return tool switch
                 {
-                    EditorTool.Select => "\uf25a",
-                    EditorTool.Rectangle => "\uf0c8",
-                    EditorTool.Ellipse => "\uf111",
-                    EditorTool.Line => "\uf068",
-                    EditorTool.Arrow => "\uf061",
-                    EditorTool.Freehand => "\uf304",
-                    EditorTool.Text => "\uf031",
-                    EditorTool.SpeechBalloon => "\uf4ad",
-                    EditorTool.Step => "\uf0cb",
-                    EditorTool.Blur => "\uf043",
-                    EditorTool.Pixelate => "\uf009",
-                    EditorTool.Magnify => "\uf00e",
-                    EditorTool.Spotlight => "\uf0eb",
-                    EditorTool.SmartEraser => "\uf12d",
-                    EditorTool.Highlight => "\uf591",
-                    EditorTool.Crop => "\uf125",
-                    EditorTool.CutOut => "\uf0c4",
-                    _ => "\uf25a"
+                    EditorTool.Select => LucideIcons.MousePointer2,
+                    EditorTool.Rectangle => LucideIcons.Square,
+                    EditorTool.Ellipse => LucideIcons.Circle,
+                    EditorTool.Line => LucideIcons.Minus,
+                    EditorTool.Arrow => LucideIcons.ArrowRight,
+                    EditorTool.Freehand => LucideIcons.PenTool,
+                    EditorTool.Text => LucideIcons.Type,
+                    EditorTool.SpeechBalloon => LucideIcons.MessageSquare,
+                    EditorTool.Step => LucideIcons.ListOrdered,
+                    EditorTool.Blur => LucideIcons.Focus,
+                    EditorTool.Pixelate => LucideIcons.Grid2X2,
+                    EditorTool.Magnify => LucideIcons.Search,
+                    EditorTool.Spotlight => LucideIcons.Spotlight,
+                    EditorTool.SmartEraser => LucideIcons.Eraser,
+                    EditorTool.Highlight => LucideIcons.Highlighter,
+                    EditorTool.Crop => LucideIcons.Crop,
+                    EditorTool.CutOut => LucideIcons.Scissors,
+                    _ => LucideIcons.MousePointer2
                 };
             }
         }

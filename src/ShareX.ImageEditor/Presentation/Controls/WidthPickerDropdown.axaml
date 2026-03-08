@@ -48,11 +48,11 @@
                 <!-- Spacer -->
                 <Border Grid.Column="1"/>
 
-                <!-- Chevron Icon (FontAwesome ChevronDown) -->
+                <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="2"
-                           Text="&#xf078;"
+                           Text="&#xe06d;"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
-                           FontWeight="Black"
+                           FontWeight="Normal"
                            FontSize="10"
                            Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            VerticalAlignment="Center"/>
