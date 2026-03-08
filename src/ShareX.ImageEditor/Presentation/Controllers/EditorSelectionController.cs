@@ -949,11 +949,11 @@ public class EditorSelectionController
 
 
 
-            var annotation = balloonControl.Annotation;
-            var balloonLeft = Canvas.GetLeft(balloonControl);
-            var balloonTop = Canvas.GetTop(balloonControl);
-            var balloonWidth = balloonControl.Width;
-            var balloonHeight = balloonControl.Height;
+        var annotation = balloonControl.Annotation;
+        var balloonLeft = Canvas.GetLeft(balloonControl);
+        var balloonTop = Canvas.GetTop(balloonControl);
+        var balloonWidth = balloonControl.Width;
+        var balloonHeight = balloonControl.Height;
 
         // Check if balloon is too small (e.g. user just clicked without dragging)
         if (balloonWidth < 50 || balloonHeight < 30)

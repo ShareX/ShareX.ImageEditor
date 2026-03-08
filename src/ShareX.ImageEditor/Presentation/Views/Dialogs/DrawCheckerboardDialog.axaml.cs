@@ -3,8 +3,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Core.ImageEffects.Drawings;
+using ShareX.ImageEditor.Presentation.Controls;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Views.Dialogs

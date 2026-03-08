@@ -31,11 +31,11 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
+using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Controllers;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
-using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
-using ShareX.ImageEditor.Presentation.Controllers;
 using SkiaSharp;
 using System.ComponentModel;
 

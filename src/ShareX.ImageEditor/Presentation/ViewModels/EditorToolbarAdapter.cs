@@ -26,7 +26,6 @@
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Abstractions;
 using ShareX.ImageEditor.Core.Annotations;
-using ShareX.ImageEditor.Presentation.ViewModels;
 using System.ComponentModel;
 using System.Windows.Input;
 

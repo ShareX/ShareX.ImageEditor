@@ -715,8 +715,3 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
     }
 }
-
-
-
-
-

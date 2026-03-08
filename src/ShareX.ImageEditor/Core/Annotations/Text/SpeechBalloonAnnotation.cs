@@ -1,6 +1,5 @@
-using System;
-using System.Text.Json.Serialization;
 using SkiaSharp;
+using System.Text.Json.Serialization;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 

@@ -28,8 +28,8 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
-using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Rendering;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels

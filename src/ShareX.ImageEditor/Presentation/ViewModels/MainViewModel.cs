@@ -32,8 +32,8 @@ using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Core.Abstractions;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
-using ShareX.ImageEditor.Presentation.Theming;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels

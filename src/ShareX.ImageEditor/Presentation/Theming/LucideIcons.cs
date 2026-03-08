@@ -156,5 +156,3 @@
         public const string TextCursor = "\uE264";
     }
 }
-
-
