@@ -46,6 +46,7 @@
         <x:String x:Key="IconRedo">&#xe2a0;</x:String>
         <x:String x:Key="IconClear">&#xe18e;</x:String>
         <x:String x:Key="IconDelete">&#xe18e;</x:String>
+        <x:String x:Key="IconDeleteAll">&#xe666;</x:String>
         <x:String x:Key="IconCopy">&#xe085;</x:String>
         <x:String x:Key="IconSave">&#xe14d;</x:String>
         <x:String x:Key="IconDownload">&#xe0b2;</x:String>
@@ -98,7 +99,7 @@
             </MenuItem>
             <MenuItem Header="Delete all" Command="{Binding ClearAnnotationsCommand}" InputGesture="Shift+Delete">
                 <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconClear}"/>
+                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{StaticResource IconDeleteAll}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Flatten" Command="{Binding FlattenImageCommand}" InputGesture="Ctrl+Shift+F">
