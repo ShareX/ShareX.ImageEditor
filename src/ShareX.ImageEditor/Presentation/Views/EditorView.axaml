@@ -665,12 +665,12 @@
                                 ToolTip.Tip="{Binding ActiveToolName}">
                             <TextBlock Text="{Binding ActiveToolIcon}"
                                        FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
-                                       FontSize="16" FontWeight="Normal"
+                                       FontSize="18" FontWeight="Normal"
                                        Foreground="{DynamicResource ShareX.Brush.Separator}"
                                        VerticalAlignment="Center"
                                        TextAlignment="Center"
                                        HorizontalAlignment="Center"
-                                       Width="20"/>
+                                       Width="24"/>
                         </Border>
 
                         <!-- Border Color Picker Dropdown -->

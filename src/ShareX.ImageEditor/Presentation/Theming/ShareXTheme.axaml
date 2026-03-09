@@ -42,7 +42,7 @@
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background" Color="{StaticResource ShareX.Color.Control.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#383838" />
-            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#2E2E2E" />
+            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#333333" />
 
             <DrawingBrush x:Key="ShareX.Brush.Checkered" TileMode="Tile" SourceRect="0,0,30,30" DestinationRect="0,0,30,30">
                 <DrawingBrush.Drawing>
