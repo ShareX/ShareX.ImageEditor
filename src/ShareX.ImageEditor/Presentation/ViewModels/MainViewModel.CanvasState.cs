@@ -471,7 +471,27 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 new() { Name = "Carbon Steel", Brush = Make("#485563", "#29323C") },
                 new() { Name = "Purple Bliss", Brush = Make("#8E2DE2", "#4A00E0") },
                 new() { Name = "Ember", Brush = Make("#CB2D3E", "#EF473A") },
-                new() { Name = "Soft Lilac", Brush = Make("#C471F5", "#FA71CD") }
+                new() { Name = "Soft Lilac", Brush = Make("#C471F5", "#FA71CD") },
+                new() { Name = "Blue Hour", Brush = Make("#355C7D", "#6C5B7B") },
+                new() { Name = "Golden Hour", Brush = Make("#F3904F", "#FFD194") },
+                new() { Name = "Watermelon", Brush = Make("#FF5F6D", "#FFC371") },
+                new() { Name = "Sea Foam", Brush = Make("#4CB8C4", "#3CD3AD") },
+                new() { Name = "Twilight Plum", Brush = Make("#41295A", "#2F0743") },
+                new() { Name = "Candy Grape", Brush = Make("#B24592", "#F15F79") },
+                new() { Name = "Fresh Mint", Brush = Make("#76B852", "#8DC26F") },
+                new() { Name = "Polar Night", Brush = Make("#283048", "#859398") },
+                new() { Name = "Tropical Sun", Brush = Make("#F6D365", "#FDA085") },
+                new() { Name = "Blue Raspberry", Brush = Make("#00B4DB", "#0083B0") },
+                new() { Name = "Rosewater", Brush = Make("#E55D87", "#5FC3E4") },
+                new() { Name = "Copper Glow", Brush = Make("#B79891", "#94716B") },
+                new() { Name = "Aurora Violet", Brush = Make("#654EA3", "#EAAFC8") },
+                new() { Name = "Apple Mint", Brush = Make("#5A3F37", "#2C7744") },
+                new() { Name = "Sunrise Peach", Brush = Make("#F857A6", "#FF5858") },
+                new() { Name = "Iceberg", Brush = Make("#C9FFBF", "#FFAFBD") },
+                new() { Name = "Nightfall", Brush = Make("#141E30", "#243B55") },
+                new() { Name = "Electric Cyan", Brush = Make("#0575E6", "#00F260") },
+                new() { Name = "Velvet Rose", Brush = Make("#DA4453", "#89216B") },
+                new() { Name = "Desert Sand", Brush = Make("#BA8B02", "#181818") }
             };
         }
 
