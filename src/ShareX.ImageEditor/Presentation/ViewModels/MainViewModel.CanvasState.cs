@@ -333,8 +333,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void ApplyGradientPreset(GradientPreset preset)
         {
-            // Clone to avoid accidental brush sharing between controls
-            CanvasBackground = CopyBrush(preset.Brush);
+            bool wasGradientMode = SelectedBackgroundModeOption?.Mode == CanvasBackgroundMode.Gradient;
+            SelectedGradientPreset = preset;
+
+            if (!wasGradientMode)
+            {
+                SelectedBackgroundModeOption = FindBackgroundModeOption(CanvasBackgroundMode.Gradient);
+            }
+            else
+            {
+                ApplyGradientBackground(preset);
+            }
         }
 
         private void UpdateCanvasProperties()
@@ -430,33 +439,39 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 }
             };
 
+            // Ordered so the most common day-to-day gradients stay near the top.
             return new ObservableCollection<GradientPreset>
             {
-                new() { Name = "None", Brush = Brushes.Transparent },
-                new() { Name = "Sunset", Brush = Make("#F093FB", "#F5576C") },
-                new() { Name = "Ocean", Brush = Make("#667EEA", "#764BA2") },
-                new() { Name = "Forest", Brush = Make("#11998E", "#38EF7D") },
-                new() { Name = "Fire", Brush = Make("#F12711", "#F5AF19") },
-                new() { Name = "Cool Blue", Brush = Make("#2193B0", "#6DD5ED") },
-                new() { Name = "Lavender", Brush = Make("#B8B8FF", "#D6A4FF") },
-                new() { Name = "Aqua", Brush = Make("#13547A", "#80D0C7") },
-                new() { Name = "Grape", Brush = Make("#7F00FF", "#E100FF") },
-                new() { Name = "Peach", Brush = Make("#FFB88C", "#DE6262") },
-                new() { Name = "Sky", Brush = Make("#56CCF2", "#2F80ED") },
-                new() { Name = "Warm", Brush = Make("#F2994A", "#F2C94C") },
-                new() { Name = "Mint", Brush = Make("#00B09B", "#96C93D") },
-                new() { Name = "Midnight", Brush = Make("#232526", "#414345") },
-                new() { Name = "Carbon", Brush = Make("#373B44", "#4286F4") },
+                new() { Name = "Sunset Glow", Brush = Make("#FF7E5F", "#FEB47B") },
+                new() { Name = "Ocean Breeze", Brush = Make("#2193B0", "#6DD5ED") },
+                new() { Name = "Skyline", Brush = Make("#00C6FF", "#0072FF") },
+                new() { Name = "Peach Bloom", Brush = Make("#ED4264", "#FFEDBC") },
+                new() { Name = "Mint Fresh", Brush = Make("#11998E", "#38EF7D") },
+                new() { Name = "Royal Blue", Brush = Make("#396AFC", "#2948FF") },
+                new() { Name = "Warm Flame", Brush = Make("#FF9A9E", "#FAD0C4") },
+                new() { Name = "Coral Candy", Brush = Make("#FF9966", "#FF5E62") },
+                new() { Name = "Mango", Brush = Make("#FFE259", "#FFA751") },
+                new() { Name = "Violet Dream", Brush = Make("#4776E6", "#8E54E9") },
+                new() { Name = "Ruby Fire", Brush = Make("#DD2476", "#FF512F") },
+                new() { Name = "Aqua Marine", Brush = Make("#1A2980", "#26D0CE") },
+                new() { Name = "Instagram", Brush = Make("#833AB4", "#FD1D1D") },
+                new() { Name = "Aurora Green", Brush = Make("#00F260", "#0575E6") },
+                new() { Name = "Citrus Pop", Brush = Make("#F7971E", "#FFD200") },
+                new() { Name = "Arctic Sky", Brush = Make("#74EBD5", "#9FACE6") },
+                new() { Name = "Cherry Rush", Brush = Make("#EB3349", "#F45C43") },
+                new() { Name = "Lavender Sky", Brush = Make("#E0C3FC", "#8EC5FC") },
+                new() { Name = "Midnight City", Brush = Make("#232526", "#414345") },
                 new() { Name = "Deep Space", Brush = Make("#000428", "#004E92") },
-                new() { Name = "Noir", Brush = Make("#0F2027", "#2C5364") },
-                new() { Name = "Royal", Brush = Make("#141E30", "#243B55") },
-                new() { Name = "Rose Gold", Brush = Make("#E8CBC0", "#636FA4") },
-                new() { Name = "Emerald", Brush = Make("#076585", "#FFFFFF") },
-                new() { Name = "Amethyst", Brush = Make("#9D50BB", "#6E48AA") },
-                new() { Name = "Neon", Brush = Make("#FF0844", "#FFB199") },
-                new() { Name = "Aurora", Brush = Make("#00C9FF", "#92FE9D") },
-                new() { Name = "Candy", Brush = Make("#D53369", "#DAAE51") },
-                new() { Name = "Clean", Brush = new SolidColorBrush(Color.Parse("#FFFFFF")) }
+                new() { Name = "Lagoon", Brush = Make("#43C6AC", "#191654") },
+                new() { Name = "Rose Gold", Brush = Make("#EECDA3", "#EF629F") },
+                new() { Name = "Emerald Water", Brush = Make("#348F50", "#56B4D3") },
+                new() { Name = "Lemon Lime", Brush = Make("#56AB2F", "#A8E063") },
+                new() { Name = "Pink Haze", Brush = Make("#EC008C", "#FC6767") },
+                new() { Name = "Slate", Brush = Make("#BDC3C7", "#2C3E50") },
+                new() { Name = "Carbon Steel", Brush = Make("#485563", "#29323C") },
+                new() { Name = "Purple Bliss", Brush = Make("#8E2DE2", "#4A00E0") },
+                new() { Name = "Ember", Brush = Make("#CB2D3E", "#EF473A") },
+                new() { Name = "Soft Lilac", Brush = Make("#C471F5", "#FA71CD") }
             };
         }
 

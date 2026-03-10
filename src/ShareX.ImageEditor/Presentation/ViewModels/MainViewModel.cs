@@ -615,7 +615,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             ToolbarAdapter = new EditorToolbarAdapter(this);
             Current = this;
             GradientPresets = BuildGradientPresets();
-            _canvasBackground = CopyBrush(GradientPresets[0].Brush);
+            BackgroundModeOptions = BuildBackgroundModeOptions();
+            _selectedGradientPreset = GradientPresets[0];
+            _selectedBackgroundModeOption = FindBackgroundModeOption(CanvasBackgroundMode.Transparent);
+            _canvasBackground = Brushes.Transparent;
 
             // Initialize values from options
             _textColor = $"#{_options.TextTextColor.A:X2}{_options.TextTextColor.R:X2}{_options.TextTextColor.G:X2}{_options.TextTextColor.B:X2}";
@@ -633,6 +636,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             _appVersion = version != null ? $"v{version.Major}.{version.Minor}.{version.Build}" : "v1.0.0";
 
+            ApplySelectedBackgroundMode();
             UpdateCanvasProperties();
         }
 

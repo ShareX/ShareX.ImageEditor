@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -408,24 +408,69 @@
                         <!-- Background -->
                         <StackPanel Spacing="0">
                             <TextBlock Text="Background" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,8"/>
-                            <ItemsControl ItemsSource="{Binding GradientPresets}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Padding="0" BorderThickness="0" Background="Transparent" Margin="2"
-                                                Command="{Binding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}">
-                                            <Border Width="50" Height="50" CornerRadius="5" Background="{Binding Brush}" ToolTip.Tip="{Binding Name}"/>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
+                            <ComboBox ItemsSource="{Binding BackgroundModeOptions}"
+                                      SelectedItem="{Binding SelectedBackgroundModeOption, Mode=TwoWay}"
+                                      Margin="0,0,0,12"
+                                      Padding="8,6"
+                                      Background="{DynamicResource ShareX.Brush.Control.Background}"
+                                      BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                      BorderThickness="1"
+                                      Foreground="{DynamicResource ShareX.Brush.Text}">
+                            </ComboBox>
 
+                            <StackPanel IsVisible="{Binding IsGradientBackgroundModeSelected}" Spacing="0">
+                                <ItemsControl ItemsSource="{Binding GradientPresets}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="4"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Padding="0"
+                                                    BorderThickness="0"
+                                                    Background="Transparent"
+                                                    Margin="2"
+                                                    ToolTip.Tip="{Binding Name}"
+                                                    Command="{Binding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Border Width="46"
+                                                        Height="36"
+                                                        CornerRadius="5"
+                                                        BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                                                        BorderThickness="1"
+                                                        Background="{Binding Brush}"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <StackPanel IsVisible="{Binding IsColorBackgroundModeSelected}" Spacing="6">
+                                <controls:ColorPickerDropdown SelectedColorValue="{Binding BackgroundColorValue, Mode=TwoWay}"
+                                                              Height="40"
+                                                              Width="72"
+                                                              HorizontalAlignment="Left"/>
+                            </StackPanel>
+
+                            <StackPanel IsVisible="{Binding IsImageBackgroundModeSelected}" Spacing="6">
+                                <Button Classes="editor-button"
+                                        Content="Browse image file..."
+                                        Click="OnBrowseBackgroundImageClick"
+                                        HorizontalAlignment="Stretch"/>
+
+                                <StackPanel IsVisible="{Binding HasBackgroundImagePath}" Spacing="2">
+                                    <TextBlock Text="File"
+                                               FontWeight="Normal"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                    <TextBlock Text="{Binding BackgroundImagePath}"
+                                               FontWeight="Normal"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

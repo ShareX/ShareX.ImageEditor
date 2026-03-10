@@ -863,6 +863,32 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private async void OnBrowseBackgroundImageClick(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Select background image",
+                AllowMultiple = false,
+                FileTypeFilter = [FilePickerFileTypes.ImageAll]
+            });
+
+            if (files.Count > 0)
+            {
+                vm.SetBackgroundImagePath(files[0].Path.LocalPath);
+            }
+        }
+
         private void OnZoomToFitRequested(object? sender, EventArgs e)
         {
             _zoomController.ZoomToFit();
