@@ -215,12 +215,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return;
             }
 
+            EditorServices.ReportInformation(
+                nameof(MainViewModel),
+                $"Attempting wallpaper background from '{wallpaper.Path}' with layout '{wallpaper.Layout}'.");
+
             if (!TryCreateImageBrushFromPath(wallpaper.Path, wallpaper.Layout, out ImageBrush? brush, out Bitmap? bitmap))
             {
                 SetCanvasBackground(Brushes.Transparent);
                 return;
             }
 
+            EditorServices.ReportInformation(nameof(MainViewModel), "Wallpaper background applied.");
             SetCanvasBackground(brush!, bitmap);
         }
 
