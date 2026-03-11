@@ -124,5 +124,18 @@ namespace ShareX.ImageEditor.Hosting
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;
         public float SpotlightStrength { get; set; } = 15;
+
+        // Background
+        public double BackgroundMargin { get; set; } = 80;
+        public double BackgroundPadding { get; set; } = 40;
+        public bool BackgroundSmartPadding { get; set; } = true;
+        public double BackgroundRoundedCorner { get; set; } = 20;
+        public double BackgroundShadowRadius { get; set; } = 30;
+        public string BackgroundType { get; set; } = "Transparent";
+        public string BackgroundGradientPresetName { get; set; } = "Sunset Glow";
+        public string BackgroundColorHex { get; set; } = ColorToHex(Color.FromArgb(255, 34, 34, 34));
+        [JsonIgnore]
+        public Color BackgroundColor { get => HexToColor(BackgroundColorHex); set => BackgroundColorHex = ColorToHex(value); }
+        public string BackgroundImagePath { get; set; } = "";
     }
 }

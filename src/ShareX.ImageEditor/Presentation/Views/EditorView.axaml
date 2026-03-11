@@ -279,64 +279,68 @@
                               ScrollChanged="OnSidebarScrollChanged">
                     <StackPanel Width="220" Spacing="0" Margin="16">
 
-                        <!-- Margin Slider -->
+                        <!-- Background Margin -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Margin" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
                                 <Border Grid.Column="1" Classes="capsule">
-                                    <TextBlock Text="{Binding PreviewPadding, StringFormat='{}{0:F0} px'}"/>
+                                    <TextBlock Text="{Binding BackgroundMargin, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
                             </Grid>
-                            <Slider Minimum="0"
+                            <Slider x:Name="BackgroundMarginSlider"
+                                    Minimum="0"
                                     Maximum="200"
-                                    Value="{Binding PreviewPadding}"
+                                    Value="{Binding BackgroundMargin}"
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
                         </StackPanel>
 
-                        <!-- Padding Slider -->
+                        <!-- Background Padding -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Padding" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
                                 <Border Grid.Column="1" Classes="capsule">
-                                    <TextBlock Text="{Binding SmartPadding, StringFormat='{}{0:F0} px'}"/>
+                                    <TextBlock Text="{Binding BackgroundPadding, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
                             </Grid>
-                            <Slider Minimum="0"
+                            <Slider x:Name="BackgroundPaddingSlider"
+                                    Minimum="0"
                                     Maximum="200"
-                                    Value="{Binding SmartPadding}"
+                                    Value="{Binding BackgroundPadding}"
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
-                            <!-- Smart Padding Checkbox -->
-                            <CheckBox IsChecked="{Binding UseSmartPadding}"
+                            <CheckBox x:Name="BackgroundSmartPaddingCheckBox"
+                                      IsChecked="{Binding BackgroundSmartPadding}"
                                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
-                                      Content="Smart Padding"
+                                      Content="Smart padding"
                                       Margin="0,0,0,8"/>
                         </StackPanel>
 
-                        <!-- Rounded Corner Slider -->
+                        <!-- Background Rounded Corner -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
                                 <Border Grid.Column="1" Classes="capsule">
-                                    <TextBlock Text="{Binding PreviewCornerRadius, StringFormat='{}{0:F0} px'}"/>
+                                    <TextBlock Text="{Binding BackgroundRoundedCorner, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
                             </Grid>
-                            <Slider Minimum="0"
+                            <Slider x:Name="BackgroundRoundedCornerSlider"
+                                    Minimum="0"
                                     Maximum="50"
-                                    Value="{Binding PreviewCornerRadius}"
+                                    Value="{Binding BackgroundRoundedCorner}"
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
                         </StackPanel>
 
-                        <!-- Shadow Slider -->
+                        <!-- Background Shadow Radius -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Shadow" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                <TextBlock Grid.Column="0" Text="Shadow Radius" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
                                 <Border Grid.Column="1" Classes="capsule">
-                                    <TextBlock Text="{Binding ShadowBlur, StringFormat='{}{0:F0} px'}"/>
+                                    <TextBlock Text="{Binding BackgroundShadowRadius, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
                             </Grid>
-                            <Slider Minimum="0"
+                            <Slider x:Name="BackgroundShadowRadiusSlider"
+                                    Minimum="0"
                                     Maximum="100"
-                                    Value="{Binding ShadowBlur}"
+                                    Value="{Binding BackgroundShadowRadius}"
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
                         </StackPanel>
 
@@ -408,7 +412,8 @@
                         <!-- Background -->
                         <StackPanel Spacing="0">
                             <TextBlock Text="Background" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,16"/>
-                            <ComboBox ItemsSource="{Binding BackgroundModeOptions}"
+                            <ComboBox x:Name="BackgroundTypeComboBox"
+                                      ItemsSource="{Binding BackgroundModeOptions}"
                                       SelectedItem="{Binding SelectedBackgroundModeOption, Mode=TwoWay}"
                                       Margin="0,0,0,12"
                                       Padding="8,6"
@@ -448,20 +453,22 @@
                             </StackPanel>
 
                             <StackPanel IsVisible="{Binding IsColorBackgroundModeSelected}" Spacing="6">
-                                <controls:ColorPickerDropdown SelectedColorValue="{Binding BackgroundColorValue, Mode=TwoWay}"
+                                <controls:ColorPickerDropdown x:Name="BackgroundColorPickerDropdown"
+                                                              SelectedColorValue="{Binding BackgroundColorValue, Mode=TwoWay}"
                                                               Height="40"
                                                               Width="72"
                                                               HorizontalAlignment="Left"/>
                             </StackPanel>
 
                             <StackPanel IsVisible="{Binding IsImageBackgroundModeSelected}" Spacing="6">
-                                <Button Classes="editor-button"
-                                        Content="Browse image file..."
+                                <Button x:Name="BrowseBackgroundImageButton"
+                                        Classes="editor-button"
+                                        Content="Browse background image..."
                                         Click="OnBrowseBackgroundImageClick"
                                         HorizontalAlignment="Stretch"/>
 
                                 <StackPanel IsVisible="{Binding HasBackgroundImagePath}" Spacing="2">
-                                    <TextBlock Text="File"
+                                    <TextBlock Text="Background image"
                                                FontWeight="Normal"
                                                FontSize="11"
                                                Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>

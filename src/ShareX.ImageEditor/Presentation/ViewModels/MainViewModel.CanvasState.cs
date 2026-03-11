@@ -68,7 +68,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         /// This method is part of a complex event chain that requires recursion prevention:
         /// </para>
         /// <list type="number">
-        /// <item>User toggles UseSmartPadding property → OnPropertyChanged fires</item>
+        /// <item>User toggles BackgroundSmartPadding property → OnPropertyChanged fires</item>
         /// <item>Property change triggers this method via partial method hook</item>
         /// <item>Method modifies PreviewImage (via UpdatePreview or direct assignment)</item>
         /// <item>PreviewImage change would trigger this method again → infinite loop</item>
@@ -95,7 +95,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return;
             }
 
-            if (!UseSmartPadding || !AreBackgroundEffectsActive)
+            if (!BackgroundSmartPadding || !AreBackgroundEffectsActive)
             {
                 _smartPaddingCropInsets = new Thickness(0);
                 UpdateCanvasProperties();
@@ -300,15 +300,15 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             if (AreBackgroundEffectsActive)
             {
-                CanvasPadding = CalculateOutputPadding(PreviewPadding, TargetOutputAspectRatio);
+                CanvasPadding = CalculateOutputPadding(BackgroundMargin, TargetOutputAspectRatio);
                 CanvasShadow = new BoxShadows(new BoxShadow
                 {
-                    Blur = ShadowBlur,
+                    Blur = BackgroundShadowRadius,
                     Color = Color.FromArgb(80, 0, 0, 0),
                     OffsetX = 0,
                     OffsetY = 10
                 });
-                CanvasCornerRadius = Math.Max(0, PreviewCornerRadius);
+                CanvasCornerRadius = Math.Max(0, BackgroundRoundedCorner);
             }
             else
             {

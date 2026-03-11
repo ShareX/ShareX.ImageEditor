@@ -266,7 +266,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 double width = ImageWidth;
 
-                if (UseSmartPadding && AreBackgroundEffectsActive)
+                if (BackgroundSmartPadding && AreBackgroundEffectsActive)
                 {
                     width -= _smartPaddingCropInsets.Left + _smartPaddingCropInsets.Right;
                 }
@@ -281,7 +281,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 double height = ImageHeight;
 
-                if (UseSmartPadding && AreBackgroundEffectsActive)
+                if (BackgroundSmartPadding && AreBackgroundEffectsActive)
                 {
                     height -= _smartPaddingCropInsets.Top + _smartPaddingCropInsets.Bottom;
                 }
@@ -294,7 +294,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             get
             {
-                if (!UseSmartPadding || !AreBackgroundEffectsActive)
+                if (!BackgroundSmartPadding || !AreBackgroundEffectsActive)
                 {
                     return 0;
                 }
@@ -307,7 +307,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             get
             {
-                if (!UseSmartPadding || !AreBackgroundEffectsActive)
+                if (!BackgroundSmartPadding || !AreBackgroundEffectsActive)
                 {
                     return 0;
                 }
@@ -344,7 +344,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 // Apply smart padding crop if enabled (but not if we're already applying it)
                 // Only trigger if background effects are active to avoid overwriting live previews
                 // Also skip if we are syncing from Core (to prevent infinite loops)
-                if (UseSmartPadding && !_isApplyingSmartPadding && AreBackgroundEffectsActive && !_isSyncingFromCore)
+                if (BackgroundSmartPadding && !_isApplyingSmartPadding && AreBackgroundEffectsActive && !_isSyncingFromCore)
                 {
                     ApplySmartPaddingCrop();
                 }
@@ -363,17 +363,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         [ObservableProperty]
-        private double _previewPadding = 30;
+        private double _backgroundMargin = 30;
 
         [ObservableProperty]
-        private double _smartPadding = 30;
+        private double _backgroundPadding = 30;
 
         [ObservableProperty]
-        private bool _useSmartPadding = true;
+        private bool _backgroundSmartPadding = true;
 
         /// <summary>
         /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
-        /// Prevents infinite loop: UseSmartPadding property change → ApplySmartPaddingCrop →
+        /// Prevents infinite loop: BackgroundSmartPadding property change → ApplySmartPaddingCrop →
         /// UpdatePreview → PreviewImage changed → ApplySmartPaddingCrop (again).
         /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
         /// </summary>
@@ -385,13 +385,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         /// </summary>
         public bool IsSmartPaddingInProgress => _isApplyingSmartPadding;
 
-        public Thickness SmartPaddingThickness => AreBackgroundEffectsActive ? new Thickness(SmartPadding) : new Thickness(0);
+        public Thickness SmartPaddingThickness => AreBackgroundEffectsActive ? new Thickness(BackgroundPadding) : new Thickness(0);
 
         public IBrush SmartPaddingColor
         {
             get
             {
-                if (!AreBackgroundEffectsActive || PreviewImage == null || SmartPadding <= 0)
+                if (!AreBackgroundEffectsActive || PreviewImage == null || BackgroundPadding <= 0)
                 {
                     return Brushes.Transparent;
                 }
@@ -401,7 +401,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     int sampleX = 0;
                     int sampleY = 0;
 
-                    if (UseSmartPadding && AreBackgroundEffectsActive)
+                    if (BackgroundSmartPadding && AreBackgroundEffectsActive)
                     {
                         sampleX = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Left));
                         sampleY = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Top));
@@ -419,10 +419,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         [ObservableProperty]
-        private double _previewCornerRadius = 15;
+        private double _backgroundRoundedCorner = 15;
 
         [ObservableProperty]
-        private double _shadowBlur = 30;
+        private double _backgroundShadowRadius = 30;
 
         private const double MinZoom = 0.25;
         private const double MaxZoom = 4.0;
@@ -471,7 +471,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             // Re-evaluate Smart Padding application
             // If we closed the panel, we might need to revert crop. If opened, apply crop.
-            // But ApplySmartPaddingCrop depends on UseSmartPadding too.
+            // But ApplySmartPaddingCrop depends on BackgroundSmartPadding too.
             if (_originalSourceImage != null)
             {
                 ApplySmartPaddingCrop();
@@ -697,8 +697,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             Current = this;
             GradientPresets = BuildGradientPresets();
             BackgroundModeOptions = BuildBackgroundModeOptions();
-            _selectedGradientPreset = GradientPresets[0];
-            _selectedBackgroundModeOption = FindBackgroundModeOption(CanvasBackgroundMode.Transparent);
+            InitializeBackgroundSettingsFromOptions();
             _canvasBackground = Brushes.Transparent;
 
             // Initialize values from options
@@ -775,29 +774,34 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             UpdateCanvasProperties();
         }
 
-        partial void OnPreviewPaddingChanged(double value)
+        partial void OnBackgroundMarginChanged(double value)
         {
+            Options.BackgroundMargin = value;
             UpdateCanvasProperties();
         }
 
-        partial void OnSmartPaddingChanged(double value)
+        partial void OnBackgroundPaddingChanged(double value)
         {
+            Options.BackgroundPadding = value;
             NotifySmartPaddingLayoutChanged();
             UpdateCanvasProperties();
         }
 
-        partial void OnUseSmartPaddingChanged(bool value)
+        partial void OnBackgroundSmartPaddingChanged(bool value)
         {
+            Options.BackgroundSmartPadding = value;
             ApplySmartPaddingCrop();
         }
 
-        partial void OnPreviewCornerRadiusChanged(double value)
+        partial void OnBackgroundRoundedCornerChanged(double value)
         {
+            Options.BackgroundRoundedCorner = value;
             UpdateCanvasProperties();
         }
 
-        partial void OnShadowBlurChanged(double value)
+        partial void OnBackgroundShadowRadiusChanged(double value)
         {
+            Options.BackgroundShadowRadius = value;
             UpdateCanvasProperties();
         }
 

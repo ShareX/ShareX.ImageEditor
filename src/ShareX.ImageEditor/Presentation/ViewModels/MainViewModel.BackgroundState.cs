@@ -65,7 +65,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private GradientPreset? _selectedGradientPreset;
 
         [ObservableProperty]
-        private string _backgroundColor = "#FFFFFFFF";
+        private string _backgroundColorHex = "#FFFFFFFF";
 
         [ObservableProperty]
         private string? _backgroundImagePath;
@@ -77,24 +77,25 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         public IBrush BackgroundColorBrush
         {
-            get => new SolidColorBrush(Color.Parse(BackgroundColor));
+            get => new SolidColorBrush(Color.Parse(BackgroundColorHex));
             set
             {
                 if (value is SolidColorBrush solidBrush)
                 {
-                    BackgroundColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                    BackgroundColorHex = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
                 }
             }
         }
 
         public Color BackgroundColorValue
         {
-            get => Color.Parse(BackgroundColor);
-            set => BackgroundColor = $"#{value.A:X2}{value.R:X2}{value.G:X2}{value.B:X2}";
+            get => Color.Parse(BackgroundColorHex);
+            set => BackgroundColorHex = $"#{value.A:X2}{value.R:X2}{value.G:X2}{value.B:X2}";
         }
 
         partial void OnSelectedBackgroundModeOptionChanged(BackgroundModeOption? value)
         {
+            Options.BackgroundType = SelectedBackgroundMode.ToString();
             OnPropertyChanged(nameof(IsGradientBackgroundModeSelected));
             OnPropertyChanged(nameof(IsColorBackgroundModeSelected));
             OnPropertyChanged(nameof(IsImageBackgroundModeSelected));
@@ -103,14 +104,20 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnSelectedGradientPresetChanged(GradientPreset? value)
         {
+            if (value != null)
+            {
+                Options.BackgroundGradientPresetName = value.Name;
+            }
+
             if (value != null && SelectedBackgroundMode == CanvasBackgroundMode.Gradient)
             {
                 ApplyGradientBackground(value);
             }
         }
 
-        partial void OnBackgroundColorChanged(string value)
+        partial void OnBackgroundColorHexChanged(string value)
         {
+            Options.BackgroundColorHex = value;
             OnPropertyChanged(nameof(BackgroundColorBrush));
             OnPropertyChanged(nameof(BackgroundColorValue));
 
@@ -122,6 +129,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnBackgroundImagePathChanged(string? value)
         {
+            Options.BackgroundImagePath = value ?? string.Empty;
             OnPropertyChanged(nameof(HasBackgroundImagePath));
 
             if (SelectedBackgroundMode == CanvasBackgroundMode.Image)
@@ -232,6 +240,61 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private BackgroundModeOption FindBackgroundModeOption(CanvasBackgroundMode mode)
         {
             return BackgroundModeOptions.FirstOrDefault(option => option.Mode == mode) ?? BackgroundModeOptions[0];
+        }
+
+        private GradientPreset FindGradientPresetByName(string? presetName)
+        {
+            return GradientPresets.FirstOrDefault(
+                preset => string.Equals(preset.Name, presetName, StringComparison.OrdinalIgnoreCase))
+                ?? GradientPresets[0];
+        }
+
+        private void InitializeBackgroundSettingsFromOptions()
+        {
+            _backgroundMargin = Math.Max(0, _options.BackgroundMargin);
+            _backgroundPadding = Math.Max(0, _options.BackgroundPadding);
+            _backgroundSmartPadding = _options.BackgroundSmartPadding;
+            _backgroundRoundedCorner = Math.Max(0, _options.BackgroundRoundedCorner);
+            _backgroundShadowRadius = Math.Max(0, _options.BackgroundShadowRadius);
+            _selectedGradientPreset = FindGradientPresetByName(_options.BackgroundGradientPresetName);
+            _backgroundColorHex = NormalizeBackgroundColorHex(
+                _options.BackgroundColorHex,
+                Color.FromArgb(255, 34, 34, 34));
+            _backgroundImagePath = string.IsNullOrWhiteSpace(_options.BackgroundImagePath) ? null : _options.BackgroundImagePath;
+            _selectedBackgroundModeOption = FindBackgroundModeOption(ParseBackgroundMode(_options.BackgroundType));
+
+            Options.BackgroundMargin = _backgroundMargin;
+            Options.BackgroundPadding = _backgroundPadding;
+            Options.BackgroundSmartPadding = _backgroundSmartPadding;
+            Options.BackgroundRoundedCorner = _backgroundRoundedCorner;
+            Options.BackgroundShadowRadius = _backgroundShadowRadius;
+            Options.BackgroundGradientPresetName = _selectedGradientPreset.Name;
+            Options.BackgroundColorHex = _backgroundColorHex;
+            Options.BackgroundImagePath = _backgroundImagePath ?? string.Empty;
+            Options.BackgroundType = SelectedBackgroundMode.ToString();
+        }
+
+        private static CanvasBackgroundMode ParseBackgroundMode(string? backgroundType)
+        {
+            return Enum.TryParse(backgroundType, ignoreCase: true, out CanvasBackgroundMode mode)
+                ? mode
+                : CanvasBackgroundMode.Transparent;
+        }
+
+        private static string NormalizeBackgroundColorHex(string? colorHex, Color fallbackColor)
+        {
+            try
+            {
+                Color color = !string.IsNullOrWhiteSpace(colorHex)
+                    ? Color.Parse(colorHex)
+                    : fallbackColor;
+
+                return $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}";
+            }
+            catch
+            {
+                return $"#{fallbackColor.A:X2}{fallbackColor.R:X2}{fallbackColor.G:X2}{fallbackColor.B:X2}";
+            }
         }
 
         private static ObservableCollection<BackgroundModeOption> BuildBackgroundModeOptions()
