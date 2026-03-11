@@ -184,7 +184,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private void ApplyImageBackground(string? filePath)
         {
-            if (!TryCreateImageBrushFromPath(filePath, out ImageBrush? brush, out Bitmap? bitmap))
+            if (!TryCreateImageBrushFromPath(filePath, DesktopWallpaperLayout.Fill, out ImageBrush? brush, out Bitmap? bitmap))
             {
                 SetCanvasBackground(Brushes.Transparent);
                 return;
@@ -197,14 +197,15 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             IDesktopWallpaperService? desktopWallpaperService = EditorServices.DesktopWallpaper;
             if (desktopWallpaperService?.IsSupported != true ||
-                !desktopWallpaperService.TryGetDesktopWallpaperPath(out string? wallpaperPath))
+                !desktopWallpaperService.TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper) ||
+                wallpaper == null)
             {
                 EditorServices.ReportWarning(nameof(MainViewModel), "Failed to locate the current desktop wallpaper.");
                 SetCanvasBackground(Brushes.Transparent);
                 return;
             }
 
-            if (!TryCreateImageBrushFromPath(wallpaperPath, out ImageBrush? brush, out Bitmap? bitmap))
+            if (!TryCreateImageBrushFromPath(wallpaper.Path, wallpaper.Layout, out ImageBrush? brush, out Bitmap? bitmap))
             {
                 SetCanvasBackground(Brushes.Transparent);
                 return;
@@ -249,7 +250,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             return options;
         }
 
-        private static bool TryCreateImageBrushFromPath(string? filePath, out ImageBrush? brush, out Bitmap? bitmap)
+        private static bool TryCreateImageBrushFromPath(string? filePath, DesktopWallpaperLayout layout, out ImageBrush? brush, out Bitmap? bitmap)
         {
             brush = null;
             bitmap = null;
@@ -263,10 +264,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 using FileStream stream = File.OpenRead(filePath);
                 bitmap = new Bitmap(stream);
-                brush = new ImageBrush(bitmap)
-                {
-                    Stretch = Stretch.UniformToFill
-                };
+                brush = CreateImageBrush(bitmap, layout);
 
                 return true;
             }
@@ -277,6 +275,43 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 EditorServices.ReportWarning(nameof(MainViewModel), $"Failed to load background image '{filePath}'.", ex);
                 return false;
             }
+        }
+
+        private static ImageBrush CreateImageBrush(Bitmap bitmap, DesktopWallpaperLayout layout)
+        {
+            ImageBrush brush = new ImageBrush(bitmap);
+
+            switch (layout)
+            {
+                case DesktopWallpaperLayout.Fill:
+                    brush.Stretch = Stretch.UniformToFill;
+                    break;
+                case DesktopWallpaperLayout.Fit:
+                    brush.Stretch = Stretch.Uniform;
+                    break;
+                case DesktopWallpaperLayout.Stretch:
+                    brush.Stretch = Stretch.Fill;
+                    break;
+                case DesktopWallpaperLayout.Center:
+                    brush.Stretch = Stretch.None;
+                    brush.AlignmentX = AlignmentX.Center;
+                    brush.AlignmentY = AlignmentY.Center;
+                    break;
+                case DesktopWallpaperLayout.Tile:
+                    brush.Stretch = Stretch.None;
+                    brush.TileMode = TileMode.Tile;
+                    brush.SourceRect = new Avalonia.RelativeRect(0, 0, 1, 1, Avalonia.RelativeUnit.Relative);
+                    brush.DestinationRect = new Avalonia.RelativeRect(0, 0, bitmap.Size.Width, bitmap.Size.Height, Avalonia.RelativeUnit.Absolute);
+                    break;
+                case DesktopWallpaperLayout.Span:
+                    brush.Stretch = Stretch.Fill;
+                    break;
+                default:
+                    brush.Stretch = Stretch.UniformToFill;
+                    break;
+            }
+
+            return brush;
         }
     }
 }

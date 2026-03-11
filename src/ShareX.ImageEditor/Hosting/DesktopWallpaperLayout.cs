@@ -26,17 +26,14 @@
 namespace ShareX.ImageEditor.Hosting;
 
 /// <summary>
-/// Host-provided service for resolving the current desktop wallpaper.
+/// Describes how a desktop wallpaper image should be presented.
 /// </summary>
-public interface IDesktopWallpaperService
+public enum DesktopWallpaperLayout
 {
-    /// <summary>
-    /// Gets whether desktop wallpaper lookup is supported by the current host/platform.
-    /// </summary>
-    bool IsSupported { get; }
-
-    /// <summary>
-    /// Tries to resolve the current desktop wallpaper metadata.
-    /// </summary>
-    bool TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper);
+    Fill,
+    Fit,
+    Stretch,
+    Center,
+    Tile,
+    Span
 }

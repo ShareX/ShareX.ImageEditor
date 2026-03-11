@@ -38,9 +38,9 @@ namespace ShareX.ImageEditor.Loader
 
         public bool IsSupported => OperatingSystem.IsWindows();
 
-        public bool TryGetDesktopWallpaperPath(out string? path)
+        public bool TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper)
         {
-            path = null;
+            wallpaper = null;
 
             if (!OperatingSystem.IsWindows())
             {
@@ -59,7 +59,12 @@ namespace ShareX.ImageEditor.Loader
                 return false;
             }
 
-            path = wallpaperPath;
+            wallpaper = new DesktopWallpaperInfo
+            {
+                Path = wallpaperPath,
+                Layout = DesktopWallpaperLayout.Fill
+            };
+
             return true;
         }
 

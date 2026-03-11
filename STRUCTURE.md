@@ -48,6 +48,8 @@ Entry points and contracts consumed by host applications (XerahS, ShareX).
 | `ImageEditorOptions.cs` | Options passed from host to editor |
 | `EditorServices.cs` | Service wiring for DI |
 | `IClipboardService.cs` | Clipboard abstraction for host to implement |
+| `DesktopWallpaperInfo.cs` | Resolved wallpaper metadata supplied by the host |
+| `DesktopWallpaperLayout.cs` | Wallpaper presentation enum for host-provided backgrounds |
 | `IDesktopWallpaperService.cs` | Desktop wallpaper abstraction for host-provided canvas backgrounds |
 | `EditorHostExample.cs` | Reference integration example |
 | `Diagnostics/EditorDiagnostics.cs` | Logging and tracing hooks |

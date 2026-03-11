@@ -26,17 +26,17 @@
 namespace ShareX.ImageEditor.Hosting;
 
 /// <summary>
-/// Host-provided service for resolving the current desktop wallpaper.
+/// Resolved desktop wallpaper metadata supplied by the host application.
 /// </summary>
-public interface IDesktopWallpaperService
+public sealed class DesktopWallpaperInfo
 {
     /// <summary>
-    /// Gets whether desktop wallpaper lookup is supported by the current host/platform.
+    /// Absolute file path to the current wallpaper image.
     /// </summary>
-    bool IsSupported { get; }
+    public required string Path { get; init; }
 
     /// <summary>
-    /// Tries to resolve the current desktop wallpaper metadata.
+    /// Presentation mode used by the desktop environment.
     /// </summary>
-    bool TryGetDesktopWallpaper(out DesktopWallpaperInfo? wallpaper);
+    public DesktopWallpaperLayout Layout { get; init; } = DesktopWallpaperLayout.Fill;
 }
