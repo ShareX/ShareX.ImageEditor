@@ -78,6 +78,8 @@ namespace ShareX.ImageEditor.Hosting
                 {
                     if (!initialized)
                     {
+                        EnsureDefaultDesktopWallpaperService();
+
                         if (Application.Current == null)
                         {
                             AppBuilder.Configure<AvaloniaApp>()
@@ -90,6 +92,14 @@ namespace ShareX.ImageEditor.Hosting
                         initialized = true;
                     }
                 }
+            }
+        }
+
+        private static void EnsureDefaultDesktopWallpaperService()
+        {
+            if (EditorServices.DesktopWallpaper == null && OperatingSystem.IsWindows())
+            {
+                EditorServices.DesktopWallpaper = new WindowsDesktopWallpaperService();
             }
         }
 
