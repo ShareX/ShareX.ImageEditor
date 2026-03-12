@@ -16,6 +16,8 @@ namespace ShareX.ImageEditor.Presentation.Controllers;
 
 public class EditorSelectionController
 {
+    private static readonly Cursor SelectToolCursor = new(StandardCursorType.Arrow);
+
     private readonly EditorView _view;
     private Control? _selectedShape;
     private List<Control> _selectionHandles = new();
@@ -296,6 +298,8 @@ public class EditorSelectionController
 
         if (_isDraggingHandle && _draggedHandle != null && _selectedShape != null)
         {
+            UpdateCanvasCursorForSelectionInteraction();
+            RefreshSelectionHandleCursors();
             HandleResize(currentPoint, e.KeyModifiers.HasFlag(KeyModifiers.Shift));
             e.Handled = true;
             return true;
@@ -303,6 +307,7 @@ public class EditorSelectionController
 
         if (_isDraggingShape && _selectedShape != null)
         {
+            UpdateCanvasCursorForSelectionInteraction();
             HandleMove(currentPoint);
             e.Handled = true;
             return true;
@@ -320,6 +325,8 @@ public class EditorSelectionController
         {
             _isDraggingHandle = false;
             _draggedHandle = null;
+            UpdateCanvasCursorForSelectionInteraction();
+            RefreshSelectionHandleCursors();
             e.Pointer.Capture(null);
 
             if (_selectedShape?.Tag is BaseEffectAnnotation)
@@ -332,6 +339,8 @@ public class EditorSelectionController
         if (_isDraggingShape)
         {
             _isDraggingShape = false;
+            UpdateCanvasCursorForSelectionInteraction();
+            RefreshSelectionHandleCursors();
             e.Pointer.Capture(null);
 
             if (_selectedShape?.Tag is BaseEffectAnnotation)
@@ -898,12 +907,6 @@ public class EditorSelectionController
         var overlay = _view.FindControl<Canvas>("OverlayCanvas");
         if (overlay == null) return;
 
-        Cursor cursor = Cursor.Parse("Hand");
-        if (tag.Contains("TopLeft") || tag.Contains("BottomRight")) cursor = new Cursor(StandardCursorType.TopLeftCorner);
-        else if (tag.Contains("TopRight") || tag.Contains("BottomLeft")) cursor = new Cursor(StandardCursorType.TopRightCorner);
-        else if (tag.Contains("Top") || tag.Contains("Bottom")) cursor = new Cursor(StandardCursorType.SizeNorthSouth);
-        else if (tag.Contains("Left") || tag.Contains("Right")) cursor = new Cursor(StandardCursorType.SizeWestEast);
-
         var handleBorder = new Border
         {
             Width = 15,
@@ -911,7 +914,7 @@ public class EditorSelectionController
             CornerRadius = new CornerRadius(10),
             Background = Brushes.White,
             Tag = tag,
-            Cursor = cursor,
+            Cursor = GetSelectionHandleCursor(),
             // Keep handle centers stable while dragging; layout rounding can cause
             // half-pixel positions to snap left/right on consecutive frames.
             UseLayoutRounding = false,
@@ -930,6 +933,65 @@ public class EditorSelectionController
 
         overlay.Children.Add(handleBorder);
         _selectionHandles.Add(handleBorder);
+    }
+
+    private bool IsSelectionInteractionActive()
+    {
+        return _isDraggingHandle || _isDraggingShape;
+    }
+
+    private Cursor GetSelectionHandleCursor()
+    {
+        return IsSelectionInteractionActive()
+            ? CursorAssetLoader.GetClosedHandCursor()
+            : CursorAssetLoader.GetOpenHandCursor();
+    }
+
+    private void RefreshSelectionHandleCursors()
+    {
+        var cursor = GetSelectionHandleCursor();
+
+        foreach (var handle in _selectionHandles)
+        {
+            if (handle is Border border)
+            {
+                border.Cursor = cursor;
+            }
+        }
+    }
+
+    private void UpdateCanvasCursorForSelectionInteraction()
+    {
+        Cursor cursor = IsSelectionInteractionActive()
+            ? CursorAssetLoader.GetClosedHandCursor()
+            : GetDefaultCanvasCursor();
+
+        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
+        if (annotationCanvas != null)
+        {
+            annotationCanvas.Cursor = cursor;
+        }
+
+        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+        if (overlayCanvas != null)
+        {
+            overlayCanvas.Cursor = cursor;
+        }
+    }
+
+    private Cursor GetDefaultCanvasCursor()
+    {
+        if (_view.DataContext is not MainViewModel vm)
+        {
+            return SelectToolCursor;
+        }
+
+        return vm.ActiveTool switch
+        {
+            EditorTool.Select => SelectToolCursor,
+            EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
+            _ => CursorAssetLoader.GetCrosshairCursor()
+        };
     }
 
     private void ShowSpeechBalloonTextEditor(SpeechBalloonControl balloonControl, Canvas unusedCanvas)

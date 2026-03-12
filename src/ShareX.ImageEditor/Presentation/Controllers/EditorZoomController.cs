@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views;
 
@@ -9,6 +11,8 @@ namespace ShareX.ImageEditor.Presentation.Controllers;
 
 public class EditorZoomController
 {
+    private static readonly Cursor ArrowCursor = new(StandardCursorType.Arrow);
+
     private readonly EditorView _view;
     private bool _isPointerZooming;
     private double _lastZoom = 1.0;
@@ -201,7 +205,8 @@ public class EditorZoomController
         _isPanning = true;
         _panStart = e.GetPosition(scrollViewer);
         _panOrigin = scrollViewer.Offset;
-        scrollViewer.Cursor = new Cursor(StandardCursorType.SizeAll);
+        scrollViewer.Cursor = CursorAssetLoader.GetClosedHandCursor();
+        UpdateCanvasCursorsForPanning(true);
         e.Pointer.Capture(scrollViewer);
         e.Handled = true;
     }
@@ -235,9 +240,44 @@ public class EditorZoomController
         {
             _isPanning = false;
             scrollViewer.Cursor = null;
+            UpdateCanvasCursorsForPanning(false);
             e.Pointer.Capture(null);
             e.Handled = true;
         }
+    }
+
+    private void UpdateCanvasCursorsForPanning(bool isPanning)
+    {
+        Cursor cursor = isPanning
+            ? CursorAssetLoader.GetClosedHandCursor()
+            : GetDefaultCanvasCursor();
+
+        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
+        if (annotationCanvas != null)
+        {
+            annotationCanvas.Cursor = cursor;
+        }
+
+        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+        if (overlayCanvas != null)
+        {
+            overlayCanvas.Cursor = cursor;
+        }
+    }
+
+    private Cursor GetDefaultCanvasCursor()
+    {
+        if (_view.DataContext is not MainViewModel vm)
+        {
+            return ArrowCursor;
+        }
+
+        return vm.ActiveTool switch
+        {
+            EditorTool.Select => ArrowCursor,
+            EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
+            _ => CursorAssetLoader.GetCrosshairCursor()
+        };
     }
 
     public void ResetScrollViewerOffset()
