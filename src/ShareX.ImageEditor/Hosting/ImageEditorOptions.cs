@@ -111,9 +111,6 @@ namespace ShareX.ImageEditor.Hosting
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
 
-        // Smart Eraser
-        public int SmartEraserThickness { get; set; } = 10;
-
         // Highlight
         public string HighlightFillColorHex { get; set; } = ColorToHex(Colors.Yellow);
         [JsonIgnore]
