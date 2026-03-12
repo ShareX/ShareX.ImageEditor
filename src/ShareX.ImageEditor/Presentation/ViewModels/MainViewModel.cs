@@ -781,12 +781,22 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnBackgroundMarginChanged(double value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundMargin = value;
             UpdateCanvasProperties();
         }
 
         partial void OnBackgroundPaddingChanged(double value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundPadding = value;
             NotifySmartPaddingLayoutChanged();
             UpdateCanvasProperties();
@@ -794,18 +804,33 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnBackgroundSmartPaddingChanged(bool value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundSmartPadding = value;
             ApplySmartPaddingCrop();
         }
 
         partial void OnBackgroundRoundedCornerChanged(double value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundRoundedCorner = value;
             UpdateCanvasProperties();
         }
 
         partial void OnBackgroundShadowRadiusChanged(double value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundShadowRadius = value;
             UpdateCanvasProperties();
         }

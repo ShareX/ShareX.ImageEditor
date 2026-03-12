@@ -57,6 +57,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private Bitmap? _backgroundBitmap;
         private Task? _wallpaperBackgroundPreloadTask;
+        private bool _isInitializingBackgroundSettings;
 
         public ObservableCollection<BackgroundModeOption> BackgroundModeOptions { get; }
 
@@ -97,6 +98,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnSelectedBackgroundModeOptionChanged(BackgroundModeOption? value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundType = SelectedBackgroundMode.ToString();
             OnPropertyChanged(nameof(IsGradientBackgroundModeSelected));
             OnPropertyChanged(nameof(IsColorBackgroundModeSelected));
@@ -106,6 +112,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnSelectedGradientPresetChanged(GradientPreset? value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             if (value != null)
             {
                 Options.BackgroundGradientPresetName = value.Name;
@@ -119,6 +130,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnBackgroundColorHexChanged(string value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundColorHex = value;
             OnPropertyChanged(nameof(BackgroundColorBrush));
             OnPropertyChanged(nameof(BackgroundColorValue));
@@ -131,6 +147,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnBackgroundImagePathChanged(string? value)
         {
+            if (_isInitializingBackgroundSettings)
+            {
+                return;
+            }
+
             Options.BackgroundImagePath = value ?? string.Empty;
             OnPropertyChanged(nameof(HasBackgroundImagePath));
 
@@ -295,26 +316,35 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private void InitializeBackgroundSettingsFromOptions()
         {
-            _backgroundMargin = Math.Max(0, _options.BackgroundMargin);
-            _backgroundPadding = Math.Max(0, _options.BackgroundPadding);
-            _backgroundSmartPadding = _options.BackgroundSmartPadding;
-            _backgroundRoundedCorner = Math.Max(0, _options.BackgroundRoundedCorner);
-            _backgroundShadowRadius = Math.Max(0, _options.BackgroundShadowRadius);
-            _selectedGradientPreset = FindGradientPresetByName(_options.BackgroundGradientPresetName);
-            _backgroundColorHex = NormalizeBackgroundColorHex(
-                _options.BackgroundColorHex,
-                Color.FromArgb(255, 34, 34, 34));
-            _backgroundImagePath = string.IsNullOrWhiteSpace(_options.BackgroundImagePath) ? null : _options.BackgroundImagePath;
-            _selectedBackgroundModeOption = FindBackgroundModeOption(ParseBackgroundMode(_options.BackgroundType));
+            _isInitializingBackgroundSettings = true;
 
-            Options.BackgroundMargin = _backgroundMargin;
-            Options.BackgroundPadding = _backgroundPadding;
-            Options.BackgroundSmartPadding = _backgroundSmartPadding;
-            Options.BackgroundRoundedCorner = _backgroundRoundedCorner;
-            Options.BackgroundShadowRadius = _backgroundShadowRadius;
-            Options.BackgroundGradientPresetName = _selectedGradientPreset.Name;
-            Options.BackgroundColorHex = _backgroundColorHex;
-            Options.BackgroundImagePath = _backgroundImagePath ?? string.Empty;
+            try
+            {
+                BackgroundMargin = Math.Max(0, _options.BackgroundMargin);
+                BackgroundPadding = Math.Max(0, _options.BackgroundPadding);
+                BackgroundSmartPadding = _options.BackgroundSmartPadding;
+                BackgroundRoundedCorner = Math.Max(0, _options.BackgroundRoundedCorner);
+                BackgroundShadowRadius = Math.Max(0, _options.BackgroundShadowRadius);
+                SelectedGradientPreset = FindGradientPresetByName(_options.BackgroundGradientPresetName);
+                BackgroundColorHex = NormalizeBackgroundColorHex(
+                    _options.BackgroundColorHex,
+                    Color.FromArgb(255, 34, 34, 34));
+                BackgroundImagePath = string.IsNullOrWhiteSpace(_options.BackgroundImagePath) ? null : _options.BackgroundImagePath;
+                SelectedBackgroundModeOption = FindBackgroundModeOption(ParseBackgroundMode(_options.BackgroundType));
+            }
+            finally
+            {
+                _isInitializingBackgroundSettings = false;
+            }
+
+            Options.BackgroundMargin = BackgroundMargin;
+            Options.BackgroundPadding = BackgroundPadding;
+            Options.BackgroundSmartPadding = BackgroundSmartPadding;
+            Options.BackgroundRoundedCorner = BackgroundRoundedCorner;
+            Options.BackgroundShadowRadius = BackgroundShadowRadius;
+            Options.BackgroundGradientPresetName = SelectedGradientPreset?.Name ?? GradientPresets[0].Name;
+            Options.BackgroundColorHex = BackgroundColorHex;
+            Options.BackgroundImagePath = BackgroundImagePath ?? string.Empty;
             Options.BackgroundType = SelectedBackgroundMode.ToString();
         }
 
