@@ -564,7 +564,7 @@
                                                             IsVisible="{Binding HasPreviewImage}"
                                                             HorizontalAlignment="Stretch"
                                                             VerticalAlignment="Stretch"
-                                                            Cursor="Cross"
+                                                            Cursor="Arrow"
                                                             PointerPressed="OnCanvasPointerPressed"
                                                             PointerMoved="OnCanvasPointerMoved"
                                                             PointerReleased="OnCanvasPointerReleased">
@@ -575,6 +575,7 @@
                                                             IsHitTestVisible="True"
                                                             HorizontalAlignment="Stretch"
                                                             VerticalAlignment="Stretch"
+                                                            Cursor="Arrow"
                                                             PointerPressed="OnCanvasPointerPressed"
                                                             PointerMoved="OnCanvasPointerMoved"
                                                             PointerReleased="OnCanvasPointerReleased">

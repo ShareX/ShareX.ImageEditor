@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets\Crosshair.cur" />
     <AvaloniaResource Include="Assets\lucide.ttf" />
   </ItemGroup>
 

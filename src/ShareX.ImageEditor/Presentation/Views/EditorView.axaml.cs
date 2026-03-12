@@ -43,6 +43,8 @@ namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {
+        private static readonly Cursor ArrowCursor = new(StandardCursorType.Arrow);
+
         private readonly EditorZoomController _zoomController;
         private readonly EditorSelectionController _selectionController;
         private readonly EditorInputController _inputController;
@@ -252,6 +254,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                 // Initialize zoom
                 _zoomController.InitLastZoom(vm.Zoom);
+                UpdateCursorForTool();
 
                 // Wire up View interactions
                 vm.DeselectRequested += OnDeselectRequested;
@@ -355,19 +358,33 @@ namespace ShareX.ImageEditor.Presentation.Views
         }
 
         /// <summary>
-        /// ISSUE-018 fix: Updates the canvas cursor based on the active tool
+        /// ISSUE-018 fix: Updates the editor canvas cursor based on the active tool.
+        /// The overlay canvas sits on top of the annotation canvas, so both must stay in sync.
         /// </summary>
         private void UpdateCursorForTool()
         {
-            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-            if (canvas == null || DataContext is not MainViewModel vm) return;
+            if (DataContext is not MainViewModel vm) return;
 
-            canvas.Cursor = vm.ActiveTool switch
+            var annotationCanvas = this.FindControl<Canvas>("AnnotationCanvas");
+            var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
+            if (annotationCanvas == null && overlayCanvas == null) return;
+
+            Cursor cursor = vm.ActiveTool switch
             {
-                EditorTool.Select => new Cursor(StandardCursorType.Arrow),
-                EditorTool.Crop or EditorTool.CutOut => new Cursor(StandardCursorType.Cross),
-                _ => new Cursor(StandardCursorType.Cross) // Drawing tools (Rectangle, Ellipse, Pen, etc.)
+                EditorTool.Select => ArrowCursor,
+                EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
+                _ => CursorAssetLoader.GetCrosshairCursor() // Drawing tools (Rectangle, Ellipse, Pen, etc.)
             };
+
+            if (annotationCanvas != null)
+            {
+                annotationCanvas.Cursor = cursor;
+            }
+
+            if (overlayCanvas != null)
+            {
+                overlayCanvas.Cursor = cursor;
+            }
         }
 
         // --- Public/Internal Methods for Controllers ---
