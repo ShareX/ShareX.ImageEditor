@@ -157,10 +157,12 @@ namespace ShareX.ImageEditor.Presentation.Views
                     // Prevent feedback loop: UI update -> VM Property Changed -> Apply to Annotation (redundant)
                     // But Apply... methods limit damage.
 
-                    // Don't sync stroke properties from ImageAnnotation or effect annotations —
-                    // they have StrokeWidth=0 / transparent stroke which would clobber
-                    // Options.Thickness and break other tools
-                    if (vm.SelectedAnnotation is not ImageAnnotation && vm.SelectedAnnotation is not BaseEffectAnnotation)
+                    // Don't sync stroke properties from ImageAnnotation, effect annotations,
+                    // or SmartEraser. They use nonstandard option semantics and would
+                    // clobber the shared defaults for other tools.
+                    if (vm.SelectedAnnotation is not ImageAnnotation
+                        && vm.SelectedAnnotation is not BaseEffectAnnotation
+                        && vm.SelectedAnnotation is not SmartEraserAnnotation)
                     {
                         vm.SelectedColor = vm.SelectedAnnotation.StrokeColor;
                         vm.StrokeWidth = (int)vm.SelectedAnnotation.StrokeWidth;
@@ -191,7 +193,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                         if (!string.IsNullOrEmpty(balloon.TextColor))
                             vm.TextColorValue = Avalonia.Media.Color.Parse(balloon.TextColor);
                     }
-                    else if (vm.SelectedAnnotation is RectangleAnnotation rect)
+                    else if (vm.SelectedAnnotation is RectangleAnnotation rect && vm.SelectedAnnotation is not SmartEraserAnnotation)
                     {
                         vm.FillColor = rect.FillColor;
                         vm.CornerRadius = rect.CornerRadius;

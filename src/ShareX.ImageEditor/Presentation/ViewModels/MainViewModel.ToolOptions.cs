@@ -439,11 +439,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public bool ShowThickness => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser or EditorTool.Text => true,
+                or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Text => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
-                    or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.SmartEraser or EditorTool.Text => true,
+                    or EditorTool.Freehand or EditorTool.SpeechBalloon or EditorTool.Step or EditorTool.Text => true,
                 _ => false
             },
             _ => false

@@ -343,11 +343,23 @@ public class EditorInputController
                 _isDrawing = true; // Keep true so released handler can select it (or we explicitly select it)?
                 // Legacy said: "Keep _isDrawing true so it goes through OnCanvasPointerReleased for auto-selection"
                 break;
-            case EditorTool.Freehand:
             case EditorTool.SmartEraser:
+                var sampledColor = _view.EditorCore.SampleCanvasColor(ToSKPoint(_startPoint)) ?? "#80FF0000";
+                var smartEraser = new SmartEraserAnnotation
+                {
+                    StrokeColor = sampledColor,
+                    FillColor = sampledColor,
+                    StrokeWidth = 0,
+                    StartPoint = ToSKPoint(_startPoint),
+                    EndPoint = ToSKPoint(_startPoint)
+                };
+                _currentShape = smartEraser.CreateVisual();
+                _currentShape.IsHitTestVisible = false;
+                break;
+            case EditorTool.Freehand:
                 var path = new global::Avalonia.Controls.Shapes.Path
                 {
-                    Stroke = (vm.ActiveTool == EditorTool.SmartEraser) ? new SolidColorBrush(Color.Parse("#80FF0000")) : brush,
+                    Stroke = brush,
                     StrokeThickness = vm.StrokeWidth,
                     StrokeLineCap = PenLineCap.Round,
                     StrokeJoin = PenLineJoin.Round,
@@ -356,7 +368,7 @@ public class EditorInputController
                     // Data will be set on move
                 };
 
-                if (vm.ShadowEnabled && vm.ActiveTool != EditorTool.SmartEraser)
+                if (vm.ShadowEnabled)
                 {
                     path.Effect = new Avalonia.Media.DropShadowEffect
                     {
@@ -369,29 +381,9 @@ public class EditorInputController
 
                 path.SetValue(Panel.ZIndexProperty, 1);
 
-                if (vm.ActiveTool == EditorTool.SmartEraser)
-                {
-                    // Restored from ref\EditorView_master.axaml.cs lines 1658-1669
-                    // Sample pixel color from rendered canvas (including annotations)
-                    var sampledColor = _view.EditorCore.SampleCanvasColor(ToSKPoint(_startPoint));
-
-                    var smartEraser = new SmartEraserAnnotation { StrokeColor = sampledColor ?? "#FFFFFFFF", StrokeWidth = vm.StrokeWidth, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
-                    path.Tag = smartEraser;
-                    path.Data = smartEraser.CreateSmoothedGeometry();
-
-                    // If we got a valid color, use it as solid color; otherwise fall back to semi-transparent red
-                    if (!string.IsNullOrEmpty(sampledColor))
-                    {
-                        // Update polyline to use solid sampled color
-                        path.Stroke = new SolidColorBrush(Color.Parse(sampledColor));
-                    }
-                }
-                else
-                {
-                    var freehand = new FreehandAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
-                    path.Tag = freehand;
-                    path.Data = freehand.CreateSmoothedGeometry();
-                }
+                var freehand = new FreehandAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
+                path.Tag = freehand;
+                path.Data = freehand.CreateSmoothedGeometry();
                 _currentShape = path;
                 break;
         }
@@ -411,7 +403,6 @@ public class EditorInputController
                 && vm.ActiveTool != EditorTool.Line
                 && vm.ActiveTool != EditorTool.Arrow
                 && vm.ActiveTool != EditorTool.Freehand
-                && vm.ActiveTool != EditorTool.SmartEraser
                 && vm.ActiveTool != EditorTool.Step)
             {
                 Canvas.SetLeft(_currentShape, _startPoint.X);
@@ -490,15 +481,11 @@ public class EditorInputController
 
         if (vm == null) return;
 
-        if (_currentShape is global::Avalonia.Controls.Shapes.Path freehandPath && (freehandPath.Tag is FreehandAnnotation || freehandPath.Tag is SmartEraserAnnotation))
+        if (_currentShape is global::Avalonia.Controls.Shapes.Path freehandPath && freehandPath.Tag is FreehandAnnotation freehand)
         {
-            var freehand = freehandPath.Tag as FreehandAnnotation;
-            if (freehand != null)
-            {
-                freehand.Points.Add(ToSKPoint(currentPoint));
-                freehandPath.Data = freehand.CreateSmoothedGeometry();
-                freehandPath.InvalidateVisual();
-            }
+            freehand.Points.Add(ToSKPoint(currentPoint));
+            freehandPath.Data = freehand.CreateSmoothedGeometry();
+            freehandPath.InvalidateVisual();
             return;
         }
 
@@ -702,10 +689,9 @@ public class EditorInputController
                 else if (_currentShape != null)
                 {
                     // Check MinSize for shapes that support size validation
-                    // Skip check for Number (single-click), Pen, SmartEraser (freehand stroke)
+                    // Skip check for Number (single-click), Pen, and Text.
                     bool isSizeBased = vm.ActiveTool != EditorTool.Step
                                     && vm.ActiveTool != EditorTool.Freehand
-                                    && vm.ActiveTool != EditorTool.SmartEraser
                                     && vm.ActiveTool != EditorTool.Text;
 
                     if (isSizeBased)
@@ -729,8 +715,8 @@ public class EditorInputController
 
                     // Restored from ref\EditorView_master.axaml.cs lines 2211-2238
                     // Auto-select newly created shape so resize handles appear immediately,
-                    // but skip selection for freehand pen/eraser strokes (Path) which
-                    // are not resizable with our current handle logic.
+                    // but skip freehand paths which are not resizable with our current
+                    // handle logic.
                     if (!(_currentShape is global::Avalonia.Controls.Shapes.Path && _currentShape.Tag is FreehandAnnotation))
                     {
                         // Apply final effect for effect tools

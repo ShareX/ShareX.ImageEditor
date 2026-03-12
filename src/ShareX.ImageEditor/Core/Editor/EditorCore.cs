@@ -440,11 +440,6 @@ public class EditorCore : IDisposable
                 for (int i = 0; i < freehand.Points.Count; i++)
                     freehand.Points[i] = transformPoint(freehand.Points[i]);
             }
-            else if (ann is SmartEraserAnnotation eraser)
-            {
-                for (int i = 0; i < eraser.Points.Count; i++)
-                    eraser.Points[i] = transformPoint(eraser.Points[i]);
-            }
             else if (ann is SpeechBalloonAnnotation balloon)
             {
                 balloon.SetTailPoint(transformPoint(balloon.GetEffectiveTailPoint()));
@@ -801,25 +796,23 @@ public class EditorCore : IDisposable
             _currentAnnotation.StrokeWidth = StrokeWidth;
 
             // Handle special tools
-            if (_currentAnnotation is FreehandAnnotation freehand)
+            if (_currentAnnotation is SmartEraserAnnotation smartEraser)
             {
-                freehand.Points.Add(point);
-            }
-            else if (_currentAnnotation is SmartEraserAnnotation smartEraser)
-            {
-                // Match Avalonia: always use thicker stroke and sampled color if available
-                smartEraser.StrokeWidth = 10;
+                smartEraser.StrokeWidth = 0;
                 if (!string.IsNullOrEmpty(sampledSmartEraserColor))
                 {
                     smartEraser.StrokeColor = sampledSmartEraserColor;
+                    smartEraser.FillColor = sampledSmartEraserColor;
                 }
                 else
                 {
                     smartEraser.StrokeColor = "#80FF0000";
+                    smartEraser.FillColor = "#80FF0000";
                 }
-
-                // Also seed the freehand point list
-                smartEraser.Points.Add(point);
+            }
+            else if (_currentAnnotation is FreehandAnnotation freehand)
+            {
+                freehand.Points.Add(point);
             }
             else if (_currentAnnotation is TextAnnotation textAnn)
             {
@@ -989,8 +982,8 @@ public class EditorCore : IDisposable
             EditAnnotationRequested?.Invoke(_currentAnnotation);
         }
 
-        // Auto-select the created annotation (skip freehand/eraser which are not resizable)
-        if (_currentAnnotation is not FreehandAnnotation && _currentAnnotation is not SmartEraserAnnotation)
+        // Auto-select the created annotation (skip only freehand which is not resizable)
+        if (_currentAnnotation is not FreehandAnnotation)
         {
             _selectedAnnotation = _currentAnnotation;
         }
@@ -1059,8 +1052,8 @@ public class EditorCore : IDisposable
             return;
         }
 
-        // Freehand/SmartEraser are not resizable in the Avalonia editor
-        if (_selectedAnnotation is FreehandAnnotation || _selectedAnnotation is SmartEraserAnnotation)
+        // Freehand is not resizable in the Avalonia editor
+        if (_selectedAnnotation is FreehandAnnotation)
         {
             return;
         }
@@ -1433,7 +1426,7 @@ public class EditorCore : IDisposable
 
     private IEnumerable<(HandleType Type, SKPoint Position)> GetAnnotationHandles(Annotation annotation)
     {
-        if (annotation is FreehandAnnotation || annotation is SmartEraserAnnotation)
+        if (annotation is FreehandAnnotation)
         {
             yield break;
         }

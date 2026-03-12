@@ -176,13 +176,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                     freehand.Points[i] = new SKPoint(freehand.Points[i].X + offset, freehand.Points[i].Y + offset);
                 }
             }
-            else if (newAnnotation is SmartEraserAnnotation eraser)
-            {
-                for (int i = 0; i < eraser.Points.Count; i++)
-                {
-                    eraser.Points[i] = new SKPoint(eraser.Points[i].X + offset, eraser.Points[i].Y + offset);
-                }
-            }
 
             // Add to Core
             _editorCore.AddAnnotation(newAnnotation);
@@ -353,21 +346,13 @@ namespace ShareX.ImageEditor.Presentation.Views
             clone.StartPoint = new SkiaSharp.SKPoint(clone.StartPoint.X + offset, clone.StartPoint.Y + offset);
             clone.EndPoint = new SkiaSharp.SKPoint(clone.EndPoint.X + offset, clone.EndPoint.Y + offset);
 
-            // Offset freehand/eraser points if applicable
+            // Offset freehand points if applicable
             if (clone is FreehandAnnotation freehandClone)
             {
                 for (int i = 0; i < freehandClone.Points.Count; i++)
                 {
                     var pt = freehandClone.Points[i];
                     freehandClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
-                }
-            }
-            else if (clone is SmartEraserAnnotation eraserClone)
-            {
-                for (int i = 0; i < eraserClone.Points.Count; i++)
-                {
-                    var pt = eraserClone.Points[i];
-                    eraserClone.Points[i] = new SkiaSharp.SKPoint(pt.X + offset, pt.Y + offset);
                 }
             }
 

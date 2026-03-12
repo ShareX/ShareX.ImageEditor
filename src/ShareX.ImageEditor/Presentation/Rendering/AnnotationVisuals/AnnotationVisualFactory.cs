@@ -197,6 +197,7 @@ public static class AnnotationVisualFactory
     {
         return annotation switch
         {
+            SmartEraserAnnotation smartEraser => smartEraser.CreateVisual(),
             RectangleAnnotation rect => rect.CreateVisual(),
             EllipseAnnotation ellipse => ellipse.CreateVisual(),
             LineAnnotation line => line.CreateVisual(),
@@ -209,7 +210,6 @@ public static class AnnotationVisualFactory
             MagnifyAnnotation magnify => magnify.CreateVisual(),
             HighlightAnnotation highlight => highlight.CreateVisual(),
             SpotlightAnnotation spotlight => spotlight.CreateVisual(),
-            SmartEraserAnnotation smartEraser => smartEraser.CreateVisual(),
             FreehandAnnotation freehand => freehand.CreateVisual(),
             ImageAnnotation image => CreateImageVisual(image),
             _ => null

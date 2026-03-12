@@ -2,21 +2,24 @@ namespace ShareX.ImageEditor.Core.Annotations;
 
 /// <summary>
 /// Smart Eraser annotation - samples pixel color from the rendered canvas (including other annotations)
-/// at click point and uses it for drawing to hide sensitive information by covering it with the 
+/// at click point and uses it for drawing to hide sensitive information by covering it with the
 /// sampled color from the visual output
 /// </summary>
-public class SmartEraserAnnotation : FreehandAnnotation
+public class SmartEraserAnnotation : RectangleAnnotation
 {
     public SmartEraserAnnotation()
     {
         ToolType = EditorTool.SmartEraser;
-        // Default to semi-transparent red (will be overridden by sampled color from rendered canvas)
+        // Default to a visible preview color until the canvas sample is available.
         StrokeColor = "#80FF0000";
-        StrokeWidth = 10;
+        FillColor = "#80FF0000";
+        StrokeWidth = 0;
+        CornerRadius = 0;
+        ShadowEnabled = false;
     }
 
-    // StrokeColor will be set to the sampled pixel color from the RENDERED canvas
+    // StrokeColor/FillColor will be set to the sampled pixel color from the RENDERED canvas
     // (including all annotations) when the user first clicks with the Smart Eraser tool.
-    // This allows users to "paint over" sensitive information with colors that match
+    // This allows users to cover sensitive information with colors that match
     // existing annotations or the background, effectively hiding it seamlessly.
 }
