@@ -30,9 +30,6 @@ using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Rendering;
 using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
