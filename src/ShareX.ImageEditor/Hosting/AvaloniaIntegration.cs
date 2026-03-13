@@ -190,17 +190,14 @@ namespace ShareX.ImageEditor.Hosting
             {
                 if (window.DataContext is MainViewModel vm)
                 {
-                    if (taskMode)
+                    switch (vm.TaskResult)
                     {
-                        switch (vm.TaskResult)
-                        {
-                            case MainViewModel.EditorTaskResult.Continue:
-                                result = window.GetResultBytes();
-                                break;
-                            case MainViewModel.EditorTaskResult.ContinueNoSave:
-                                result = window.GetSourceBytes();
-                                break;
-                        }
+                        case MainViewModel.EditorTaskResult.Continue:
+                            result = window.GetResultBytes();
+                            break;
+                        case MainViewModel.EditorTaskResult.ContinueNoSave:
+                            result = window.GetSourceBytes();
+                            break;
                     }
                 }
             });

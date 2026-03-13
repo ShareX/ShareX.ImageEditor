@@ -108,19 +108,19 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void Cancel()
         {
-            TaskResult = EditorTaskResult.Cancel;
-            CloseRequested?.Invoke(this, EventArgs.Empty);
+            RequestClose();
         }
 
         public void RequestClose()
         {
+            TaskResult = EditorTaskResult.Cancel;
+
             if (IsDirty)
             {
                 ShowConfirmationDialog();
             }
             else
             {
-                TaskResult = EditorTaskResult.Continue;
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -131,13 +131,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 onYes: () =>
                 {
                     Save();
-                    TaskResult = EditorTaskResult.Continue;
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
                 onNo: () =>
                 {
-                    TaskResult = EditorTaskResult.ContinueNoSave;
                     IsModalOpen = false;
                     CloseRequested?.Invoke(this, EventArgs.Empty);
                 },
