@@ -26,33 +26,7 @@
         <converters:EqualsConverter x:Key="EqualsConverter" />
 
         <MenuFlyout x:Key="EditorContextMenu"
-                    Placement="Pointer"
-                    FlyoutPresenterClasses="editor-menu">
-            <MenuFlyout.FlyoutPresenterTheme>
-                <ControlTheme TargetType="MenuFlyoutPresenter"
-                              BasedOn="{StaticResource {x:Type MenuFlyoutPresenter}}">
-                    <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
-                    <Setter Property="BorderThickness" Value="5"/>
-                    <Setter Property="CornerRadius" Value="60"/>
-                    <Setter Property="Padding" Value="6,2"/>
-                    <Setter Property="Cursor" Value="Arrow"/>
-                </ControlTheme>
-            </MenuFlyout.FlyoutPresenterTheme>
-            <MenuFlyout.ItemContainerTheme>
-                <ControlTheme TargetType="MenuItem"
-                              BasedOn="{StaticResource {x:Type MenuItem}}">
-                    <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
-                    <Setter Property="FontSize" Value="13"/>
-                    <Setter Property="Padding" Value="12,8"/>
-                    <Setter Property="CornerRadius" Value="4"/>
-                    <Setter Property="Cursor" Value="Arrow"/>
-
-                    <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
-                        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-                    </Style>
-                </ControlTheme>
-            </MenuFlyout.ItemContainerTheme>
+                    Placement="Pointer">
             <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionUndo}"/>
@@ -210,7 +184,23 @@
             </Style>
         </Style>
 
-        <Style Selector="MenuFlyoutPresenter.editor-menu Separator">
+        <Style Selector="MenuFlyoutPresenter">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="6,2"/>
+        </Style>
+        <Style Selector="MenuFlyoutPresenter MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="MenuFlyoutPresenter MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+        <Style Selector="MenuFlyoutPresenter Separator">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
         </Style>
 
