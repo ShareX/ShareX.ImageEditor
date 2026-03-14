@@ -43,7 +43,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string ActionOpenLink = LucideIcons.Link;
         public const string ActionAdd = LucideIcons.Plus;
         public const string ActionMoveUp = LucideIcons.MoveUp;
-        public const string ActionMoveDown = LucideIcons.ChevronDown;
+        public const string ActionMoveDown = LucideIcons.MoveDown;
         public const string ActionStart = LucideIcons.Play;
         public const string ActionStop = LucideIcons.Square;
         public const string ActionPause = LucideIcons.Pause;
