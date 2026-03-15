@@ -115,7 +115,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             TaskResult = EditorTaskResult.Cancel;
 
-            if (Options.ExitConfirmation && IsDirty)
+            if (Options.ShowExitConfirmation && IsDirty)
             {
                 ShowConfirmationDialog();
             }

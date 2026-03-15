@@ -49,7 +49,7 @@ namespace ShareX.ImageEditor.Hosting
         private static Color HexToColor(string hex) => Color.Parse(hex);
 
         // Editor
-        public bool ExitConfirmation { get; set; } = true;
+        public bool ShowExitConfirmation { get; set; } = true;
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);
