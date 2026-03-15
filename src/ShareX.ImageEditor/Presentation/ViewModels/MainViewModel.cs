@@ -164,7 +164,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanSave() => _saveRequested != null;
+        public bool CanSave() => _saveRequested != null && HasPreviewImage;
 
         private Action? _saveAsRequested;
         public event Action? SaveAsRequested
@@ -172,7 +172,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveAsRequested += value; SaveAsCommand.NotifyCanExecuteChanged(); }
             remove { _saveAsRequested -= value; SaveAsCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanSaveAs() => _saveAsRequested != null;
+        public bool CanSaveAs() => _saveAsRequested != null && HasPreviewImage;
 
         private Action? _pinRequested;
         public event Action? PinRequested
@@ -213,6 +213,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 {
                     ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
                     CopyCommand.NotifyCanExecuteChanged();
+                    SaveCommand.NotifyCanExecuteChanged();
+                    SaveAsCommand.NotifyCanExecuteChanged();
                     ZoomInCommand.NotifyCanExecuteChanged();
                     ZoomOutCommand.NotifyCanExecuteChanged();
                     ResetZoomCommand.NotifyCanExecuteChanged();
