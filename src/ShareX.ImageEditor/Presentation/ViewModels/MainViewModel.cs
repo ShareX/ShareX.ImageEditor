@@ -69,9 +69,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private string _windowTitle = "ShareX - Image Editor";
 
         [ObservableProperty]
-        private bool _showCaptureToolbar = true;
-
-        [ObservableProperty]
         private bool _showTaskModeButtons = true;
 
         // Events to signal View to perform canvas operations
