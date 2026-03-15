@@ -213,6 +213,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 {
                     ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
                     CopyCommand.NotifyCanExecuteChanged();
+                    ZoomInCommand.NotifyCanExecuteChanged();
+                    ZoomOutCommand.NotifyCanExecuteChanged();
+                    ResetZoomCommand.NotifyCanExecuteChanged();
+                    ZoomToFitCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -924,25 +928,27 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             IsSettingsPanelOpen = !IsSettingsPanelOpen;
         }
 
-        [RelayCommand]
+        private bool CanZoom() => HasPreviewImage;
+
+        [RelayCommand(CanExecute = nameof(CanZoom))]
         private void ZoomIn()
         {
             Zoom = Math.Clamp(Math.Round((Zoom + ZoomStep) * 100) / 100, MinZoom, MaxZoom);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanZoom))]
         private void ZoomOut()
         {
             Zoom = Math.Clamp(Math.Round((Zoom - ZoomStep) * 100) / 100, MinZoom, MaxZoom);
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanZoom))]
         private void ResetZoom()
         {
             Zoom = 1.0;
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanZoom))]
         private void ZoomToFit()
         {
             ZoomToFitRequested?.Invoke(this, EventArgs.Empty);
