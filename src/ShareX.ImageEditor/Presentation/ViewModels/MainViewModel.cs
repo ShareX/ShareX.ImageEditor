@@ -156,7 +156,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
             remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanCopy() => _copyRequested != null;
+        public bool CanCopy() => _copyRequested != null && HasPreviewImage;
 
         private Action? _saveRequested;
         public event Action? SaveRequested
@@ -212,6 +212,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 if (SetProperty(ref _hasPreviewImage, value))
                 {
                     ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
+                    CopyCommand.NotifyCanExecuteChanged();
                 }
             }
         }
