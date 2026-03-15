@@ -22,6 +22,15 @@
             <Color x:Key="ShareX.Color.Border">#1F1F1F</Color>
             <Color x:Key="ShareX.Color.Control.Background">#2E2E2E</Color>
             <Color x:Key="ShareX.Color.Control.Border">#1F1F1F</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Background">#16271C</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Border">#4C8E67</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Foreground">#D9FBE8</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Background">#35260D</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Border">#D7A550</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Foreground">#FFE9B2</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Background">#34161B</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Border">#DC5A68</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Foreground">#FFD7DC</Color>
 
             <LinearGradientBrush x:Key="ShareX.Brush.Accent" StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
@@ -99,6 +108,15 @@
             <Color x:Key="ShareX.Color.Border">#E5E5E8</Color>
             <Color x:Key="ShareX.Color.Control.Background">#F5F5F7</Color>
             <Color x:Key="ShareX.Color.Control.Border">#DBDBDF</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Background">#EAF7EE</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Border">#72A86A</Color>
+            <Color x:Key="ShareX.Color.Status.Success.Foreground">#183624</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Background">#FFF4CC</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Border">#D7A550</Color>
+            <Color x:Key="ShareX.Color.Status.Warning.Foreground">#6A4C00</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Background">#FDECEC</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Border">#DC3545</Color>
+            <Color x:Key="ShareX.Color.Status.Error.Foreground">#7A1622</Color>
 
             <LinearGradientBrush x:Key="ShareX.Brush.Accent" StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
