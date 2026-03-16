@@ -277,7 +277,12 @@ namespace ShareX.ImageEditor.Presentation.Views
                 // Initial load
                 if (vm.PreviewImage != null)
                 {
+                    bool isInitialImageLoad = _editorCore.SourceImage == null;
                     LoadImageFromViewModel(vm);
+                    if (isInitialImageLoad)
+                    {
+                        QueueAutoCopyImageToClipboard(vm);
+                    }
                 }
 
                 // Reset dirty flag after initial load — loading the image fires HistoryChanged
@@ -349,6 +354,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
+                    bool isInitialImageLoad = vm.PreviewImage != null && _editorCore.SourceImage == null;
                     _zoomController.ResetScrollViewerOffset();
                     // During smart padding, use UpdateSourceImage to preserve history and annotations
                     if (vm.IsSmartPaddingInProgress)
@@ -358,6 +364,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                     else
                     {
                         LoadImageFromViewModel(vm);
+                    }
+
+                    if (isInitialImageLoad)
+                    {
+                        QueueAutoCopyImageToClipboard(vm);
                     }
                 }
                 else if (e.PropertyName == nameof(MainViewModel.Zoom))
