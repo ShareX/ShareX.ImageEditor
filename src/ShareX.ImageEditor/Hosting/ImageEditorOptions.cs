@@ -51,6 +51,7 @@ namespace ShareX.ImageEditor.Hosting
         // Editor
         public bool ShowExitConfirmation { get; set; } = true;
         public bool ZoomToFitOnOpen { get; set; } = true;
+        public bool AutoCloseEditorOnTask { get; set; } = true;
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);

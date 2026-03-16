@@ -126,6 +126,15 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
+        public void CloseAfterTaskActionIfEnabled()
+        {
+            if (Options.AutoCloseEditorOnTask)
+            {
+                TaskResult = EditorTaskResult.Cancel;
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         private void ShowConfirmationDialog()
         {
             var dialog = new ConfirmationDialogViewModel(
@@ -997,30 +1006,35 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void Copy()
         {
             _copyRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private void Save()
         {
             _saveRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveAs))]
         private void SaveAs()
         {
             _saveAsRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanPinToScreen))]
         private void PinToScreen()
         {
             _pinRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
             _uploadRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
     }
 }
