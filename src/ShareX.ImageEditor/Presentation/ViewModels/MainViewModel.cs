@@ -64,6 +64,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private bool _isDirty;
 
         private bool _isSyncingFromCore;
+        private bool _zoomToFitOnNextImageLoad;
 
         [ObservableProperty]
         private string _windowTitle = "ShareX - Image Editor";
@@ -778,6 +779,22 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             _editorCore = editorCore;
             UpdateCoreHistoryState(editorCore.CanUndo, editorCore.CanRedo);
+        }
+
+        public void RequestZoomToFitOnNextImageLoad()
+        {
+            _zoomToFitOnNextImageLoad = Options.ZoomToFitOnOpen;
+        }
+
+        public bool ConsumeZoomToFitOnNextImageLoad()
+        {
+            if (!_zoomToFitOnNextImageLoad)
+            {
+                return false;
+            }
+
+            _zoomToFitOnNextImageLoad = false;
+            return true;
         }
 
         partial void OnApplicationNameChanged(string value)

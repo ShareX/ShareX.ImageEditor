@@ -29,6 +29,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
@@ -58,6 +59,8 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _isSyncingFromVM;
         private bool _isSyncingToVM;
         private bool _skipNextCoreImageChanged;
+        private bool _pendingZoomToFitOnOpen;
+        private int _pendingZoomToFitRetryCount;
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
@@ -440,6 +443,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                     _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                     RenderCore();
+                    QueueZoomToFitOnOpenIfNeeded(vm);
                 }
             }
             finally
@@ -464,6 +468,40 @@ namespace ShareX.ImageEditor.Presentation.Views
                 _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                 RenderCore();
             }
+        }
+
+        private void QueueZoomToFitOnOpenIfNeeded(MainViewModel vm)
+        {
+            if (!vm.ConsumeZoomToFitOnNextImageLoad())
+            {
+                return;
+            }
+
+            _pendingZoomToFitOnOpen = true;
+            _pendingZoomToFitRetryCount = 4;
+            TryApplyPendingZoomToFitOnOpen();
+        }
+
+        private void TryApplyPendingZoomToFitOnOpen()
+        {
+            if (!_pendingZoomToFitOnOpen)
+            {
+                return;
+            }
+
+            if (_zoomController.ZoomToFit())
+            {
+                _pendingZoomToFitOnOpen = false;
+                return;
+            }
+
+            if (_pendingZoomToFitRetryCount-- <= 0)
+            {
+                _pendingZoomToFitOnOpen = false;
+                return;
+            }
+
+            Dispatcher.UIThread.Post(TryApplyPendingZoomToFitOnOpen, DispatcherPriority.Render);
         }
 
 
