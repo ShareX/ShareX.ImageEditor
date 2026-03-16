@@ -50,6 +50,9 @@ namespace ShareX.ImageEditor.Hosting
 
         // Editor
         public bool ShowExitConfirmation { get; set; } = true;
+        public bool ZoomToFitOnOpen { get; set; } = false;
+        public bool AutoCloseEditorOnTask { get; set; } = false;
+        public bool AutoCopyImageToClipboard { get; set; } = false;
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);

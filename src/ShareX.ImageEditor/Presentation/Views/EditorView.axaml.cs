@@ -29,6 +29,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
@@ -58,6 +59,9 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _isSyncingFromVM;
         private bool _isSyncingToVM;
         private bool _skipNextCoreImageChanged;
+        private bool _pendingZoomToFitOnOpen;
+        private int _pendingZoomToFitRetryCount;
+        private int _pendingAutoCopyImageVersion;
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
@@ -126,6 +130,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                     // Mark as dirty when history changes (annotations added/interactions/undo/redo)
                     vm.IsDirty = true;
+                    QueueAutoCopyImageToClipboard(vm);
                 }
             });
 
@@ -272,7 +277,12 @@ namespace ShareX.ImageEditor.Presentation.Views
                 // Initial load
                 if (vm.PreviewImage != null)
                 {
+                    bool isInitialImageLoad = _editorCore.SourceImage == null;
                     LoadImageFromViewModel(vm);
+                    if (isInitialImageLoad)
+                    {
+                        QueueAutoCopyImageToClipboard(vm);
+                    }
                 }
 
                 // Reset dirty flag after initial load — loading the image fires HistoryChanged
@@ -344,6 +354,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
                 else if (e.PropertyName == nameof(MainViewModel.PreviewImage))
                 {
+                    bool isInitialImageLoad = vm.PreviewImage != null && _editorCore.SourceImage == null;
                     _zoomController.ResetScrollViewerOffset();
                     // During smart padding, use UpdateSourceImage to preserve history and annotations
                     if (vm.IsSmartPaddingInProgress)
@@ -353,6 +364,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                     else
                     {
                         LoadImageFromViewModel(vm);
+                    }
+
+                    if (isInitialImageLoad)
+                    {
+                        QueueAutoCopyImageToClipboard(vm);
                     }
                 }
                 else if (e.PropertyName == nameof(MainViewModel.Zoom))
@@ -440,6 +456,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                     _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                     RenderCore();
+                    QueueZoomToFitOnOpenIfNeeded(vm);
                 }
             }
             finally
@@ -463,6 +480,77 @@ namespace ShareX.ImageEditor.Presentation.Views
                 _editorCore.UpdateSourceImage(skBitmap.Copy());
                 _canvasControl.Initialize(skBitmap.Width, skBitmap.Height);
                 RenderCore();
+            }
+        }
+
+        private void QueueZoomToFitOnOpenIfNeeded(MainViewModel vm)
+        {
+            if (!vm.ConsumeZoomToFitOnNextImageLoad())
+            {
+                return;
+            }
+
+            _pendingZoomToFitOnOpen = true;
+            _pendingZoomToFitRetryCount = 4;
+            TryApplyPendingZoomToFitOnOpen();
+        }
+
+        private void TryApplyPendingZoomToFitOnOpen()
+        {
+            if (!_pendingZoomToFitOnOpen)
+            {
+                return;
+            }
+
+            if (_zoomController.ZoomToFit())
+            {
+                _pendingZoomToFitOnOpen = false;
+                return;
+            }
+
+            if (_pendingZoomToFitRetryCount-- <= 0)
+            {
+                _pendingZoomToFitOnOpen = false;
+                return;
+            }
+
+            Dispatcher.UIThread.Post(TryApplyPendingZoomToFitOnOpen, DispatcherPriority.Render);
+        }
+
+        private void QueueAutoCopyImageToClipboard(MainViewModel vm)
+        {
+            if (!vm.Options.AutoCopyImageToClipboard || !vm.HasPreviewImage)
+            {
+                return;
+            }
+
+            int version = ++_pendingAutoCopyImageVersion;
+
+            Dispatcher.UIThread.Post(async () =>
+            {
+                if (version != _pendingAutoCopyImageVersion)
+                {
+                    return;
+                }
+
+                AutoCopyImageToClipboard(vm);
+            }, DispatcherPriority.Background);
+        }
+
+        private void AutoCopyImageToClipboard(MainViewModel vm)
+        {
+            if (!vm.Options.AutoCopyImageToClipboard || !vm.HasPreviewImage)
+            {
+                return;
+            }
+
+            try
+            {
+                vm.RequestCopyToClipboard();
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to raise auto-copy image request.", ex);
             }
         }
 

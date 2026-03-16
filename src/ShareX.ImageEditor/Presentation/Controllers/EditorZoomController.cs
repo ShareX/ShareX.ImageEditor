@@ -306,18 +306,23 @@ public class EditorZoomController
         }
     }
 
-    public void ZoomToFit()
+    public bool ZoomToFit()
     {
         if (_view.DataContext is not MainViewModel vm || !vm.HasPreviewImage)
         {
-            return;
+            return false;
         }
 
         var scrollViewer = _view.FindControl<ScrollViewer>("CanvasScrollViewer");
         var previewFrame = _view.FindControl<Border>("PreviewFrame");
         if (scrollViewer == null || previewFrame == null)
         {
-            return;
+            return false;
+        }
+
+        if (scrollViewer.Viewport.Width <= 0 || scrollViewer.Viewport.Height <= 0)
+        {
+            return false;
         }
 
         // PreviewFrame includes canvas padding/smart padding, so this fits the visible output.
@@ -332,7 +337,7 @@ public class EditorZoomController
 
         if (contentWidth <= 0 || contentHeight <= 0)
         {
-            return;
+            return false;
         }
 
         const double margin = 24;
@@ -345,5 +350,6 @@ public class EditorZoomController
         _lastZoom = vm.Zoom;
         vm.Zoom = fitZoom;
         CenterCanvasOnZoomChange();
+        return true;
     }
 }

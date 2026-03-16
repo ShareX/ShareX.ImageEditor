@@ -123,6 +123,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 using var stream = File.OpenRead(filePath);
                 var bitmap = new Bitmap(stream);
+                _viewModel.RequestZoomToFitOnNextImageLoad();
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.LastSavedPath = filePath;
                 _viewModel.ImageFilePath = filePath;
@@ -150,6 +151,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                     stream.Position = 0;
 
                 var bitmap = new Bitmap(stream);
+                _viewModel.RequestZoomToFitOnNextImageLoad();
                 _viewModel.PreviewImage = bitmap;
                 _viewModel.ImageDimensions = $"{bitmap.Size.Width} x {bitmap.Size.Height}";
                 _viewModel.WindowTitle = GetWindowTitle(_viewModel.ImageDimensions);

@@ -109,6 +109,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             int width = image.Width;
             int height = image.Height;
 
+            if (clearAnnotations)
+            {
+                RequestZoomToFitOnNextImageLoad();
+            }
+
             // Convert SKBitmap to Avalonia Bitmap
             PreviewImage = BitmapConversionHelpers.ToAvaloniBitmap(image);
             ImageDimensions = $"{width} x {height}";

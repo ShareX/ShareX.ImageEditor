@@ -64,6 +64,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private bool _isDirty;
 
         private bool _isSyncingFromCore;
+        private bool _zoomToFitOnNextImageLoad;
 
         [ObservableProperty]
         private string _windowTitle = "ShareX - Image Editor";
@@ -123,6 +124,20 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 CloseRequested?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        public void CloseAfterTaskActionIfEnabled()
+        {
+            if (Options.AutoCloseEditorOnTask)
+            {
+                TaskResult = EditorTaskResult.Cancel;
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void RequestCopyToClipboard()
+        {
+            _copyRequested?.Invoke();
         }
 
         private void ShowConfirmationDialog()
@@ -780,6 +795,22 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             UpdateCoreHistoryState(editorCore.CanUndo, editorCore.CanRedo);
         }
 
+        public void RequestZoomToFitOnNextImageLoad()
+        {
+            _zoomToFitOnNextImageLoad = Options.ZoomToFitOnOpen;
+        }
+
+        public bool ConsumeZoomToFitOnNextImageLoad()
+        {
+            if (!_zoomToFitOnNextImageLoad)
+            {
+                return false;
+            }
+
+            _zoomToFitOnNextImageLoad = false;
+            return true;
+        }
+
         partial void OnApplicationNameChanged(string value)
         {
             OnPropertyChanged(nameof(EditorTitle));
@@ -979,31 +1010,36 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand(CanExecute = nameof(CanCopy))]
         private void Copy()
         {
-            _copyRequested?.Invoke();
+            RequestCopyToClipboard();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
         private void Save()
         {
             _saveRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveAs))]
         private void SaveAs()
         {
             _saveAsRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanPinToScreen))]
         private void PinToScreen()
         {
             _pinRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
 
         [RelayCommand(CanExecute = nameof(CanUpload))]
         private async Task Upload()
         {
             _uploadRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
         }
     }
 }
