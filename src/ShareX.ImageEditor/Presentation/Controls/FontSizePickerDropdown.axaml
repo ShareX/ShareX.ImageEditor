@@ -46,6 +46,8 @@
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="2"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #FontSizePopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
@@ -61,7 +63,8 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
-            <Border Classes="popup-border">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #FontSizePopup.IsOpen}">
                 <ItemsControl ItemsSource="{Binding FontSizeOptions, ElementName=FontSizePickerDropdownRoot}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

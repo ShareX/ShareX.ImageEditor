@@ -27,6 +27,8 @@
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="1"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #ZoomPopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
@@ -43,7 +45,8 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="-4">
-            <Border Classes="popup-border">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #ZoomPopup.IsOpen}">
                 <StackPanel Orientation="Vertical" Spacing="0">
                     <ItemsControl ItemsSource="{Binding ZoomLevels, ElementName=ZoomPickerDropdownRoot}"
                                   HorizontalAlignment="Stretch">

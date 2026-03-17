@@ -167,6 +167,110 @@
             <Setter Property="BoxShadow" Value="0 4 16 #40000000"/>
         </Style>
 
+        <Style Selector="Border.popup-surface">
+            <Setter Property="RenderTransformOrigin" Value="50%,0%"/>
+            <Setter Property="RenderTransform" Value="translateY(-8px) scale(0.98)"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.18"/>
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^.open">
+                <Setter Property="Opacity" Value="1"/>
+                <Setter Property="RenderTransform" Value="translateY(0px) scale(1)"/>
+                <Setter Property="BoxShadow" Value="0 14 28 -14 #66000000"/>
+            </Style>
+        </Style>
+
+        <Style Selector="TextBlock.dropdown-chevron">
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+            <Setter Property="RenderTransform" Value="rotate(0deg)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16"/>
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^.open">
+                <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Border.editor-sidebar">
+            <Setter Property="Width" Value="0"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="ClipToBounds" Value="True"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RenderTransform" Value="translateX(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Width" Duration="0:0:0.22"/>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22"/>
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^.left">
+                <Setter Property="RenderTransform" Value="translateX(-18px)"/>
+            </Style>
+
+            <Style Selector="^.right">
+                <Setter Property="RenderTransform" Value="translateX(18px)"/>
+            </Style>
+
+            <Style Selector="^.open">
+                <Setter Property="Width" Value="252"/>
+                <Setter Property="Opacity" Value="1"/>
+                <Setter Property="RenderTransform" Value="translateX(0px)"/>
+            </Style>
+
+            <Style Selector="^.left.open">
+                <Setter Property="BorderThickness" Value="0,0,1,0"/>
+            </Style>
+
+            <Style Selector="^.right.open">
+                <Setter Property="BorderThickness" Value="1,0,0,0"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Grid.overlay-scrim">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.18"/>
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^.open">
+                <Setter Property="Opacity" Value="1"/>
+            </Style>
+        </Style>
+
+        <Style Selector="Border.floating-panel">
+            <Setter Property="RenderTransformOrigin" Value="50%,0%"/>
+            <Setter Property="RenderTransform" Value="translateY(-24px) scale(0.98)"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^.open">
+                <Setter Property="Opacity" Value="1"/>
+                <Setter Property="RenderTransform" Value="translateY(0px) scale(1)"/>
+                <Setter Property="BoxShadow" Value="0 22 40 -22 #66000000"/>
+            </Style>
+        </Style>
+
         <Style Selector="Slider:horizontal">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent}"/>
 
@@ -225,8 +329,13 @@
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Main}">
 
             <!-- Left Sidebar (Settings Panel) -->
-            <Border Grid.Column="0" Padding="0" IsVisible="{Binding IsSettingsPanelOpen}" Background="{DynamicResource ShareX.Brush.Background.Panel}"
-                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,0,1,0">
+            <Border Grid.Column="0"
+                    Classes="editor-sidebar left"
+                    Classes.open="{Binding IsSettingsPanelOpen}"
+                    Padding="0"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    IsHitTestVisible="{Binding IsSettingsPanelOpen}">
                 <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               ScrollChanged="OnSidebarScrollChanged">
                     <StackPanel Width="220" Spacing="0" Margin="16">
@@ -535,8 +644,13 @@
             </Grid>
 
             <!-- Right Sidebar (Effects Panel) -->
-            <Border Grid.Column="2" Padding="0" IsVisible="{Binding IsRightEffectsSidebarVisible}" Background="{DynamicResource ShareX.Brush.Background.Panel}"
-                    BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1,0,0,0">
+            <Border Grid.Column="2"
+                    Classes="editor-sidebar right"
+                    Classes.open="{Binding IsRightEffectsSidebarVisible}"
+                    Padding="0"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    IsHitTestVisible="{Binding IsRightEffectsSidebarVisible}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -892,26 +1006,29 @@
 
         <!-- Effect Browser Panel Overlay -->
         <Grid Grid.Row="0"
-              IsVisible="{Binding IsEffectBrowserVisible}"
+              IsHitTestVisible="{Binding IsEffectBrowserVisible}"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"
               ZIndex="30">
 
             <!-- Click-away background to close the panel -->
-            <Grid Background="#30000000"
+            <Grid Classes="overlay-scrim"
+                  Classes.open="{Binding IsEffectBrowserVisible}"
+                  Background="#30000000"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   PointerPressed="OnEffectBrowserOverlayPointerPressed" />
 
             <!-- The Panel Itself -->
-            <Border Background="{DynamicResource ShareX.Brush.Background.Panel}"
+            <Border Classes="floating-panel"
+                    Classes.open="{Binding IsEffectBrowserVisible}"
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
                     BorderThickness="1"
                     CornerRadius="8"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
                     Margin="16,125,16,125"
-                    BoxShadow="{DynamicResource ShareX.BoxShadow.Dropdown}"
                     Width="800">
 
                 <controls:EffectBrowserPanel x:Name="EffectBrowserPanel"

@@ -67,6 +67,8 @@
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="2"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #ColorPopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
@@ -81,7 +83,9 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
-            <Border Background="{DynamicResource ShareX.Brush.Background.Popup}" 
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #ColorPopup.IsOpen}"
+                    Background="{DynamicResource ShareX.Brush.Background.Popup}" 
                     CornerRadius="8" 
                     Padding="4"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}"

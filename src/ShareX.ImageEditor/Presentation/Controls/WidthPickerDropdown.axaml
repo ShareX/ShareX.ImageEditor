@@ -51,6 +51,8 @@
 
                 <!-- Chevron Icon (Lucide ChevronDown) -->
                 <TextBlock Grid.Column="2"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #WidthPopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
@@ -66,7 +68,8 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
-            <Border Classes="popup-border">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #WidthPopup.IsOpen}">
                 <ItemsControl ItemsSource="{Binding WidthOptions, ElementName=WidthPickerDropdownRoot}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
