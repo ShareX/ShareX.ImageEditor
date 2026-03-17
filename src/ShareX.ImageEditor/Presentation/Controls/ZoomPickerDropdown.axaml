@@ -45,7 +45,7 @@
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="-4">
-            <Border Classes="popup-border popup-surface"
+            <Border Classes="popup-border popup-surface zoom-upward"
                     Classes.open="{Binding #ZoomPopup.IsOpen}">
                 <StackPanel Orientation="Vertical" Spacing="0">
                     <ItemsControl ItemsSource="{Binding ZoomLevels, ElementName=ZoomPickerDropdownRoot}"

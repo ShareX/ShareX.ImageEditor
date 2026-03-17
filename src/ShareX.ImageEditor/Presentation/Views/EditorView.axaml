@@ -187,6 +187,11 @@
             </Style>
         </Style>
 
+        <Style Selector="Border.popup-surface.zoom-upward">
+            <Setter Property="RenderTransformOrigin" Value="50%,100%"/>
+            <Setter Property="RenderTransform" Value="translateY(8px) scale(0.98)"/>
+        </Style>
+
         <Style Selector="TextBlock.dropdown-chevron">
             <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
             <Setter Property="RenderTransform" Value="rotate(0deg)"/>
