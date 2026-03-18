@@ -35,7 +35,7 @@
 
                 <CheckBox x:Name="BackgroundCheckBox"
                           Content="Draw particles in background"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 
@@ -43,7 +43,7 @@
 
                 <CheckBox x:Name="RandomSizeCheckBox"
                           Content="Random size"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
@@ -73,7 +73,7 @@
 
                 <CheckBox x:Name="RandomAngleCheckBox"
                           Content="Random angle"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
@@ -103,7 +103,7 @@
 
                 <CheckBox x:Name="RandomOpacityCheckBox"
                           Content="Random opacity"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
@@ -133,7 +133,7 @@
 
                 <CheckBox x:Name="NoOverlapCheckBox"
                           Content="Prevent overlap"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
                 <StackPanel Spacing="4">
@@ -149,7 +149,7 @@
 
                 <CheckBox x:Name="EdgeOverlapCheckBox"
                           Content="Allow edge overlap"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
             </StackPanel>

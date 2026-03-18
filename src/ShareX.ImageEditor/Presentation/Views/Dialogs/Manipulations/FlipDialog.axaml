@@ -13,14 +13,14 @@
             <CheckBox x:Name="HorizontalCheckBox"
                       Content="Horizontally"
                       IsChecked="False"
-                      Foreground="#E7E9EA"
+                     
                       Checked="OnCheckChanged"
                       Unchecked="OnCheckChanged"/>
 
             <CheckBox x:Name="VerticalCheckBox"
                       Content="Vertically"
                       IsChecked="False"
-                      Foreground="#E7E9EA"
+                     
                       Checked="OnCheckChanged"
                       Unchecked="OnCheckChanged"/>
         </StackPanel>

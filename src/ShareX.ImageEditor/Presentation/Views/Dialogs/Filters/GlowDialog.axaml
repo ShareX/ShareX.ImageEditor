@@ -38,27 +38,7 @@
                             HorizontalContentAlignment="Stretch">
                         <Grid ColumnDefinitions="Auto,8,*">
                             <Grid Grid.Column="0" Width="24" Height="24" VerticalAlignment="Center">
-                                <Border CornerRadius="4" ClipToBounds="True">
-                                    <Border.Background>
-                                        <DrawingBrush TileMode="Tile" DestinationRect="0,0,8,8" SourceRect="0,0,8,8">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#CCCCCC">
-                                                        <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,8,8"/></GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                    <GeometryDrawing Brush="#999999">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,4,4"/>
-                                                                <RectangleGeometry Rect="4,4,4,4"/>
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.Background>
-                                </Border>
+                                <Border Classes="checkered-surface" CornerRadius="4" ClipToBounds="True"/>
                                 <Border Background="{Binding GlowColorBrush, ElementName=GlowDialogRoot}" CornerRadius="4"/>
                             </Grid>
                             <TextBlock Grid.Column="2"
@@ -72,7 +52,7 @@
                            Placement="Bottom"
                            IsLightDismissEnabled="True"
                            VerticalOffset="4">
-                        <Border Background="#1F2937" CornerRadius="8" Padding="4" BorderBrush="#374151" BorderThickness="1">
+                        <Border Classes="color-picker-popup">
                             <cp:ColorView x:Name="ColorViewControl"
                                           Color="{Binding GlowColorValue, ElementName=GlowDialogRoot, Mode=TwoWay}"
                                           IsAlphaVisible="True"
@@ -83,7 +63,7 @@
             </StackPanel>
 
             <!-- Auto Resize -->
-            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" Foreground="#E7E9EA" 
+            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" 
                       Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
         </StackPanel>
 

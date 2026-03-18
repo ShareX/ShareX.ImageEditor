@@ -34,7 +34,7 @@
             <!-- Maintain Aspect Ratio -->
             <CheckBox x:Name="MaintainAspectRatioCheckbox"
                       IsChecked="{Binding MaintainAspectRatio, ElementName=ResizeImageDialogRoot}"
-                      Foreground="#E7E9EA"
+                     
                       Content="Maintain aspect ratio"/>
 
             <!-- Resample Mode -->

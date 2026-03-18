@@ -39,7 +39,7 @@
             <!-- Color Preview -->
             <StackPanel Spacing="4">
                 <TextBlock Text="Preview" FontSize="12"/>
-                <Border x:Name="PreviewColorBox" Height="30" CornerRadius="4" BorderBrush="#374151" BorderThickness="1">
+                <Border x:Name="PreviewColorBox" Classes="color-preview-frame" Height="30" CornerRadius="4">
                     <Border.Background>
                         <SolidColorBrush Color="Transparent"/>
                     </Border.Background>

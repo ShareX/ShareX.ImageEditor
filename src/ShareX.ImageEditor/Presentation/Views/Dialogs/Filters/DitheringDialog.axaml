@@ -35,7 +35,7 @@
                 </ComboBox>
             </StackPanel>
 
-            <CheckBox x:Name="SerpentineCheckBox" Content="Serpentine scan (Floyd-Steinberg)" Foreground="#E7E9EA"
+            <CheckBox x:Name="SerpentineCheckBox" Content="Serpentine scan (Floyd-Steinberg)"
                       IsChecked="True"
                       Checked="OnSettingChanged" Unchecked="OnSettingChanged"/>
 

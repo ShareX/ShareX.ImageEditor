@@ -23,13 +23,13 @@
             <CheckBox x:Name="CenterCheckBox"
                       Content="Center image"
                       IsChecked="True"
-                      Foreground="#E7E9EA"
+                     
                       Checked="OnSettingChanged"
                       Unchecked="OnSettingChanged"/>
 
             <CheckBox x:Name="TileCheckBox"
                       Content="Tile image"
-                      Foreground="#E7E9EA"
+                     
                       Checked="OnSettingChanged"
                       Unchecked="OnSettingChanged"/>
         </StackPanel>

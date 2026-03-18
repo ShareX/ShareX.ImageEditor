@@ -119,13 +119,13 @@
 
                 <CheckBox x:Name="TileCheckBox"
                           Content="Tile image"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 
                 <CheckBox x:Name="AutoHideCheckBox"
                           Content="Auto hide when outside image bounds"
-                          Foreground="#E7E9EA"
+                         
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 

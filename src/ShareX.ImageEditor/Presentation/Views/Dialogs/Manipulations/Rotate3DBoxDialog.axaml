@@ -44,7 +44,7 @@
 
         <!-- CheckBoxes -->
         <StackPanel Spacing="8" Margin="0,12,0,0">
-            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" Foreground="#E7E9EA" Checked="OnAutoResizeChanged" Unchecked="OnAutoResizeChanged"/>
+            <CheckBox x:Name="AutoResizeCheckBox" Content="Auto resize" IsChecked="True" Checked="OnAutoResizeChanged" Unchecked="OnAutoResizeChanged"/>
         </StackPanel>
 
         <!-- Buttons -->

@@ -35,14 +35,14 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Spacing="16">
-                <CheckBox x:Name="InvertCheckBox" Content="Invert luminance" Foreground="#E7E9EA"
+                <CheckBox x:Name="InvertCheckBox" Content="Invert luminance"
                           Checked="OnSettingChanged" Unchecked="OnSettingChanged"/>
-                <CheckBox x:Name="DarkBackgroundCheckBox" Content="Dark background" Foreground="#E7E9EA"
+                <CheckBox x:Name="DarkBackgroundCheckBox" Content="Dark background"
                           IsChecked="True"
                           Checked="OnSettingChanged" Unchecked="OnSettingChanged"/>
             </StackPanel>
 
-            <CheckBox x:Name="UseSourceColorCheckBox" Content="Use source colors" Foreground="#E7E9EA"
+            <CheckBox x:Name="UseSourceColorCheckBox" Content="Use source colors"
                       IsChecked="True"
                       Checked="OnSettingChanged" Unchecked="OnSettingChanged"/>
         </StackPanel>

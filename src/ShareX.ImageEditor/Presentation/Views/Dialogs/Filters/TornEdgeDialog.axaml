@@ -23,19 +23,19 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="Sides"/>
                 <StackPanel Orientation="Vertical">
-                    <CheckBox x:Name="TopCheckBox" Content="Top" IsChecked="True" Foreground="#E7E9EA"
+                    <CheckBox x:Name="TopCheckBox" Content="Top" IsChecked="True"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                    <CheckBox x:Name="RightCheckBox" Content="Right" IsChecked="True" Foreground="#E7E9EA"
+                    <CheckBox x:Name="RightCheckBox" Content="Right" IsChecked="True"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                    <CheckBox x:Name="BottomCheckBox" Content="Bottom" IsChecked="True" Foreground="#E7E9EA"
+                    <CheckBox x:Name="BottomCheckBox" Content="Bottom" IsChecked="True"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
-                    <CheckBox x:Name="LeftCheckBox" Content="Left" IsChecked="True" Foreground="#E7E9EA"
+                    <CheckBox x:Name="LeftCheckBox" Content="Left" IsChecked="True"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
                 </StackPanel>
             </StackPanel>
 
             <!-- Curved edges -->
-            <CheckBox x:Name="CurvedCheckBox" Content="Curved edges" Foreground="#E7E9EA"
+            <CheckBox x:Name="CurvedCheckBox" Content="Curved edges"
                       Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
 
         </StackPanel>

@@ -29,7 +29,7 @@
 
             <!-- Skew -->
             <StackPanel Spacing="4">
-                <CheckBox x:Name="SkewCheckBox" Content="Skew" Foreground="#E7E9EA"
+                <CheckBox x:Name="SkewCheckBox" Content="Skew"
                           Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>
                 <controls:EffectSlider IsVisible="{Binding ElementName=SkewCheckBox, Path=IsChecked}"
                                        Label="Skew Size"

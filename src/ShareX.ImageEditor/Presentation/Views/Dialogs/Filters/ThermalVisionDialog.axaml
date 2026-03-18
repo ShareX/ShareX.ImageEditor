@@ -43,7 +43,7 @@
                                    IsSnapToTickEnabled="True"
                                    ValueChanged="OnValueChanged"/>
 
-            <CheckBox x:Name="InvertCheckBox" Content="Invert heatmap" Foreground="#E7E9EA"
+            <CheckBox x:Name="InvertCheckBox" Content="Invert heatmap"
                       Checked="OnSettingChanged" Unchecked="OnSettingChanged"/>
         </StackPanel>
 

@@ -88,24 +88,44 @@
         </Style>
     </Style>
 
+    <Style Selector="Button.task-mode-button.danger">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
+        </Style>
+    </Style>
+
     <Style Selector="Button.task-mode-button.danger:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#EF4444"/>
-        <Setter Property="BorderBrush" Value="#EF4444"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
     </Style>
 
     <Style Selector="Button.task-mode-button.danger:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="#EF4444"/>
-        <Setter Property="BorderBrush" Value="#EF4444"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
+    </Style>
+
+    <Style Selector="Button.task-mode-button.success">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
+        </Style>
     </Style>
 
     <Style Selector="Button.task-mode-button.success:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#13DD9A"/>
-        <Setter Property="BorderBrush" Value="#13DD9A"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
     </Style>
 
     <Style Selector="Button.task-mode-button.success:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="#13DD9A"/>
-        <Setter Property="BorderBrush" Value="#13DD9A"/>
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
     </Style>
 
     <!-- Shared surfaces -->
@@ -173,6 +193,23 @@
         </Style>
     </Style>
 
+    <Style Selector="Border.color-picker-popup">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Background.Popup}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <Style Selector="Border.color-preview-frame">
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="Border.checkered-surface">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Checkered.Small}"/>
+    </Style>
+
     <!-- Editor layout primitives -->
     <Style Selector="TextBlock.dropdown-chevron">
         <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
@@ -226,6 +263,7 @@
     </Style>
 
     <Style Selector="Grid.overlay-scrim">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Overlay.Soft}"/>
         <Setter Property="Opacity" Value="0"/>
         <Setter Property="Transitions">
             <Transitions>
@@ -236,6 +274,10 @@
         <Style Selector="^.open">
             <Setter Property="Opacity" Value="1"/>
         </Style>
+    </Style>
+
+    <Style Selector="Border.modal-scrim">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Overlay.Modal}"/>
     </Style>
 
     <!-- Shared feature panels -->
