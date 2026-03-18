@@ -1,9 +1,12 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:helpers="clr-namespace:ShareX.ImageEditor.Presentation.Theming">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ShareXTypography.axaml"/>
-    </ResourceDictionary.MergedDictionaries>
+    
+    <FontFamily x:Key="ShareX.FontFamily.Default">Segoe UI, avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+    <FontFamily x:Key="ShareX.FontFamily.Icon">avares://ShareX.ImageEditor/Assets#lucide</FontFamily>
+    <FontFamily x:Key="ShareX.FontFamily.Monospace">Cascadia Mono, Consolas, Courier New, Monospace</FontFamily>
+    <x:Double x:Key="ShareX.FontSize.Default">14</x:Double>
+
     <ResourceDictionary.ThemeDictionaries>
 
         <!-- ShareX Dark -->
