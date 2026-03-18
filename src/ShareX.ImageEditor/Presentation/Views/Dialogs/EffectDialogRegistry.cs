@@ -135,6 +135,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["draw_image"] = () => new DrawImageDialog(),
                 ["draw_particles"] = () => new DrawParticlesDialog(),
                 ["draw_text"] = () => new DrawTextDialog(),
+                ["text_watermark"] = () => new TextWatermarkDialog(),
 
                 // --- Transforms ---
                 ["rounded_corners"] = () => new RoundedCornersDialog(),

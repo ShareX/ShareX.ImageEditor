@@ -1,3 +1,4 @@
+using System.Globalization;
 using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
@@ -12,6 +13,59 @@ internal static class DrawingEffectHelpers
         }
 
         return Environment.ExpandEnvironmentVariables(path.Trim());
+    }
+
+    public static string ExpandTextVariables(string? text, SKSizeI imageSize)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return string.Empty;
+        }
+
+        string expanded = Environment.ExpandEnvironmentVariables(text);
+        DateTime now = DateTime.Now;
+        bool useTwelveHourClock = expanded.Contains("%pm", StringComparison.OrdinalIgnoreCase);
+        int hour = now.Hour % 12;
+        if (hour == 0)
+        {
+            hour = 12;
+        }
+
+        string currentMonth = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(now.Month);
+        string invariantMonth = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(now.Month);
+        string currentDay = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(now.DayOfWeek);
+        string invariantDay = CultureInfo.InvariantCulture.DateTimeFormat.GetDayName(now.DayOfWeek);
+
+        (string Token, string Value)[] replacements =
+        [
+            ("%width", imageSize.Width.ToString(CultureInfo.InvariantCulture)),
+            ("%height", imageSize.Height.ToString(CultureInfo.InvariantCulture)),
+            ("%unix", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)),
+            ("%mon2", invariantMonth),
+            ("%mon", currentMonth),
+            ("%yy", now.ToString("yy", CultureInfo.InvariantCulture)),
+            ("%y", now.Year.ToString(CultureInfo.InvariantCulture)),
+            ("%mo", now.Month.ToString("00", CultureInfo.InvariantCulture)),
+            ("%mi", now.Minute.ToString("00", CultureInfo.InvariantCulture)),
+            ("%ms", now.Millisecond.ToString("000", CultureInfo.InvariantCulture)),
+            ("%pm", now.Hour >= 12 ? "PM" : "AM"),
+            ("%w2", invariantDay),
+            ("%w", currentDay),
+            ("%d", now.Day.ToString("00", CultureInfo.InvariantCulture)),
+            ("%h", (useTwelveHourClock ? hour : now.Hour).ToString("00", CultureInfo.InvariantCulture)),
+            ("%s", now.Second.ToString("00", CultureInfo.InvariantCulture)),
+            ("%un", Environment.UserName),
+            ("%uln", Environment.UserDomainName),
+            ("%cn", Environment.MachineName),
+            ("%n", Environment.NewLine)
+        ];
+
+        foreach ((string token, string value) in replacements)
+        {
+            expanded = expanded.Replace(token, value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return expanded;
     }
 
     public static SKPointI GetPosition(DrawingPlacement placement, SKPointI offset, SKSizeI backgroundSize, SKSizeI objectSize)
