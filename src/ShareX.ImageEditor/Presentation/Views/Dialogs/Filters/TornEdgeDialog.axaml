@@ -13,11 +13,11 @@
         <StackPanel Spacing="12">
             <!-- Depth -->
             <controls:EffectSlider Label="Depth" ValueStringFormat="{}{0:0}" x:Name="DepthSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Range -->
             <controls:EffectSlider Label="Range" ValueStringFormat="{}{0:0}" x:Name="RangeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Sides -->
             <StackPanel Spacing="8">

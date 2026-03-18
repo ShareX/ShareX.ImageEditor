@@ -13,7 +13,7 @@
         <controls:EffectSlider Label="Amount (stops)" ValueStringFormat="{}{0:0.0}" x:Name="AmountSlider"
                     Minimum="-5" Maximum="5" Value="0"
                     TickFrequency="0.1" IsSnapToTickEnabled="False"
-                    Background="#374151"
+                   
                     ValueChanged="OnValueChanged"/>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">

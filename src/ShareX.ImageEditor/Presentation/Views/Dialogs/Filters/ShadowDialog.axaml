@@ -13,19 +13,19 @@
         <StackPanel Spacing="12">
             <!-- Opacity -->
             <controls:EffectSlider Label="Opacity" ValueStringFormat="{}{0:0}%" x:Name="OpacitySlider" Minimum="0" Maximum="100" Value="80" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Size -->
             <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider" Minimum="0" Maximum="100" Value="20" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Offset X/Y -->
             <!-- We'll stack them vertically for sidebar width constraint -->
             <controls:EffectSlider Label="Offset X" ValueStringFormat="{}{0:0}" x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="5" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
             
             <controls:EffectSlider Label="Offset Y" ValueStringFormat="{}{0:0}" x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="5" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Color -->
             <StackPanel Spacing="4">

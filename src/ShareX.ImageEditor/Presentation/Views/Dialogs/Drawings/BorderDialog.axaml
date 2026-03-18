@@ -23,7 +23,7 @@
 
             <!-- Size -->
             <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider" Minimum="1" Maximum="100" Value="5" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Dash Style -->
             <StackPanel Spacing="4">

@@ -11,13 +11,13 @@
         <TextBlock Text="Twirl" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <controls:EffectSlider Label="Angle" ValueStringFormat="{}{0:0}°" x:Name="AngleSlider" Minimum="-1080" Maximum="1080" Value="90" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Angle" ValueStringFormat="{}{0:0}°" x:Name="AngleSlider" Minimum="-1080" Maximum="1080" Value="90" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Radius (%)" ValueStringFormat="{}{0:0}%" x:Name="RadiusSlider" Minimum="1" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Radius (%)" ValueStringFormat="{}{0:0}%" x:Name="RadiusSlider" Minimum="1" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Center X (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterXSlider" Minimum="0" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Center X (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterXSlider" Minimum="0" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Center Y (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterYSlider" Minimum="0" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Center Y (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterYSlider" Minimum="0" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">

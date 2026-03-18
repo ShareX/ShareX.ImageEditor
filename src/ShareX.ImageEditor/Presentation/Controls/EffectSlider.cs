@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using System.Globalization;
 
 namespace ShareX.ImageEditor.Presentation.Controls
@@ -15,6 +16,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
             AvaloniaProperty.Register<EffectSlider, string>(
                 nameof(ValueStringFormat),
                 defaultValue: "{}{0:0.##}");
+
+        public static readonly StyledProperty<IBrush?> TrackBackgroundProperty =
+            AvaloniaProperty.Register<EffectSlider, IBrush?>(
+                nameof(TrackBackground));
 
         public static readonly DirectProperty<EffectSlider, string> ValueTextProperty =
             AvaloniaProperty.RegisterDirect<EffectSlider, string>(
@@ -33,6 +38,12 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             get => GetValue(ValueStringFormatProperty);
             set => SetValue(ValueStringFormatProperty, value);
+        }
+
+        public IBrush? TrackBackground
+        {
+            get => GetValue(TrackBackgroundProperty);
+            set => SetValue(TrackBackgroundProperty, value);
         }
 
         public string ValueText

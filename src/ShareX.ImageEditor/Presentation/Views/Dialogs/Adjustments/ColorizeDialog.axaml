@@ -19,21 +19,21 @@
             <controls:EffectSlider Label="Hue" ValueStringFormat="{}{0:0}°" x:Name="HueSlider"
                         Minimum="0" Maximum="360" Value="180"
                         TickFrequency="30" IsSnapToTickEnabled="False"
-                         Background="#374151"
+                        
                         ValueChanged="OnValueChanged"/>
 
             <!-- Saturation Slider -->
             <controls:EffectSlider Label="Saturation" ValueStringFormat="{}{0:0}%" x:Name="SaturationSlider"
                         Minimum="0" Maximum="100" Value="50"
                         TickFrequency="10" IsSnapToTickEnabled="False"
-                         Background="#374151"
+                        
                         ValueChanged="OnValueChanged"/>
 
             <!-- Strength Slider -->
             <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider"
                         Minimum="0" Maximum="100" Value="100"
                         TickFrequency="10" IsSnapToTickEnabled="False"
-                         Background="#374151"
+                        
                         ValueChanged="OnValueChanged"/>
 
             <!-- Color Preview -->

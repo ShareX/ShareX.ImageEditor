@@ -13,11 +13,11 @@
         <StackPanel Spacing="12">
             <!-- Size -->
             <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider" Minimum="1" Maximum="50" Value="3" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Padding -->
             <controls:EffectSlider Label="Padding" ValueStringFormat="{}{0:0}" x:Name="PaddingSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Color -->
             <StackPanel Spacing="4">

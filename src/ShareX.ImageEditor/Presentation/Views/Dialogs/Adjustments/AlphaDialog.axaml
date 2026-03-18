@@ -14,7 +14,7 @@
         <controls:EffectSlider Label="Opacity (%)" ValueStringFormat="{}{0:0}" x:Name="AmountSlider"
                     Minimum="0" Maximum="100" Value="100"
                     TickFrequency="5" IsSnapToTickEnabled="True"
-                    Background="#374151"
+                   
                     ValueChanged="OnValueChanged"/>
 
         <!-- Buttons -->

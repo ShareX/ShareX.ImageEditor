@@ -24,7 +24,7 @@
                                    Value="{Binding RotateAngleDegrees}"
                                    TickFrequency="1"
                                    IsSnapToTickEnabled="True"
-                                   Background="#374151"/>
+                                  />
 
             <!-- Auto Resize Checkbox -->
             <CheckBox x:Name="AutoResizeCheckBox"

@@ -14,13 +14,13 @@
             <controls:EffectSlider Label="Shadows" ValueStringFormat="{}{0:0}" x:Name="ShadowsSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="1" IsSnapToTickEnabled="True"
-                        Background="#374151"
+                       
                         ValueChanged="OnValueChanged"/>
 
             <controls:EffectSlider Label="Highlights" ValueStringFormat="{}{0:0}" x:Name="HighlightsSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="1" IsSnapToTickEnabled="True"
-                        Background="#374151"
+                       
                         ValueChanged="OnValueChanged"/>
         </StackPanel>
 

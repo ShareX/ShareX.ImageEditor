@@ -13,19 +13,19 @@
         <StackPanel Spacing="12">
             <!-- Percentage -->
             <controls:EffectSlider Label="Percentage" ValueStringFormat="{}{0:0}%" x:Name="PercentageSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
-                                   Background="#374151"/>
+                                  />
 
             <!-- Max Alpha -->
             <controls:EffectSlider Label="Max Alpha" ValueStringFormat="{}{0:0}" x:Name="MaxAlphaSlider" Minimum="0" Maximum="255" Value="255" ValueChanged="OnValueChanged"
-                                   Background="#374151"/>
+                                  />
 
             <!-- Min Alpha -->
             <controls:EffectSlider Label="Min Alpha" ValueStringFormat="{}{0:0}" x:Name="MinAlphaSlider" Minimum="0" Maximum="255" Value="0" ValueChanged="OnValueChanged"
-                                   Background="#374151"/>
+                                  />
 
             <!-- Offset -->
             <controls:EffectSlider Label="Offset" ValueStringFormat="{}{0:0}" x:Name="OffsetSlider" Minimum="0" Maximum="100" Value="0" ValueChanged="OnValueChanged"
-                                   Background="#374151"/>
+                                  />
 
             <!-- Skew -->
             <StackPanel Spacing="4">
@@ -39,7 +39,7 @@
                                        Maximum="100"
                                        Value="25"
                                        ValueChanged="OnValueChanged"
-                                       Background="#374151"/>
+                                      />
             </StackPanel>
 
         </StackPanel>

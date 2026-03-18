@@ -16,7 +16,7 @@
                     Value="15"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                    Background="#374151"
+                   
                     ValueChanged="OnValueChanged"/>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">

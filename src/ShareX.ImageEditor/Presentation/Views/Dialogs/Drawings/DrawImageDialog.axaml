@@ -160,7 +160,7 @@
                                        Minimum="0"
                                        Maximum="100"
                                        Value="100"
-                                       Background="#374151"
+                                      
                                        ValueChanged="OnSliderChanged"/>
             </StackPanel>
         </ScrollViewer>

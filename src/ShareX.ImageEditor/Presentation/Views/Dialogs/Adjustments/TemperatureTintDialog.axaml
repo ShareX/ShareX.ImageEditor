@@ -14,13 +14,13 @@
             <controls:EffectSlider Label="Temperature" ValueStringFormat="{}{0:0}" x:Name="TemperatureSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="1" IsSnapToTickEnabled="True"
-                        Background="#374151"
+                       
                         ValueChanged="OnValueChanged"/>
 
             <controls:EffectSlider Label="Tint" ValueStringFormat="{}{0:0}" x:Name="TintSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="1" IsSnapToTickEnabled="True"
-                        Background="#374151"
+                       
                         ValueChanged="OnValueChanged"/>
         </StackPanel>
 

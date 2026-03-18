@@ -11,13 +11,13 @@
         <TextBlock Text="Pinch / Bulge" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}" x:Name="StrengthSlider" Minimum="-100" Maximum="100" Value="35" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}" x:Name="StrengthSlider" Minimum="-100" Maximum="100" Value="35" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Radius (%)" ValueStringFormat="{}{0:0}%" x:Name="RadiusSlider" Minimum="1" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Radius (%)" ValueStringFormat="{}{0:0}%" x:Name="RadiusSlider" Minimum="1" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Center X (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterXSlider" Minimum="0" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Center X (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterXSlider" Minimum="0" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Center Y (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterYSlider" Minimum="0" Maximum="100" Value="50" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Center Y (%)" ValueStringFormat="{}{0:0}%" x:Name="CenterYSlider" Minimum="0" Maximum="100" Value="50" ValueChanged="OnValueChanged"/>
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">

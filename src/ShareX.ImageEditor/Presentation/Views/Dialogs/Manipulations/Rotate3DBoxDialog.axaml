@@ -15,14 +15,14 @@
         <controls:EffectSlider Label="Depth" ValueStringFormat="{}{0:0} px" x:Name="DepthSlider"
                                Minimum="0" Maximum="300" Value="50"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                ValueChanged="OnValueChanged"/>
 
         <!-- X-axis Slider -->
         <controls:EffectSlider Label="X-axis (Tilt)" ValueStringFormat="{}{0:0}&#176;" x:Name="XAxisSlider"
                                Minimum="-90" Maximum="90" Value="15"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 
@@ -30,7 +30,7 @@
         <controls:EffectSlider Label="Y-axis (Turn)" ValueStringFormat="{}{0:0}&#176;" x:Name="YAxisSlider"
                                Minimum="-90" Maximum="90" Value="25"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 
@@ -38,7 +38,7 @@
         <controls:EffectSlider Label="Z-axis (Rotate)" ValueStringFormat="{}{0:0}&#176;" x:Name="ZAxisSlider"
                                Minimum="-90" Maximum="90" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 

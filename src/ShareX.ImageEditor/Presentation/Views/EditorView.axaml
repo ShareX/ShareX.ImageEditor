@@ -142,7 +142,7 @@
                         <!-- Background Margin -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Margin" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                <TextBlock Grid.Column="0" Text="Margin"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding BackgroundMargin, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -157,7 +157,7 @@
                         <!-- Background Padding -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Padding" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                <TextBlock Grid.Column="0" Text="Padding"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding BackgroundPadding, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -177,7 +177,7 @@
                         <!-- Background Rounded Corner -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Rounded Corner" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                <TextBlock Grid.Column="0" Text="Rounded Corner"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding BackgroundRoundedCorner, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -192,7 +192,7 @@
                         <!-- Background Shadow Radius -->
                         <StackPanel Spacing="0">
                             <Grid ColumnDefinitions="*,Auto">
-                                <TextBlock Grid.Column="0" Text="Shadow Radius" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                <TextBlock Grid.Column="0" Text="Shadow Radius"/>
                                 <Border Grid.Column="1" Classes="capsule">
                                     <TextBlock Text="{Binding BackgroundShadowRadius, StringFormat='{}{0:F0} px'}"/>
                                 </Border>
@@ -206,7 +206,7 @@
 
                         <!-- Ratio -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Ratio" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,0,0,16"/>
+                            <TextBlock Text="Ratio" Margin="0,0,0,16"/>
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*">
                                 <!-- Row 0 -->
                                 <Button Grid.Row="0" Grid.Column="0" Content="Auto"
@@ -263,7 +263,7 @@
 
                         <!-- Background -->
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Background" Foreground="{DynamicResource ShareX.Brush.Text.Secondary}" Margin="0,16"/>
+                            <TextBlock Text="Background" Margin="0,16"/>
                             <ComboBox x:Name="BackgroundTypeComboBox"
                                       ItemsSource="{Binding BackgroundModeOptions}"
                                       SelectedItem="{Binding SelectedBackgroundModeOption, Mode=TwoWay}"

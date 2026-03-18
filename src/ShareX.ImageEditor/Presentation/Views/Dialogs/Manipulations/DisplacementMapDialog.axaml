@@ -11,9 +11,9 @@
         <TextBlock Text="Displacement Map" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
-            <controls:EffectSlider Label="Amount X (px)" ValueStringFormat="{}{0:0}" x:Name="AmountXSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Amount X (px)" ValueStringFormat="{}{0:0}" x:Name="AmountXSlider" Minimum="-200" Maximum="200" Value="20" ValueChanged="OnValueChanged"/>
 
-            <controls:EffectSlider Label="Amount Y (px)" ValueStringFormat="{}{0:0}" x:Name="AmountYSlider" Minimum="-200" Maximum="200" Value="20" Background="#374151" ValueChanged="OnValueChanged"/>
+            <controls:EffectSlider Label="Amount Y (px)" ValueStringFormat="{}{0:0}" x:Name="AmountYSlider" Minimum="-200" Maximum="200" Value="20" ValueChanged="OnValueChanged"/>
 
             <TextBlock Text="Uses source Red channel for X offset and Green channel for Y offset."
                       

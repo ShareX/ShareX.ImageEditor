@@ -15,14 +15,14 @@
         <controls:EffectSlider Label="X-axis (Tilt)" ValueStringFormat="{}{0:0}&#176;" x:Name="XAxisSlider"
                                Minimum="-180" Maximum="180" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                ValueChanged="OnValueChanged"/>
 
         <!-- Y-axis Slider -->
         <controls:EffectSlider Label="Y-axis (Turn)" ValueStringFormat="{}{0:0}&#176;" x:Name="YAxisSlider"
                                Minimum="-180" Maximum="180" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 
@@ -30,7 +30,7 @@
         <controls:EffectSlider Label="Z-axis (Rotate)" ValueStringFormat="{}{0:0}&#176;" x:Name="ZAxisSlider"
                                Minimum="-180" Maximum="180" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 

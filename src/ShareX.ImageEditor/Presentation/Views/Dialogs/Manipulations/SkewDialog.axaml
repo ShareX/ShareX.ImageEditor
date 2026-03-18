@@ -15,14 +15,14 @@
         <controls:EffectSlider Label="Horizontal" ValueStringFormat="{}{0:0} px" x:Name="HorizontalSlider"
                                Minimum="-100" Maximum="100" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                ValueChanged="OnValueChanged"/>
 
         <!-- Vertical Slider -->
         <controls:EffectSlider Label="Vertical" ValueStringFormat="{}{0:0} px" x:Name="VerticalSlider"
                                Minimum="-100" Maximum="100" Value="0"
                                TickFrequency="1" IsSnapToTickEnabled="True"
-                               Background="#374151"
+                              
                                Margin="0,8,0,0"
                                ValueChanged="OnValueChanged"/>
 

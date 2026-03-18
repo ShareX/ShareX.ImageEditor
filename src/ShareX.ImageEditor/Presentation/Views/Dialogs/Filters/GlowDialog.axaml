@@ -13,18 +13,18 @@
         <StackPanel Spacing="12">
             <!-- Size -->
             <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider" Minimum="1" Maximum="100" Value="20" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Strength -->
             <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider" Minimum="1" Maximum="100" Value="80" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Offset X/Y -->
             <controls:EffectSlider Label="Offset X" ValueStringFormat="{}{0:0}" x:Name="OffsetXSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
             
             <controls:EffectSlider Label="Offset Y" ValueStringFormat="{}{0:0}" x:Name="OffsetYSlider" Minimum="-100" Maximum="100" Value="0" ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Color -->
             <StackPanel Spacing="4">

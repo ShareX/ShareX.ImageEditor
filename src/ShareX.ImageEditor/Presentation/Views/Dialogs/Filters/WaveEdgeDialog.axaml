@@ -17,7 +17,7 @@
                         Maximum="100"
                         Value="15"
                         ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Range -->
             <controls:EffectSlider Label="Range" ValueStringFormat="{}{0:0}" x:Name="RangeSlider"
@@ -25,7 +25,7 @@
                         Maximum="100"
                         Value="20"
                         ValueChanged="OnValueChanged"
-                        Background="#374151"/>
+                       />
 
             <!-- Sides -->
             <StackPanel Spacing="8">

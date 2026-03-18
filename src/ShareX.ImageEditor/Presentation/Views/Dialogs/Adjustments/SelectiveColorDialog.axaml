@@ -33,21 +33,21 @@
             <controls:EffectSlider Label="Hue Shift" ValueStringFormat="{}{0:0}°" x:Name="HueSlider"
                         Minimum="-180" Maximum="180" Value="0"
                         TickFrequency="30" IsSnapToTickEnabled="False"
-                        Background="#374151"
+                       
                         ValueChanged="OnValueChanged"/>
 
             <!-- Saturation Shift -->
             <controls:EffectSlider Label="Saturation Shift" ValueStringFormat="{}{0:0}%" x:Name="SatSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="25" IsSnapToTickEnabled="False"
-                         Background="#374151"
+                        
                         ValueChanged="OnValueChanged"/>
 
             <!-- Lightness Shift -->
             <controls:EffectSlider Label="Lightness Shift" ValueStringFormat="{}{0:0}%" x:Name="LightSlider"
                         Minimum="-100" Maximum="100" Value="0"
                         TickFrequency="25" IsSnapToTickEnabled="False"
-                         Background="#374151"
+                        
                         ValueChanged="OnValueChanged"/>
 
         </StackPanel>

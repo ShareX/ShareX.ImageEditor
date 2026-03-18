@@ -14,7 +14,7 @@
         <controls:EffectSlider Label="Amount" ValueStringFormat="{}{0:0}" x:Name="AmountSlider"
                     Minimum="-100" Maximum="100" Value="0"
                     TickFrequency="10" IsSnapToTickEnabled="True"
-                    Background="#374151"
+                   
                     ValueChanged="OnValueChanged"/>
 
         <!-- Buttons -->
