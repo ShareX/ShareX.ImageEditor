@@ -295,6 +295,24 @@ public static class ImageHelpers
         return new BorderImageEffect(type, size, dashStyle, color).Apply(source);
     }
 
+    public static SKBitmap ApplyBevel(
+        SKBitmap source,
+        int size,
+        float strength,
+        float lightAngle,
+        SKColor highlightColor,
+        SKColor shadowColor)
+    {
+        return new BevelImageEffect
+        {
+            Size = size,
+            Strength = strength,
+            LightAngle = lightAngle,
+            HighlightColor = highlightColor,
+            ShadowColor = shadowColor
+        }.Apply(source);
+    }
+
     public static SKBitmap ApplyOutline(SKBitmap source, int size, int padding, bool outlineOnly, SKColor color)
     {
         return new OutlineImageEffect(size, padding, outlineOnly, color).Apply(source);

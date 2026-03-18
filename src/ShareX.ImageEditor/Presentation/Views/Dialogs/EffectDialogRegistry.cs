@@ -74,6 +74,7 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["add_noise"] = () => new AddNoiseDialog(),
                 ["anime_speed_lines"] = () => new AnimeSpeedLinesDialog(),
                 ["ascii_art"] = () => new ASCIIArtDialog(),
+                ["bevel"] = () => new BevelDialog(),
                 ["block_glitch"] = () => new BlockGlitchDialog(),
                 ["blueprint_drawing"] = () => new BlueprintDrawingDialog(),
                 ["border"] = () => new BorderDialog(),
