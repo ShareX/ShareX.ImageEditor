@@ -1,5 +1,5 @@
-using System.Globalization;
 using SkiaSharp;
+using System.Globalization;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 

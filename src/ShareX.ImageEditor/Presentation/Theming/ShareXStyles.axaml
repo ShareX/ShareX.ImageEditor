@@ -503,6 +503,8 @@
 
     <Style Selector="CheckBox">
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
 
         <Style Selector="^ /template/ Border#NormalRectangle">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
