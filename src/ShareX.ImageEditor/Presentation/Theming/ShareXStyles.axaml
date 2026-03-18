@@ -253,6 +253,55 @@
     </Style>
 
     <!-- Common control overrides -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="MinHeight" Value="40"/>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+
+        <Style Selector="^ /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        </Style>
+
+        <Style Selector="^:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        </Style>
+
+        <Style Selector="^ /template/ TextPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ TextPresenter">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+    </Style>
+
     <Style Selector="ComboBox">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
@@ -405,9 +454,54 @@
     </Style>
 
     <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+
+        <Style Selector="^ /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^:not(:pointerover) /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+        </Style>
+
         <Style Selector="^:checked /template/ Border#NormalRectangle">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
             <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </Style>
+
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+
+        <Style Selector="^ /template/ Border">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Separator}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Separator}"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
     </Style>
 

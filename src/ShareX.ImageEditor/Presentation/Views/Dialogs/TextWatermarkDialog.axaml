@@ -95,17 +95,14 @@
                 <StackPanel Orientation="Horizontal" Spacing="16">
                     <CheckBox x:Name="BoldCheckBox"
                               Content="Bold"
-                              Foreground="#E7E9EA"
                               Checked="OnSettingChanged"
                               Unchecked="OnSettingChanged"/>
                     <CheckBox x:Name="ItalicCheckBox"
                               Content="Italic"
-                              Foreground="#E7E9EA"
                               Checked="OnSettingChanged"
                               Unchecked="OnSettingChanged"/>
                     <CheckBox x:Name="AutoHideCheckBox"
                               Content="Auto hide"
-                              Foreground="#E7E9EA"
                               Checked="OnSettingChanged"
                               Unchecked="OnSettingChanged"/>
                 </StackPanel>
@@ -174,7 +171,6 @@
                 <CheckBox x:Name="BackgroundCheckBox"
                           Content="Enable background"
                           IsChecked="True"
-                          Foreground="#E7E9EA"
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 
@@ -190,7 +186,6 @@
                 <CheckBox x:Name="BorderCheckBox"
                           Content="Enable border"
                           IsChecked="True"
-                          Foreground="#E7E9EA"
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 
@@ -217,7 +212,6 @@
 
                 <CheckBox x:Name="ShadowCheckBox"
                           Content="Enable shadow"
-                          Foreground="#E7E9EA"
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
 
