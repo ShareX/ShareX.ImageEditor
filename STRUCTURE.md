@@ -7,7 +7,7 @@ It is written for coding agents and human contributors equally.
 
 ## Namespace-to-Path Contract
 
-**Every type's file path is deterministically computable from its namespace.**
+**Almost every type's file path is deterministically computable from its namespace.**
 
 ```
 namespace ShareX.ImageEditor.X.Y.Z
@@ -24,6 +24,7 @@ Examples:
 **Rule for Styles/ResourceDictionary files:** no `.cs` at all (e.g. `EffectSlider.axaml`, `ShareXTheme.axaml`).
 
 Skip grep for type lookups. Compute the path directly.
+Exception: effect dialogs stay in the `ShareX.ImageEditor.Presentation.Views.Dialogs` namespace while their files are grouped under `Presentation/Views/Dialogs/<Category>/`.
 
 ---
 
@@ -108,7 +109,7 @@ Glob `**/ImageEffect.cs` returns exactly one result.
 
 **To add a new image effect:**
 1. Create the class in the appropriate sub-folder, extending the category base.
-2. Add a dialog in `Presentation/Views/Dialogs/`.
+2. Add a dialog in the matching `Presentation/Views/Dialogs/<Category>/` sub-folder.
 3. Register the dialog factory in `Presentation/Views/Dialogs/EffectDialogRegistry.cs`.
 4. Add a menu item in the effects menu calling `RaiseDialog("your_id")`.
 
@@ -161,6 +162,8 @@ Presentation/
     ├── EditorWindow.axaml.cs           Window shell
     └── ConfirmationDialogView.axaml.cs
 ```
+
+Under `Views/Dialogs/`, effect dialog files are grouped into `Adjustments`, `Drawings`, `Filters`, and `Manipulations`, while `EffectDialogRegistry.cs` and `IEffectDialog.cs` remain at the root of `Dialogs/`.
 
 ### Partial Class Conventions
 
