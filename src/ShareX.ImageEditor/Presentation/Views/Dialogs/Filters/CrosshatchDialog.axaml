@@ -8,7 +8,7 @@
              x:Name="CrosshatchDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Crosshatch" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Crosshatch" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Line spacing (px)" ValueStringFormat="{}{0:0}" x:Name="SpacingSlider"

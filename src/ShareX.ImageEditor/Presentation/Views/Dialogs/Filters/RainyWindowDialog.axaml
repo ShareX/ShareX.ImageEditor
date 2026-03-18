@@ -8,7 +8,7 @@
              x:Name="RainyWindowDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Rainy Window" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Rainy Window" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Glass distortion" ValueStringFormat="{}{0:0}" x:Name="DistortionSlider"

@@ -7,11 +7,11 @@
              x:Name="ScaleDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Scale" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Scale" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="12">
             <StackPanel Spacing="4">
-                <TextBlock Text="Width percentage" Foreground="#9CA3AF"/>
+                <TextBlock Text="Width percentage"/>
                 <NumericUpDown x:Name="WidthPercentageInput"
                                Value="100"
                                Minimum="0"
@@ -23,7 +23,7 @@
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Height percentage" Foreground="#9CA3AF"/>
+                <TextBlock Text="Height percentage"/>
                 <NumericUpDown x:Name="HeightPercentageInput"
                                Value="0"
                                Minimum="0"
@@ -35,7 +35,7 @@
             </StackPanel>
 
             <TextBlock Text="Set width or height to 0 to preserve aspect ratio from the other value."
-                       Foreground="#9CA3AF"
+                      
                        FontSize="12"
                        TextWrapping="Wrap"/>
         </StackPanel>

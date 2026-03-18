@@ -8,7 +8,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.OutlineDialog"
              x:Name="OutlineDialogRoot">
     <StackPanel Spacing="0">
-        <TextBlock Text="Outline" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Outline" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Size -->
@@ -21,7 +21,7 @@
 
             <!-- Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color"/>
                 <Grid>
                     <Button x:Name="ColorButton"
                             Classes="editor-button"
@@ -63,7 +63,7 @@
                             <!-- Color label -->
                             <TextBlock Grid.Column="2"
                                        Text="{Binding OutlineColorText, ElementName=OutlineDialogRoot}"
-                                       Foreground="#9CA3AF"
+                                      
                                        VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
@@ -90,7 +90,7 @@
             <!-- Outline Only -->
             <CheckBox x:Name="OutlineOnlyCheckBox"
                       Content="Outline only"
-                      Foreground="#9CA3AF"
+                     
                       IsCheckedChanged="OnOutlineOnlyChanged"/>
         </StackPanel>
 

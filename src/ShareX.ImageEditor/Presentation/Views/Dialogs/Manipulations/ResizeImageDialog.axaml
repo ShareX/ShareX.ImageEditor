@@ -8,12 +8,12 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Resize Image" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Resize Image" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="12">
             <!-- Width Input -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Width (px)" Foreground="#9CA3AF"/>
+                <TextBlock Text="Width (px)"/>
                 <NumericUpDown x:Name="WidthInput" 
                                Value="{Binding ResizeWidth, ElementName=ResizeImageDialogRoot}"
                                ValueChanged="OnWidthChanged"
@@ -23,7 +23,7 @@
 
             <!-- Height Input -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Height (px)" Foreground="#9CA3AF"/>
+                <TextBlock Text="Height (px)"/>
                 <NumericUpDown x:Name="HeightInput" 
                                Value="{Binding ResizeHeight, ElementName=ResizeImageDialogRoot}"
                                ValueChanged="OnHeightChanged"
@@ -39,7 +39,7 @@
 
             <!-- Resample Mode -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Resample Mode" Foreground="#9CA3AF"/>
+                <TextBlock Text="Resample Mode"/>
                 <ComboBox x:Name="ResampleModeCombo" 
                           SelectedIndex="2"
                           HorizontalAlignment="Stretch">

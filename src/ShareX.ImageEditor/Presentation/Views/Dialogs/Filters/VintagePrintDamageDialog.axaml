@@ -8,7 +8,7 @@
              x:Name="VintagePrintDamageDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Vintage Print Damage" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Vintage Print Damage" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Sepia tone (%)" ValueStringFormat="{}{0:0}" x:Name="SepiaSlider"

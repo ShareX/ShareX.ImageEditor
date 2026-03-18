@@ -8,7 +8,7 @@
              x:Name="GrayscaleDialogRoot">
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Grayscale" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Grayscale" Margin="0,0,0,8"/>
         
         <!-- Slider -->
         <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider"

@@ -8,12 +8,12 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.BorderDialog"
              x:Name="BorderDialogRoot">
     <StackPanel Spacing="0">
-        <TextBlock Text="Border" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Border" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Border Type -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Type" Foreground="#9CA3AF"/>
+                <TextBlock Text="Type"/>
                 <ComboBox x:Name="TypeComboBox" SelectedIndex="0" SelectionChanged="OnSelectionChanged"
                           HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Outside"/>
@@ -27,7 +27,7 @@
 
             <!-- Dash Style -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Dash Style" Foreground="#9CA3AF"/>
+                <TextBlock Text="Dash Style"/>
                 <ComboBox x:Name="DashStyleComboBox" SelectedIndex="0" SelectionChanged="OnSelectionChanged"
                           HorizontalAlignment="Stretch">
                     <ComboBoxItem Content="Solid"/>
@@ -39,7 +39,7 @@
 
             <!-- Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color"/>
                 <Grid>
                     <Button x:Name="ColorButton"
                             Classes="editor-button"
@@ -81,7 +81,7 @@
                             <!-- Color label -->
                             <TextBlock Grid.Column="2"
                                        Text="{Binding BorderColorText, ElementName=BorderDialogRoot}"
-                                       Foreground="#9CA3AF"
+                                      
                                        VerticalAlignment="Center"/>
                         </Grid>
                     </Button>

@@ -8,7 +8,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.NeonEdgeGlowDialog"
              x:Name="NeonEdgeGlowDialogRoot">
     <StackPanel Spacing="0">
-        <TextBlock Text="Neon Edge Glow" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Neon Edge Glow" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Edge strength" ValueStringFormat="{}{0:0.0}" x:Name="StrengthSlider"
@@ -52,7 +52,7 @@
                                    ValueChanged="OnValueChanged"/>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Neon color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Neon color"/>
                 <Grid>
                     <Button x:Name="ColorButton"
                             Classes="editor-button"
@@ -87,7 +87,7 @@
                             </Grid>
                             <TextBlock Grid.Column="2"
                                        Text="{Binding NeonColorText, ElementName=NeonEdgeGlowDialogRoot}"
-                                       Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
 

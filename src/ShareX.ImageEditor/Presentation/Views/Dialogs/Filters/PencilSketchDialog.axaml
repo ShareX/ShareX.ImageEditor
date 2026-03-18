@@ -8,7 +8,7 @@
              x:Name="PencilSketchDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Pencil Sketch" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Pencil Sketch" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Blur radius (px)" ValueStringFormat="{}{0:0}" x:Name="BlurRadiusSlider"

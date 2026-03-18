@@ -8,7 +8,7 @@
              x:Name="MedianFilterDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Median filter" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Median filter" Margin="0,0,0,8"/>
 
         <controls:EffectSlider Label="Radius" ValueStringFormat="{}{0:0}" x:Name="RadiusSlider"
                     Minimum="1"

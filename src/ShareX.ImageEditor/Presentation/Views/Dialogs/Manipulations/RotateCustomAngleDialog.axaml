@@ -12,7 +12,7 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Rotate" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Rotate" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="12">
             <!-- Angle Section -->
@@ -30,7 +30,7 @@
             <CheckBox x:Name="AutoResizeCheckBox"
                       IsChecked="{Binding RotateAutoResize}"
                       Content="Auto resize"
-                      Foreground="#9CA3AF"/>
+                     />
 
             <!-- Quick Actions -->
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">

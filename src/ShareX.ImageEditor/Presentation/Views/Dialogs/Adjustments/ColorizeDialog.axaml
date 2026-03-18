@@ -12,7 +12,7 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Colorize" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Colorize" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Hue Slider -->
@@ -38,7 +38,7 @@
 
             <!-- Color Preview -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Preview" Foreground="#9CA3AF" FontSize="12"/>
+                <TextBlock Text="Preview" FontSize="12"/>
                 <Border x:Name="PreviewColorBox" Height="30" CornerRadius="4" BorderBrush="#374151" BorderThickness="1">
                     <Border.Background>
                         <SolidColorBrush Color="Transparent"/>

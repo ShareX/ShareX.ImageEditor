@@ -7,13 +7,13 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawImageDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Image" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Image" Margin="0,0,0,8"/>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="10">
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Image file" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Image file"/>
                     <TextBox x:Name="ImagePathTextBox"
                              TextChanged="OnTextChanged"
                              Watermark="Path to image file"/>
@@ -24,7 +24,7 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Placement" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Placement"/>
                     <ComboBox x:Name="PlacementComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
@@ -43,7 +43,7 @@
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Offset X" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Offset X"/>
                         <NumericUpDown x:Name="OffsetXInput"
                                        Value="0"
                                        Minimum="-2000"
@@ -53,7 +53,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Offset Y" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Offset Y"/>
                         <NumericUpDown x:Name="OffsetYInput"
                                        Value="0"
                                        Minimum="-2000"
@@ -65,7 +65,7 @@
                 </Grid>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Size mode" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Size mode"/>
                     <ComboBox x:Name="SizeModeComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
@@ -79,7 +79,7 @@
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Width" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Width"/>
                         <NumericUpDown x:Name="SizeWidthInput"
                                        Value="0"
                                        Minimum="-1"
@@ -89,7 +89,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Height" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Height"/>
                         <NumericUpDown x:Name="SizeHeightInput"
                                        Value="0"
                                        Minimum="-1"
@@ -101,7 +101,7 @@
                 </Grid>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Rotate / flip" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Rotate / flip"/>
                     <ComboBox x:Name="RotateFlipComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
@@ -130,7 +130,7 @@
                           Unchecked="OnSettingChanged"/>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Interpolation" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Interpolation"/>
                     <ComboBox x:Name="InterpolationComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
@@ -144,7 +144,7 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Compositing" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Compositing"/>
                     <ComboBox x:Name="CompositingComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"

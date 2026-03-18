@@ -7,7 +7,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.BevelDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Bevel" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Bevel" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <controls:EffectSlider Label="Size" ValueStringFormat="{}{0:0}" x:Name="SizeSlider"
@@ -35,13 +35,13 @@
                                    ValueChanged="OnValueChanged"/>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Highlight color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Highlight color"/>
                 <controls:ColorPickerDropdown x:Name="HighlightColorPicker"
                                               SelectedColorValue="#D9FFFFFF"/>
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Shadow color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Shadow color"/>
                 <controls:ColorPickerDropdown x:Name="ShadowColorPicker"
                                               SelectedColorValue="#B0000000"/>
             </StackPanel>

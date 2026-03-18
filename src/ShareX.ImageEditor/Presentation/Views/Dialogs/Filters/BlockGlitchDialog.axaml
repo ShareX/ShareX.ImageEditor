@@ -8,7 +8,7 @@
              x:Name="BlockGlitchDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Block Glitch / Databending" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Block Glitch / Databending" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Block count" ValueStringFormat="{}{0:0}" x:Name="BlockCountSlider"

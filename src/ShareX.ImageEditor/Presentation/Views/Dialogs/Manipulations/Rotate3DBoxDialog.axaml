@@ -9,7 +9,7 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="3D Box / Extrude" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="3D Box / Extrude" Margin="0,0,0,8"/>
 
         <!-- Depth Slider -->
         <controls:EffectSlider Label="Depth" ValueStringFormat="{}{0:0} px" x:Name="DepthSlider"

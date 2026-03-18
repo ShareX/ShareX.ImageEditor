@@ -8,7 +8,7 @@
              x:Name="SliceDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Slice" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Slice" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Min Height -->

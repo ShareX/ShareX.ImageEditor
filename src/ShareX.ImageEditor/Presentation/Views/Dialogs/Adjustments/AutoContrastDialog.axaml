@@ -8,7 +8,7 @@
              x:Name="AutoContrastDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Auto contrast" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Auto contrast" Margin="0,0,0,8"/>
 
         <controls:EffectSlider Label="Clip (%)" ValueStringFormat="{}{0:0.#}%" x:Name="ClipSlider"
                     Minimum="0"

@@ -9,7 +9,7 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Sepia" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Sepia" Margin="0,0,0,8"/>
         
         <!-- Slider -->
         <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}%" x:Name="StrengthSlider"

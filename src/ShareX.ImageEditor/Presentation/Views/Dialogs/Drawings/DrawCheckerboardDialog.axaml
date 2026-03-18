@@ -7,7 +7,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawCheckerboardDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Checkerboard" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Checkerboard" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <controls:EffectSlider Label="Size"
@@ -20,13 +20,13 @@
                                    ValueChanged="OnValueChanged"/>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Color 1" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color 1"/>
                 <controls:ColorPickerDropdown x:Name="Color1Picker"
                                               SelectedColorValue="#FFD3D3D3"/>
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Color 2" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color 2"/>
                 <controls:ColorPickerDropdown x:Name="Color2Picker"
                                               SelectedColorValue="#FFFFFFFF"/>
             </StackPanel>

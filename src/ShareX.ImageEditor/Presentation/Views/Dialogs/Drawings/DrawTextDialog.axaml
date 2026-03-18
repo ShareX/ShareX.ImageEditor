@@ -7,13 +7,13 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawTextDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Text" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Text" Margin="0,0,0,8"/>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="10">
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Text" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Text"/>
                     <TextBox x:Name="TextContentInput"
                              Text="Text"
                              TextChanged="OnTextChanged"
@@ -22,7 +22,7 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Placement" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Placement"/>
                     <ComboBox x:Name="PlacementComboBox"
                               SelectedIndex="0"
                               SelectionChanged="OnSelectionChanged"
@@ -41,7 +41,7 @@
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Offset X" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Offset X"/>
                         <NumericUpDown x:Name="OffsetXInput"
                                        Value="0"
                                        Minimum="-4000"
@@ -51,7 +51,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Offset Y" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Offset Y"/>
                         <NumericUpDown x:Name="OffsetYInput"
                                        Value="0"
                                        Minimum="-4000"
@@ -64,7 +64,7 @@
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Angle" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Angle"/>
                         <NumericUpDown x:Name="AngleInput"
                                        Value="0"
                                        Minimum="-3600"
@@ -74,7 +74,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Font size" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Font size"/>
                         <NumericUpDown x:Name="FontSizeInput"
                                        Value="36"
                                        Minimum="1"
@@ -86,7 +86,7 @@
                 </Grid>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Font family" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Font family"/>
                     <TextBox x:Name="FontFamilyTextBox"
                              Text="Arial"
                              TextChanged="OnTextChanged"/>
@@ -111,16 +111,16 @@
                 </StackPanel>
 
                 <Separator/>
-                <TextBlock Text="Fill" Foreground="#9CA3AF"/>
+                <TextBlock Text="Fill"/>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Color"/>
                     <controls:ColorPickerDropdown x:Name="FillColorPicker"
                                                   SelectedColorValue="#FFEBEBEB"/>
                 </StackPanel>
 
                 <Separator/>
-                <TextBlock Text="Outline" Foreground="#9CA3AF"/>
+                <TextBlock Text="Outline"/>
 
                 <CheckBox x:Name="OutlineCheckBox"
                           Content="Enable outline"
@@ -129,7 +129,7 @@
                           Unchecked="OnSettingChanged"/>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Outline size" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Outline size"/>
                     <NumericUpDown x:Name="OutlineSizeInput"
                                    Value="5"
                                    Minimum="0"
@@ -140,13 +140,13 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Outline color" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Outline color"/>
                     <controls:ColorPickerDropdown x:Name="OutlineColorPicker"
                                                   SelectedColorValue="#FFEB0000"/>
                 </StackPanel>
 
                 <Separator/>
-                <TextBlock Text="Shadow" Foreground="#9CA3AF"/>
+                <TextBlock Text="Shadow"/>
 
                 <CheckBox x:Name="ShadowCheckBox"
                           Content="Enable shadow"
@@ -156,7 +156,7 @@
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Shadow offset X" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Shadow offset X"/>
                         <NumericUpDown x:Name="ShadowOffsetXInput"
                                        Value="0"
                                        Minimum="-4000"
@@ -166,7 +166,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Shadow offset Y" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Shadow offset Y"/>
                         <NumericUpDown x:Name="ShadowOffsetYInput"
                                        Value="5"
                                        Minimum="-4000"
@@ -178,7 +178,7 @@
                 </Grid>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Shadow color" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Shadow color"/>
                     <controls:ColorPickerDropdown x:Name="ShadowColorPicker"
                                                   SelectedColorValue="#7D000000"/>
                 </StackPanel>

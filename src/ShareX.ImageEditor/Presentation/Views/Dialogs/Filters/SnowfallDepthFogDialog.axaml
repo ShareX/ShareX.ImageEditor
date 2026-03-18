@@ -8,7 +8,7 @@
              x:Name="SnowfallDepthFogDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Snowfall + depth fog" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Snowfall + depth fog" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Snow amount (%)" ValueStringFormat="{}{0:0}" x:Name="SnowAmountSlider"

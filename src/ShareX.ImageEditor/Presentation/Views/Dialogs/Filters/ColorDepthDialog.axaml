@@ -8,7 +8,7 @@
              x:Name="ColorDepthDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Color Depth" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Color Depth" Margin="0,0,0,8"/>
 
         <controls:EffectSlider Label="Bits per channel" ValueStringFormat="{}{0:0}" x:Name="BitsSlider"
                     Minimum="1"

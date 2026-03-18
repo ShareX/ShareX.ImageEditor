@@ -8,7 +8,7 @@
              x:Name="ThermalVisionDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Thermal Vision" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Thermal Vision" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Levels" ValueStringFormat="{}{0:0}" x:Name="LevelsSlider"

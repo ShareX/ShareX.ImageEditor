@@ -8,7 +8,7 @@
              x:Name="ThresholdDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Threshold" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Threshold" Margin="0,0,0,8"/>
 
         <controls:EffectSlider Label="Value" ValueStringFormat="{}{0:0}" x:Name="ValueSlider"
                     Minimum="0"

@@ -8,7 +8,7 @@
              x:Name="PinchBulgeDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Pinch / Bulge" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Pinch / Bulge" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Strength" ValueStringFormat="{}{0:0}" x:Name="StrengthSlider" Minimum="-100" Maximum="100" Value="35" Background="#374151" ValueChanged="OnValueChanged"/>

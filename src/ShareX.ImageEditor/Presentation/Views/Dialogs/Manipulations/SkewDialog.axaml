@@ -9,7 +9,7 @@
 
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Skew" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Skew" Margin="0,0,0,8"/>
 
         <!-- Horizontal Slider -->
         <controls:EffectSlider Label="Horizontal" ValueStringFormat="{}{0:0} px" x:Name="HorizontalSlider"
@@ -30,7 +30,7 @@
         <CheckBox x:Name="AutoResizeCheckBox"
                   IsChecked="True"
                   Content="Auto resize"
-                  Foreground="#9CA3AF"
+                 
                   Margin="0,8,0,0"
                   Checked="OnAutoResizeChanged"
                   Unchecked="OnAutoResizeChanged"/>

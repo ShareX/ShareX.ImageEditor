@@ -8,7 +8,7 @@
              x:Name="HalationDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Halation" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Halation" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Highlight threshold (%)" ValueStringFormat="{}{0:0}" x:Name="ThresholdSlider"

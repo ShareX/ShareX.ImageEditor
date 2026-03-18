@@ -8,23 +8,23 @@
              x:Name="DuotoneGradientMapDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Duotone / Gradient Map" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Duotone / Gradient Map" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <StackPanel Spacing="4">
-                <TextBlock Text="Shadows color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Shadows color"/>
                 <controls:ColorPickerDropdown x:Name="ShadowColorPicker"
                                               SelectedColorValue="#FF181C4E"/>
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Midtones color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Midtones color"/>
                 <controls:ColorPickerDropdown x:Name="MidtoneColorPicker"
                                               SelectedColorValue="#FFB63C84"/>
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Highlights color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Highlights color"/>
                 <controls:ColorPickerDropdown x:Name="HighlightColorPicker"
                                               SelectedColorValue="#FFFFE084"/>
             </StackPanel>

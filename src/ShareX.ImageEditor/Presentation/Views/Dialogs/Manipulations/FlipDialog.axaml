@@ -7,7 +7,7 @@
              x:Name="FlipDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Flip" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Flip" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <CheckBox x:Name="HorizontalCheckBox"

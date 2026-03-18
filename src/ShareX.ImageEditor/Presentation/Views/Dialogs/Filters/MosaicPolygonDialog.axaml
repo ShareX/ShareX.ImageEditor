@@ -8,11 +8,11 @@
              x:Name="MosaicPolygonDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Mosaic Polygon" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Mosaic Polygon" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <StackPanel Spacing="4">
-                <TextBlock Text="Shape" Foreground="#9CA3AF"/>
+                <TextBlock Text="Shape"/>
                 <ComboBox x:Name="ShapeComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnShapeChanged"

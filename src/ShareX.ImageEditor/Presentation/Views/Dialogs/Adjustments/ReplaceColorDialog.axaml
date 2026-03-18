@@ -9,12 +9,12 @@
              x:Name="ReplaceColorDialogRoot">
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Replace Color" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Replace Color" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Target Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Target Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Target Color"/>
                 <Grid>
                     <Button x:Name="TargetColorButton"
                             Classes="editor-button"
@@ -56,7 +56,7 @@
                             <!-- Color label -->
                             <TextBlock Grid.Column="2"
                                        Text="{Binding TargetColorText, ElementName=ReplaceColorDialogRoot}"
-                                       Foreground="#9CA3AF"
+                                      
                                        VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
@@ -82,7 +82,7 @@
 
             <!-- Replace Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Replace With" Foreground="#9CA3AF"/>
+                <TextBlock Text="Replace With"/>
                 <Grid>
                     <Button x:Name="ReplaceColorButton"
                             Classes="editor-button"
@@ -124,7 +124,7 @@
                             <!-- Color label -->
                             <TextBlock Grid.Column="2"
                                        Text="{Binding ReplaceColorText, ElementName=ReplaceColorDialogRoot}"
-                                       Foreground="#9CA3AF"
+                                      
                                        VerticalAlignment="Center"/>
                         </Grid>
                     </Button>

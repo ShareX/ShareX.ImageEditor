@@ -8,7 +8,7 @@
              x:Name="WaveEdgeDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Wave Edge" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Wave Edge" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="12">
             <!-- Depth -->
@@ -29,7 +29,7 @@
 
             <!-- Sides -->
             <StackPanel Spacing="8">
-                <TextBlock Text="Sides" Foreground="#9CA3AF"/>
+                <TextBlock Text="Sides"/>
                 <StackPanel Orientation="Vertical">
                     <CheckBox x:Name="TopCheckBox" Content="Top" IsChecked="True" Foreground="#E7E9EA"
                               Checked="OnCheckChanged" Unchecked="OnCheckChanged"/>

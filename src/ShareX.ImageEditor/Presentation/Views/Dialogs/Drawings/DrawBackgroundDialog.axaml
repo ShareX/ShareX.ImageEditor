@@ -7,11 +7,11 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawBackgroundDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Background" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Background" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <StackPanel Spacing="4">
-                <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color"/>
                 <controls:ColorPickerDropdown x:Name="BackgroundColorPicker"
                                               SelectedColorValue="#FF000000"/>
             </StackPanel>

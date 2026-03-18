@@ -8,11 +8,11 @@
              x:Name="TiltShiftDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Tilt-Shift (Miniature)" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Tilt-Shift (Miniature)" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <StackPanel Spacing="4">
-                <TextBlock Text="Mode" Foreground="#9CA3AF"/>
+                <TextBlock Text="Mode"/>
                 <ComboBox x:Name="ModeComboBox"
                           SelectedIndex="0"
                           SelectionChanged="OnModeChanged"

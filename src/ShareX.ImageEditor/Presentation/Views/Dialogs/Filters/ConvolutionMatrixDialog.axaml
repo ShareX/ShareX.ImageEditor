@@ -7,7 +7,7 @@
              x:Name="ConvolutionMatrixDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Convolution Matrix" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Convolution Matrix" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <Grid RowDefinitions="Auto,Auto,Auto"
@@ -28,12 +28,12 @@
             </Grid>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Factor" Foreground="#9CA3AF"/>
+                <TextBlock Text="Factor"/>
                 <NumericUpDown x:Name="FactorInput" Value="1" Minimum="0.01" Maximum="1000" Increment="0.1" FormatString="0.##" ValueChanged="OnValueChanged"/>
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Offset" Foreground="#9CA3AF"/>
+                <TextBlock Text="Offset"/>
                 <NumericUpDown x:Name="OffsetInput" Value="0" Minimum="-255" Maximum="255" Increment="1" FormatString="0" ValueChanged="OnValueChanged"/>
             </StackPanel>
         </StackPanel>

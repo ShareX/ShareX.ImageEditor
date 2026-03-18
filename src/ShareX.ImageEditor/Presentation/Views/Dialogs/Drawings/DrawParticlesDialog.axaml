@@ -6,13 +6,13 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawParticlesDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Particles" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Particles" Margin="0,0,0,8"/>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="10">
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Image folder" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Image folder"/>
                     <TextBox x:Name="ImageFolderTextBox"
                              TextChanged="OnTextChanged"
                              Watermark="Path to folder containing particle images"/>
@@ -23,7 +23,7 @@
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Image count" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Image count"/>
                     <NumericUpDown x:Name="ImageCountInput"
                                    Value="1"
                                    Minimum="1"
@@ -48,7 +48,7 @@
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Random size min" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random size min"/>
                         <NumericUpDown x:Name="RandomSizeMinInput"
                                        Value="64"
                                        Minimum="1"
@@ -58,7 +58,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Random size max" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random size max"/>
                         <NumericUpDown x:Name="RandomSizeMaxInput"
                                        Value="128"
                                        Minimum="1"
@@ -78,7 +78,7 @@
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Random angle min" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random angle min"/>
                         <NumericUpDown x:Name="RandomAngleMinInput"
                                        Value="0"
                                        Minimum="-3600"
@@ -88,7 +88,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Random angle max" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random angle max"/>
                         <NumericUpDown x:Name="RandomAngleMaxInput"
                                        Value="360"
                                        Minimum="-3600"
@@ -108,7 +108,7 @@
                           Unchecked="OnSettingChanged"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Random opacity min" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random opacity min"/>
                         <NumericUpDown x:Name="RandomOpacityMinInput"
                                        Value="0"
                                        Minimum="0"
@@ -118,7 +118,7 @@
                                        ValueChanged="OnNumericChanged"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Random opacity max" Foreground="#9CA3AF"/>
+                        <TextBlock Text="Random opacity max"/>
                         <NumericUpDown x:Name="RandomOpacityMaxInput"
                                        Value="100"
                                        Minimum="0"
@@ -137,7 +137,7 @@
                           Checked="OnSettingChanged"
                           Unchecked="OnSettingChanged"/>
                 <StackPanel Spacing="4">
-                    <TextBlock Text="No-overlap offset" Foreground="#9CA3AF"/>
+                    <TextBlock Text="No-overlap offset"/>
                     <NumericUpDown x:Name="NoOverlapOffsetInput"
                                    Value="0"
                                    Minimum="-2000"

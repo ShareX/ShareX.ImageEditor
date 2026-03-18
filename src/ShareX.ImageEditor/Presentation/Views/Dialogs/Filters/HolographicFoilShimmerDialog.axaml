@@ -8,7 +8,7 @@
              x:Name="HolographicFoilShimmerDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Holographic foil shimmer" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Holographic foil shimmer" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Intensity (%)" ValueStringFormat="{}{0:0}" x:Name="IntensitySlider"

@@ -8,35 +8,35 @@
              x:Name="ResizeCanvasDialogRoot">
     <StackPanel Spacing="0">
         <!-- Header -->
-        <TextBlock Text="Resize Canvas" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Resize Canvas" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Padding Inputs - one per row: Left, Top, Right, Bottom -->
             <StackPanel Spacing="8">
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Left" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Left"/>
                     <NumericUpDown x:Name="LeftInput" Value="{Binding LeftPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Top" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Top"/>
                     <NumericUpDown x:Name="TopInput" Value="{Binding TopPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Right" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Right"/>
                     <NumericUpDown x:Name="RightInput" Value="{Binding RightPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Bottom" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Bottom"/>
                     <NumericUpDown x:Name="BottomInput" Value="{Binding BottomPadding, ElementName=ResizeCanvasDialogRoot}" Minimum="0" Maximum="1000" Increment="10" FormatString="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
 
             <!-- Canvas Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Canvas Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Canvas Color"/>
                 <Grid>
                     <Button x:Name="ColorButton"
                             Classes="editor-button"
@@ -78,7 +78,7 @@
                             <!-- Color label -->
                             <TextBlock Grid.Column="2"
                                        Text="{Binding CanvasColorText, ElementName=ResizeCanvasDialogRoot}"
-                                       Foreground="#9CA3AF"
+                                      
                                        VerticalAlignment="Center"/>
                         </Grid>
                     </Button>

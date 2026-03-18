@@ -20,6 +20,12 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
+    <Style Selector="Grid > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
     <!-- Shared buttons -->
     <Style Selector="Button.editor-button">
         <Setter Property="Height" Value="40"/>

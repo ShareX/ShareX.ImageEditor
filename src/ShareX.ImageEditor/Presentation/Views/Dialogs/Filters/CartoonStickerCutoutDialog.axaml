@@ -8,7 +8,7 @@
              x:Name="CartoonStickerCutoutDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Cartoon sticker cutout" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Cartoon sticker cutout" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Color levels" ValueStringFormat="{}{0:0}" x:Name="ColorLevelsSlider"

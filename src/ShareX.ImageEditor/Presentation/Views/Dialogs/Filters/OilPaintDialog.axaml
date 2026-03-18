@@ -8,7 +8,7 @@
              x:Name="OilPaintDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Oil paint" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Oil paint" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Radius" ValueStringFormat="{}{0:0}" x:Name="RadiusSlider"

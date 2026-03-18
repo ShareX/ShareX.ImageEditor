@@ -8,7 +8,7 @@
              x:Name="InkSplatterDripsDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Ink splatter + drips" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Ink splatter + drips" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="8">
             <controls:EffectSlider Label="Ink amount (%)" ValueStringFormat="{}{0:0}" x:Name="InkAmountSlider"

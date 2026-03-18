@@ -8,7 +8,7 @@
              x:Name="ASCIIArtDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="ASCII Art" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="ASCII Art" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <controls:EffectSlider Label="Character size (px)" ValueStringFormat="{}{0:0}" x:Name="CellSizeSlider"
@@ -28,7 +28,7 @@
                                    ValueChanged="OnValueChanged"/>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Character set" Foreground="#9CA3AF"/>
+                <TextBlock Text="Character set"/>
                 <TextBox x:Name="CharacterSetTextBox"
                          Text="@%#*+=-:. "
                          TextChanged="OnTextChanged"/>

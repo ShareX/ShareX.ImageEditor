@@ -7,7 +7,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.WoodenFrameDialog">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Wooden frame" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Wooden frame" Margin="0,0,0,8"/>
 
         <StackPanel Spacing="10">
             <controls:EffectSlider Label="Frame width" ValueStringFormat="{}{0:0}" x:Name="FrameWidthSlider"
@@ -35,7 +35,7 @@
                                    ValueChanged="OnValueChanged"/>
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Wood color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Wood color"/>
                 <controls:ColorPickerDropdown x:Name="WoodColorPicker"
                                               SelectedColorValue="#FF8B5E3C"/>
             </StackPanel>

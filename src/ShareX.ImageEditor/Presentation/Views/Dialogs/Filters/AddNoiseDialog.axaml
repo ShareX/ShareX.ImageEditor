@@ -8,7 +8,7 @@
              x:Name="AddNoiseDialogRoot">
 
     <StackPanel Spacing="0">
-        <TextBlock Text="Add noise" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Add noise" Margin="0,0,0,8"/>
 
         <controls:EffectSlider Label="Amount" ValueStringFormat="{}{0:0}" x:Name="AmountSlider"
                     Minimum="0"

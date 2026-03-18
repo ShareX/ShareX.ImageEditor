@@ -8,7 +8,7 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.ShadowDialog"
              x:Name="ShadowDialogRoot">
     <StackPanel Spacing="0">
-        <TextBlock Text="Shadow" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+        <TextBlock Text="Shadow" Margin="0,0,0,8"/>
         
         <StackPanel Spacing="12">
             <!-- Opacity -->
@@ -29,7 +29,7 @@
 
             <!-- Color -->
             <StackPanel Spacing="4">
-                <TextBlock Text="Color" Foreground="#9CA3AF"/>
+                <TextBlock Text="Color"/>
                 <Grid>
                     <Button x:Name="ColorButton"
                             Classes="editor-button"
@@ -64,7 +64,7 @@
                             </Grid>
                             <TextBlock Grid.Column="2"
                                        Text="{Binding ShadowColorText, ElementName=ShadowDialogRoot}"
-                                       Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
 
