@@ -28,6 +28,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Annotations;
@@ -36,6 +37,7 @@ using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Controllers;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Rendering;
+using ShareX.ImageEditor.Presentation.Theming;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System.ComponentModel;
@@ -65,6 +67,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
+        private IPlatformSettings? _platformSettings;
 
         // SIP-CLIPBOARD: Internal clipboard for shape deep-cloning
         private static Annotation? _clipboardAnnotation;
@@ -141,6 +144,8 @@ namespace ShareX.ImageEditor.Presentation.Views
             DragDrop.SetAllowDrop(this, true);
             AddHandler(DragDrop.DropEvent, OnDrop);
             AddHandler(DragDrop.DragOverEvent, OnDragOver);
+
+            DataContextChanged += OnEditorDataContextChanged;
         }
 
         private void OnSelectionChanged(bool hasSelection)
@@ -289,6 +294,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 // and OnPreviewImageChanged which both set IsDirty=true as a side-effect.
                 vm.IsDirty = false;
             }
+
+            RefreshAccentColorTracking();
         }
 
         protected override void OnUnloaded(RoutedEventArgs e)
@@ -310,6 +317,125 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
 
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
+            SetPlatformSettings(null);
+        }
+
+        private void OnEditorDataContextChanged(object? sender, EventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            RefreshAccentColorTracking();
+        }
+
+        private void RefreshAccentColorTracking()
+        {
+            if (!ShouldUseSystemAccentColor())
+            {
+                SetPlatformSettings(null);
+                return;
+            }
+
+            SetPlatformSettings(TopLevel.GetTopLevel(this)?.PlatformSettings ?? Application.Current?.PlatformSettings);
+            UpdateAccentColor();
+        }
+
+        private bool ShouldUseSystemAccentColor()
+        {
+            return DataContext is MainViewModel { Options.UseSystemAccentColor: true };
+        }
+
+        private void SetPlatformSettings(IPlatformSettings? platformSettings)
+        {
+            if (ReferenceEquals(_platformSettings, platformSettings))
+            {
+                return;
+            }
+
+            if (_platformSettings != null)
+            {
+                _platformSettings.ColorValuesChanged -= OnPlatformColorValuesChanged;
+            }
+
+            _platformSettings = platformSettings;
+
+            if (_platformSettings != null)
+            {
+                _platformSettings.ColorValuesChanged += OnPlatformColorValuesChanged;
+            }
+        }
+
+        private void OnPlatformColorValuesChanged(object? sender, PlatformColorValues colorValues)
+        {
+            Dispatcher.UIThread.Post(() => UpdateAccentColor(colorValues));
+        }
+
+        private void UpdateAccentColor(PlatformColorValues? colorValues = null)
+        {
+            if (!ShouldUseSystemAccentColor())
+            {
+                return;
+            }
+
+            colorValues ??= _platformSettings?.GetColorValues()
+                ?? TopLevel.GetTopLevel(this)?.PlatformSettings?.GetColorValues()
+                ?? Application.Current?.PlatformSettings?.GetColorValues();
+
+            if (colorValues == null || colorValues.AccentColor1.A == 0)
+            {
+                return;
+            }
+
+            Color startColor = colorValues.AccentColor1;
+            Color endColor = DarkenColor(startColor, 0.10);
+
+            Resources["ShareX.Color.Accent.Start"] = startColor;
+            Resources["ShareX.Color.Accent.End"] = endColor;
+
+            UpdateAccentBrush(ThemeManager.ShareXDark, startColor, endColor);
+            UpdateAccentBrush(ThemeManager.ShareXLight, startColor, endColor);
+        }
+
+        private void UpdateAccentBrush(Avalonia.Styling.ThemeVariant theme, Color startColor, Color endColor)
+        {
+            if (!Resources.TryGetResource("ShareX.Brush.Accent", theme, out object? accentBrushValue) ||
+                accentBrushValue is not LinearGradientBrush accentBrush)
+            {
+                return;
+            }
+
+            accentBrush.StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative);
+            accentBrush.EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative);
+
+            GradientStops gradientStops = accentBrush.GradientStops;
+
+            while (gradientStops.Count < 2)
+            {
+                gradientStops.Add(new GradientStop());
+            }
+
+            while (gradientStops.Count > 2)
+            {
+                gradientStops.RemoveAt(gradientStops.Count - 1);
+            }
+
+            gradientStops[0].Color = startColor;
+            gradientStops[0].Offset = 0;
+            gradientStops[1].Color = endColor;
+            gradientStops[1].Offset = 1;
+        }
+
+        private static Color DarkenColor(Color color, double amount)
+        {
+            double factor = Math.Clamp(1 - amount, 0, 1);
+
+            return Color.FromArgb(
+                color.A,
+                (byte)Math.Clamp((int)Math.Round(color.R * factor), 0, byte.MaxValue),
+                (byte)Math.Clamp((int)Math.Round(color.G * factor), 0, byte.MaxValue),
+                (byte)Math.Clamp((int)Math.Round(color.B * factor), 0, byte.MaxValue));
         }
 
         private void OnWindowActivated(object? sender, EventArgs e)
