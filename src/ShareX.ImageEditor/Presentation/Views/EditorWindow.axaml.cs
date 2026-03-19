@@ -23,9 +23,12 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Theming;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -39,6 +42,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         private readonly MainViewModel _viewModel;
         private string? _pendingFilePath;
         private bool _allowClose;
+        private IPlatformSettings? _platformSettings;
 
         public EditorWindow() : this(null)
         {
@@ -57,7 +61,16 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             // Set initial theme and subscribe to changes
             RequestedThemeVariant = ThemeManager.ShareXDark;
-            ThemeManager.ThemeChanged += (s, theme) => RequestedThemeVariant = theme;
+            ThemeManager.ThemeChanged += OnThemeChanged;
+
+            Opened += OnWindowOpened;
+            Closed += OnWindowClosed;
+
+            if (_viewModel.Options.UseSystemAccentColor)
+            {
+                SetPlatformSettings(Application.Current?.PlatformSettings);
+                UpdateAccentColor();
+            }
 
             _viewModel.CloseRequested += (s, e) =>
             {
@@ -81,6 +94,126 @@ namespace ShareX.ImageEditor.Presentation.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void OnThemeChanged(object? sender, Avalonia.Styling.ThemeVariant theme)
+        {
+            RequestedThemeVariant = theme;
+
+            if (_viewModel.Options.UseSystemAccentColor)
+            {
+                UpdateAccentColor();
+            }
+        }
+
+        private void OnWindowOpened(object? sender, EventArgs e)
+        {
+            if (!_viewModel.Options.UseSystemAccentColor)
+            {
+                return;
+            }
+
+            SetPlatformSettings(PlatformSettings ?? Application.Current?.PlatformSettings);
+            UpdateAccentColor();
+        }
+
+        private void OnWindowClosed(object? sender, EventArgs e)
+        {
+            ThemeManager.ThemeChanged -= OnThemeChanged;
+            SetPlatformSettings(null);
+        }
+
+        private void SetPlatformSettings(IPlatformSettings? platformSettings)
+        {
+            if (ReferenceEquals(_platformSettings, platformSettings))
+            {
+                return;
+            }
+
+            if (_platformSettings != null)
+            {
+                _platformSettings.ColorValuesChanged -= OnPlatformColorValuesChanged;
+            }
+
+            _platformSettings = platformSettings;
+
+            if (_platformSettings != null)
+            {
+                _platformSettings.ColorValuesChanged += OnPlatformColorValuesChanged;
+            }
+        }
+
+        private void OnPlatformColorValuesChanged(object? sender, PlatformColorValues colorValues)
+        {
+            UpdateAccentColor(colorValues);
+        }
+
+        private void UpdateAccentColor(PlatformColorValues? colorValues = null)
+        {
+            if (!_viewModel.Options.UseSystemAccentColor)
+            {
+                return;
+            }
+
+            colorValues ??= _platformSettings?.GetColorValues() ?? Application.Current?.PlatformSettings?.GetColorValues();
+
+            if (colorValues == null || colorValues.AccentColor1.A == 0)
+            {
+                return;
+            }
+
+            Color startColor = colorValues.AccentColor1;
+            Color endColor = DarkenColor(startColor, 0.10);
+
+            if (this.FindControl<EditorView>("EditorViewControl") is not { } editorView)
+            {
+                return;
+            }
+
+            editorView.Resources["ShareX.Color.Accent.Start"] = startColor;
+            editorView.Resources["ShareX.Color.Accent.End"] = endColor;
+            UpdateAccentBrush(editorView, ThemeManager.ShareXDark, startColor, endColor);
+            UpdateAccentBrush(editorView, ThemeManager.ShareXLight, startColor, endColor);
+        }
+
+        private static void UpdateAccentBrush(EditorView editorView, Avalonia.Styling.ThemeVariant theme, Color startColor, Color endColor)
+        {
+            if (!editorView.Resources.TryGetResource("ShareX.Brush.Accent", theme, out object? accentBrushValue) ||
+                accentBrushValue is not LinearGradientBrush accentBrush)
+            {
+                return;
+            }
+
+            accentBrush.StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative);
+            accentBrush.EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative);
+
+            GradientStops gradientStops = accentBrush.GradientStops;
+
+            while (gradientStops.Count < 2)
+            {
+                gradientStops.Add(new GradientStop());
+            }
+
+            while (gradientStops.Count > 2)
+            {
+                gradientStops.RemoveAt(gradientStops.Count - 1);
+            }
+
+            gradientStops[0].Color = startColor;
+            gradientStops[0].Offset = 0;
+            gradientStops[1].Color = endColor;
+            gradientStops[1].Offset = 1;
+        }
+
+        private static Color DarkenColor(Color color, double amount)
+        {
+            double factor = Math.Clamp(1 - amount, 0, 1);
+
+            return Color.FromArgb(
+                color.A,
+                (byte)Math.Clamp((int)Math.Round(color.R * factor), 0, byte.MaxValue),
+                (byte)Math.Clamp((int)Math.Round(color.G * factor), 0, byte.MaxValue),
+                (byte)Math.Clamp((int)Math.Round(color.B * factor), 0, byte.MaxValue));
         }
 
         private void OnWindowLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
