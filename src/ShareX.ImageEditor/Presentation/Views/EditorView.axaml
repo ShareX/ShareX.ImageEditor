@@ -128,7 +128,9 @@
         </ContextMenu>
     </UserControl.Resources>
 
-    <Grid RowDefinitions="*">
+    <ThemeVariantScope x:Name="EditorThemeScope"
+                       RequestedThemeVariant="{x:Static theming:ThemeManager.ShareXDark}">
+        <Grid RowDefinitions="*">
 
         <!-- Row 0: Main Content Area with Preview and Sidebar (Background Layer) -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Main}">
@@ -835,5 +837,6 @@
                                 VerticalAlignment="Center"/>
             </Grid>
         </Border>
-    </Grid>
+        </Grid>
+    </ThemeVariantScope>
 </UserControl>

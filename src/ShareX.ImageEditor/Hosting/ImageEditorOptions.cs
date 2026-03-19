@@ -53,6 +53,7 @@ namespace ShareX.ImageEditor.Hosting
         public bool ZoomToFitOnOpen { get; set; } = false;
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
+        public bool UseSystemTheme { get; set; } = true;
         public bool UseSystemAccentColor { get; set; } = true;
 
         // Shared

@@ -30,6 +30,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
@@ -67,6 +68,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
+        private readonly ThemeVariantScope? _editorThemeScope;
         private IPlatformSettings? _platformSettings;
 
         // SIP-CLIPBOARD: Internal clipboard for shape deep-cloning
@@ -75,6 +77,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         public EditorView()
         {
             InitializeComponent();
+            _editorThemeScope = this.FindControl<ThemeVariantScope>("EditorThemeScope");
 
             _editorCore = new EditorCore();
 
@@ -233,6 +236,8 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             base.OnLoaded(e);
 
+            ThemeManager.ThemeChanged += OnThemeChanged;
+
             // Check clipboard initially
             _ = CheckClipboardStatus();
 
@@ -295,12 +300,14 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.IsDirty = false;
             }
 
-            RefreshAccentColorTracking();
+            RefreshPlatformColorTracking();
         }
 
         protected override void OnUnloaded(RoutedEventArgs e)
         {
             base.OnUnloaded(e);
+
+            ThemeManager.ThemeChanged -= OnThemeChanged;
 
             if (_parentWindow != null)
             {
@@ -327,24 +334,46 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return;
             }
 
-            RefreshAccentColorTracking();
+            RefreshPlatformColorTracking();
         }
 
-        private void RefreshAccentColorTracking()
+        private void OnThemeChanged(object? sender, ThemeVariant theme)
         {
-            if (!ShouldUseSystemAccentColor())
+            Dispatcher.UIThread.Post(() => ApplyTheme(theme));
+        }
+
+        private void RefreshPlatformColorTracking()
+        {
+            if (!ShouldListenToPlatformColorChanges())
             {
                 SetPlatformSettings(null);
-                return;
+            }
+            else
+            {
+                SetPlatformSettings(TopLevel.GetTopLevel(this)?.PlatformSettings ?? Application.Current?.PlatformSettings);
             }
 
-            SetPlatformSettings(TopLevel.GetTopLevel(this)?.PlatformSettings ?? Application.Current?.PlatformSettings);
-            UpdateAccentColor();
+            PlatformColorValues? colorValues = _platformSettings?.GetColorValues()
+                ?? TopLevel.GetTopLevel(this)?.PlatformSettings?.GetColorValues()
+                ?? Application.Current?.PlatformSettings?.GetColorValues();
+
+            UpdateTheme(colorValues);
+            UpdateAccentColor(colorValues);
+        }
+
+        private bool ShouldUseSystemTheme()
+        {
+            return DataContext is MainViewModel { Options.UseSystemTheme: true };
         }
 
         private bool ShouldUseSystemAccentColor()
         {
             return DataContext is MainViewModel { Options.UseSystemAccentColor: true };
+        }
+
+        private bool ShouldListenToPlatformColorChanges()
+        {
+            return ShouldUseSystemTheme() || ShouldUseSystemAccentColor();
         }
 
         private void SetPlatformSettings(IPlatformSettings? platformSettings)
@@ -369,7 +398,54 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void OnPlatformColorValuesChanged(object? sender, PlatformColorValues colorValues)
         {
-            Dispatcher.UIThread.Post(() => UpdateAccentColor(colorValues));
+            Dispatcher.UIThread.Post(() =>
+            {
+                UpdateTheme(colorValues);
+                UpdateAccentColor(colorValues);
+            });
+        }
+
+        private void UpdateTheme(PlatformColorValues? colorValues = null)
+        {
+            if (ShouldUseSystemTheme())
+            {
+                ApplyTheme(MapSystemTheme(colorValues));
+                return;
+            }
+
+            ApplyTheme(ThemeManager.GetCurrentTheme());
+        }
+
+        private void ApplyTheme(ThemeVariant theme)
+        {
+            if (_editorThemeScope != null)
+            {
+                _editorThemeScope.RequestedThemeVariant = theme;
+            }
+        }
+
+        private ThemeVariant MapSystemTheme(PlatformColorValues? colorValues)
+        {
+            if (colorValues != null)
+            {
+                return IsLightTheme(colorValues.ThemeVariant.ToString())
+                    ? ThemeManager.ShareXLight
+                    : ThemeManager.ShareXDark;
+            }
+
+            ThemeVariant hostTheme = TopLevel.GetTopLevel(this)?.ActualThemeVariant
+                ?? Application.Current?.ActualThemeVariant
+                ?? ThemeVariant.Default;
+
+            return IsLightTheme(hostTheme.ToString())
+                ? ThemeManager.ShareXLight
+                : ThemeManager.ShareXDark;
+        }
+
+        private static bool IsLightTheme(string? themeName)
+        {
+            return !string.IsNullOrWhiteSpace(themeName) &&
+                themeName.Contains("Light", StringComparison.OrdinalIgnoreCase);
         }
 
         private void UpdateAccentColor(PlatformColorValues? colorValues = null)
