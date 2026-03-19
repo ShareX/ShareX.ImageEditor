@@ -44,6 +44,11 @@
 
         <Style Selector="^.active">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+        </Style>
+
+        <Style Selector="^.active TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
     </Style>
 
@@ -58,10 +63,15 @@
 
         <Style Selector="^.active">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
 
         <Style Selector="^.active /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^.active TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
     </Style>
 
@@ -178,7 +188,7 @@
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
 
         <Style Selector="^ TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
     </Style>
 
@@ -388,7 +398,11 @@
 
     <Style Selector="ComboBoxItem:selected">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
     </Style>
 
     <Style Selector="NumericUpDown">
@@ -571,6 +585,14 @@
 
     <Style Selector="ContextMenu MenuItem:pointerover /template/ Border#PART_LayoutRoot">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+    </Style>
+
+    <Style Selector="ContextMenu MenuItem:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ContextMenu MenuItem:pointerover TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
     </Style>
 
     <Style Selector="ContextMenu Separator">

@@ -466,12 +466,16 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             Color startColor = colorValues.AccentColor1;
             Color endColor = DarkenColor(startColor, 0.10);
+            Color foregroundColor = GetAccentForegroundColor(startColor, endColor);
 
             Resources["ShareX.Color.Accent.Start"] = startColor;
             Resources["ShareX.Color.Accent.End"] = endColor;
+            Resources["ShareX.Color.Accent.Foreground"] = foregroundColor;
 
             UpdateAccentBrush(ThemeManager.ShareXDark, startColor, endColor);
             UpdateAccentBrush(ThemeManager.ShareXLight, startColor, endColor);
+            UpdateAccentForegroundBrush(ThemeManager.ShareXDark, foregroundColor);
+            UpdateAccentForegroundBrush(ThemeManager.ShareXLight, foregroundColor);
         }
 
         private void UpdateAccentBrush(Avalonia.Styling.ThemeVariant theme, Color startColor, Color endColor)
@@ -501,6 +505,108 @@ namespace ShareX.ImageEditor.Presentation.Views
             gradientStops[0].Offset = 0;
             gradientStops[1].Color = endColor;
             gradientStops[1].Offset = 1;
+        }
+
+        private void UpdateAccentForegroundBrush(Avalonia.Styling.ThemeVariant theme, Color foregroundColor)
+        {
+            if (!Resources.TryGetResource("ShareX.Brush.Accent.Foreground", theme, out object? accentForegroundBrushValue) ||
+                accentForegroundBrushValue is not SolidColorBrush accentForegroundBrush)
+            {
+                return;
+            }
+
+            accentForegroundBrush.Color = foregroundColor;
+        }
+
+        private Color GetAccentForegroundColor(Color startColor, Color endColor)
+        {
+            Color lightForeground = GetThemeColor(
+                ThemeManager.ShareXDark,
+                "ShareX.Color.Text",
+                Color.Parse("#D8DADB"));
+
+            Color darkForeground = GetThemeColor(
+                ThemeManager.ShareXLight,
+                "ShareX.Color.Text",
+                Color.Parse("#4E4E4E"));
+
+            double darkSwitchRatio = GetResourceDouble(
+                "ShareX.Value.Accent.Foreground.DarkSwitchRatio",
+                1.75);
+
+            double lightContrast = Math.Min(
+                GetContrastRatio(lightForeground, startColor),
+                GetContrastRatio(lightForeground, endColor));
+
+            double darkContrast = Math.Min(
+                GetContrastRatio(darkForeground, startColor),
+                GetContrastRatio(darkForeground, endColor));
+
+            return darkContrast >= lightContrast * darkSwitchRatio
+                ? darkForeground
+                : lightForeground;
+        }
+
+        private Color GetThemeColor(Avalonia.Styling.ThemeVariant theme, string resourceKey, Color fallback)
+        {
+            if (!Resources.TryGetResource(resourceKey, theme, out object? resourceValue))
+            {
+                return fallback;
+            }
+
+            return resourceValue switch
+            {
+                Color color => color,
+                SolidColorBrush brush => brush.Color,
+                _ => fallback
+            };
+        }
+
+        private double GetResourceDouble(string resourceKey, double fallback)
+        {
+            if (!Resources.TryGetResource(resourceKey, ActualThemeVariant, out object? resourceValue))
+            {
+                return fallback;
+            }
+
+            return resourceValue switch
+            {
+                double value => value,
+                float value => value,
+                decimal value => (double)value,
+                int value => value,
+                long value => value,
+                _ => fallback
+            };
+        }
+
+        private static double GetContrastRatio(Color firstColor, Color secondColor)
+        {
+            double firstLuminance = GetRelativeLuminance(firstColor);
+            double secondLuminance = GetRelativeLuminance(secondColor);
+
+            double lighter = Math.Max(firstLuminance, secondLuminance);
+            double darker = Math.Min(firstLuminance, secondLuminance);
+
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        private static double GetRelativeLuminance(Color color)
+        {
+            double red = LinearizeColorChannel(color.R);
+            double green = LinearizeColorChannel(color.G);
+            double blue = LinearizeColorChannel(color.B);
+
+            return (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+        }
+
+        private static double LinearizeColorChannel(byte channel)
+        {
+            double normalized = channel / 255.0;
+
+            return normalized <= 0.03928
+                ? normalized / 12.92
+                : Math.Pow((normalized + 0.055) / 1.055, 2.4);
         }
 
         private static Color DarkenColor(Color color, double amount)
