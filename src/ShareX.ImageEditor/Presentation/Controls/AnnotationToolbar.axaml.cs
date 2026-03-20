@@ -40,9 +40,18 @@ public partial class AnnotationToolbar : UserControl
 {
     private const double AccentForegroundDarkSwitchRatio = 1.75;
 
+    public static readonly StyledProperty<object?> TopRowTrailingContentProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowTrailingContent));
+
+    public static readonly DirectProperty<AnnotationToolbar, bool> HasTopRowTrailingContentProperty =
+        AvaloniaProperty.RegisterDirect<AnnotationToolbar, bool>(
+            nameof(HasTopRowTrailingContent),
+            toolbar => toolbar.HasTopRowTrailingContent);
+
     private readonly SolidColorBrush? _activeBrush;
     private readonly SolidColorBrush? _activeForegroundBrush;
     private IPlatformSettings? _platformSettings;
+    private bool _hasTopRowTrailingContent;
 
     public event EventHandler<IBrush>? ColorChanged;
     public event EventHandler<IBrush>? FillColorChanged;
@@ -56,6 +65,14 @@ public partial class AnnotationToolbar : UserControl
     public event EventHandler<bool>? TextUnderlineChanged;
     public event EventHandler<bool>? ShadowChanged;
 
+    static AnnotationToolbar()
+    {
+        TopRowTrailingContentProperty.Changed.AddClassHandler<AnnotationToolbar>((toolbar, args) =>
+        {
+            toolbar.HasTopRowTrailingContent = args.NewValue != null;
+        });
+    }
+
     public AnnotationToolbar()
     {
         InitializeComponent();
@@ -64,6 +81,18 @@ public partial class AnnotationToolbar : UserControl
         WireCompatibilityEvents();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+    }
+
+    public object? TopRowTrailingContent
+    {
+        get => GetValue(TopRowTrailingContentProperty);
+        set => SetValue(TopRowTrailingContentProperty, value);
+    }
+
+    public bool HasTopRowTrailingContent
+    {
+        get => _hasTopRowTrailingContent;
+        private set => SetAndRaise(HasTopRowTrailingContentProperty, ref _hasTopRowTrailingContent, value);
     }
 
     private void InitializeComponent()

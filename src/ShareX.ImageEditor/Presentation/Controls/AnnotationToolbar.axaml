@@ -6,6 +6,7 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              xmlns:theming="clr-namespace:ShareX.ImageEditor.Presentation.Theming;assembly=ShareX.ImageEditor"
              x:Class="ShareX.ImageEditor.Presentation.Controls.AnnotationToolbar"
+             x:Name="AnnotationToolbarRoot"
              x:DataType="abstractions:IAnnotationToolbarAdapter"
              MinWidth="860">
 
@@ -59,119 +60,132 @@
             CornerRadius="8"
             Padding="8">
         <StackPanel Orientation="Vertical" Spacing="8">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Select}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Select (V)"
-                        Content="{x:Static theming:EditorIcons.ToolSelect}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Rectangle}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Rectangle (R)"
-                        Content="{x:Static theming:EditorIcons.ToolRectangle}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Ellipse}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Ellipse (E)"
-                        Content="{x:Static theming:EditorIcons.ToolEllipse}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Line}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Line (L)"
-                        Content="{x:Static theming:EditorIcons.ToolLine}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Arrow}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Arrow (A)"
-                        Content="{x:Static theming:EditorIcons.ToolArrow}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Freehand}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Freehand (F)"
-                        Content="{x:Static theming:EditorIcons.ToolFreehand}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Text}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Text (T)"
-                        Content="{x:Static theming:EditorIcons.ToolText}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Step}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Step (N)"
-                        Content="{x:Static theming:EditorIcons.ToolStep}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Highlight}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Highlight (H)"
-                        Content="{x:Static theming:EditorIcons.ToolHighlight}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.SmartEraser}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Smart Eraser (W)"
-                        Content="{x:Static theming:EditorIcons.ToolSmartEraser}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Blur}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Blur (B)"
-                        Content="{x:Static theming:EditorIcons.ToolBlur}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Pixelate}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Pixelate (P)"
-                        Content="{x:Static theming:EditorIcons.ToolPixelate}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Magnify}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Magnify (M)"
-                        Content="{x:Static theming:EditorIcons.ToolMagnify}"/>
-                <Button Classes="toolbar-button"
-                        Tag="{x:Static models:EditorTool.Spotlight}"
-                        Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
-                        Click="OnSelectToolClick"
-                        ToolTip.Tip="Spotlight (S)"
-                        Content="{x:Static theming:EditorIcons.ToolSpotlight}"/>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Select}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Select (V)"
+                            Content="{x:Static theming:EditorIcons.ToolSelect}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Rectangle}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Rectangle}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Rectangle (R)"
+                            Content="{x:Static theming:EditorIcons.ToolRectangle}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Ellipse}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Ellipse}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Ellipse (E)"
+                            Content="{x:Static theming:EditorIcons.ToolEllipse}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Line}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Line}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Line (L)"
+                            Content="{x:Static theming:EditorIcons.ToolLine}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Arrow}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Arrow}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Arrow (A)"
+                            Content="{x:Static theming:EditorIcons.ToolArrow}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Freehand}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Freehand}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Freehand (F)"
+                            Content="{x:Static theming:EditorIcons.ToolFreehand}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Text}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Text}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Text (T)"
+                            Content="{x:Static theming:EditorIcons.ToolText}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Step}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Step (N)"
+                            Content="{x:Static theming:EditorIcons.ToolStep}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Highlight}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Highlight (H)"
+                            Content="{x:Static theming:EditorIcons.ToolHighlight}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.SmartEraser}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SmartEraser}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Smart Eraser (W)"
+                            Content="{x:Static theming:EditorIcons.ToolSmartEraser}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Blur}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Blur}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Blur (B)"
+                            Content="{x:Static theming:EditorIcons.ToolBlur}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Pixelate}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Pixelate}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Pixelate (P)"
+                            Content="{x:Static theming:EditorIcons.ToolPixelate}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Magnify}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Magnify}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Magnify (M)"
+                            Content="{x:Static theming:EditorIcons.ToolMagnify}"/>
+                    <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.Spotlight}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Spotlight}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Spotlight (S)"
+                            Content="{x:Static theming:EditorIcons.ToolSpotlight}"/>
 
-                <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                    <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
 
-                <Button Classes="toolbar-button"
-                        MinWidth="44"
-                        IsEnabled="{Binding CanUndo}"
-                        Click="OnUndoClick"
-                        ToolTip.Tip="Undo (Ctrl+Z)"
-                        Content="{x:Static theming:EditorIcons.ActionUndo}"/>
-                <Button Classes="toolbar-button"
-                        MinWidth="44"
-                        IsEnabled="{Binding CanRedo}"
-                        Click="OnRedoClick"
-                        ToolTip.Tip="Redo (Ctrl+Y)"
-                        Content="{x:Static theming:EditorIcons.ActionRedo}"/>
-                <Button Classes="toolbar-button"
-                        MinWidth="44"
-                        IsEnabled="{Binding HasSelection}"
-                        Click="OnDeleteClick"
-                        ToolTip.Tip="Delete selected"
-                        Content="{x:Static theming:EditorIcons.ActionDelete}"/>
-                <Button Classes="toolbar-button"
-                        MinWidth="44"
-                        IsEnabled="{Binding HasAnnotations}"
-                        Click="OnClearClick"
-                        ToolTip.Tip="Clear all"
-                        Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
-            </StackPanel>
+                    <Button Classes="toolbar-button"
+                            MinWidth="44"
+                            IsEnabled="{Binding CanUndo}"
+                            Click="OnUndoClick"
+                            ToolTip.Tip="Undo (Ctrl+Z)"
+                            Content="{x:Static theming:EditorIcons.ActionUndo}"/>
+                    <Button Classes="toolbar-button"
+                            MinWidth="44"
+                            IsEnabled="{Binding CanRedo}"
+                            Click="OnRedoClick"
+                            ToolTip.Tip="Redo (Ctrl+Y)"
+                            Content="{x:Static theming:EditorIcons.ActionRedo}"/>
+                    <Button Classes="toolbar-button"
+                            MinWidth="44"
+                            IsEnabled="{Binding HasSelection}"
+                            Click="OnDeleteClick"
+                            ToolTip.Tip="Delete selected"
+                            Content="{x:Static theming:EditorIcons.ActionDelete}"/>
+                    <Button Classes="toolbar-button"
+                            MinWidth="44"
+                            IsEnabled="{Binding HasAnnotations}"
+                            Click="OnClearClick"
+                            ToolTip.Tip="Clear all"
+                            Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            HorizontalAlignment="Right"
+                            IsVisible="{Binding HasTopRowTrailingContent, ElementName=AnnotationToolbarRoot}">
+                    <Border Width="1"
+                            Margin="4,0"
+                            Background="{DynamicResource ShareX.Brush.Separator}"/>
+                    <ContentPresenter Content="{Binding TopRowTrailingContent, ElementName=AnnotationToolbarRoot}"/>
+                </StackPanel>
+            </Grid>
 
             <StackPanel Orientation="Horizontal"
                         Spacing="6"

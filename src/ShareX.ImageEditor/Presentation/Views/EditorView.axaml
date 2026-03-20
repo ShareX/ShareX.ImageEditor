@@ -471,19 +471,11 @@
         <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="4" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
             <controls:AnnotationToolbar x:Name="AnnotationToolbarControl"
                                         DataContext="{Binding ToolbarAdapter}"
-                                        MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
-            <Border Padding="4"
-                    Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
-                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="0,0,4,4"
-                    HorizontalAlignment="Center"
-                    x:DataType="vm:EditorToolbarAdapter"
-                    DataContext="{Binding ToolbarAdapter}"
-                    MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                <ScrollViewer x:Name="ToolbarScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" ScrollChanged="OnToolbarScrollChanged">
-                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <controls:AnnotationToolbar.TopRowTrailingContent>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                x:DataType="vm:EditorToolbarAdapter">
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
@@ -510,8 +502,8 @@
                                 ToolTip.Tip="Effects"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelEffects}"/>
                     </StackPanel>
-                </ScrollViewer>
-            </Border>
+                </controls:AnnotationToolbar.TopRowTrailingContent>
+            </controls:AnnotationToolbar>
         </StackPanel>
 
         <!-- Row 0: Export Actions Toolbar (Bottom Centered, Floating) -->
