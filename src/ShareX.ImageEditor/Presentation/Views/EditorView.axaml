@@ -471,16 +471,12 @@
         <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="4" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
             <controls:AnnotationToolbar x:Name="AnnotationToolbarControl"
                                         DataContext="{Binding ToolbarAdapter}"
+                                        ShowEditingActions="False"
                                         MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <controls:AnnotationToolbar.TopRowTrailingContent>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
                                 x:DataType="vm:EditorToolbarAdapter">
-                        <Button Classes="editor-button" Width="40"
-                                Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
-                                Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.SpeechBalloon}"
-                                ToolTip.Tip="Speech Balloon (O)"
-                                FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.ToolSpeechBalloon}"/>
                         <Button Classes="editor-button" Width="40"
                                 Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Crop}"
                                 Command="{Binding SelectToolCommand}" CommandParameter="{x:Static models:EditorTool.Crop}"

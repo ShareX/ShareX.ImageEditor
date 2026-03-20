@@ -60,8 +60,7 @@
             CornerRadius="8"
             Padding="8">
         <StackPanel Orientation="Vertical" Spacing="8">
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                <StackPanel Orientation="Horizontal" Spacing="4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
                     <Button Classes="toolbar-button"
                             Tag="{x:Static models:EditorTool.Select}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Select}"
@@ -105,6 +104,12 @@
                             ToolTip.Tip="Text (T)"
                             Content="{x:Static theming:EditorIcons.ToolText}"/>
                     <Button Classes="toolbar-button"
+                            Tag="{x:Static models:EditorTool.SpeechBalloon}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Speech Balloon (O)"
+                            Content="{x:Static theming:EditorIcons.ToolSpeechBalloon}"/>
+                    <Button Classes="toolbar-button"
                             Tag="{x:Static models:EditorTool.Step}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Step}"
                             Click="OnSelectToolClick"
@@ -147,45 +152,46 @@
                             ToolTip.Tip="Spotlight (S)"
                             Content="{x:Static theming:EditorIcons.ToolSpotlight}"/>
 
-                    <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4"
+                                IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
+                        <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <Button Classes="toolbar-button"
+                                MinWidth="44"
+                                IsEnabled="{Binding CanUndo}"
+                                Click="OnUndoClick"
+                                ToolTip.Tip="Undo (Ctrl+Z)"
+                                Content="{x:Static theming:EditorIcons.ActionUndo}"/>
+                        <Button Classes="toolbar-button"
+                                MinWidth="44"
+                                IsEnabled="{Binding CanRedo}"
+                                Click="OnRedoClick"
+                                ToolTip.Tip="Redo (Ctrl+Y)"
+                                Content="{x:Static theming:EditorIcons.ActionRedo}"/>
+                        <Button Classes="toolbar-button"
+                                MinWidth="44"
+                                IsEnabled="{Binding HasSelection}"
+                                Click="OnDeleteClick"
+                                ToolTip.Tip="Delete selected"
+                                Content="{x:Static theming:EditorIcons.ActionDelete}"/>
+                        <Button Classes="toolbar-button"
+                                MinWidth="44"
+                                IsEnabled="{Binding HasAnnotations}"
+                                Click="OnClearClick"
+                                ToolTip.Tip="Clear all"
+                                Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
+                    </StackPanel>
 
-                    <Button Classes="toolbar-button"
-                            MinWidth="44"
-                            IsEnabled="{Binding CanUndo}"
-                            Click="OnUndoClick"
-                            ToolTip.Tip="Undo (Ctrl+Z)"
-                            Content="{x:Static theming:EditorIcons.ActionUndo}"/>
-                    <Button Classes="toolbar-button"
-                            MinWidth="44"
-                            IsEnabled="{Binding CanRedo}"
-                            Click="OnRedoClick"
-                            ToolTip.Tip="Redo (Ctrl+Y)"
-                            Content="{x:Static theming:EditorIcons.ActionRedo}"/>
-                    <Button Classes="toolbar-button"
-                            MinWidth="44"
-                            IsEnabled="{Binding HasSelection}"
-                            Click="OnDeleteClick"
-                            ToolTip.Tip="Delete selected"
-                            Content="{x:Static theming:EditorIcons.ActionDelete}"/>
-                    <Button Classes="toolbar-button"
-                            MinWidth="44"
-                            IsEnabled="{Binding HasAnnotations}"
-                            Click="OnClearClick"
-                            ToolTip.Tip="Clear all"
-                            Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="2"
+                    <StackPanel
                             Orientation="Horizontal"
                             Spacing="4"
-                            HorizontalAlignment="Right"
                             IsVisible="{Binding HasTopRowTrailingContent, ElementName=AnnotationToolbarRoot}">
-                    <Border Width="1"
-                            Margin="4,0"
-                            Background="{DynamicResource ShareX.Brush.Separator}"/>
-                    <ContentPresenter Content="{Binding TopRowTrailingContent, ElementName=AnnotationToolbarRoot}"/>
-                </StackPanel>
-            </Grid>
+                        <Border Width="1"
+                                Margin="4,0"
+                                Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <ContentPresenter Content="{Binding TopRowTrailingContent, ElementName=AnnotationToolbarRoot}"/>
+                    </StackPanel>
+            </StackPanel>
 
             <StackPanel Orientation="Horizontal"
                         Spacing="6"

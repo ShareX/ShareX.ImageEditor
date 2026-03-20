@@ -40,6 +40,9 @@ public partial class AnnotationToolbar : UserControl
 {
     private const double AccentForegroundDarkSwitchRatio = 1.75;
 
+    public static readonly StyledProperty<bool> ShowEditingActionsProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowEditingActions), true);
+
     public static readonly StyledProperty<object?> TopRowTrailingContentProperty =
         AvaloniaProperty.Register<AnnotationToolbar, object?>(nameof(TopRowTrailingContent));
 
@@ -87,6 +90,12 @@ public partial class AnnotationToolbar : UserControl
     {
         get => GetValue(TopRowTrailingContentProperty);
         set => SetValue(TopRowTrailingContentProperty, value);
+    }
+
+    public bool ShowEditingActions
+    {
+        get => GetValue(ShowEditingActionsProperty);
+        set => SetValue(ShowEditingActionsProperty, value);
     }
 
     public bool HasTopRowTrailingContent
