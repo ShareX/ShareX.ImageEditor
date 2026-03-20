@@ -246,6 +246,16 @@
             <Setter Property="RenderTransform" Value="translateX(18px)"/>
         </Style>
 
+        <Style Selector="^.left > ScrollViewer > StackPanel > TextBlock:nth-child(1)">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Foreground">
+                <SolidColorBrush Color="{DynamicResource ShareX.Color.Accent.Start}"/>
+            </Setter>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
         <Style Selector="^.right ContentControl > :is(UserControl) > StackPanel > TextBlock:nth-child(1)">
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="Normal"/>

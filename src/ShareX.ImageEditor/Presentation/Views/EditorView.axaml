@@ -146,6 +146,7 @@
                 <ScrollViewer x:Name="SidebarScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               ScrollChanged="OnSidebarScrollChanged">
                     <StackPanel Width="250" Spacing="0" Margin="16">
+                        <TextBlock Text="Background"/>
 
                         <!-- Background Margin -->
                         <StackPanel Spacing="0">
