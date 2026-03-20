@@ -33,6 +33,7 @@
 
         <Style Selector="Button.toolbar-button">
             <Setter Property="Height" Value="40"/>
+            <Setter Property="Width" Value="40"/>
             <Setter Property="MinWidth" Value="40"/>
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
