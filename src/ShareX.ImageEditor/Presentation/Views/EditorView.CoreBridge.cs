@@ -25,14 +25,11 @@
 
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
-using SkiaSharp;
 
 namespace ShareX.ImageEditor.Presentation.Views
 {
@@ -139,48 +136,13 @@ namespace ShareX.ImageEditor.Presentation.Views
         // We replicate the UpdateEffectVisual logic here or expose it
         private void OnRequestUpdateEffect(Control shape)
         {
-            if (shape == null || shape.Tag is not BaseEffectAnnotation annotation) return;
+            if (shape == null || shape.Tag is not BaseEffectAnnotation) return;
             if (DataContext is not MainViewModel vm || vm.PreviewImage == null) return;
 
-            // Logic to update effect bitmap
             try
             {
-                double left = Canvas.GetLeft(shape);
-                double top = Canvas.GetTop(shape);
-                // Use explicit Width/Height first, fallback to Bounds, then annotation bounds
-                double width = shape.Width;
-                double height = shape.Height;
-                if (double.IsNaN(width) || width <= 0) width = shape.Bounds.Width;
-                if (double.IsNaN(height) || height <= 0) height = shape.Bounds.Height;
-                // Final fallback to annotation's own bounds
-                if (width <= 0 || height <= 0)
-                {
-                    var bounds = annotation.GetBounds();
-                    width = bounds.Width;
-                    height = bounds.Height;
-                }
-                if (width <= 0 || height <= 0) return;
-
-                // Map to SKPoint
-                annotation.StartPoint = new SKPoint((float)left, (float)top);
-                annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
-
-                // We don't have the cached bitmap here, create fresh or pass from controller?
-                // Original logic cached it. InputController caches it.
-                // This handler is for "OnPointerReleased" from SelectionController (dragging an existing effect).
-                // SelectionController doesn't have the cached bitmap.
                 using var skBitmap = BitmapConversionHelpers.ToSKBitmap(vm.PreviewImage);
-                annotation.UpdateEffect(skBitmap);
-
-                if (annotation.EffectBitmap != null && shape is Shape shapeControl)
-                {
-                    var avaloniaBitmap = BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap);
-                    shapeControl.Fill = new ImageBrush(avaloniaBitmap)
-                    {
-                        Stretch = Stretch.Fill,
-                        SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
-                    };
-                }
+                AnnotationEffectVisualUpdater.UpdateEffectVisual(shape, skBitmap);
             }
             catch (Exception ex)
             {

@@ -257,6 +257,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.AttachEditorCore(_editorCore);
+                HookAnnotationToolbarEvents();
 
                 var effectPanel = this.FindControl<EffectBrowserPanel>("EffectBrowserPanel");
                 effectPanel?.SetOptions(vm.Options);
@@ -323,6 +324,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.ZoomToFitRequested -= OnZoomToFitRequested;
             }
 
+            UnhookAnnotationToolbarEvents();
             _selectionController.RequestUpdateEffect -= OnRequestUpdateEffect;
             SetPlatformSettings(null);
         }

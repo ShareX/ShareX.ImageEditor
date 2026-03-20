@@ -126,6 +126,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public bool HasSelection => _viewModel.HasSelectedAnnotation;
 
+    public bool HasAnnotations => _viewModel.HasAnnotations;
+
     public bool ShowBorderColor => _viewModel.ShowBorderColor;
 
     public bool ShowFillColor => _viewModel.ShowFillColor;
@@ -145,6 +147,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     public bool ShowShadow => _viewModel.ShowShadow;
 
     public bool ShowToolOptions => _viewModel.ShowToolOptionsSeparator;
+
+    public bool ShowToolOptionsSeparator => _viewModel.ShowToolOptionsSeparator;
 
     // Compatibility surface for existing toolbar bindings
     public IBrush SelectedColorBrush
@@ -187,8 +191,6 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
         set => _viewModel.Zoom = value;
     }
 
-    public bool ShowToolOptionsSeparator => ShowToolOptions;
-
     public ICommand SelectToolCommand => _viewModel.SelectToolCommand;
 
     public ICommand UndoCommand => _viewModel.UndoCommand;
@@ -202,6 +204,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
     public ICommand ToggleSettingsPanelCommand => _viewModel.ToggleSettingsPanelCommand;
 
     public ICommand ToggleEffectsPanelCommand => _viewModel.ToggleEffectsPanelCommand;
+
+    public void SelectTool(EditorTool tool) => _viewModel.SelectToolCommand.Execute(tool);
 
     public void Undo() => _viewModel.UndoCommand.Execute(null);
 
@@ -238,11 +242,15 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
             case nameof(MainViewModel.HasSelectedAnnotation):
                 OnPropertyChanged(nameof(HasSelection));
                 break;
+            case nameof(MainViewModel.HasAnnotations):
+                OnPropertyChanged(nameof(HasAnnotations));
+                break;
             case nameof(MainViewModel.ShowTextColor):
                 OnPropertyChanged(nameof(ShowTextColor));
                 break;
             case nameof(MainViewModel.ShowToolOptionsSeparator):
                 OnPropertyChanged(nameof(ShowToolOptions));
+                OnPropertyChanged(nameof(ShowToolOptionsSeparator));
                 break;
             case nameof(MainViewModel.IsEffectsPanelOpen):
                 OnPropertyChanged(nameof(IsEffectsPanelOpen));

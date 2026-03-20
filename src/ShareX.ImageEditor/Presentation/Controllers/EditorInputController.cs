@@ -776,7 +776,7 @@ public class EditorInputController
         // ISSUE-004 fix: Store ViewModel locally to prevent null reference if it changes
         var vm = ViewModel;
         if (!_isCreatingEffect || vm == null) return;
-        if (vm.PreviewImage == null || shape.Tag is not BaseEffectAnnotation annotation) return;
+        if (vm.PreviewImage == null || shape.Tag is not BaseEffectAnnotation) return;
 
         if (_cachedSkBitmap == null)
         {
@@ -785,20 +785,14 @@ public class EditorInputController
 
         if (width <= 0 || height <= 0) return;
 
-        annotation.StartPoint = new SKPoint((float)x, (float)y);
-        annotation.EndPoint = new SKPoint((float)(x + width), (float)(y + height));
-
         try
         {
             if (_cachedSkBitmap != null)
-                annotation.UpdateEffect(_cachedSkBitmap);
-            if (annotation.EffectBitmap != null && shape is Shape shapeControl)
             {
-                shapeControl.Fill = new ImageBrush(BitmapConversionHelpers.ToAvaloniBitmap(annotation.EffectBitmap))
-                {
-                    Stretch = Stretch.Fill,
-                    SourceRect = new RelativeRect(0, 0, 1, 1, RelativeUnit.Relative)
-                };
+                AnnotationEffectVisualUpdater.UpdateEffectVisual(
+                    shape,
+                    _cachedSkBitmap,
+                    new Rect(x, y, width, height));
             }
         }
         catch { }

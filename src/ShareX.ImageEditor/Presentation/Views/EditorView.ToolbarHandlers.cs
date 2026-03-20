@@ -34,6 +34,48 @@ namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {
+        private void HookAnnotationToolbarEvents()
+        {
+            var toolbar = this.FindControl<AnnotationToolbar>("AnnotationToolbarControl");
+            if (toolbar == null)
+            {
+                return;
+            }
+
+            toolbar.ColorChanged += OnColorChanged;
+            toolbar.FillColorChanged += OnFillColorChanged;
+            toolbar.TextColorChanged += OnTextColorChanged;
+            toolbar.WidthChanged += OnWidthChanged;
+            toolbar.CornerRadiusChanged += OnCornerRadiusChanged;
+            toolbar.FontSizeChanged += OnFontSizeChanged;
+            toolbar.StrengthChanged += OnStrengthChanged;
+            toolbar.TextBoldChanged += OnToolbarTextBoldChanged;
+            toolbar.TextItalicChanged += OnToolbarTextItalicChanged;
+            toolbar.TextUnderlineChanged += OnToolbarTextUnderlineChanged;
+            toolbar.ShadowChanged += OnToolbarShadowChanged;
+        }
+
+        private void UnhookAnnotationToolbarEvents()
+        {
+            var toolbar = this.FindControl<AnnotationToolbar>("AnnotationToolbarControl");
+            if (toolbar == null)
+            {
+                return;
+            }
+
+            toolbar.ColorChanged -= OnColorChanged;
+            toolbar.FillColorChanged -= OnFillColorChanged;
+            toolbar.TextColorChanged -= OnTextColorChanged;
+            toolbar.WidthChanged -= OnWidthChanged;
+            toolbar.CornerRadiusChanged -= OnCornerRadiusChanged;
+            toolbar.FontSizeChanged -= OnFontSizeChanged;
+            toolbar.StrengthChanged -= OnStrengthChanged;
+            toolbar.TextBoldChanged -= OnToolbarTextBoldChanged;
+            toolbar.TextItalicChanged -= OnToolbarTextItalicChanged;
+            toolbar.TextUnderlineChanged -= OnToolbarTextUnderlineChanged;
+            toolbar.ShadowChanged -= OnToolbarShadowChanged;
+        }
+
         private void OnColorChanged(object? sender, IBrush color)
         {
             if (DataContext is MainViewModel vm && color is SolidColorBrush solidBrush)
@@ -66,49 +108,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.FontSize = fontSize;
-
-                // ... (rest of logic) ...
-
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is TextAnnotation textAnn)
-                {
-                    textAnn.FontSize = fontSize;
-                    if (selected is OutlinedTextControl outlinedText)
-                    {
-                        outlinedText.InvalidateMeasure();
-                        outlinedText.InvalidateVisual();
-                    }
-                }
-                else if (selected?.Tag is NumberAnnotation numAnn)
-                {
-                    numAnn.FontSize = fontSize;
-
-                    // Update the visual - resize grid and update text
-                    if (selected is Grid grid)
-                    {
-                        var radius = Math.Max(12, fontSize * 0.7f);
-                        grid.Width = radius * 2;
-                        grid.Height = radius * 2;
-
-                        foreach (var child in grid.Children)
-                        {
-                            if (child is TextBlock textBlock)
-                            {
-                                textBlock.FontSize = fontSize * 0.6; // Match CreateVisual scaling
-                            }
-                        }
-                    }
-                }
-                else if (selected?.Tag is SpeechBalloonAnnotation balloonAnn)
-                {
-                    balloonAnn.FontSize = fontSize;
-                    if (selected is SpeechBalloonControl balloonControl)
-                    {
-                        balloonControl.InvalidateVisual();
-                    }
-                    _selectionController.UpdateActiveTextEditorProperties();
-                }
+                ApplySelectedFontSize(fontSize);
             }
         }
 
@@ -117,25 +117,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.EffectStrength = strength;
-
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is BaseEffectAnnotation effectAnn)
-                {
-                    effectAnn.Amount = strength;
-                    // Regenerate effect
-                    OnRequestUpdateEffect(selected);
-                }
-                else if (selected?.Tag is SpotlightAnnotation spotlightAnn)
-                {
-                    // Map EffectStrength (0-100) to DarkenOpacity (0-255)
-                    spotlightAnn.DarkenOpacity = (byte)Math.Clamp(strength / MainViewModel.GetMaxEffectStrength(EditorTool.Spotlight) * 255, 0, 255);
-
-                    if (selected is SpotlightControl spotlightControl)
-                    {
-                        spotlightControl.InvalidateVisual();
-                    }
-                }
+                ApplySelectedEffectStrength(strength);
             }
         }
 
@@ -143,35 +125,8 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             if (DataContext is MainViewModel vm)
             {
-                // Toggle state
                 vm.ShadowEnabled = !vm.ShadowEnabled;
-                var isEnabled = vm.ShadowEnabled;
-
-                // Apply to selected annotation if any
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is Annotation annotation)
-                {
-                    annotation.ShadowEnabled = isEnabled;
-
-                    // Update the UI control's Effect property
-                    if (selected is Control control)
-                    {
-                        if (isEnabled)
-                        {
-                            control.Effect = new Avalonia.Media.DropShadowEffect
-                            {
-                                OffsetX = 3,
-                                OffsetY = 3,
-                                BlurRadius = 4,
-                                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-                            };
-                        }
-                        else
-                        {
-                            control.Effect = null;
-                        }
-                    }
-                }
+                ApplySelectedShadowState(vm.ShadowEnabled);
             }
         }
         private void OnBoldButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
@@ -179,17 +134,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.TextBold = !vm.TextBold;
-
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is TextAnnotation textAnn)
-                {
-                    textAnn.IsBold = vm.TextBold;
-                    if (selected is OutlinedTextControl otc)
-                    {
-                        otc.InvalidateMeasure();
-                        otc.InvalidateVisual();
-                    }
-                }
+                ApplySelectedTextBold(vm.TextBold);
             }
         }
 
@@ -198,17 +143,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.TextItalic = !vm.TextItalic;
-
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is TextAnnotation textAnn)
-                {
-                    textAnn.IsItalic = vm.TextItalic;
-                    if (selected is OutlinedTextControl otc)
-                    {
-                        otc.InvalidateMeasure();
-                        otc.InvalidateVisual();
-                    }
-                }
+                ApplySelectedTextItalic(vm.TextItalic);
             }
         }
 
@@ -217,18 +152,28 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (DataContext is MainViewModel vm)
             {
                 vm.TextUnderline = !vm.TextUnderline;
-
-                var selected = _selectionController.SelectedShape;
-                if (selected?.Tag is TextAnnotation textAnn)
-                {
-                    textAnn.IsUnderline = vm.TextUnderline;
-                    if (selected is OutlinedTextControl otc)
-                    {
-                        otc.InvalidateMeasure();
-                        otc.InvalidateVisual();
-                    }
-                }
+                ApplySelectedTextUnderline(vm.TextUnderline);
             }
+        }
+
+        private void OnToolbarTextBoldChanged(object? sender, bool isBold)
+        {
+            ApplySelectedTextBold(isBold);
+        }
+
+        private void OnToolbarTextItalicChanged(object? sender, bool isItalic)
+        {
+            ApplySelectedTextItalic(isItalic);
+        }
+
+        private void OnToolbarTextUnderlineChanged(object? sender, bool isUnderline)
+        {
+            ApplySelectedTextUnderline(isUnderline);
+        }
+
+        private void OnToolbarShadowChanged(object? sender, bool isEnabled)
+        {
+            ApplySelectedShadowState(isEnabled);
         }
 
         private void OnWidthChanged(object? sender, int width)
@@ -480,6 +425,138 @@ namespace ShareX.ImageEditor.Presentation.Views
                         balloonControl.InvalidateVisual();
                     }
                     break;
+            }
+        }
+
+        private void ApplySelectedFontSize(float fontSize)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected?.Tag is TextAnnotation textAnn)
+            {
+                textAnn.FontSize = fontSize;
+                if (selected is OutlinedTextControl outlinedText)
+                {
+                    outlinedText.InvalidateMeasure();
+                    outlinedText.InvalidateVisual();
+                }
+            }
+            else if (selected?.Tag is NumberAnnotation numAnn)
+            {
+                numAnn.FontSize = fontSize;
+
+                if (selected is Grid grid)
+                {
+                    var radius = Math.Max(12, fontSize * 0.7f);
+                    grid.Width = radius * 2;
+                    grid.Height = radius * 2;
+
+                    foreach (var child in grid.Children)
+                    {
+                        if (child is TextBlock textBlock)
+                        {
+                            textBlock.FontSize = fontSize * 0.6;
+                        }
+                    }
+                }
+            }
+            else if (selected?.Tag is SpeechBalloonAnnotation balloonAnn)
+            {
+                balloonAnn.FontSize = fontSize;
+                if (selected is SpeechBalloonControl balloonControl)
+                {
+                    balloonControl.InvalidateVisual();
+                }
+                _selectionController.UpdateActiveTextEditorProperties();
+            }
+        }
+
+        private void ApplySelectedEffectStrength(float strength)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected?.Tag is BaseEffectAnnotation effectAnn)
+            {
+                effectAnn.Amount = strength;
+                OnRequestUpdateEffect(selected);
+            }
+            else if (selected?.Tag is SpotlightAnnotation spotlightAnn)
+            {
+                spotlightAnn.DarkenOpacity = (byte)Math.Clamp(
+                    strength / MainViewModel.GetMaxEffectStrength(EditorTool.Spotlight) * 255,
+                    0,
+                    255);
+
+                if (selected is SpotlightControl spotlightControl)
+                {
+                    spotlightControl.InvalidateVisual();
+                }
+            }
+        }
+
+        private void ApplySelectedShadowState(bool isEnabled)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected?.Tag is not Annotation annotation)
+            {
+                return;
+            }
+
+            annotation.ShadowEnabled = isEnabled;
+
+            if (selected is Control control)
+            {
+                if (isEnabled)
+                {
+                    control.Effect = new Avalonia.Media.DropShadowEffect
+                    {
+                        OffsetX = 3,
+                        OffsetY = 3,
+                        BlurRadius = 4,
+                        Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
+                    };
+                }
+                else
+                {
+                    control.Effect = null;
+                }
+            }
+        }
+
+        private void ApplySelectedTextBold(bool isBold)
+        {
+            if (_selectionController.SelectedShape?.Tag is TextAnnotation textAnn)
+            {
+                textAnn.IsBold = isBold;
+                if (_selectionController.SelectedShape is OutlinedTextControl outlinedText)
+                {
+                    outlinedText.InvalidateMeasure();
+                    outlinedText.InvalidateVisual();
+                }
+            }
+        }
+
+        private void ApplySelectedTextItalic(bool isItalic)
+        {
+            if (_selectionController.SelectedShape?.Tag is TextAnnotation textAnn)
+            {
+                textAnn.IsItalic = isItalic;
+                if (_selectionController.SelectedShape is OutlinedTextControl outlinedText)
+                {
+                    outlinedText.InvalidateMeasure();
+                    outlinedText.InvalidateVisual();
+                }
+            }
+        }
+
+        private void ApplySelectedTextUnderline(bool isUnderline)
+        {
+            if (_selectionController.SelectedShape?.Tag is TextAnnotation textAnn)
+            {
+                textAnn.IsUnderline = isUnderline;
+                if (_selectionController.SelectedShape is OutlinedTextControl outlinedText)
+                {
+                    outlinedText.InvalidateMeasure();
+                    outlinedText.InvalidateVisual();
+                }
             }
         }
 

@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
 using System.ComponentModel;
 
@@ -37,17 +38,24 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     string StrokeColor { get; set; }
     string FillColor { get; set; }
     string TextColor { get; set; }
+    IBrush SelectedColorBrush { get; set; }
+    IBrush FillColorBrush { get; set; }
+    IBrush TextColorBrush { get; set; }
     int StrokeWidth { get; set; }
     int CornerRadius { get; set; }
     float FontSize { get; set; }
     float EffectStrength { get; set; }
+    float EffectStrengthMaximum { get; }
     bool ShadowEnabled { get; set; }
     bool TextBold { get; set; }
     bool TextItalic { get; set; }
     bool TextUnderline { get; set; }
+    string ActiveToolIcon { get; }
+    string ActiveToolName { get; }
     bool CanUndo { get; }
     bool CanRedo { get; }
     bool HasSelection { get; }
+    bool HasAnnotations { get; }
     bool ShowBorderColor { get; }
     bool ShowFillColor { get; }
     bool ShowTextColor { get; }
@@ -58,6 +66,8 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }
     bool ShowToolOptions { get; }
+    bool ShowToolOptionsSeparator { get; }
+    void SelectTool(EditorTool tool);
     void Undo();
     void Redo();
     void DeleteSelection();
