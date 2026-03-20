@@ -28,6 +28,7 @@
             <Color x:Key="ShareX.Color.Control.Background">#2E2E2E</Color>
             <Color x:Key="ShareX.Color.Control.Background.Hover">#3A3A3A</Color>
             <Color x:Key="ShareX.Color.Control.Border">#1F1F1F</Color>
+            <Color x:Key="ShareX.Color.Separator">#333333</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Background">#DC2626</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Border">#EF4444</Color>
             <Color x:Key="ShareX.Color.TaskMode.Continue.Background">#10B981</Color>
@@ -53,7 +54,7 @@
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Hover" Color="{StaticResource ShareX.Color.Control.Background.Hover}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#383838" />
-            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#333333" />
+            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{StaticResource ShareX.Color.Separator}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Background" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Border" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Continue.Background" Color="{StaticResource ShareX.Color.TaskMode.Continue.Background}" />
@@ -121,6 +122,7 @@
             <Color x:Key="ShareX.Color.Control.Background">#F5F5F7</Color>
             <Color x:Key="ShareX.Color.Control.Background.Hover">#EBEBEF</Color>
             <Color x:Key="ShareX.Color.Control.Border">#DBDBDF</Color>
+            <Color x:Key="ShareX.Color.Separator">#E3E3E3</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Background">#DC2626</Color>
             <Color x:Key="ShareX.Color.TaskMode.Cancel.Border">#EF4444</Color>
             <Color x:Key="ShareX.Color.TaskMode.Continue.Background">#10B981</Color>
@@ -146,7 +148,7 @@
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Hover" Color="{StaticResource ShareX.Color.Control.Background.Hover}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Border" Color="{StaticResource ShareX.Color.Control.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.Control.Background.Disabled" Color="#AEAEB2" />
-            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="#E3E3E3" />
+            <SolidColorBrush x:Key="ShareX.Brush.Separator" Color="{StaticResource ShareX.Color.Separator}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Background" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Background}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Cancel.Border" Color="{StaticResource ShareX.Color.TaskMode.Cancel.Border}" />
             <SolidColorBrush x:Key="ShareX.Brush.TaskMode.Continue.Background" Color="{StaticResource ShareX.Color.TaskMode.Continue.Background}" />
