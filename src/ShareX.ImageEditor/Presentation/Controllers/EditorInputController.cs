@@ -631,6 +631,9 @@ public class EditorInputController
             Canvas.SetTop(_currentShape, currentPoint.Y - numberRadius);
             numberAnn.StartPoint = ToSKPoint(currentPoint);
         }
+
+        // Update live dimensions in the Tool Info panel
+        vm.UpdateDrawingDimensions(width, height);
     }
 
     public void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -750,6 +753,9 @@ public class EditorInputController
             _cachedSkBitmap?.Dispose();
             _cachedSkBitmap = null;
             _isCreatingEffect = false;
+
+            // Clear transient drawing dimensions; selection-based dims restored if applicable
+            ViewModel?.ClearDrawingDimensions();
         }
     }
 

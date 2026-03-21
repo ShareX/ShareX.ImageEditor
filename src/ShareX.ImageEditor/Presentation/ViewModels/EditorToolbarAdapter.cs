@@ -173,6 +173,8 @@ public sealed class EditorToolbarAdapter : IAnnotationToolbarAdapter
 
     public string ActiveToolName => _viewModel.ActiveToolName;
 
+    public ToolInfoModel ToolInfo => _viewModel.ToolInfo;
+
     public bool IsSettingsPanelOpen
     {
         get => _viewModel.IsSettingsPanelOpen;

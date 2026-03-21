@@ -32,6 +32,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+        private readonly ToolInfoModel _toolInfo = new();
+
+        /// <summary>
+        /// Structured tool info model for the Tool Info panel.
+        /// </summary>
+        public ToolInfoModel ToolInfo => _toolInfo;
+
         [ObservableProperty]
         private string _selectedColor = "#EF4444";
 
@@ -582,6 +589,89 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ActiveToolName));
             OnPropertyChanged(nameof(EffectStrengthMaximum));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
+            RefreshToolInfo();
+        }
+
+        /// <summary>
+        /// Synchronises the <see cref="ToolInfo"/> model with the current tool state.
+        /// </summary>
+        private void RefreshToolInfo()
+        {
+            _toolInfo.Title = ActiveToolName;
+            _toolInfo.Icon = ActiveToolIcon;
+
+            _toolInfo.ShowPrimaryColor = ShowBorderColor;
+            _toolInfo.PrimaryColor = ShowBorderColor ? Color.Parse(SelectedColor) : Colors.Transparent;
+
+            _toolInfo.ShowSecondaryColor = ShowFillColor;
+            _toolInfo.SecondaryColor = ShowFillColor ? Color.Parse(FillColor) : Colors.Transparent;
+
+            _toolInfo.ShowTextColor = ShowTextColor;
+            _toolInfo.TextColor = ShowTextColor ? Color.Parse(TextColor) : Colors.Transparent;
+
+            _toolInfo.ShowThickness = ShowThickness;
+            _toolInfo.Thickness = StrokeWidth;
+
+            _toolInfo.ShowFontSize = ShowFontSize;
+            _toolInfo.FontSize = FontSize;
+
+            _toolInfo.ShowStrength = ShowStrength;
+            _toolInfo.Strength = EffectStrength;
+
+            _toolInfo.ShowTextStyle = ShowTextStyle;
+            _toolInfo.IsBold = TextBold;
+            _toolInfo.IsItalic = TextItalic;
+            _toolInfo.IsUnderline = TextUnderline;
+
+            _toolInfo.ShowShadow = ShowShadow;
+            _toolInfo.ShadowEnabled = ShadowEnabled;
+
+            // Dimensions from selected annotation
+            if (_selectedAnnotation != null)
+            {
+                var bounds = _selectedAnnotation.GetBounds();
+                _toolInfo.ShowDimensions = true;
+                _toolInfo.InfoWidth = Math.Round(bounds.Width);
+                _toolInfo.InfoHeight = Math.Round(bounds.Height);
+            }
+            else
+            {
+                _toolInfo.ShowDimensions = false;
+                _toolInfo.InfoWidth = 0;
+                _toolInfo.InfoHeight = 0;
+            }
+        }
+
+        /// <summary>
+        /// Called by <see cref="Controllers.EditorInputController"/> during active drawing
+        /// to show live width/height in the Tool Info panel.
+        /// </summary>
+        public void UpdateDrawingDimensions(double width, double height)
+        {
+            _toolInfo.ShowDimensions = true;
+            _toolInfo.InfoWidth = Math.Round(width);
+            _toolInfo.InfoHeight = Math.Round(height);
+        }
+
+        /// <summary>
+        /// Called when drawing ends to clear transient dimension display
+        /// (selection-based dimensions will be restored by <see cref="RefreshToolInfo"/>).
+        /// </summary>
+        public void ClearDrawingDimensions()
+        {
+            if (_selectedAnnotation != null)
+            {
+                var bounds = _selectedAnnotation.GetBounds();
+                _toolInfo.ShowDimensions = true;
+                _toolInfo.InfoWidth = Math.Round(bounds.Width);
+                _toolInfo.InfoHeight = Math.Round(bounds.Height);
+            }
+            else
+            {
+                _toolInfo.ShowDimensions = false;
+                _toolInfo.InfoWidth = 0;
+                _toolInfo.InfoHeight = 0;
+            }
         }
 
         public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;

@@ -1,0 +1,159 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ShareX.ImageEditor.Presentation.ViewModels;assembly=ShareX.ImageEditor"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.ToolInfoPanel"
+             x:DataType="vm:ToolInfoModel">
+
+    <!-- Compact horizontal info panel: icon + title + relevant summary chips -->
+    <StackPanel Orientation="Horizontal"
+                Spacing="6"
+                VerticalAlignment="Center"
+                Height="40">
+
+        <!-- Tool icon -->
+        <Border Width="28"
+                Height="28"
+                VerticalAlignment="Center"
+                CornerRadius="4"
+                Background="{DynamicResource ShareX.Brush.Background.Panel}">
+            <TextBlock Text="{Binding Icon}"
+                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                       FontSize="16"
+                       FontWeight="Normal"
+                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"/>
+        </Border>
+
+        <!-- Tool title -->
+        <TextBlock Text="{Binding Title}"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center"
+                   MinWidth="50"/>
+
+        <!-- Primary color chip -->
+        <StackPanel Orientation="Horizontal"
+                    Spacing="3"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowPrimaryColor}">
+            <Border Width="14" Height="14" CornerRadius="3"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    BorderThickness="1">
+                <Border.Background>
+                    <SolidColorBrush Color="{Binding PrimaryColor}"/>
+                </Border.Background>
+            </Border>
+        </StackPanel>
+
+        <!-- Secondary (fill) color chip -->
+        <StackPanel Orientation="Horizontal"
+                    Spacing="3"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowSecondaryColor}">
+            <Border Width="14" Height="14" CornerRadius="3"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    BorderThickness="1">
+                <Border.Background>
+                    <SolidColorBrush Color="{Binding SecondaryColor}"/>
+                </Border.Background>
+            </Border>
+        </StackPanel>
+
+        <!-- Text color chip -->
+        <StackPanel Orientation="Horizontal"
+                    Spacing="3"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowTextColor}">
+            <TextBlock Text="A"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{Binding TextColor}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Thickness chip -->
+        <TextBlock IsVisible="{Binding ShowThickness}"
+                   FontSize="11"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0}px">
+                    <Binding Path="Thickness"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <!-- Font size chip -->
+        <TextBlock IsVisible="{Binding ShowFontSize}"
+                   FontSize="11"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0:0}pt">
+                    <Binding Path="FontSize"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <!-- Text style summary (B I U) -->
+        <StackPanel Orientation="Horizontal"
+                    Spacing="2"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowTextStyle}">
+            <TextBlock Text="B" FontSize="10" FontWeight="Bold" Opacity="0.4"
+                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                       VerticalAlignment="Center">
+                <TextBlock.IsVisible>
+                    <Binding Path="IsBold"/>
+                </TextBlock.IsVisible>
+            </TextBlock>
+            <TextBlock Text="I" FontSize="10" FontStyle="Italic" Opacity="0.4"
+                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                       VerticalAlignment="Center">
+                <TextBlock.IsVisible>
+                    <Binding Path="IsItalic"/>
+                </TextBlock.IsVisible>
+            </TextBlock>
+            <TextBlock Text="U" FontSize="10" Opacity="0.4"
+                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                       VerticalAlignment="Center"
+                       TextDecorations="Underline">
+                <TextBlock.IsVisible>
+                    <Binding Path="IsUnderline"/>
+                </TextBlock.IsVisible>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Strength chip -->
+        <TextBlock IsVisible="{Binding ShowStrength}"
+                   FontSize="11"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}str {0:0}">
+                    <Binding Path="Strength"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <!-- Dimensions chip -->
+        <TextBlock IsVisible="{Binding ShowDimensions}"
+                   FontSize="11"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center"
+                   Opacity="0.7">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0:0} x {1:0}">
+                    <Binding Path="InfoWidth"/>
+                    <Binding Path="InfoHeight"/>
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+    </StackPanel>
+</UserControl>

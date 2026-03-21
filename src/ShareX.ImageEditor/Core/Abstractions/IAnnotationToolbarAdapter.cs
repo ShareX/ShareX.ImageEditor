@@ -25,6 +25,7 @@
 
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.ViewModels;
 using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Core.Abstractions;
@@ -52,6 +53,7 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool TextUnderline { get; set; }
     string ActiveToolIcon { get; }
     string ActiveToolName { get; }
+    ToolInfoModel ToolInfo { get; }
     bool CanUndo { get; }
     bool CanRedo { get; }
     bool HasSelection { get; }
