@@ -6,76 +6,61 @@
 
     <!-- Compact horizontal info panel: icon + title + relevant summary chips -->
     <StackPanel Orientation="Horizontal"
-                Spacing="6"
+                Spacing="5"
                 VerticalAlignment="Center"
-                Height="40">
+                Height="40"
+                Opacity="0.75">
 
         <!-- Tool icon -->
-        <Border Width="28"
-                Height="28"
-                VerticalAlignment="Center"
-                CornerRadius="4"
-                Background="{DynamicResource ShareX.Brush.Background.Panel}">
-            <TextBlock Text="{Binding Icon}"
-                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
-                       FontSize="16"
-                       FontWeight="Normal"
-                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center"/>
-        </Border>
+        <TextBlock Text="{Binding Icon}"
+                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                   FontSize="14"
+                   FontWeight="Normal"
+                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Margin="2,0,0,0"/>
 
         <!-- Tool title -->
         <TextBlock Text="{Binding Title}"
-                   FontSize="12"
-                   FontWeight="SemiBold"
+                   FontSize="11"
+                   FontWeight="Normal"
                    Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
-                   VerticalAlignment="Center"
-                   MinWidth="50"/>
+                   VerticalAlignment="Center"/>
 
         <!-- Primary color chip -->
-        <StackPanel Orientation="Horizontal"
-                    Spacing="3"
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ShowPrimaryColor}">
-            <Border Width="14" Height="14" CornerRadius="3"
-                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                    BorderThickness="1">
-                <Border.Background>
-                    <SolidColorBrush Color="{Binding PrimaryColor}"/>
-                </Border.Background>
-            </Border>
-        </StackPanel>
+        <Border Width="10" Height="10" CornerRadius="2"
+                VerticalAlignment="Center"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="0.5"
+                IsVisible="{Binding ShowPrimaryColor}">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding PrimaryColor}"/>
+            </Border.Background>
+        </Border>
 
         <!-- Secondary (fill) color chip -->
-        <StackPanel Orientation="Horizontal"
-                    Spacing="3"
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ShowSecondaryColor}">
-            <Border Width="14" Height="14" CornerRadius="3"
-                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                    BorderThickness="1">
-                <Border.Background>
-                    <SolidColorBrush Color="{Binding SecondaryColor}"/>
-                </Border.Background>
-            </Border>
-        </StackPanel>
+        <Border Width="10" Height="10" CornerRadius="2"
+                VerticalAlignment="Center"
+                BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                BorderThickness="0.5"
+                IsVisible="{Binding ShowSecondaryColor}">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding SecondaryColor}"/>
+            </Border.Background>
+        </Border>
 
         <!-- Text color chip -->
-        <StackPanel Orientation="Horizontal"
-                    Spacing="3"
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ShowTextColor}">
-            <TextBlock Text="A"
-                       FontSize="11"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center">
-                <TextBlock.Foreground>
-                    <SolidColorBrush Color="{Binding TextColor}"/>
-                </TextBlock.Foreground>
-            </TextBlock>
-        </StackPanel>
+        <TextBlock Text="A"
+                   FontSize="11"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding ShowTextColor}">
+            <TextBlock.Foreground>
+                <SolidColorBrush Color="{Binding TextColor}"/>
+            </TextBlock.Foreground>
+        </TextBlock>
 
         <!-- Thickness chip -->
         <TextBlock IsVisible="{Binding ShowThickness}"
@@ -106,21 +91,21 @@
                     Spacing="2"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ShowTextStyle}">
-            <TextBlock Text="B" FontSize="10" FontWeight="Bold" Opacity="0.4"
+            <TextBlock Text="B" FontSize="11" FontWeight="Bold" Opacity="0.4"
                        Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                        VerticalAlignment="Center">
                 <TextBlock.IsVisible>
                     <Binding Path="IsBold"/>
                 </TextBlock.IsVisible>
             </TextBlock>
-            <TextBlock Text="I" FontSize="10" FontStyle="Italic" Opacity="0.4"
+            <TextBlock Text="I" FontSize="11" FontStyle="Italic" Opacity="0.4"
                        Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                        VerticalAlignment="Center">
                 <TextBlock.IsVisible>
                     <Binding Path="IsItalic"/>
                 </TextBlock.IsVisible>
             </TextBlock>
-            <TextBlock Text="U" FontSize="10" Opacity="0.4"
+            <TextBlock Text="U" FontSize="11" Opacity="0.4"
                        Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                        VerticalAlignment="Center"
                        TextDecorations="Underline">
@@ -147,7 +132,7 @@
                    FontSize="11"
                    Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                    VerticalAlignment="Center"
-                   Opacity="0.7">
+                   Opacity="0.85">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0:0} x {1:0}">
                     <Binding Path="InfoWidth"/>
