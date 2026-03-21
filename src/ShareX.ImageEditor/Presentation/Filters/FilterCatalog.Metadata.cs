@@ -99,7 +99,19 @@ public static partial class FilterCatalog
             ["vintage_print_damage"] = new("Vintage print damage...", LucideIcons.Newspaper, "Adds film grain, scratches, dust and faded paper burn."),
             ["watercolor_kuwahara"] = new("Watercolor / Kuwahara...", LucideIcons.Paintbrush, "Simplifies local color regions for watercolor-like strokes."),
             ["wave_edge"] = new("Wave edge...", LucideIcons.WavesLadder, "Adds a wavy edge to the image."),
-            ["zoom_blur"] = new("Zoom blur...", LucideIcons.ZoomIn, "Creates radial streak blur toward a chosen center point.")
+            ["zoom_blur"] = new("Zoom blur...", LucideIcons.ZoomIn, "Creates radial streak blur toward a chosen center point."),
+
+            // --- Migrated from bespoke dialogs (IEIP0003 Phase 4) ---
+            ["anamorphic_lens_flare"] = new("Anamorphic lens flare...", LucideIcons.Aperture, "Adds cinematic horizontal flare streaks, warm bloom, and lens ghosts around bright areas."),
+            ["etched_glass"] = new("Etched glass...", LucideIcons.Glasses, "Turns the image into frosted glass with engraved detail and refracted highlights."),
+            ["liquid_mercury"] = new("Liquid mercury...", LucideIcons.Droplet, "Builds reflective silver ripples and glossy fluid-metal highlights."),
+            ["night_vision"] = new("Night vision...", LucideIcons.Moon, "Simulates green phosphor night optics with glow, noise, and scanlines."),
+            ["oil_slick_interference"] = new("Oil slick interference...", LucideIcons.Rainbow, "Overlays dark glossy iridescent interference colors like spilled oil."),
+            ["plasma_energy_arcs"] = new("Plasma energy arcs...", LucideIcons.Zap, "Adds glowing electric plasma filaments with branchy arc turbulence."),
+            ["rust_corrosion"] = new("Rust / corrosion...", LucideIcons.Stamp, "Adds oxidized rust blooms, pitting, grime, and worn edges."),
+            ["smoke_overlay"] = new("Smoke overlay...", LucideIcons.Cloud, "Adds drifting layered smoke billows over the image."),
+            ["vhs_tape_damage"] = new("VHS tape damage...", LucideIcons.Monitor, "Applies analog tracking jitter, chroma bleed, scanlines, and tape dropouts."),
+            ["x_ray_scan"] = new("X-ray scan...", LucideIcons.ScanEye, "Rebuilds the image as glowing cyan density and edge structure like a scanner plate.")
         };
     }
 }

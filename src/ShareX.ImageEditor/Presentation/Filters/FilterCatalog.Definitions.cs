@@ -596,7 +596,89 @@ public static partial class FilterCatalog
                 FloatSlider<ZoomBlurImageEffect>("strength", "Strength (%)", 0, 100, 35, (effect, value) => effect.Strength = value),
                 IntSlider<ZoomBlurImageEffect>("samples", "Samples", 4, 64, 24, (effect, value) => effect.Samples = value),
                 FloatSlider<ZoomBlurImageEffect>("center_x", "Center X (%)", 0, 100, 50, (effect, value) => effect.CenterX = value),
-                FloatSlider<ZoomBlurImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterY = value))
+                FloatSlider<ZoomBlurImageEffect>("center_y", "Center Y (%)", 0, 100, 50, (effect, value) => effect.CenterY = value)),
+
+            // --- Migrated from bespoke dialogs (IEIP0003 Phase 4) ---
+
+            Filter<AnamorphicLensFlareImageEffect>(
+                "anamorphic_lens_flare",
+                FloatSlider<AnamorphicLensFlareImageEffect>("intensity", "Intensity (%)", 0, 100, 60, (effect, value) => effect.Intensity = value),
+                FloatSlider<AnamorphicLensFlareImageEffect>("threshold", "Threshold (%)", 0, 100, 72, (effect, value) => effect.Threshold = value),
+                FloatSlider<AnamorphicLensFlareImageEffect>("streak_length", "Streak length (%)", 0, 100, 55, (effect, value) => effect.StreakLength = value),
+                FloatSlider<AnamorphicLensFlareImageEffect>("warmth", "Warmth (%)", 0, 100, 45, (effect, value) => effect.Warmth = value),
+                FloatSlider<AnamorphicLensFlareImageEffect>("ghosting", "Ghosting (%)", 0, 100, 35, (effect, value) => effect.Ghosting = value)),
+
+            Filter<EtchedGlassImageEffect>(
+                "etched_glass",
+                FloatSlider<EtchedGlassImageEffect>("frost", "Frost (%)", 0, 100, 48, (effect, value) => effect.Frost = value),
+                FloatSlider<EtchedGlassImageEffect>("engrave", "Engrave (%)", 0, 100, 68, (effect, value) => effect.Engrave = value),
+                FloatSlider<EtchedGlassImageEffect>("refraction", "Refraction (%)", 0, 100, 18, (effect, value) => effect.Refraction = value),
+                FloatSlider<EtchedGlassImageEffect>("highlight", "Highlight (%)", 0, 100, 42, (effect, value) => effect.Highlight = value),
+                FloatSlider<EtchedGlassImageEffect>("background_fade", "Background fade (%)", 0, 100, 38, (effect, value) => effect.BackgroundFade = value)),
+
+            Filter<LiquidMercuryImageEffect>(
+                "liquid_mercury",
+                FloatSlider<LiquidMercuryImageEffect>("reflection", "Reflection (%)", 0, 100, 78, (effect, value) => effect.Reflection = value),
+                FloatSlider<LiquidMercuryImageEffect>("ripple", "Ripple (%)", 0, 100, 42, (effect, value) => effect.Ripple = value),
+                FloatSlider<LiquidMercuryImageEffect>("shine", "Shine (%)", 0, 100, 82, (effect, value) => effect.Shine = value),
+                FloatSlider<LiquidMercuryImageEffect>("fluidity", "Fluidity (%)", 0, 100, 55, (effect, value) => effect.Fluidity = value),
+                FloatSlider<LiquidMercuryImageEffect>("depth", "Depth (%)", 0, 100, 65, (effect, value) => effect.Depth = value)),
+
+            Filter<NightVisionImageEffect>(
+                "night_vision",
+                FloatSlider<NightVisionImageEffect>("intensity", "Intensity (%)", 0, 100, 78, (effect, value) => effect.Intensity = value),
+                FloatSlider<NightVisionImageEffect>("glow", "Glow (%)", 0, 100, 42, (effect, value) => effect.Glow = value),
+                FloatSlider<NightVisionImageEffect>("noise", "Noise (%)", 0, 100, 18, (effect, value) => effect.Noise = value),
+                FloatSlider<NightVisionImageEffect>("vignette", "Vignette (%)", 0, 100, 45, (effect, value) => effect.Vignette = value),
+                FloatSlider<NightVisionImageEffect>("scanlines", "Scanlines (%)", 0, 100, 35, (effect, value) => effect.Scanlines = value)),
+
+            Filter<OilSlickInterferenceImageEffect>(
+                "oil_slick_interference",
+                FloatSlider<OilSlickInterferenceImageEffect>("intensity", "Intensity (%)", 0, 100, 58, (effect, value) => effect.Intensity = value),
+                FloatSlider<OilSlickInterferenceImageEffect>("scale", "Scale (%)", 0, 100, 70, (effect, value) => effect.Scale = value),
+                FloatSlider<OilSlickInterferenceImageEffect>("darkness", "Darkness (%)", 0, 100, 45, (effect, value) => effect.Darkness = value),
+                FloatSlider<OilSlickInterferenceImageEffect>("gloss", "Gloss (%)", 0, 100, 60, (effect, value) => effect.Gloss = value),
+                FloatSlider<OilSlickInterferenceImageEffect>("shift", "Hue shift", 0, 360, 0, (effect, value) => effect.Shift = value, valueStringFormat: "{}{0:0}°")),
+
+            Filter<PlasmaEnergyArcsImageEffect>(
+                "plasma_energy_arcs",
+                FloatSlider<PlasmaEnergyArcsImageEffect>("energy", "Energy (%)", 0, 100, 65, (effect, value) => effect.Energy = value),
+                FloatSlider<PlasmaEnergyArcsImageEffect>("arc_density", "Arc density (%)", 0, 100, 46, (effect, value) => effect.ArcDensity = value),
+                FloatSlider<PlasmaEnergyArcsImageEffect>("glow", "Glow (%)", 0, 100, 70, (effect, value) => effect.Glow = value),
+                FloatSlider<PlasmaEnergyArcsImageEffect>("turbulence", "Turbulence (%)", 0, 100, 52, (effect, value) => effect.Turbulence = value),
+                FloatSlider<PlasmaEnergyArcsImageEffect>("thickness", "Thickness (%)", 0, 100, 38, (effect, value) => effect.Thickness = value)),
+
+            Filter<RustCorrosionImageEffect>(
+                "rust_corrosion",
+                FloatSlider<RustCorrosionImageEffect>("corrosion", "Corrosion (%)", 0, 100, 58, (effect, value) => effect.Corrosion = value),
+                FloatSlider<RustCorrosionImageEffect>("pitting", "Pitting (%)", 0, 100, 44, (effect, value) => effect.Pitting = value),
+                FloatSlider<RustCorrosionImageEffect>("streaks", "Streaks (%)", 0, 100, 36, (effect, value) => effect.Streaks = value),
+                FloatSlider<RustCorrosionImageEffect>("dirt", "Dirt (%)", 0, 100, 26, (effect, value) => effect.Dirt = value),
+                FloatSlider<RustCorrosionImageEffect>("edge_wear", "Edge wear (%)", 0, 100, 52, (effect, value) => effect.EdgeWear = value)),
+
+            Filter<SmokeOverlayImageEffect>(
+                "smoke_overlay",
+                FloatSlider<SmokeOverlayImageEffect>("density", "Density (%)", 0, 100, 42, (effect, value) => effect.Density = value),
+                FloatSlider<SmokeOverlayImageEffect>("scale", "Scale (%)", 0, 100, 68, (effect, value) => effect.Scale = value),
+                FloatSlider<SmokeOverlayImageEffect>("drift", "Drift", -100, 100, 18, (effect, value) => effect.Drift = value),
+                FloatSlider<SmokeOverlayImageEffect>("softness", "Softness (%)", 0, 100, 55, (effect, value) => effect.Softness = value),
+                FloatSlider<SmokeOverlayImageEffect>("contrast", "Contrast (%)", 0, 100, 48, (effect, value) => effect.Contrast = value)),
+
+            Filter<VhsTapeDamageImageEffect>(
+                "vhs_tape_damage",
+                FloatSlider<VhsTapeDamageImageEffect>("distortion", "Distortion (%)", 0, 100, 55, (effect, value) => effect.Distortion = value),
+                FloatSlider<VhsTapeDamageImageEffect>("noise", "Noise (%)", 0, 100, 28, (effect, value) => effect.Noise = value),
+                FloatSlider<VhsTapeDamageImageEffect>("color_bleed", "Color bleed (%)", 0, 100, 30, (effect, value) => effect.ColorBleed = value),
+                FloatSlider<VhsTapeDamageImageEffect>("tracking", "Tracking (%)", 0, 100, 24, (effect, value) => effect.Tracking = value),
+                FloatSlider<VhsTapeDamageImageEffect>("scanlines", "Scanlines (%)", 0, 100, 48, (effect, value) => effect.Scanlines = value)),
+
+            Filter<XRayScanImageEffect>(
+                "x_ray_scan",
+                FloatSlider<XRayScanImageEffect>("contrast", "Contrast (%)", 0, 100, 70, (effect, value) => effect.Contrast = value),
+                FloatSlider<XRayScanImageEffect>("glow", "Glow (%)", 0, 100, 60, (effect, value) => effect.Glow = value),
+                FloatSlider<XRayScanImageEffect>("edge_boost", "Edge boost (%)", 0, 100, 68, (effect, value) => effect.EdgeBoost = value),
+                FloatSlider<XRayScanImageEffect>("scanlines", "Scanlines (%)", 0, 100, 40, (effect, value) => effect.Scanlines = value),
+                FloatSlider<XRayScanImageEffect>("noise", "Noise (%)", 0, 100, 14, (effect, value) => effect.Noise = value))
         ];
     }
 }

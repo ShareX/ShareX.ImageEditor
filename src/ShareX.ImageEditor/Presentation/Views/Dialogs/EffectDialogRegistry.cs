@@ -72,18 +72,6 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["vibrance"] = () => new VibranceDialog(),
                 ["duotone_gradient_map"] = () => new DuotoneGradientMapDialog(),
 
-                // --- Filters (custom dialogs not covered by FilterCatalog) ---
-                ["anamorphic_lens_flare"] = () => new AnamorphicLensFlareDialog(),
-                ["etched_glass"] = () => new EtchedGlassDialog(),
-                ["liquid_mercury"] = () => new LiquidMercuryDialog(),
-                ["night_vision"] = () => new NightVisionDialog(),
-                ["oil_slick_interference"] = () => new OilSlickInterferenceDialog(),
-                ["plasma_energy_arcs"] = () => new PlasmaEnergyArcsDialog(),
-                ["rust_corrosion"] = () => new RustCorrosionDialog(),
-                ["smoke_overlay"] = () => new SmokeOverlayDialog(),
-                ["vhs_tape_damage"] = () => new VhsTapeDamageDialog(),
-                ["x_ray_scan"] = () => new XRayScanDialog(),
-
                 // --- Drawings ---
                 ["draw_background"] = () => new DrawBackgroundDialog(),
                 ["draw_background_image"] = () => new DrawBackgroundImageDialog(),

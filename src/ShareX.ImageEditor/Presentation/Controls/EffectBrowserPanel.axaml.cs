@@ -511,20 +511,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
             Categories.Add(adj);
 
             var fil = new EffectCategory("Filters");
-            fil.AddEffect("Anamorphic lens flare...", LucideIcons.Aperture, "Adds cinematic horizontal flare streaks, warm bloom, and lens ghosts around bright areas.", () => RaiseDialog("anamorphic_lens_flare"), "anamorphic_lens_flare");
             fil.AddEffect("Edge detect", LucideIcons.ScanSearch, "Detects visible edges in the image.", () => Raise(EdgeDetectRequested));
             fil.AddEffect("Emboss", LucideIcons.Stamp, "Applies an emboss effect.", () => Raise(EmbossRequested));
-            fil.AddEffect("Etched glass...", LucideIcons.Glasses, "Turns the image into frosted glass with engraved detail and refracted highlights.", () => RaiseDialog("etched_glass"), "etched_glass");
-            fil.AddEffect("Liquid mercury...", LucideIcons.Droplet, "Builds reflective silver ripples and glossy fluid-metal highlights.", () => RaiseDialog("liquid_mercury"), "liquid_mercury");
             fil.AddEffect("Mean removal", LucideIcons.Sigma, "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
-            fil.AddEffect("Night vision...", LucideIcons.Moon, "Simulates green phosphor night optics with glow, noise, and scanlines.", () => RaiseDialog("night_vision"), "night_vision");
-            fil.AddEffect("Oil slick interference...", LucideIcons.Rainbow, "Overlays dark glossy iridescent interference colors like spilled oil.", () => RaiseDialog("oil_slick_interference"), "oil_slick_interference");
-            fil.AddEffect("Plasma energy arcs...", LucideIcons.Zap, "Adds glowing electric plasma filaments with branchy arc turbulence.", () => RaiseDialog("plasma_energy_arcs"), "plasma_energy_arcs");
-            fil.AddEffect("Rust / corrosion...", LucideIcons.Stamp, "Adds oxidized rust blooms, pitting, grime, and worn edges.", () => RaiseDialog("rust_corrosion"), "rust_corrosion");
-            fil.AddEffect("Smoke overlay...", LucideIcons.Cloud, "Adds drifting layered smoke billows over the image.", () => RaiseDialog("smoke_overlay"), "smoke_overlay");
             fil.AddEffect("Smooth", LucideIcons.Waves, "Applies a smoothing effect.", () => Raise(SmoothRequested));
-            fil.AddEffect("VHS tape damage...", LucideIcons.Monitor, "Applies analog tracking jitter, chroma bleed, scanlines, and tape dropouts.", () => RaiseDialog("vhs_tape_damage"), "vhs_tape_damage");
-            fil.AddEffect("X-ray scan...", LucideIcons.ScanEye, "Rebuilds the image as glowing cyan density and edge structure like a scanner plate.", () => RaiseDialog("x_ray_scan"), "x_ray_scan");
             AddCatalogDrivenFilters(fil);
             Categories.Add(fil);
 
