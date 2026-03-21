@@ -396,6 +396,7 @@ public class EditorSelectionController
 
             _startPoint = currentPoint;
             UpdateSelectionHandles();
+            NotifyDimensionsChanged();
             return;
         }
 
@@ -432,6 +433,7 @@ public class EditorSelectionController
             }
             _startPoint = currentPoint;
             UpdateSelectionHandles();
+            NotifyDimensionsChanged();
             return;
         }
 
@@ -506,6 +508,7 @@ public class EditorSelectionController
 
             _startPoint = currentPoint;
             UpdateSelectionHandles();
+            NotifyDimensionsChanged();
             return;
         }
 
@@ -532,6 +535,7 @@ public class EditorSelectionController
 
             _startPoint = currentPoint;
             UpdateSelectionHandles();
+            NotifyDimensionsChanged();
             return;
         }
 
@@ -568,6 +572,20 @@ public class EditorSelectionController
         if (_selectedShape?.Tag is BaseEffectAnnotation)
         {
             RequestUpdateEffect?.Invoke(_selectedShape);
+        }
+
+        NotifyDimensionsChanged();
+    }
+
+    /// <summary>
+    /// Pushes the selected annotation's current bounds to the Tool Info panel.
+    /// </summary>
+    private void NotifyDimensionsChanged()
+    {
+        if (_selectedShape?.Tag is Annotation ann && _view.DataContext is MainViewModel vm)
+        {
+            var bounds = ann.GetBounds();
+            vm.UpdateDrawingDimensions(bounds.Width, bounds.Height);
         }
     }
 
