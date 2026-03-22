@@ -140,7 +140,8 @@ namespace ShareX.ImageEditor.Hosting
         public Color BackgroundColor { get => HexToColor(BackgroundColorHex); set => BackgroundColorHex = ColorToHex(value); }
         public string BackgroundImagePath { get; set; } = "";
 
-        // Effects
+        // Image effects
+        public List<string> RecentEffects { get; set; } = new List<string>();
         public List<string> FavoriteEffects { get; set; } = new List<string>(DefaultFavoriteEffects);
     }
 }

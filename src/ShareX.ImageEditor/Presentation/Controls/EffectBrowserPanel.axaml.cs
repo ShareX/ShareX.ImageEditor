@@ -67,7 +67,8 @@ namespace ShareX.ImageEditor.Presentation.Controls
         }
 
         public EffectItem AddEffectCopy(EffectItem effect, bool keepSorted = true)
-            => AddEffect(effect.Name, effect.Icon, effect.Description, effect.ExecuteAction, effect.EffectId, keepSorted);
+            => AddEffect(effect.Name, effect.Icon, effect.Description, effect.ExecuteAction, effect.EffectId, keepSorted)
+                .WithExecuteObserver(effect.ExecuteObserver);
 
         public void ClearEffects()
         {
@@ -160,6 +161,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         private string _description;
 
         public Action ExecuteAction { get; }
+        public Action<EffectItem>? ExecuteObserver { get; set; }
 
         public EffectItem(string name, string icon, string description, Action executeAction, string? effectId = null)
         {
@@ -168,6 +170,12 @@ namespace ShareX.ImageEditor.Presentation.Controls
             Icon = icon;
             Description = description;
             ExecuteAction = executeAction;
+        }
+
+        public EffectItem WithExecuteObserver(Action<EffectItem>? executeObserver)
+        {
+            ExecuteObserver = executeObserver;
+            return this;
         }
 
         public static string NormalizeEffectId(string value)
@@ -213,15 +221,17 @@ namespace ShareX.ImageEditor.Presentation.Controls
         private void Execute()
         {
             ExecuteAction?.Invoke();
+            ExecuteObserver?.Invoke(this);
         }
     }
 
     public partial class EffectBrowserPanel : UserControl
     {
         private const string FavoritesHeaderHint = "Right click to favorite";
+        private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
 
-        private static readonly Dictionary<string, string> FavoriteAliases = new(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, string> EffectAliases = new(StringComparer.OrdinalIgnoreCase)
         {
             ["resize"] = "resize_image",
             ["canvas"] = "resize_canvas",
@@ -252,8 +262,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         public ObservableCollection<EffectCategory> Categories { get; } = new();
 
+        private readonly EffectCategory _recentCategory = new("Recent");
         private readonly EffectCategory _favoritesCategory = new("Favorites", headerHint: FavoritesHeaderHint);
         private readonly Dictionary<string, EffectItem> _allEffectsById = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<string> _recentEffectIds = new();
         private readonly HashSet<string> _favoriteEffectIds = new(StringComparer.OrdinalIgnoreCase);
         private ImageEditorOptions? _options;
 
@@ -276,6 +288,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         public void SetOptions(ImageEditorOptions options)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
+            LoadRecentEffects(options.RecentEffects, persistToOptions: true);
             LoadFavoriteEffects(options.FavoriteEffects, persistToOptions: true);
         }
 
@@ -338,7 +351,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
             foreach (var category in Categories)
             {
-                if (ReferenceEquals(category, _favoritesCategory))
+                if (IsPinnedCategory(category))
                 {
                     continue;
                 }
@@ -347,9 +360,51 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 {
                     if (!string.IsNullOrWhiteSpace(effect.EffectId))
                     {
+                        effect.ExecuteObserver = RegisterRecentEffect;
                         _allEffectsById[effect.EffectId] = effect;
                     }
                 }
+            }
+        }
+
+        private bool IsPinnedCategory(EffectCategory category)
+        {
+            return ReferenceEquals(category, _recentCategory) || ReferenceEquals(category, _favoritesCategory);
+        }
+
+        private void LoadRecentEffects(IEnumerable<string>? recentEffectIds, bool persistToOptions)
+        {
+            _recentEffectIds.Clear();
+
+            if (recentEffectIds != null)
+            {
+                foreach (string recentEffectId in recentEffectIds)
+                {
+                    if (!TryResolveEffect(recentEffectId, out EffectItem effect))
+                    {
+                        continue;
+                    }
+
+                    if (_recentEffectIds.Any(effectId => string.Equals(effectId, effect.EffectId, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    _recentEffectIds.Add(effect.EffectId);
+
+                    if (_recentEffectIds.Count >= MaxRecentEffects)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            RebuildRecentCategory();
+            ApplyCurrentFilter();
+
+            if (persistToOptions)
+            {
+                PersistRecentToOptions();
             }
         }
 
@@ -387,7 +442,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 return false;
             }
 
-            if (FavoriteAliases.TryGetValue(normalizedId, out string? alias))
+            if (EffectAliases.TryGetValue(normalizedId, out string? alias))
             {
                 normalizedId = alias;
             }
@@ -433,6 +488,39 @@ namespace ShareX.ImageEditor.Presentation.Controls
             return true;
         }
 
+        private void RegisterRecentEffect(EffectItem effect)
+        {
+            if (string.IsNullOrWhiteSpace(effect.EffectId))
+            {
+                return;
+            }
+
+            _recentEffectIds.RemoveAll(effectId => string.Equals(effectId, effect.EffectId, StringComparison.OrdinalIgnoreCase));
+            _recentEffectIds.Insert(0, effect.EffectId);
+
+            if (_recentEffectIds.Count > MaxRecentEffects)
+            {
+                _recentEffectIds.RemoveRange(MaxRecentEffects, _recentEffectIds.Count - MaxRecentEffects);
+            }
+
+            RebuildRecentCategory();
+            ApplyCurrentFilter();
+            PersistRecentToOptions();
+        }
+
+        private void RebuildRecentCategory()
+        {
+            _recentCategory.ClearEffects();
+
+            foreach (string recentEffectId in _recentEffectIds)
+            {
+                if (TryResolveEffect(recentEffectId, out EffectItem effect))
+                {
+                    _recentCategory.AddEffectCopy(effect, keepSorted: false);
+                }
+            }
+        }
+
         private void ApplyCurrentFilter()
         {
             var searchBox = this.FindControl<TextBox>("SearchBox");
@@ -453,10 +541,20 @@ namespace ShareX.ImageEditor.Presentation.Controls
             }
 
             int totalEffectCount = Categories
-                .Where(category => !ReferenceEquals(category, _favoritesCategory))
+                .Where(category => !IsPinnedCategory(category))
                 .Sum(category => category.AllEffects.Count);
 
             searchBox.Watermark = string.Format(SearchWatermarkFormat, totalEffectCount);
+        }
+
+        private void PersistRecentToOptions()
+        {
+            if (_options == null)
+            {
+                return;
+            }
+
+            _options.RecentEffects = _recentEffectIds.ToList();
         }
 
         private void PersistFavoritesToOptions()
@@ -474,6 +572,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         private void InitializeEffects()
         {
+            Categories.Add(_recentCategory);
             Categories.Add(_favoritesCategory);
 
             var manip = new EffectCategory("Manipulations");
