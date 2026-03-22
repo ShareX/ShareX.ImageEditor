@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ShareX.ImageEditor.Presentation.Controls"
+             mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="360"
+             x:Class="ShareX.ImageEditor.Presentation.Views.Dialogs.DrawLineDialog">
+
+    <StackPanel Spacing="0">
+        <TextBlock Text="Line" Margin="0,0,0,8"/>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="10">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Start X"/>
+                        <NumericUpDown x:Name="StartXInput"
+                                       Value="0"
+                                       Minimum="-10000"
+                                       Maximum="10000"
+                                       Increment="1"
+                                       FormatString="0"
+                                       ValueChanged="OnNumericChanged"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Start Y"/>
+                        <NumericUpDown x:Name="StartYInput"
+                                       Value="0"
+                                       Minimum="-10000"
+                                       Maximum="10000"
+                                       Increment="1"
+                                       FormatString="0"
+                                       ValueChanged="OnNumericChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="End X"/>
+                        <NumericUpDown x:Name="EndXInput"
+                                       Value="200"
+                                       Minimum="-10000"
+                                       Maximum="10000"
+                                       Increment="1"
+                                       FormatString="0"
+                                       ValueChanged="OnNumericChanged"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="End Y"/>
+                        <NumericUpDown x:Name="EndYInput"
+                                       Value="0"
+                                       Minimum="-10000"
+                                       Maximum="10000"
+                                       Increment="1"
+                                       FormatString="0"
+                                       ValueChanged="OnNumericChanged"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Thickness"/>
+                    <NumericUpDown x:Name="ThicknessInput"
+                                   Value="4"
+                                   Minimum="0"
+                                   Maximum="1000"
+                                   Increment="1"
+                                   FormatString="0.##"
+                                   ValueChanged="OnNumericChanged"/>
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Color"/>
+                    <controls:ColorPickerDropdown x:Name="LineColorPicker"
+                                                  SelectedColorValue="#FFFFFFFF"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
+            <Button Classes="editor-button"
+                    Content="Cancel"
+                    Click="OnCancelClick"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Stretch"/>
+            <Button Classes="editor-button active"
+                    Content="Apply"
+                    Click="OnApplyClick"
+                    Margin="4,0,0,0"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"/>
+        </Grid>
+    </StackPanel>
+</UserControl>

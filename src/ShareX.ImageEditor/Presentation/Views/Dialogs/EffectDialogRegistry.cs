@@ -77,10 +77,13 @@ namespace ShareX.ImageEditor.Presentation.Views.Dialogs
                 ["draw_background_image"] = () => new DrawBackgroundImageDialog(),
                 ["draw_checkerboard"] = () => new DrawCheckerboardDialog(),
                 ["draw_image"] = () => new DrawImageDialog(),
+                ["draw_line"] = () => new DrawLineDialog(),
                 ["draw_particles"] = () => new DrawParticlesDialog(),
                 ["draw_shape"] = () => new DrawShapeDialog(),
                 ["draw_text"] = () => new DrawTextDialog(),
                 ["text_watermark"] = () => new TextWatermarkDialog(),
+
+                // --- Filters ---
                 ["wooden_frame"] = () => new WoodenFrameDialog(),
 
                 // --- Transforms ---

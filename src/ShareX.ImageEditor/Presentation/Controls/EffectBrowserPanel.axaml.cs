@@ -642,6 +642,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             drawings.AddEffect("Checkerboard...", LucideIcons.Grid2X2Check, "Draws a checkerboard background behind the image.", () => RaiseDialog("draw_checkerboard"));
             drawings.AddEffect("Border...", LucideIcons.Frame, "Adds a border to the image.", () => RaiseDialog("border"));
             drawings.AddEffect("Image...", LucideIcons.ImagePlus, "Draws an image overlay with placement, sizing and opacity controls.", () => RaiseDialog("draw_image"));
+            drawings.AddEffect("Line...", LucideIcons.Minus, "Draws a straight line overlay with start, end, color and thickness controls.", () => RaiseDialog("draw_line"));
             drawings.AddEffect("Particles...", LucideIcons.Sparkle, "Draws random particles from an image folder.", () => RaiseDialog("draw_particles"));
             drawings.AddEffect("Shape...", LucideIcons.VectorSquare, "Draws filled primitive shapes with placement, size and color controls.", () => RaiseDialog("draw_shape"));
             drawings.AddEffect("Text...", LucideIcons.TextCursor, "Draws stylized text with gradient, outline and shadow options.", () => RaiseDialog("draw_text"));
