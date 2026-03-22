@@ -252,7 +252,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
 
         public ObservableCollection<EffectCategory> Categories { get; } = new();
 
-        private readonly EffectCategory _favoritesCategory = new("Favorites", keepVisibleWhenEmpty: true, headerHint: FavoritesHeaderHint);
+        private readonly EffectCategory _favoritesCategory = new("Favorites", headerHint: FavoritesHeaderHint);
         private readonly Dictionary<string, EffectItem> _allEffectsById = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _favoriteEffectIds = new(StringComparer.OrdinalIgnoreCase);
         private ImageEditorOptions? _options;
