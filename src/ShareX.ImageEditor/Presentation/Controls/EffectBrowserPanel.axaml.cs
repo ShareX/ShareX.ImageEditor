@@ -632,6 +632,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             fil.AddEffect("Emboss", LucideIcons.Stamp, "Applies an emboss effect.", () => Raise(EmbossRequested));
             fil.AddEffect("Mean removal", LucideIcons.Sigma, "Removes the mean value from colors.", () => Raise(MeanRemovalRequested));
             fil.AddEffect("Smooth", LucideIcons.Waves, "Applies a smoothing effect.", () => Raise(SmoothRequested));
+            fil.AddEffect("Wooden frame...", LucideIcons.Frame, "Expands the canvas with a beveled procedural wooden picture frame.", () => RaiseDialog("wooden_frame"), "wooden_frame");
             AddCatalogDrivenFilters(fil);
             Categories.Add(fil);
 
@@ -645,7 +646,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
             drawings.AddEffect("Shape...", LucideIcons.VectorSquare, "Draws filled primitive shapes with placement, size and color controls.", () => RaiseDialog("draw_shape"));
             drawings.AddEffect("Text...", LucideIcons.TextCursor, "Draws stylized text with gradient, outline and shadow options.", () => RaiseDialog("draw_text"));
             drawings.AddEffect("Text watermark...", LucideIcons.Stamp, "Draws text inside a rounded watermark box with padding, border and optional shadow.", () => RaiseDialog("text_watermark"));
-            drawings.AddEffect("Wooden frame...", LucideIcons.Frame, "Expands the canvas with a beveled procedural wooden picture frame.", () => RaiseDialog("wooden_frame"), "wooden_frame");
             Categories.Add(drawings);
         }
 
