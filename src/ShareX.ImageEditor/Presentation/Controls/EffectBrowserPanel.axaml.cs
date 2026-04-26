@@ -1,3 +1,28 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -8,7 +33,6 @@ using ShareX.ImageEditor.Core.ImageEffects;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Effects;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 
 namespace ShareX.ImageEditor.Presentation.Controls
@@ -555,7 +579,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 .Where(category => !IsPinnedCategory(category))
                 .Sum(category => category.AllEffects.Count);
 
-        searchBox.PlaceholderText = string.Format(SearchWatermarkFormat, totalEffectCount);
+            searchBox.PlaceholderText = string.Format(SearchWatermarkFormat, totalEffectCount);
         }
 
         private void PersistRecentToOptions()
@@ -612,7 +636,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             foreach (EffectDefinition definition in ImageEffectCatalog.GetByCategory(targetCategory))
             {
-                // Skip effects that are registered as editor operations — they are added separately.
+                // Skip effects that are registered as editor operations � they are added separately.
                 if (EditorOperationCatalog.TryGetDefinition(definition.Id, out _))
                 {
                     continue;

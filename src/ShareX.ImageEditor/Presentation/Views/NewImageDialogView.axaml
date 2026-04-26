@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ShareX.ImageEditor.Presentation.ViewModels"
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="280"
+             mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="300"
              x:Class="ShareX.ImageEditor.Presentation.Views.NewImageDialogView"
              x:DataType="vm:NewImageDialogViewModel">
 
@@ -15,12 +15,12 @@
             Padding="0"
             Width="340"
             BoxShadow="0 4 10 0 #40000000">
-        <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Popup}">
+        <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Panel}">
             <!-- Title Bar -->
             <Border Grid.Row="0" Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,0,0,1"
-                    Padding="10,6">
-                <TextBlock Text="New Image" FontWeight="Normal"/>
+                    Padding="14,8">
+                <TextBlock Text="New Image" FontSize="15" VerticalAlignment="Center"/>
             </Border>
 
             <!-- Content -->
@@ -48,14 +48,25 @@
                 </Grid>
 
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Background color:" FontWeight="Normal"/>
-                    <CheckBox IsChecked="{Binding Transparent}" Content="Transparent" FontWeight="Normal"/>
-                    <controls:ColorPickerDropdown x:Name="BackgroundColorPicker"
-                                                  SelectedColorValue="{Binding BackgroundColor, Mode=TwoWay}"
-                                                  IsEnabled="{Binding !Transparent}"
-                                                  Height="40"
-                                                  Width="72"
-                                                  HorizontalAlignment="Left"/>
+                    <TextBlock Text="Background:" FontWeight="Normal"/>
+                    <StackPanel Orientation="Horizontal" Spacing="16">
+                        <RadioButton GroupName="BackgroundMode"
+                                     IsChecked="{Binding Transparent, Mode=TwoWay}">
+                            <TextBlock Text="Transparent" FontWeight="Normal"/>
+                        </RadioButton>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <RadioButton GroupName="BackgroundMode"
+                                         IsChecked="{Binding IsSolidBackground, Mode=TwoWay}">
+                                <TextBlock Text="Solid color" FontWeight="Normal"/>
+                            </RadioButton>
+                            <controls:ColorPickerDropdown x:Name="BackgroundColorPicker"
+                                                        SelectedColorValue="{Binding BackgroundColor, Mode=TwoWay}"
+                                                        IsEnabled="{Binding IsSolidBackground}"
+                                                        Height="40"
+                                                        Width="72"
+                                                        HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
 

@@ -25,7 +25,6 @@
 
 using ShareX.ImageEditor.Hosting.Diagnostics;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace ShareX.ImageEditor.Hosting;
 

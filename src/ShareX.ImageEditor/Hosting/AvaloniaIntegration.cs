@@ -125,7 +125,14 @@ namespace ShareX.ImageEditor.Hosting
             window.Show();
         }
 
-        public static byte[]? ShowEditorDialog(Stream imageStream, ImageEditorOptions options, EditorEvents? events = null, bool taskMode = false, string? imageFilePath = null)
+        public static byte[]? ShowEditorDialog(ImageEditorOptions options, EditorEvents? events = null,
+            bool taskMode = false, string? imageFilePath = null)
+        {
+            return ShowEditorDialog(null, options, events, taskMode, imageFilePath);
+        }
+
+        public static byte[]? ShowEditorDialog(Stream? imageStream, ImageEditorOptions options, EditorEvents? events = null,
+            bool taskMode = false, string? imageFilePath = null)
         {
             byte[]? result = null;
             IEditorDiagnosticsSink? previousDiagnosticsSink = null;
@@ -172,14 +179,19 @@ namespace ShareX.ImageEditor.Hosting
 
             // Set file path from events or parameter
             string? filePath = imageFilePath ?? events?.ImageFilePath;
-            if (!string.IsNullOrEmpty(filePath) && window.DataContext is MainViewModel vmForPath)
-            {
-                vmForPath.ImageFilePath = filePath;
-            }
 
-            if (taskMode && window.DataContext is MainViewModel vm)
+            if (window.DataContext is MainViewModel vm)
             {
-                vm.TaskMode = true;
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    vm.ImageFilePath = filePath;
+                }
+
+                vm.ShowFileMenu = !taskMode;
+                vm.ShowTaskButtons = true;
+                vm.UseContinueWorkflow = taskMode;
+                vm.ShowBottomToolbar = true;
+                vm.ShowStartScreen = !taskMode;
             }
 
             SetupEvents(window, events, () =>

@@ -43,8 +43,19 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private Color _backgroundColor = Colors.White;
 
+        public bool IsSolidBackground
+        {
+            get => !Transparent;
+            set => Transparent = !value;
+        }
+
         public IRelayCommand OkCommand { get; }
         public IRelayCommand CancelCommand { get; }
+
+        partial void OnTransparentChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsSolidBackground));
+        }
 
         public NewImageDialogViewModel(Action<NewImageDialogViewModel> onOk, Action onCancel)
         {

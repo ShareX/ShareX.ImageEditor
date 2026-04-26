@@ -1,3 +1,28 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -35,6 +60,8 @@ public class EditorZoomController
     {
         _view = view;
     }
+
+    public bool IsPanning => _isPanning;
 
     public void InitLastZoom(double zoom)
     {
@@ -205,9 +232,8 @@ public class EditorZoomController
         _isPanning = true;
         _panStart = e.GetPosition(scrollViewer);
         _panOrigin = scrollViewer.Offset;
-        scrollViewer.Cursor = CursorAssetLoader.GetClosedHandCursor();
+        _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
         UpdateCanvasCursorsForPanning(true);
-        e.Pointer.Capture(scrollViewer);
         e.Handled = true;
     }
 
@@ -248,20 +274,13 @@ public class EditorZoomController
 
     private void UpdateCanvasCursorsForPanning(bool isPanning)
     {
-        Cursor cursor = isPanning
-            ? CursorAssetLoader.GetClosedHandCursor()
-            : GetDefaultCanvasCursor();
-
-        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
-        if (annotationCanvas != null)
+        if (isPanning)
         {
-            annotationCanvas.Cursor = cursor;
+            _view.ApplyInteractionCursor(CursorAssetLoader.GetClosedHandCursor());
         }
-
-        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
-        if (overlayCanvas != null)
+        else
         {
-            overlayCanvas.Cursor = cursor;
+            _view.RestoreEditorSurfaceCursorForActiveTool();
         }
     }
 

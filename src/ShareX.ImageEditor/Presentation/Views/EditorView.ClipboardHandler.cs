@@ -123,9 +123,12 @@ namespace ShareX.ImageEditor.Presentation.Views
                     }
 
                     // Check for bitmap
-                    var formats = await clipboard.GetDataFormatsAsync();
-                    if (formats.Any(f => f.ToString() == "PNG") || formats.Any(f => f.ToString() == "Bitmap") || formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
+                    // Use TryGetBitmapAsync for reliable cross-format bitmap detection instead of
+                    // hardcoded format name strings which are platform-specific and may not match.
+                    var clipboardBitmap = await clipboard.TryGetBitmapAsync();
+                    if (clipboardBitmap != null)
                     {
+                        (clipboardBitmap as IDisposable)?.Dispose();
                         await PasteImageFromClipboard();
                         return;
                     }
@@ -303,12 +306,13 @@ namespace ShareX.ImageEditor.Presentation.Views
                         }
                         else
                         {
-                            // Check for bitmap
-                            var formats = await clipboard.GetDataFormatsAsync();
-                            if (formats.Any(f => f.ToString() == "PNG") ||
-                                formats.Any(f => f.ToString() == "Bitmap") ||
-                                formats.Any(f => f.ToString() == "DeviceIndependentBitmap"))
+                            // Use TryGetBitmapAsync for reliable cross-format bitmap detection.
+                            // Format name strings (e.g. "PNG", "Bitmap") are platform-specific and
+                            // unreliable; TryGetBitmapAsync handles all native image clipboard formats.
+                            var bitmap = await clipboard.TryGetBitmapAsync();
+                            if (bitmap != null)
                             {
+                                (bitmap as IDisposable)?.Dispose();
                                 canPaste = true;
                             }
                         }

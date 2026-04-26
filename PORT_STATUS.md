@@ -1,11 +1,79 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-04-09
+Last updated: 2026-04-26
 
 ## Port Source
-- ShareX.ImageEditor commit: `c6e3c5260` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-04-08)
-- XerahS submodule last synced to: `c6e3c5260` (pending submodule commit)
-- XerahS submodule current HEAD: `6aac31b` (submodule's own commit history after porting)
+- ShareX.ImageEditor commit: `c98176bf1` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-04-26)
+- XerahS submodule last synced to: `c98176bf1` (pending submodule commit)
+- XerahS submodule current HEAD: `d285844` (submodule's own commit history before this porting session)
+
+## Port Activity (2026-04-26)
+
+- Previous recorded ShareX sync: `c6e3c5260`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `c98176bf1`
+- Result: caught up through `c98176bf1` in the working tree
+- Method: mapped sync from the local `C:\Users\liveu\source\repos\ShareX Team\ShareX\ShareX.ImageEditor` checkout into `src/ShareX.ImageEditor`, followed by XerahS host integration fixes
+- Risk: high; the range spans start-screen flow, recent image files, editor mode flags, Skia/Avalonia API migration, cursor capture, dialog behavior, and image resizing behavior
+
+### Commits reviewed and ported
+
+- `5e7e59a93` Async emoji preview and picker loading
+- `c61d57887` Upgrade packages and migrate to Avalonia APIs
+- `44dc953b3` Cleanup usings, format SKPaint, and minor UI fixes
+- `1ca713cf5` Handle Escape to close dialogs and panels
+- `30ff71fff` Use SKSamplingOptions and SKImage for resampling
+- `4a8247fed` Use ReflectionBinding for SelectEmojiCommand
+- `2598bca20` Add CopyContext and fix bitmap clipboard checks
+- `6b172822c` Improve emoji picker init, focus & shortcut handling
+- `1cbf1da91` Centralize interaction cursor overrides
+- `64b9dfc44` Use interaction capture layer for cursor handling
+- `43964127e` Add start screen, URL/clipboard loading, recent files
+- `c79ae99fa` Disable sample fallback; compact start UI
+- `0ed42d55e` Embed URL input and status into Start Screen
+- `372b894c3` Restyle start-screen status panel
+- `7b1b10cf4` Rework start screen URL panel layout
+- `1e0939db0` Add ShowEditorDialog overload and modern editor flow
+- `275fc301a` Refactor editor mode into granular UI flags
+- `e5333a2bb` Update MainViewModel UI flags in editor
+- `7722a3ef4` Assign ImageFilePath inside VM branch
+- `45ee36513` Remove theme selection functionality from EditorView and MainViewModel
+- `5134ddf01` Fix resx
+- `09b456fa2` Added "Remember window state" option
+- `a07b88bcf` Refactor ConfirmationDialogView layout for improved content structure
+- `c66d92c6f` Add custom ItemsPanel to RecentFiles ItemsControl for improved layout
+- `c11df0504` Refactor NewImageDialogView layout for improved styling and consistency
+- `3479bed9c` Update ConfirmationDialogViewModel title and enhance layout for consistency
+- `e714392b5` Enhance NewImageDialogView with solid background option and update layout for clarity
+- `7404c68ed` Enhance EditorInputController to support crosshair cursor interaction for specific tools
+- `998e1b7c7` Add RefreshSpotlightOverlay call on new image request and bitmap load
+- `f3bebe613` Implement recent image file management in the annotation toolbar
+- `c98176bf1` Add aspect ratio handling to image resizing functionality
+
+### Files added
+
+- `src/ShareX.ImageEditor/Presentation/ViewModels/StartScreenDialogViewModel.cs`
+- `src/ShareX.ImageEditor/Presentation/Views/StartScreenDialogView.axaml`
+- `src/ShareX.ImageEditor/Presentation/Views/StartScreenDialogView.axaml.cs`
+
+### Files updated
+
+- Updated mapped upstream changes across `Core/Abstractions`, `Core/Annotations/Effects`, `Core/Editor`, `Core/ImageEffects`, `Hosting`, `Presentation/Controllers`, `Presentation/Controls`, `Presentation/Emoji`, `Presentation/Theming`, `Presentation/ViewModels`, and `Presentation/Views`.
+- Updated XerahS host integration call sites for the new `MainViewModel` UI flags.
+- Updated RegionCapture's toolbar adapter implementation for recent-image members added upstream.
+- Updated the ViewLocator test for the current confirmation dialog constructor.
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout.
+- Preserved XerahS annotation persistence hooks on `EditorCore`.
+- Preserved XerahS tail-style options and icon constants used by the tail-style picker.
+- Preserved the submodule library license header wording for synced `.cs` files.
+- Mapped removed `TaskMode` / `ShowTaskModeButtons` host usage to `ShowFileMenu`, `ShowTaskButtons`, `UseContinueWorkflow`, `ShowBottomToolbar`, and `ShowStartScreen`.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor\src\ShareX.ImageEditor\ShareX.ImageEditor.csproj -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-04-26.
+- `dotnet build src\desktop\XerahS.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-04-26.
 
 ## Port Activity (2026-04-09)
 

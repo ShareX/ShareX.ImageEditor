@@ -24,8 +24,11 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media;
+using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace ShareX.ImageEditor.Core.Abstractions;
 
@@ -50,7 +53,6 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool TextBold { get; set; }
     bool TextItalic { get; set; }
     bool TextUnderline { get; set; }
-    StepTailStyle TailStyle { get; set; }
     string ActiveToolIcon { get; }
     string ActiveToolName { get; }
     bool CanUndo { get; }
@@ -66,9 +68,12 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }
-    bool ShowTailStyle { get; }
     bool ShowToolOptions { get; }
     bool ShowToolOptionsSeparator { get; }
+    ReadOnlyObservableCollection<MenuItem> RecentImageMenuItems { get; }
+    ReadOnlyObservableCollection<string> RecentImageFiles { get; }
+    bool HasRecentImageFiles { get; }
+    ICommand OpenRecentImageCommand { get; }
     void SelectTool(EditorTool tool);
     void Undo();
     void Redo();

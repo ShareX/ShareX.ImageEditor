@@ -1,3 +1,28 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -49,6 +74,7 @@ public class EditorSelectionController
     private TextBox? _balloonTextEditor;
 
     public Control? SelectedShape => _selectedShape;
+    public bool IsInteractionActive => IsSelectionInteractionActive();
 
     // Event invoked when visual needs update (for Effects)
     public event Action<Control>? RequestUpdateEffect;
@@ -126,7 +152,7 @@ public class EditorSelectionController
                 _isDraggingHandle = true;
                 _draggedHandle = handleSource;
                 _startPoint = point; // Capture start for resize delta
-                e.Pointer.Capture(handleSource);
+                _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
                 e.Handled = true;
                 return true;
             }
@@ -136,7 +162,7 @@ public class EditorSelectionController
         // If we are in Select tool OR user holds Ctrl (multi-select not impl yet) or just clicking existing shapes to move
         // BUT: If active tool is a drawing tool, we usually prioritize drawing NEW shapes unless we click ON a selected shape?
         // ShareX logic: If in Select Tool, selecting works. If in other tools, usually drawing takes precedence unless we click a handle.
-        // But logic in EditorView.axaml.cs had: 
+        // But logic in EditorView.axaml.cs had:
         // if (vm.ActiveTool == EditorTool.Select ...) -> Try select.
 
         if (_view.DataContext is MainViewModel vm)
@@ -195,7 +221,7 @@ public class EditorSelectionController
                     _lastDragPoint = point;
                     UpdateSelectionHandles();
                     SelectionChanged?.Invoke(true);
-                    e.Pointer.Capture(hitTarget);
+                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
                     e.Handled = true;
                     return true;
                 }
@@ -285,7 +311,7 @@ public class EditorSelectionController
                         _lastDragPoint = point;
                         UpdateSelectionHandles();
                         SelectionChanged?.Invoke(true);
-                        e.Pointer.Capture(manualHit);
+                        _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
                         e.Handled = true;
                         return true;
                     }
@@ -461,7 +487,7 @@ public class EditorSelectionController
         if (_selectedShape is StepControl stepControl && stepControl.Annotation is NumberAnnotation number && handleTag == "StepTail")
         {
             number.SetTailPoint(new SKPoint((float)currentPoint.X, (float)currentPoint.Y));
-            AnnotationVisualFactory.UpdateVisualControl(stepControl, number);
+            stepControl.InvalidateVisual();
             _startPoint = currentPoint;
             UpdateSelectionHandles();
             return;
@@ -917,7 +943,6 @@ public class EditorSelectionController
 
         if (TryCreateRotatableSelectionHandles(_selectedShape, overlay))
         {
-            UpdateHoverOutline();
             return;
         }
 
@@ -1173,20 +1198,13 @@ public class EditorSelectionController
 
     private void UpdateCanvasCursorForSelectionInteraction()
     {
-        Cursor cursor = IsSelectionInteractionActive()
-            ? CursorAssetLoader.GetClosedHandCursor()
-            : GetDefaultCanvasCursor();
-
-        var annotationCanvas = _view.FindControl<Canvas>("AnnotationCanvas");
-        if (annotationCanvas != null)
+        if (IsSelectionInteractionActive())
         {
-            annotationCanvas.Cursor = cursor;
+            _view.ApplyInteractionCursor(CursorAssetLoader.GetClosedHandCursor());
         }
-
-        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
-        if (overlayCanvas != null)
+        else
         {
-            overlayCanvas.Cursor = cursor;
+            _view.RestoreEditorSurfaceCursorForActiveTool();
         }
     }
 
@@ -1219,8 +1237,6 @@ public class EditorSelectionController
             (_balloonTextEditor.Parent as Panel)?.Children.Remove(_balloonTextEditor);
             _balloonTextEditor = null;
         }
-
-
 
         var annotation = balloonControl.Annotation;
         var balloonLeft = Canvas.GetLeft(balloonControl);
@@ -1329,7 +1345,7 @@ public class EditorSelectionController
         textBox.Resources["TextControlBorderBrushPointerOver"] = Avalonia.Media.Brushes.Transparent;
 
         // Ensure TextBox is above the balloon geometry (ZIndex 100 might not be enough if Overlay is higher)
-        // But AnnotationCanvas is usually below Overlay. 
+        // But AnnotationCanvas is usually below Overlay.
         // We can't put TextBox in Overlay because Overlay is for handles.
         textBox.SetValue(Panel.ZIndexProperty, 9999);
 
@@ -1400,7 +1416,6 @@ public class EditorSelectionController
     {
         _shapeEndpoints[path] = (start, end);
     }
-
 
     private void UpdateHoverState(Canvas canvas, Point currentPoint)
     {
@@ -2018,6 +2033,9 @@ public class EditorSelectionController
 
         overlay.Children.Add(textBox);
         textBox.Focus();
+        textBox.CaretIndex = textBox.Text?.Length ?? 0;
+        textBox.SelectionStart = textBox.CaretIndex;
+        textBox.SelectionEnd = textBox.CaretIndex;
     }
 
     private void UpdateBoundsObserver()
@@ -2067,11 +2085,6 @@ public class EditorSelectionController
         if (control is SpeechBalloonControl balloonControl && balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
         {
             return ToRect(balloonAnnotation.GetBounds());
-        }
-
-        if (control is StepControl stepControl && stepControl.Annotation is NumberAnnotation numberAnnotation)
-        {
-            return ToRect(numberAnnotation.GetInteractionBounds());
         }
 
         if (control.Tag is Annotation annotation)

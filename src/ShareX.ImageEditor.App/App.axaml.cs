@@ -62,7 +62,11 @@ namespace ShareX.ImageEditor.App
 
                 if (window.DataContext is MainViewModel vm)
                 {
-                    vm.ImageEditorMode = true;
+                    vm.ShowFileMenu = true;
+                    vm.ShowTaskButtons = true;
+                    vm.UseContinueWorkflow = false;
+                    vm.ShowBottomToolbar = true;
+                    vm.ShowStartScreen = true;
 
                     string? imagePath = GetImagePathFromArgs(desktop.Args);
 

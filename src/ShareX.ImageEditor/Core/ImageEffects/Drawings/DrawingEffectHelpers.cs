@@ -1,6 +1,30 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using SkiaSharp;
 using System.Globalization;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -118,12 +142,11 @@ internal static class DrawingEffectHelpers
     {
         return interpolationMode switch
         {
-            DrawingInterpolationMode.HighQualityBicubic => SkiaImageHelper.HighQualitySampling,
-            DrawingInterpolationMode.Bicubic => SkiaImageHelper.HighQualitySampling,
-            DrawingInterpolationMode.HighQualityBilinear => SkiaImageHelper.MediumQualitySampling,
-            DrawingInterpolationMode.Bilinear => SkiaImageHelper.LinearSampling,
-            DrawingInterpolationMode.NearestNeighbor => SkiaImageHelper.NearestNeighborSampling,
-            _ => SkiaImageHelper.HighQualitySampling
+            DrawingInterpolationMode.Bicubic => new SKSamplingOptions(SKCubicResampler.Mitchell),
+            DrawingInterpolationMode.HighQualityBilinear => new SKSamplingOptions(SKCubicResampler.Mitchell),
+            DrawingInterpolationMode.Bilinear => new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None),
+            DrawingInterpolationMode.NearestNeighbor => new SKSamplingOptions(SKFilterMode.Nearest, SKMipmapMode.None),
+            _ => new SKSamplingOptions(SKCubicResampler.CatmullRom)
         };
     }
 

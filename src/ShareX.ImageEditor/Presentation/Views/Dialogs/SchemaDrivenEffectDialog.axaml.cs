@@ -25,6 +25,7 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
@@ -83,6 +84,10 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
 
         AttachedToVisualTree += OnAttachedToVisualTree;
         DetachedFromVisualTree += OnDetachedFromVisualTree;
+
+        // Handle Esc even when a TextBox inside the dialog has focus (handledEventsToo: true
+        // ensures this fires even after a child TextBox marks the KeyUp event as handled).
+        AddHandler(KeyUpEvent, OnEscapeKeyUp, RoutingStrategies.Bubble, handledEventsToo: true);
 
         EditorServices.ReportDebug(
             nameof(SchemaDrivenEffectDialog),
@@ -238,6 +243,15 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
         ApplyRequested?.Invoke(this, BuildEffectEventArgs($"Applied {Definition.Name}"));
     }
 
+    private void OnEscapeKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None)
+        {
+            CancelRequested?.Invoke(this, EventArgs.Empty);
+            e.Handled = true;
+        }
+    }
+
     private void OnCancelClick(object? sender, RoutedEventArgs e)
     {
         CancelRequested?.Invoke(this, EventArgs.Empty);
@@ -312,7 +326,7 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
             return snapshot;
         }
 
-        return snapshot[..MaxParameterSnapshotChars] + "…";
+        return snapshot[..MaxParameterSnapshotChars] + "�";
     }
 
     private string BuildParameterSnapshot()
@@ -351,13 +365,13 @@ public partial class SchemaDrivenEffectDialog : UserControl, IEffectDialog
                     break;
                 case TextParameterState text:
                     sb.Append('"');
-                    sb.Append(text.Value.Length > 40 ? text.Value[..40] + "…" : text.Value);
+                    sb.Append(text.Value.Length > 40 ? text.Value[..40] + "�" : text.Value);
                     sb.Append('"');
                     break;
                 case FilePathParameterState path:
                     string p = path.Value;
                     sb.Append('"');
-                    sb.Append(p.Length > 48 ? "…" + p[^48..] : p);
+                    sb.Append(p.Length > 48 ? "�" + p[^48..] : p);
                     sb.Append('"');
                     break;
                 default:

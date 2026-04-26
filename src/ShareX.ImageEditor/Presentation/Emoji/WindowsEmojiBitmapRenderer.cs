@@ -24,7 +24,6 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Media.Imaging;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Presentation.Rendering;
 using SkiaSharp;
 using System.Runtime.InteropServices;
@@ -184,7 +183,7 @@ public static class WindowsEmojiBitmapRenderer
         using SKTypeface? typeface = SKFontManager.Default.MatchFamily(EmojiFontFamily) ?? SKTypeface.Default;
         using var rawBitmap = new SKBitmap(new SKImageInfo(canvasSize, canvasSize, SKColorType.Bgra8888, SKAlphaType.Premul));
         using var canvas = new SKCanvas(rawBitmap);
-        using var font = new SKFont(typeface ?? SKTypeface.Default, canvasSize * 0.68f);
+        using var font = new SKFont(typeface, canvasSize * 0.68f);
         using var paint = new SKPaint
         {
             IsAntialias = true,
@@ -194,7 +193,7 @@ public static class WindowsEmojiBitmapRenderer
         canvas.Clear(SKColors.Transparent);
 
         SKRect bounds = default;
-        font.MeasureText(glyph, out bounds, paint);
+        font.MeasureText(glyph, out bounds);
 
         float x = (canvasSize - bounds.Width) / 2f - bounds.Left;
         float y = (canvasSize - bounds.Height) / 2f - bounds.Top;
@@ -250,7 +249,10 @@ public static class WindowsEmojiBitmapRenderer
 
         using var canvas = new SKCanvas(trimmed);
         canvas.Clear(SKColors.Transparent);
-        canvas.DrawBitmap(source, new SKRectI(minX, minY, maxX + 1, maxY + 1), new SKRect(0, 0, width, height));
+        canvas.DrawBitmap(
+            source,
+            new SKRectI(minX, minY, maxX + 1, maxY + 1),
+            new SKRect(0, 0, width, height));
 
         return trimmed;
     }
@@ -259,7 +261,10 @@ public static class WindowsEmojiBitmapRenderer
     {
         var output = new SKBitmap(new SKImageInfo(size, size, SKColorType.Bgra8888, SKAlphaType.Premul));
         using var canvas = new SKCanvas(output);
-        using var paint = new SKPaint { IsAntialias = true };
+        using var paint = new SKPaint
+        {
+            IsAntialias = true
+        };
 
         canvas.Clear(SKColors.Transparent);
 
@@ -271,7 +276,8 @@ public static class WindowsEmojiBitmapRenderer
         float left = (size - drawWidth) / 2f;
         float top = (size - drawHeight) / 2f;
 
-        SkiaImageHelper.DrawBitmap(canvas, source, new SKRect(left, top, left + drawWidth, top + drawHeight), SkiaImageHelper.HighQualitySampling, paint);
+        using SKImage sourceImage = SKImage.FromBitmap(source);
+        canvas.DrawImage(sourceImage, new SKRect(left, top, left + drawWidth, top + drawHeight), new SKSamplingOptions(SKCubicResampler.CatmullRom), paint);
         return output;
     }
 

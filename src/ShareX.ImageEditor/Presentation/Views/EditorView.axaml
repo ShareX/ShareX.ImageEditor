@@ -11,7 +11,6 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
-             x:Name="EditorViewRoot"
              x:DataType="vm:MainViewModel"
              Focusable="True">
 
@@ -28,6 +27,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EmojiPickerDialogViewModel}" x:DataType="vm:EmojiPickerDialogViewModel">
             <views:EmojiPickerDialogView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:StartScreenDialogViewModel}" x:DataType="vm:StartScreenDialogViewModel">
+            <views:StartScreenDialogView />
         </DataTemplate>
     </UserControl.DataTemplates>
 
@@ -79,7 +81,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ToolCutOut}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Copy" Command="{Binding CopyAnnotationCommand}" InputGesture="Ctrl+C">
+            <MenuItem Header="Copy" Command="{Binding CopyContextCommand}" InputGesture="Ctrl+C">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionCopy}"/>
                 </MenuItem.Icon>
@@ -308,7 +310,7 @@
                                                     Background="Transparent"
                                                     Margin="2"
                                                     ToolTip.Tip="{Binding Name}"
-                                                    Command="{Binding #EditorViewRoot.DataContext.ApplyGradientPresetCommand}"
+                                                    Command="{ReflectionBinding DataContext.ApplyGradientPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}">
                                                 <Border Width="46"
                                                         Height="36"
@@ -523,7 +525,7 @@
 
                 <!-- Task Mode Buttons -->
                 <Grid Width="90" Height="40" Margin="4,0,10,0" ClipToBounds="False" VerticalAlignment="Bottom"
-                      IsVisible="{Binding ShowTaskModeButtons}">
+                      IsVisible="{Binding ShowTaskButtons}">
                     <!-- Cancel Button: Red Rectangle (Behind) -->
                     <Button Command="{Binding CancelCommand}"
                             Classes="task-mode-button danger"
@@ -586,6 +588,16 @@
                 </Button>
             </StackPanel>
         </Border>
+
+        <Border x:Name="InteractionCaptureLayer"
+                Grid.Row="0"
+                Background="Transparent"
+                IsVisible="False"
+                IsHitTestVisible="False"
+                Cursor="Arrow"
+                ZIndex="25"
+                PointerMoved="OnCanvasPointerMoved"
+                PointerReleased="OnCanvasPointerReleased"/>
 
         <!-- Effect Browser Panel Overlay -->
         <Grid Grid.Row="0"

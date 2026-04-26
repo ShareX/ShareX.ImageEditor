@@ -1,7 +1,31 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Drawings;
 
@@ -172,12 +196,12 @@ public sealed class DrawImageEffect : ImageEffectBase
 
         SKBitmap result = source.Copy();
         using SKCanvas canvas = new SKCanvas(result);
+        SKSamplingOptions sampling = DrawingEffectHelpers.GetSamplingOptions(InterpolationMode);
         using SKPaint paint = new SKPaint
         {
             IsAntialias = true,
             BlendMode = DrawingEffectHelpers.GetBlendMode(CompositingMode)
         };
-        SKSamplingOptions sampling = DrawingEffectHelpers.GetSamplingOptions(InterpolationMode);
 
         if (Opacity < 100)
         {
@@ -187,10 +211,12 @@ public sealed class DrawImageEffect : ImageEffectBase
 
         if (Tile)
         {
-            using SKShader shader = SKShader.CreateBitmap(
-                watermark,
+            using SKImage watermarkImage = SKImage.FromBitmap(watermark);
+            using SKShader shader = SKShader.CreateImage(
+                watermarkImage,
                 SKShaderTileMode.Repeat,
-                SKShaderTileMode.Repeat);
+                SKShaderTileMode.Repeat,
+                sampling);
             paint.Shader = shader;
             canvas.Save();
             canvas.Translate(imageRect.Left, imageRect.Top);
@@ -199,7 +225,8 @@ public sealed class DrawImageEffect : ImageEffectBase
         }
         else
         {
-            SkiaImageHelper.DrawBitmap(canvas, watermark, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), sampling, paint);
+            using SKImage watermarkImage = SKImage.FromBitmap(watermark);
+            canvas.DrawImage(watermarkImage, new SKRect(imageRect.Left, imageRect.Top, imageRect.Right, imageRect.Bottom), sampling, paint);
         }
 
         return result;

@@ -24,9 +24,11 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using ShareX.ImageEditor.Presentation.ViewModels;
 
 namespace ShareX.ImageEditor.Presentation.Views;
 
@@ -36,6 +38,22 @@ public partial class EmojiPickerDialogView : UserControl
     {
         InitializeComponent();
         Loaded += OnLoaded;
+
+        // Handle Esc even when the search TextBox has focus (handledEventsToo: true
+        // ensures this fires even after a child TextBox marks the KeyUp event as handled).
+        AddHandler(KeyUpEvent, OnEscapeKeyUp, RoutingStrategies.Bubble, handledEventsToo: true);
+    }
+
+    private void OnEscapeKeyUp(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None)
+        {
+            if (DataContext is EmojiPickerDialogViewModel viewModel)
+            {
+                viewModel.CancelCommand.Execute(null);
+            }
+            e.Handled = true;
+        }
     }
 
     private void InitializeComponent()
@@ -45,9 +63,18 @@ public partial class EmojiPickerDialogView : UserControl
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (this.FindControl<TextBox>("SearchBox") is TextBox searchBox)
+        if (DataContext is EmojiPickerDialogViewModel viewModel)
         {
-            Dispatcher.UIThread.Post(() => searchBox.Focus(), DispatcherPriority.Input);
+            Dispatcher.UIThread.Post(async () =>
+            {
+                await viewModel.InitializeAsync();
+
+                // Focus the search box after loading completes so it is enabled and ready.
+                if (this.FindControl<TextBox>("SearchBox") is TextBox searchBox)
+                {
+                    searchBox.Focus();
+                }
+            }, DispatcherPriority.Background);
         }
     }
 }

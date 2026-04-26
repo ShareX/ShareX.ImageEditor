@@ -26,7 +26,6 @@
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShareX.ImageEditor.Core.Abstractions;
@@ -56,8 +55,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         private readonly ImageEditorOptions _options;
+        private readonly ObservableCollection<string> _recentImageFiles;
         public ImageEditorOptions Options => _options;
         public IAnnotationToolbarAdapter ToolbarAdapter { get; }
+        public ReadOnlyObservableCollection<string> RecentImageFiles { get; }
+        public bool HasRecentImageFiles => RecentImageFiles.Count > 0;
 
         private const string OutputRatioAuto = "Auto";
 
@@ -71,19 +73,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private string _windowTitle = "ShareX - Image Editor";
 
         [ObservableProperty]
-        private bool _showTaskModeButtons = true;
+        private bool _showFileMenu;
 
         [ObservableProperty]
-        private bool _imageEditorMode;
+        private bool _showTaskButtons = true;
 
-        public bool ShowBottomToolbar => !ImageEditorMode;
+        [ObservableProperty]
+        private bool _showBottomToolbar = true;
 
-        partial void OnImageEditorModeChanged(bool value)
-        {
-            OnPropertyChanged(nameof(ShowBottomToolbar));
-
-            ShowTaskModeButtons = !value;
-        }
+        [ObservableProperty]
+        private bool _showStartScreen = true;
 
         // Events to signal View to perform canvas operations
         public event EventHandler? UndoRequested;
@@ -104,13 +103,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         // File menu events (Image Editor Mode)
         public event EventHandler? NewImageRequested;
         public event EventHandler? OpenImageRequested;
+        public event EventHandler? StartScreenRequested;
+        public event EventHandler? LoadFromClipboardRequested;
+        public event EventHandler<string>? LoadFromUrlRequested;
+        public event EventHandler<string>? LoadRecentFileRequested;
 
         [ObservableProperty]
-        private bool _taskMode;
+        private bool _useContinueWorkflow;
 
-        public string ContinueButtonTooltip => TaskMode ? "Continue (Enter)" : "Run after capture tasks (Enter)";
+        public string ContinueButtonTooltip => UseContinueWorkflow ? "Continue (Enter)" : "Run after capture tasks (Enter)";
 
-        partial void OnTaskModeChanged(bool value)
+        partial void OnUseContinueWorkflowChanged(bool value)
         {
             OnPropertyChanged(nameof(ContinueButtonTooltip));
         }
@@ -129,6 +132,15 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void Cancel()
         {
             RequestClose();
+        }
+
+        [RelayCommand]
+        private void SetTheme(string themeName)
+        {
+            ThemeManager.SetTheme(
+                string.Equals(themeName, nameof(ThemeManager.ShareXLight), StringComparison.OrdinalIgnoreCase)
+                    ? ThemeManager.ShareXLight
+                    : ThemeManager.ShareXDark);
         }
 
         public void RequestClose(bool ignoreModal = false)
@@ -177,7 +189,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             var dialog = new ConfirmationDialogViewModel(
-                ApplicationName,
                 onYes: () =>
                 {
                     Save();
@@ -206,10 +217,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _copyRequested += value; CopyCommand.NotifyCanExecuteChanged(); }
             remove { _copyRequested -= value; CopyCommand.NotifyCanExecuteChanged(); }
         }
-        public bool CanCopy() => _copyRequested != null && HasPreviewImage;
         public bool HasHostCopyHandler { get; set; }
-        public bool HasHostSaveHandler { get; set; }
-        public bool HasHostSaveAsHandler { get; set; }
+        public bool CanCopy() => _copyRequested != null && HasPreviewImage;
+
+        /// <summary>
+        /// Smart copy used by the context menu: copies the selected annotation when one is
+        /// selected, otherwise copies the full canvas to the clipboard (same as Ctrl+C behaviour).
+        /// Enabled whenever the editor has a loaded image.
+        /// </summary>
+        public bool CanCopyContext() => HasPreviewImage;
+
+        [RelayCommand(CanExecute = nameof(CanCopyContext))]
+        private void CopyContext()
+        {
+            if (HasSelectedAnnotation)
+                CopyAnnotationRequested?.Invoke(this, EventArgs.Empty);
+            else
+                _copyRequested?.Invoke();
+        }
 
         private Action? _saveRequested;
         public event Action? SaveRequested
@@ -217,6 +242,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveRequested += value; SaveCommand.NotifyCanExecuteChanged(); }
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
+        public bool HasHostSaveHandler { get; set; }
         public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(ImageFilePath);
 
         private Action? _saveAsRequested;
@@ -225,6 +251,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             add { _saveAsRequested += value; SaveAsCommand.NotifyCanExecuteChanged(); }
             remove { _saveAsRequested -= value; SaveAsCommand.NotifyCanExecuteChanged(); }
         }
+        public bool HasHostSaveAsHandler { get; set; }
         public bool CanSaveAs() => _saveAsRequested != null && HasPreviewImage;
 
         private Action? _pinRequested;
@@ -266,6 +293,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 {
                     ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
                     CopyCommand.NotifyCanExecuteChanged();
+                    CopyContextCommand.NotifyCanExecuteChanged();
                     SaveCommand.NotifyCanExecuteChanged();
                     SaveAsCommand.NotifyCanExecuteChanged();
                     PinToScreenCommand.NotifyCanExecuteChanged();
@@ -440,8 +468,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         /// <summary>
         /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
-        /// Prevents infinite loop: BackgroundSmartPadding property change â†’ ApplySmartPaddingCrop â†’
-        /// UpdatePreview â†’ PreviewImage changed â†’ ApplySmartPaddingCrop (again).
+        /// Prevents infinite loop: BackgroundSmartPadding property change ? ApplySmartPaddingCrop ?
+        /// UpdatePreview ? PreviewImage changed ? ApplySmartPaddingCrop (again).
         /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
         /// </summary>
         private bool _isApplyingSmartPadding = false;
@@ -718,18 +746,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             ModalContent = null;
         }
 
-        [RelayCommand]
-        private void SetTheme(string themeName)
-        {
-            var theme = themeName switch
-            {
-                "ShareXDark" => ThemeManager.ShareXDark,
-                "ShareXLight" => ThemeManager.ShareXLight,
-                _ => ThemeVariant.Default
-            };
-            ThemeManager.SetTheme(theme);
-        }
-
         [ObservableProperty]
         private IBrush _canvasBackground;
 
@@ -745,6 +761,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private BoxShadows _canvasShadow;
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private string? _imageFilePath;
 
         [ObservableProperty]
@@ -757,6 +774,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public MainViewModel(ImageEditorOptions? options = null)
         {
             _options = options ?? new ImageEditorOptions();
+            _recentImageFiles = new ObservableCollection<string>(_options.RecentImageFiles);
+            _recentImageFiles.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasRecentImageFiles));
+            RecentImageFiles = new ReadOnlyObservableCollection<string>(_recentImageFiles);
             _activeTool = GetInitialAnnotationTool();
 
             ToolbarAdapter = new EditorToolbarAdapter(this);
@@ -797,6 +817,40 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
             ApplySelectedBackgroundMode();
             UpdateCanvasProperties();
+        }
+
+        public void AddRecentImageFile(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return;
+            }
+
+            _options.AddRecentImageFile(filePath);
+            SyncRecentImageFiles();
+        }
+
+        public void RemoveRecentImageFile(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return;
+            }
+
+            if (_options.RecentImageFiles.Remove(filePath))
+            {
+                SyncRecentImageFiles();
+            }
+        }
+
+        private void SyncRecentImageFiles()
+        {
+            _recentImageFiles.Clear();
+
+            foreach (string filePath in _options.RecentImageFiles)
+            {
+                _recentImageFiles.Add(filePath);
+            }
         }
 
         private static string BuildWindowTitle(double width, double height, string? fileName)
@@ -1132,6 +1186,35 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void OpenImage()
         {
             OpenImageRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RequestStartScreen()
+        {
+            StartScreenRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RequestLoadFromClipboard()
+        {
+            LoadFromClipboardRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void RequestLoadFromUrl(string url)
+        {
+            LoadFromUrlRequested?.Invoke(this, url);
+        }
+
+        public void RequestLoadRecentFile(string filePath)
+        {
+            LoadRecentFileRequested?.Invoke(this, filePath);
+        }
+
+        [RelayCommand]
+        private void OpenRecentImage(string? filePath)
+        {
+            if (!string.IsNullOrWhiteSpace(filePath))
+            {
+                RequestLoadRecentFile(filePath);
+            }
         }
 
         [RelayCommand]

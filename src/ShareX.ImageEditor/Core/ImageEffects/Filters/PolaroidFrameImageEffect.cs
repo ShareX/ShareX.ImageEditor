@@ -1,3 +1,28 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
@@ -112,17 +137,19 @@ public sealed class PolaroidFrameImageEffect : ImageEffectBase
         if (!string.IsNullOrWhiteSpace(Caption))
         {
             float fontSize = Math.Max(12, bottom * 0.3f);
-            using SKTypeface? captionTypeface = SKTypeface.FromFamilyName("Segoe Script", SKFontStyle.Normal)
-                                                ?? SKTypeface.FromFamilyName("Comic Sans MS", SKFontStyle.Normal);
-            SKTypeface resolvedTypeface = captionTypeface ?? SKTypeface.Default;
-            using SKFont textFont = new(resolvedTypeface, fontSize);
-            using SKPaint textPaint = new() { IsAntialias = true, Color = new SKColor(60, 55, 50) };
-            SKFontMetrics metrics = textFont.Metrics;
+            using SKTypeface captionTypeface = SKTypeface.FromFamilyName("Segoe Script", SKFontStyle.Normal)
+                                               ?? SKTypeface.FromFamilyName("Comic Sans MS", SKFontStyle.Normal)
+                                               ?? SKTypeface.Default;
+            using SKFont captionFont = new SKFont(captionTypeface, fontSize);
+            using SKPaint textPaint = new()
+            {
+                IsAntialias = true,
+                Color = new SKColor(60, 55, 50)
+            };
 
             float textX = polaroidWidth / 2f;
-            float textCenterY = source.Height + border + (bottom / 2f);
-            float textY = textCenterY - ((metrics.Ascent + metrics.Descent) / 2f);
-            canvas.DrawText(Caption, textX, textY, SKTextAlign.Center, textFont, textPaint);
+            float textY = source.Height + border + (bottom / 2f) + (fontSize / 3f);
+            canvas.DrawText(Caption, textX, textY, SKTextAlign.Center, captionFont, textPaint);
         }
 
         canvas.Restore();

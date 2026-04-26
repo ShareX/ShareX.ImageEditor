@@ -25,6 +25,7 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using ShareX.ImageEditor.Presentation.Emoji;
 
 namespace ShareX.ImageEditor.Presentation.Controls;
@@ -37,10 +38,13 @@ public sealed class EmojiPreviewImage : Image
     public static readonly StyledProperty<int> PreviewSizeProperty =
         AvaloniaProperty.Register<EmojiPreviewImage, int>(nameof(PreviewSize), 48);
 
+    private static readonly SemaphoreSlim PreviewRenderThrottle = new(4, 4);
+    private int _updateVersion;
+
     static EmojiPreviewImage()
     {
-        UnicodeSequenceProperty.Changed.AddClassHandler<EmojiPreviewImage>((image, _) => image.UpdatePreview());
-        PreviewSizeProperty.Changed.AddClassHandler<EmojiPreviewImage>((image, _) => image.UpdatePreview());
+        UnicodeSequenceProperty.Changed.AddClassHandler<EmojiPreviewImage>((image, _) => image.QueuePreviewUpdate());
+        PreviewSizeProperty.Changed.AddClassHandler<EmojiPreviewImage>((image, _) => image.QueuePreviewUpdate());
     }
 
     public string UnicodeSequence
@@ -55,8 +59,45 @@ public sealed class EmojiPreviewImage : Image
         set => SetValue(PreviewSizeProperty, value);
     }
 
-    private void UpdatePreview()
+    private void QueuePreviewUpdate()
     {
-        Source = WindowsEmojiBitmapRenderer.RenderPreviewBitmap(UnicodeSequence, PreviewSize);
+        _ = UpdatePreviewAsync();
+    }
+
+    private async Task UpdatePreviewAsync()
+    {
+        string unicodeSequence = UnicodeSequence;
+        int previewSize = PreviewSize;
+        int version = Interlocked.Increment(ref _updateVersion);
+
+        if (string.IsNullOrWhiteSpace(unicodeSequence) || previewSize <= 0)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (version == _updateVersion)
+                {
+                    Source = null;
+                }
+            });
+            return;
+        }
+
+        await PreviewRenderThrottle.WaitAsync();
+        try
+        {
+            var bitmap = await Task.Run(() => WindowsEmojiBitmapRenderer.RenderPreviewBitmap(unicodeSequence, previewSize));
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (version == _updateVersion)
+                {
+                    Source = bitmap;
+                }
+            });
+        }
+        finally
+        {
+            PreviewRenderThrottle.Release();
+        }
     }
 }

@@ -23,29 +23,15 @@
 
 #endregion License Information (GPL v3)
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using Avalonia.Controls;
 
-namespace ShareX.ImageEditor.Presentation.ViewModels
+namespace ShareX.ImageEditor.Presentation.Views
 {
-    public partial class ConfirmationDialogViewModel : ObservableObject
+    public partial class StartScreenDialogView : UserControl
     {
-        public string Title { get; }
-        public string Message { get; }
-
-        public IRelayCommand YesCommand { get; }
-        public IRelayCommand NoCommand { get; }
-        public IRelayCommand CancelCommand { get; }
-
-        public ConfirmationDialogViewModel(Action onYes, Action onNo, Action onCancel,
-            string title = "Exit Confirmation",
-            string message = "There are unsaved changes.\n\nWould you like to save the changes before closing the image editor?")
+        public StartScreenDialogView()
         {
-            Title = title;
-            Message = message;
-            YesCommand = new RelayCommand(onYes);
-            NoCommand = new RelayCommand(onNo);
-            CancelCommand = new RelayCommand(onCancel);
+            InitializeComponent();
         }
     }
 }

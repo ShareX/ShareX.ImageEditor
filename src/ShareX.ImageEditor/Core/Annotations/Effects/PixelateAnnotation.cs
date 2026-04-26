@@ -1,5 +1,29 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using SkiaSharp;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -25,14 +49,14 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
         int h = Math.Max(1, source.Height / pixelSize);
 
         var info = new SKImageInfo(w, h);
-        using var small = source.Resize(info, SkiaImageHelper.LinearSampling);
+        using var small = source.Resize(info, new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None));
         if (small == null)
         {
             return null;
         }
 
         info = new SKImageInfo(source.Width, source.Height);
-        return small.Resize(info, SkiaImageHelper.NearestNeighborSampling);
+        return small.Resize(info, new SKSamplingOptions(SKFilterMode.Nearest, SKMipmapMode.None));
     }
 
     internal override SKBitmap? CreateInteractionCacheBitmap(SKBitmap source)
@@ -44,9 +68,6 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
     {
         UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
     }
-
-
-
 
     public override void UpdateEffect(SKBitmap source)
     {
@@ -89,10 +110,22 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
         int h = Math.Max(1, crop.Height / pixelSize);
 
         var info = new SKImageInfo(w, h);
-        using var small = crop.Resize(info, SkiaImageHelper.LinearSampling);
+        using var small = crop.Resize(info, new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None));
+        if (small == null)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         info = new SKImageInfo(crop.Width, crop.Height);
-        using var pixelated = small.Resize(info, SkiaImageHelper.NearestNeighborSampling); // Nearest neighbor upscale
+        using var pixelated = small.Resize(info, new SKSamplingOptions(SKFilterMode.Nearest, SKMipmapMode.None)); // Nearest neighbor upscale
+        if (pixelated == null)
+        {
+            EffectBitmap?.Dispose();
+            EffectBitmap = result;
+            return;
+        }
 
         // Draw pixelated region into result at correct offset
         int drawX = validRect.Left - annotationRect.Left;

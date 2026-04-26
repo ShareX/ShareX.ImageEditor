@@ -1,7 +1,7 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
-    ShareX - A program that allows you to take screenshots and share any file type
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -57,6 +57,9 @@ public class EditorInputController
     private bool _isDrawing;
     private bool _isCreatingEffect;
 
+    private static bool UsesCrosshairInteractionCapture(EditorTool tool)
+        => tool != EditorTool.Image && tool != EditorTool.Text;
+
     // Track cut-out direction (null = not determined yet, true = vertical, false = horizontal)
     private bool? _cutOutDirection;
 
@@ -80,6 +83,8 @@ public class EditorInputController
         _selectionController = selectionController;
         _zoomController = zoomController;
     }
+
+    public bool IsCropInteractionActive => _isDraggingCropHandle;
 
     private MainViewModel? ViewModel => _view.DataContext as MainViewModel;
     private static double ToOverlayCoordinate(double value) => value + EditorView.OverlayCanvasBleed;
@@ -192,7 +197,7 @@ public class EditorInputController
                     _cropDragStartPoint = e.GetPosition(canvas);
                     _draggedCropHandleTag = cropTag;
                     _isDraggingCropHandle = true;
-                    e.Pointer.Capture(cropBorder);
+                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
                     e.Handled = true;
                     return;
                 }
@@ -203,7 +208,7 @@ public class EditorInputController
                 var clickPos = e.GetPosition(canvas);
                 var cropBounds = GetCropOverlayCanvasRect(cropOverlay);
 
-                // Double-click inside crop area → confirm
+                // Double-click inside crop area ? confirm
                 if (e.ClickCount == 2 && cropBounds.Contains(clickPos))
                 {
                     TryConfirmCrop();
@@ -211,20 +216,20 @@ public class EditorInputController
                     return;
                 }
 
-                // Single-click inside crop area → drag/move entire crop rect
+                // Single-click inside crop area ? drag/move entire crop rect
                 if (cropBounds.Contains(clickPos))
                 {
                     _cropDragStartRect = cropBounds;
                     _cropDragStartPoint = clickPos;
                     _draggedCropHandleTag = "Crop_Move";
                     _isDraggingCropHandle = true;
-                    e.Pointer.Capture(canvas);
+                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
                     e.Handled = true;
                     return;
                 }
             }
 
-            // Click outside crop area → cancel and fall through to start a new crop
+            // Click outside crop area ? cancel and fall through to start a new crop
             CancelCrop();
         }
 
@@ -239,7 +244,14 @@ public class EditorInputController
         var point = e.GetPosition(canvas);
         _startPoint = point;
         _isDrawing = true;
-        e.Pointer.Capture(canvas);
+        if (UsesCrosshairInteractionCapture(vm.ActiveTool))
+        {
+            _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetCrosshairCursor());
+        }
+        else
+        {
+            e.Pointer.Capture(canvas);
+        }
 
         var brush = new SolidColorBrush(Color.Parse(vm.SelectedColor));
 
@@ -430,6 +442,8 @@ public class EditorInputController
 
         if (_currentShape != null)
         {
+            _currentShape.Cursor = CursorAssetLoader.GetCrosshairCursor();
+
             var currentLeft = Canvas.GetLeft(_currentShape);
             var currentTop = Canvas.GetTop(_currentShape);
 
@@ -490,6 +504,7 @@ public class EditorInputController
             var cvs = _view.FindControl<Canvas>("AnnotationCanvas") ?? sender as Canvas;
             if (cvs != null)
             {
+                _view.ApplyInteractionCursor(CursorAssetLoader.GetClosedHandCursor());
                 var cropCurrent = e.GetPosition(cvs);
                 var newRect = ComputeCropHandleResizedRect(_draggedCropHandleTag!, _cropDragStartPoint, cropCurrent, _cropDragStartRect, cvs.Bounds.Width, cvs.Bounds.Height);
                 UpdateCropOverlayBounds(newRect);
@@ -689,6 +704,7 @@ public class EditorInputController
         {
             _isDraggingCropHandle = false;
             _draggedCropHandleTag = null;
+            _view.RestoreEditorSurfaceCursorForActiveTool();
             e.Pointer.Capture(null);
             return;
         }
@@ -700,10 +716,16 @@ public class EditorInputController
 
             e.Pointer.Capture(null);
             _isDrawing = false;
+            _view.RestoreEditorSurfaceCursorForActiveTool();
 
             var vm = ViewModel;
             if (vm != null)
             {
+                if (_currentShape != null)
+                {
+                    _currentShape.Cursor = null;
+                }
+
                 if (vm.ActiveTool == EditorTool.Crop)
                 {
                     var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
@@ -824,6 +846,7 @@ public class EditorInputController
         _currentShape = null;
         _cutOutDirection = null;
         _isDrawing = false;
+        _view.RestoreEditorSurfaceCursorForActiveTool();
     }
 
     private void UpdateEffectVisual(Control shape, double x, double y, double width, double height)
@@ -1297,11 +1320,11 @@ public class EditorInputController
         // The polygon traces the outer boundary of the L clockwise.
         //
         // For TopLeft corner (arms extend right and down into the crop area):
-        //   P0 ──────── P1
-        //   │            │
-        //   │   P3 ── P2
-        //   │   │
-        //   │   │
+        //   P0 -------- P1
+        //   �            �
+        //   �   P3 -- P2
+        //   �   �
+        //   �   �
         //   P5  P4
         //
         bool extendsLeft = tag.Contains("Right", StringComparison.Ordinal);
@@ -1476,7 +1499,7 @@ public class EditorInputController
         }
 
         // Canvas coordinates are already in image-pixel space (AnnotationCanvas is sized
-        // to CanvasSize = bitmap.Width/Height). No DPI scaling needed — RenderScaling
+        // to CanvasSize = bitmap.Width/Height). No DPI scaling needed � RenderScaling
         // only affects physical display pixels, not the logical layout coordinate space.
         var cropX = (int)Math.Round(x);
         var cropY = (int)Math.Round(y);
@@ -1499,7 +1522,7 @@ public class EditorInputController
             {
                 // XIP0039 Guardrail 1: Annotation model coordinates are logical image pixels.
                 // AnnotationCanvas is sized 1:1 with the source bitmap in logical pixels,
-                // so no RenderScaling factor is needed — consistent with the Crop path.
+                // so no RenderScaling factor is needed � consistent with the Crop path.
                 // The previous code incorrectly multiplied by RenderScaling, which caused
                 // CutOut bounds to be scaled by the display DPI factor on high-DPI screens.
                 if (_cutOutDirection.Value) // Vertical
@@ -1757,7 +1780,7 @@ public class EditorInputController
 
     /// <summary>
     /// Snaps the endpoint so the line from <paramref name="start"/> to <paramref name="end"/>
-    /// is locked to the nearest 45-degree increment (0°, 45°, 90°, 135°, etc.).
+    /// is locked to the nearest 45-degree increment (0�, 45�, 90�, 135�, etc.).
     /// The distance from start to end is preserved.
     /// </summary>
     internal static Point SnapTo45Degrees(Point start, Point end)

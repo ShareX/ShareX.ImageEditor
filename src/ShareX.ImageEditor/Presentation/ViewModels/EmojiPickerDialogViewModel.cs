@@ -32,8 +32,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels;
 
 public partial class EmojiPickerDialogViewModel : ObservableObject
 {
-    private readonly IReadOnlyList<EmojiCatalogEntry> _catalog;
+    private IReadOnlyList<EmojiCatalogEntry> _catalog = [];
     private readonly Action<EmojiCatalogEntry> _onSelect;
+    private int _refreshVersion;
+    private bool _isInitialized;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -48,9 +50,12 @@ public partial class EmojiPickerDialogViewModel : ObservableObject
     private string _resultsSummary = string.Empty;
 
     [ObservableProperty]
-    private string _searchWatermark = "Search emojis";
+    private string _searchWatermark = "Loading emojis...";
 
-    public IReadOnlyList<string> GroupOptions { get; }
+    [ObservableProperty]
+    private bool _isLoading = true;
+
+    public ObservableCollection<string> GroupOptions { get; } = [];
 
     public bool HasResults => VisibleEmojis.Count > 0;
 
@@ -60,21 +65,59 @@ public partial class EmojiPickerDialogViewModel : ObservableObject
 
     public EmojiPickerDialogViewModel(Action<EmojiCatalogEntry> onSelect, Action onCancel)
     {
-        _catalog = EmojiCatalogService.GetCatalog();
         _onSelect = onSelect;
-
-        GroupOptions = EmojiCatalogService.GetGroups();
-        SelectedGroup = GroupOptions.FirstOrDefault() ?? string.Empty;
 
         SelectEmojiCommand = new RelayCommand<EmojiCatalogEntry?>(SelectEmoji);
         CancelCommand = new RelayCommand(onCancel);
-
-        RefreshResults();
     }
 
-    partial void OnSearchTextChanged(string value) => RefreshResults();
+    partial void OnSearchTextChanged(string value)
+    {
+        if (_isInitialized)
+        {
+            _ = RefreshResultsAsync();
+        }
+    }
 
-    partial void OnSelectedGroupChanged(string value) => RefreshResults();
+    partial void OnSelectedGroupChanged(string value)
+    {
+        if (_isInitialized)
+        {
+            _ = RefreshResultsAsync();
+        }
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_isInitialized)
+        {
+            return;
+        }
+
+        IsLoading = true;
+        ResultsSummary = "Loading emojis...";
+        SearchWatermark = "Loading emojis...";
+
+        await Task.Yield();
+
+        IReadOnlyList<EmojiCatalogEntry> catalog = await Task.Run(EmojiCatalogService.GetCatalog);
+        IReadOnlyList<string> groups = await Task.Run(EmojiCatalogService.GetGroups);
+
+        _catalog = catalog;
+
+        GroupOptions.Clear();
+        foreach (string group in groups)
+        {
+            GroupOptions.Add(group);
+        }
+
+        SelectedGroup = GroupOptions.FirstOrDefault() ?? string.Empty;
+        _isInitialized = true;
+
+        await RefreshResultsAsync();
+
+        IsLoading = false;
+    }
 
     private void SelectEmoji(EmojiCatalogEntry? emoji)
     {
@@ -86,38 +129,61 @@ public partial class EmojiPickerDialogViewModel : ObservableObject
         _onSelect(emoji);
     }
 
-    private void RefreshResults()
+    private async Task RefreshResultsAsync()
     {
+        int version = Interlocked.Increment(ref _refreshVersion);
         string search = SearchText.Trim();
+        string selectedGroup = SelectedGroup;
+
+        EmojiQueryResult result = await Task.Run(() => BuildQueryResult(search, selectedGroup));
+        if (version != _refreshVersion)
+        {
+            return;
+        }
+
+        SearchWatermark = $"Search emojis... ({result.CategoryCount})";
+        ResultsSummary = result.ResultsSummary;
+        VisibleEmojis = [.. result.Entries];
+        OnPropertyChanged(nameof(HasResults));
+    }
+
+    private EmojiQueryResult BuildQueryResult(string search, string selectedGroup)
+    {
         EmojiCatalogEntry[] categoryEntries =
         [
-            .. _catalog.Where(entry => string.Equals(entry.Group, SelectedGroup, StringComparison.Ordinal))
+            .. _catalog.Where(entry => string.Equals(entry.Group, selectedGroup, StringComparison.Ordinal))
         ];
 
-        SearchWatermark = $"Search emojis... ({categoryEntries.Length})";
-
         IEnumerable<EmojiCatalogEntry> query;
+        string resultsSummary;
 
         if (string.IsNullOrWhiteSpace(search))
         {
             query = categoryEntries;
-
-            ResultsSummary = string.IsNullOrEmpty(SelectedGroup)
+            resultsSummary = string.IsNullOrEmpty(selectedGroup)
                 ? "Browse emojis"
-                : $"{SelectedGroup} - {query.Count()} emojis";
+                : $"{selectedGroup} • {categoryEntries.Length} emojis";
         }
         else
         {
-            query = categoryEntries
-                .Select(entry => (Entry: entry, Score: entry.GetSearchScore(search)))
-                .Where(match => match.Score != int.MaxValue)
-                .OrderBy(match => match.Score)
-                .Select(match => match.Entry);
+            EmojiCatalogEntry[] filteredEntries =
+            [
+                .. categoryEntries
+                    .Select(entry => (Entry: entry, Score: entry.GetSearchScore(search)))
+                    .Where(match => match.Score != int.MaxValue)
+                    .OrderBy(match => match.Score)
+                    .Select(match => match.Entry)
+            ];
 
-            ResultsSummary = $"Search results - {query.Count()} matches";
+            query = filteredEntries;
+            resultsSummary = $"Search results • {filteredEntries.Length} matches";
         }
 
-        VisibleEmojis = [.. query];
-        OnPropertyChanged(nameof(HasResults));
+        return new EmojiQueryResult([.. query], resultsSummary, categoryEntries.Length);
     }
+
+    private sealed record EmojiQueryResult(
+        EmojiCatalogEntry[] Entries,
+        string ResultsSummary,
+        int CategoryCount);
 }

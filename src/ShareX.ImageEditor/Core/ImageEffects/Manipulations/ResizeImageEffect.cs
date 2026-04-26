@@ -1,7 +1,31 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
-using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
@@ -23,32 +47,59 @@ public sealed class ResizeImageEffect : ImageEffectBase
     public int Height { get; set; }
     public bool MaintainAspectRatio { get; set; }
 
+    public SKSizeI GetTargetSize(SKBitmap source)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        return ResolveTargetSize(source.Width, source.Height, Width, Height, MaintainAspectRatio);
+    }
+
+    public static SKSizeI ResolveTargetSize(int sourceWidth, int sourceHeight, int requestedWidth, int requestedHeight, bool maintainAspectRatio)
+    {
+        if (sourceWidth <= 0) throw new ArgumentOutOfRangeException(nameof(sourceWidth));
+        if (sourceHeight <= 0) throw new ArgumentOutOfRangeException(nameof(sourceHeight));
+
+        int width = requestedWidth > 0 ? requestedWidth : 0;
+        int height = requestedHeight > 0 ? requestedHeight : 0;
+
+        if (!maintainAspectRatio)
+        {
+            width = width > 0 ? width : sourceWidth;
+            height = height > 0 ? height : sourceHeight;
+            return new SKSizeI(width, height);
+        }
+
+        if (width <= 0 && height <= 0)
+        {
+            return new SKSizeI(sourceWidth, sourceHeight);
+        }
+
+        if (width <= 0)
+        {
+            width = Math.Max(1, (int)Math.Round((double)height / sourceHeight * sourceWidth));
+            return new SKSizeI(width, height);
+        }
+
+        if (height <= 0)
+        {
+            height = Math.Max(1, (int)Math.Round((double)width / sourceWidth * sourceHeight));
+            return new SKSizeI(width, height);
+        }
+
+        double scale = Math.Max((double)width / sourceWidth, (double)height / sourceHeight);
+
+        return new SKSizeI(
+            Math.Max(1, (int)Math.Round(sourceWidth * scale)),
+            Math.Max(1, (int)Math.Round(sourceHeight * scale)));
+    }
+
     public override SKBitmap Apply(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        int width = Width > 0 ? Width : source.Width;
-        int height = Height > 0 ? Height : source.Height;
+        SKSizeI targetSize = GetTargetSize(source);
 
-        if (width <= 0) width = source.Width;
-        if (height <= 0) height = source.Height;
-
-        if (MaintainAspectRatio)
-        {
-            double sourceAspect = (double)source.Width / source.Height;
-            double targetAspect = (double)width / height;
-
-            if (sourceAspect > targetAspect)
-            {
-                height = (int)Math.Round(width / sourceAspect);
-            }
-            else
-            {
-                width = (int)Math.Round(height * sourceAspect);
-            }
-        }
-
-        SKImageInfo info = new SKImageInfo(width, height, source.ColorType, source.AlphaType, source.ColorSpace);
-        return SkiaImageHelper.Resize(source, info, SkiaImageHelper.HighQualitySampling);
+        SKImageInfo info = new SKImageInfo(targetSize.Width, targetSize.Height, source.ColorType, source.AlphaType, source.ColorSpace);
+        return source.Resize(info, new SKSamplingOptions(SKCubicResampler.CatmullRom));
     }
 }

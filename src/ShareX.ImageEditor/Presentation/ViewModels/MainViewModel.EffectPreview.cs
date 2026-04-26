@@ -74,9 +74,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         /// <summary>
-        /// Resize the image to new dimensions with specified sampling.
+        /// Resize the image to new dimensions with specified quality.
         /// </summary>
-        public void ResizeImage(int newWidth, int newHeight, SkiaSharp.SKSamplingOptions? sampling = null)
+        public void ResizeImage(int newWidth, int newHeight, SkiaSharp.SKSamplingOptions sampling = default)
         {
             if (newWidth <= 0 || newHeight <= 0)
             {
@@ -214,7 +214,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 _isSyncingFromCore = true;
 
                 // SIP-FIX: Calculate dimensions string BEFORE setting PreviewImage.
-                // Setting PreviewImage can trigger bindings that might dispose the source 
+                // Setting PreviewImage can trigger bindings that might dispose the source
                 // via EditorCore updates if not handled carefully.
                 string dimStr = $"{preview.Width} x {preview.Height}";
 

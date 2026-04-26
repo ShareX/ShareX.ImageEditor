@@ -1,7 +1,7 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
-    ShareX - A program that allows you to take screenshots and share any file type
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -281,7 +281,7 @@ public class EditorCore : IDisposable
         return ApplyImageOperation(effectOperation, clearAnnotations: false);
     }
 
-    public bool ResizeImage(int newWidth, int newHeight, SKSamplingOptions? sampling = null)
+    public bool ResizeImage(int newWidth, int newHeight, SKSamplingOptions sampling = default)
     {
         if (newWidth <= 0 || newHeight <= 0)
         {
@@ -1438,7 +1438,7 @@ public class EditorCore : IDisposable
     {
         canvas.Clear(SKColors.Transparent);
 
-        // Draw source image only — annotations are handled by Avalonia controls
+        // Draw source image only � annotations are handled by Avalonia controls
         if (SourceImage != null)
         {
             canvas.DrawBitmap(SourceImage, 0, 0);

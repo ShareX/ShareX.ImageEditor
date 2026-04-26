@@ -50,13 +50,17 @@ namespace ShareX.ImageEditor.Hosting
         private static Color HexToColor(string hex) => Color.Parse(hex);
 
         // Editor
+        public bool UseSystemTheme { get; set; } = true;
+        public bool UseSystemAccentColor { get; set; } = true;
+        public bool RememberWindowState { get; set; } = true;
+        public bool IsWindowMaximized { get; set; } = true;
+        public double WindowWidth { get; set; } = 1280;
+        public double WindowHeight { get; set; } = 720;
         public bool ShowExitConfirmation { get; set; } = true;
         public bool ZoomToFitOnOpen { get; set; } = false;
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
         public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
-        public bool UseSystemTheme { get; set; } = true;
-        public bool UseSystemAccentColor { get; set; } = true;
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);
@@ -143,6 +147,23 @@ namespace ShareX.ImageEditor.Hosting
         [JsonIgnore]
         public Color BackgroundColor { get => HexToColor(BackgroundColorHex); set => BackgroundColorHex = ColorToHex(value); }
         public string BackgroundImagePath { get; set; } = "";
+
+        // Recent image files
+        public List<string> RecentImageFiles { get; set; } = new List<string>();
+        public int MaxRecentImageFiles { get; set; } = 10;
+
+        public void AddRecentImageFile(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            RecentImageFiles.Remove(filePath);
+            RecentImageFiles.Insert(0, filePath);
+
+            if (RecentImageFiles.Count > MaxRecentImageFiles)
+            {
+                RecentImageFiles.RemoveRange(MaxRecentImageFiles, RecentImageFiles.Count - MaxRecentImageFiles);
+            }
+        }
 
         // Image effects
         public List<string> RecentEffects { get; set; } = new List<string>();

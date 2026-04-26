@@ -1,3 +1,28 @@
+#region License Information (GPL v3)
+
+/*
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
+    Copyright (c) 2007-2026 ShareX Team
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
+#endregion License Information (GPL v3)
+
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
@@ -107,16 +132,18 @@ public sealed class Windows11ImageEffect : ImageEffectBase
         if (!string.IsNullOrWhiteSpace(Title))
         {
             SKColor textColor = DarkMode ? new SKColor(220, 220, 220) : new SKColor(50, 50, 50);
-            using SKTypeface? titleTypeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
-            SKTypeface resolvedTypeface = titleTypeface ?? SKTypeface.Default;
-            using SKFont textFont = new(resolvedTypeface, 12);
-            using SKPaint textPaint = new() { IsAntialias = true, Color = textColor };
-            SKFontMetrics metrics = textFont.Metrics;
+            using SKTypeface titleTypeface = SKTypeface.FromFamilyName("Segoe UI", SKFontStyleWeight.Normal, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright)
+                                            ?? SKTypeface.Default;
+            using SKFont titleFont = new SKFont(titleTypeface, 12f);
+            using SKPaint textPaint = new()
+            {
+                IsAntialias = true,
+                Color = textColor
+            };
 
             float textX = windowX + 12;
-            float textCenterY = windowY + (TitleBarHeight / 2f);
-            float textY = textCenterY - ((metrics.Ascent + metrics.Descent) / 2f);
-            canvas.DrawText(Title, textX, textY, SKTextAlign.Left, textFont, textPaint);
+            float textY = windowY + (TitleBarHeight / 2f) + (12f / 3f);
+            canvas.DrawText(Title, textX, textY, SKTextAlign.Left, titleFont, textPaint);
         }
 
         // Draw the source image below the title bar

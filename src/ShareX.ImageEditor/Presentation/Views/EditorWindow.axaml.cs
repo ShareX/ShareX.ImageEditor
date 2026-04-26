@@ -1,7 +1,7 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
-    ShareX - A program that allows you to take screenshots and share any file type
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using ShareX.ImageEditor.Hosting;
@@ -34,6 +35,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorWindow : Window
     {
+        private readonly ImageEditorOptions? _options;
         private readonly MainViewModel _viewModel;
         private string? _pendingFilePath;
         private bool _allowClose;
@@ -45,6 +47,11 @@ namespace ShareX.ImageEditor.Presentation.Views
         public EditorWindow(ImageEditorOptions? options)
         {
             InitializeComponent();
+
+            _options = options;
+            ApplySavedWindowState();
+
+            Resized += OnWindowResized;
 
             _viewModel = new MainViewModel(options);
             DataContext = _viewModel;
@@ -72,9 +79,63 @@ namespace ShareX.ImageEditor.Presentation.Views
             _viewModel.RequestClose(ignoreModal: true);
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            SaveWindowState();
+            base.OnClosed(e);
+        }
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void ApplySavedWindowState()
+        {
+            if (_options?.RememberWindowState != true)
+            {
+                return;
+            }
+
+            if (_options.WindowWidth > 0 && _options.WindowHeight > 0)
+            {
+                Width = _options.WindowWidth;
+                Height = _options.WindowHeight;
+            }
+
+            WindowState = _options.IsWindowMaximized ? WindowState.Maximized : WindowState.Normal;
+        }
+
+        private void OnWindowResized(object? sender, WindowResizedEventArgs e)
+        {
+            SaveNormalWindowSize();
+        }
+
+        private void SaveWindowState()
+        {
+            if (_options?.RememberWindowState != true)
+            {
+                return;
+            }
+
+            SaveNormalWindowSize();
+            _options.IsWindowMaximized = WindowState == WindowState.Maximized;
+        }
+
+        private void SaveNormalWindowSize()
+        {
+            if (_options?.RememberWindowState != true || WindowState != WindowState.Normal)
+            {
+                return;
+            }
+
+            Size windowSize = Bounds.Size;
+
+            if (windowSize.Width > 0 && windowSize.Height > 0)
+            {
+                _options.WindowWidth = windowSize.Width;
+                _options.WindowHeight = windowSize.Height;
+            }
         }
 
         private void OnWindowLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

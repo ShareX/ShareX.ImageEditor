@@ -25,6 +25,7 @@
 
 using Avalonia.Controls;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Effects;
 using ShareX.ImageEditor.Presentation.ViewModels;
@@ -161,7 +162,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// <summary>
         /// Single handler for all registry-backed effect dialogs.
         /// Adding a new dialog-based effect requires only an <see cref="EffectDialogRegistry"/>
-        /// entry plus a menu item that calls <c>RaiseDialog("id")</c> — no new method here.
+        /// entry plus a menu item that calls <c>RaiseDialog("id")</c> � no new method here.
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
@@ -284,7 +285,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 switch (operation.Kind)
                 {
                     case EditorOperationKind.AutoCropImage:
-                    {
                         int tolerance = 0;
                         foreach (EffectParameterState state in dialog.ParameterStates)
                         {
@@ -298,9 +298,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                         _editorCore.AutoCrop(tolerance);
                         break;
-                    }
                     case EditorOperationKind.CropImage:
-                    {
                         int x = 0, y = 0, w = 0, h = 0;
                         foreach (EffectParameterState state in dialog.ParameterStates)
                         {
@@ -318,10 +316,9 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                         _editorCore.Crop(new SKRect(x, y, x + w, y + h));
                         break;
-                    }
                     case EditorOperationKind.ResizeImage:
-                    {
                         int rw = 0, rh = 0;
+                        bool maintainAspectRatio = false;
                         foreach (EffectParameterState state in dialog.ParameterStates)
                         {
                             if (state is NumericParameterState n)
@@ -332,13 +329,26 @@ namespace ShareX.ImageEditor.Presentation.Views
                                     case "height": rh = (int)(n.Value ?? 0); break;
                                 }
                             }
+                            else if (state is CheckboxParameterState cb &&
+                                     string.Equals(state.Key, "maintain_aspect_ratio", StringComparison.OrdinalIgnoreCase))
+                            {
+                                maintainAspectRatio = cb.Value;
+                            }
                         }
 
-                        _editorCore.ResizeImage(rw, rh);
+                        if (_editorCore.SourceImage != null)
+                        {
+                            SKSizeI targetSize = ResizeImageEffect.ResolveTargetSize(
+                                _editorCore.SourceImage.Width,
+                                _editorCore.SourceImage.Height,
+                                rw,
+                                rh,
+                                maintainAspectRatio);
+
+                            _editorCore.ResizeImage(targetSize.Width, targetSize.Height);
+                        }
                         break;
-                    }
                     case EditorOperationKind.ResizeCanvas:
-                    {
                         int top = 0, right = 0, bottom = 0, left = 0;
                         SKColor bgColor = SKColors.Transparent;
                         foreach (EffectParameterState state in dialog.ParameterStates)
@@ -362,9 +372,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                         _editorCore.ResizeCanvas(top, right, bottom, left, bgColor);
                         break;
-                    }
                     case EditorOperationKind.RotateCustomAngle:
-                    {
                         float angle = 0;
                         bool autoResize = true;
                         foreach (EffectParameterState state in dialog.ParameterStates)
@@ -383,7 +391,6 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                         _editorCore.RotateCustomAngle(angle, autoResize);
                         break;
-                    }
                     default:
                         vm.ApplyEffect(e.EffectOperation, $"Applied {operation.SchemaDefinition!.Name}");
                         break;
