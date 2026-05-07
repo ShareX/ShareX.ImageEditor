@@ -323,7 +323,7 @@ public partial class NumberAnnotation : Annotation
             center.Y,
             tailTip.X,
             tailTip.Y,
-            StrokeWidth * ArrowAnnotation.ArrowHeadWidthMultiplier);
+            StrokeWidth * ArrowAnnotation.ClassicArrowHeadWidthMultiplier);
         if (arrowPoints is not { } points)
         {
             return false;

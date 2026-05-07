@@ -318,6 +318,24 @@
                                                          IsVisible="{Binding ShowCornerRadius}"
                                                          ToolTip.Tip="Corner radius"/>
 
+                    <controls:FontFamilyPickerDropdown x:Name="FontFamilyPicker"
+                                                       FontFamilyOptions="{Binding AvailableFontFamilies}"
+                                                       SelectedFontFamily="{Binding SelectedFontFamily, Mode=TwoWay}"
+                                                       MinWidth="180"
+                                                       MaxWidth="240"
+                                                       Height="40"
+                                                       IsVisible="{Binding ShowFontFamily}"
+                                                       ToolTip.Tip="Font family"/>
+
+                    <controls:ArrowStylePickerDropdown x:Name="ArrowStylePicker"
+                                                       ArrowStyleOptions="{Binding AvailableArrowStyles}"
+                                                       SelectedArrowStyle="{Binding SelectedArrowStyle, Mode=TwoWay}"
+                                                       MinWidth="80"
+                                                       MaxWidth="160"
+                                                       Height="40"
+                                                       IsVisible="{Binding ShowArrowStyle}"
+                                                       ToolTip.Tip="Arrow style"/>
+
                     <controls:FontSizePickerDropdown x:Name="FontSizePicker"
                                                      SelectedFontSize="{Binding FontSize, Mode=TwoWay}"
                                                      Height="40"

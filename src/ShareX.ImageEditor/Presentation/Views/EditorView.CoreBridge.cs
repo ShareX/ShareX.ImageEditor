@@ -125,35 +125,51 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 snapshotTarget.Measure(Size.Infinity);
 
-                double width = snapshotTarget.DesiredSize.Width;
-                double height = snapshotTarget.DesiredSize.Height;
+                int pixelWidth = 0;
+                int pixelHeight = 0;
 
-                if (width <= 0 || height <= 0)
+                if (DataContext is MainViewModel vm)
                 {
-                    width = snapshotTarget.Bounds.Width;
-                    height = snapshotTarget.Bounds.Height;
+                    double width = vm.SmartPaddingViewportWidth + vm.SmartPaddingThickness.Left + vm.SmartPaddingThickness.Right + vm.CanvasPadding.Left + vm.CanvasPadding.Right;
+                    double height = vm.SmartPaddingViewportHeight + vm.SmartPaddingThickness.Top + vm.SmartPaddingThickness.Bottom + vm.CanvasPadding.Top + vm.CanvasPadding.Bottom;
+
+                    pixelWidth = Math.Max(1, (int)Math.Round(width, MidpointRounding.AwayFromZero));
+                    pixelHeight = Math.Max(1, (int)Math.Round(height, MidpointRounding.AwayFromZero));
                 }
 
-                if (width <= 0 || height <= 0)
+                if (pixelWidth <= 0 || pixelHeight <= 0)
                 {
-                    width = _editorCore.SourceImage.Width;
-                    height = _editorCore.SourceImage.Height;
+                    double width = snapshotTarget.Bounds.Width;
+                    double height = snapshotTarget.Bounds.Height;
+
+                    if (width <= 0 || height <= 0)
+                    {
+                        width = snapshotTarget.DesiredSize.Width;
+                        height = snapshotTarget.DesiredSize.Height;
+                    }
+
+                    if (width <= 0 || height <= 0)
+                    {
+                        width = _editorCore.SourceImage.Width;
+                        height = _editorCore.SourceImage.Height;
+                    }
+
+                    // Fallback to live bounds only when the view-model export size is unavailable.
+                    pixelWidth = Math.Max(1, (int)Math.Round(width, MidpointRounding.AwayFromZero));
+                    pixelHeight = Math.Max(1, (int)Math.Round(height, MidpointRounding.AwayFromZero));
                 }
 
                 // Force layout at native resolution (un-zoomed)
-                snapshotTarget.Arrange(new Rect(0, 0, width, height));
+                snapshotTarget.Arrange(new Rect(0, 0, pixelWidth, pixelHeight));
 
                 // Render Avalonia visual tree to bitmap
                 using var rtb = new RenderTargetBitmap(
-                    new PixelSize(Math.Max(1, (int)Math.Ceiling(width)), Math.Max(1, (int)Math.Ceiling(height))),
+                        new PixelSize(pixelWidth, pixelHeight),
                     new Vector(96, 96));
                 rtb.Render(snapshotTarget);
 
-                // Convert Avalonia RenderTargetBitmap → SKBitmap
-                using var stream = new System.IO.MemoryStream();
-                rtb.Save(stream);
-                stream.Position = 0;
-                var skBitmap = SkiaSharp.SKBitmap.Decode(stream);
+                // Convert Avalonia RenderTargetBitmap → SKBitmap via direct pixel copy (no PNG encode/decode)
+                var skBitmap = BitmapConversionHelpers.ToSKBitmap(rtb);
 
                 return skBitmap;
             }
@@ -293,15 +309,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             var canvas = this.FindControl<Canvas>("AnnotationCanvas");
             if (canvas == null) return;
 
-            // Dispose old annotations before clearing
-            foreach (var child in canvas.Children)
-            {
-                if (child is Control control)
-                {
-                    (control.Tag as IDisposable)?.Dispose();
-                }
-            }
-
             canvas.Children.Clear();
             _selectionController.ClearSelection();
 
@@ -314,16 +321,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     canvas.Children.Add(shape);
 
-                    // XIP0039 Guardrail 4: Rehydrate the arrow endpoint cache so that
-                    // endpoint drag handles work correctly after undo/redo, paste, and duplicate.
-                    // Previously the cache was only populated during the draw flow, causing
-                    // handle and hit-test degradation on restored annotations.
-                    if (annotation is ArrowAnnotation arrow)
-                    {
-                        var start = new Point(arrow.StartPoint.X, arrow.StartPoint.Y);
-                        var end = new Point(arrow.EndPoint.X, arrow.EndPoint.Y);
-                        _selectionController.RegisterArrowEndpoint(shape, start, end);
-                    }
                 }
             }
 

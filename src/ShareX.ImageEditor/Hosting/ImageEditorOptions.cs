@@ -58,6 +58,7 @@ namespace ShareX.ImageEditor.Hosting
         public double WindowHeight { get; set; } = 720;
         public bool ShowExitConfirmation { get; set; } = true;
         public bool ZoomToFitOnOpen { get; set; } = false;
+        public bool QuickCrop { get; set; } = true;
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
         public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
@@ -74,6 +75,7 @@ namespace ShareX.ImageEditor.Hosting
         public int Thickness { get; set; } = 4;
         public int CornerRadius { get; set; } = 4;
         public bool Shadow { get; set; } = false;
+        public ArrowStyle ArrowStyle { get; set; } = ArrowStyle.Classic;
 
         // Text
         public string TextBorderColorHex { get; set; } = ColorToHex(PrimaryColor);
@@ -86,6 +88,7 @@ namespace ShareX.ImageEditor.Hosting
 
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
+        public string TextFontFamily { get; set; } = "Segoe UI";
         public bool TextBold { get; set; } = true;
         public bool TextItalic { get; set; } = false;
         public bool TextUnderline { get; set; } = false;
@@ -105,7 +108,7 @@ namespace ShareX.ImageEditor.Hosting
 
         public int SpeechBalloonThickness { get; set; } = 4;
         public float SpeechBalloonFontSize { get; set; } = 48;
-        public StepTailStyle SpeechBalloonTailStyle { get; set; } = StepTailStyle.Triangle;
+        public string SpeechBalloonFontFamily { get; set; } = "Segoe UI";
 
         // Step
         public string StepBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
@@ -122,7 +125,6 @@ namespace ShareX.ImageEditor.Hosting
 
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
-        public StepTailStyle StepTailStyle { get; set; } = StepTailStyle.Triangle;
 
         // Highlight
         public string HighlightFillColorHex { get; set; } = ColorToHex(Colors.Yellow);

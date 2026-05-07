@@ -87,6 +87,7 @@ public class EditorInputController
     public bool IsCropInteractionActive => _isDraggingCropHandle;
 
     private MainViewModel? ViewModel => _view.DataContext as MainViewModel;
+    private bool IsQuickCropEnabled => ViewModel?.Options.QuickCrop == true;
     private static double ToOverlayCoordinate(double value) => value + EditorView.OverlayCanvasBleed;
     private static double FromOverlayCoordinate(double value) => value - EditorView.OverlayCanvasBleed;
     private static Point ToOverlayPoint(Point value) => new(ToOverlayCoordinate(value.X), ToOverlayCoordinate(value.Y));
@@ -208,7 +209,7 @@ public class EditorInputController
                 var clickPos = e.GetPosition(canvas);
                 var cropBounds = GetCropOverlayCanvasRect(cropOverlay);
 
-                // Double-click inside crop area ? confirm
+                // Double-click inside crop area → confirm
                 if (e.ClickCount == 2 && cropBounds.Contains(clickPos))
                 {
                     TryConfirmCrop();
@@ -216,7 +217,7 @@ public class EditorInputController
                     return;
                 }
 
-                // Single-click inside crop area ? drag/move entire crop rect
+                // Single-click inside crop area → drag/move entire crop rect
                 if (cropBounds.Contains(clickPos))
                 {
                     _cropDragStartRect = cropBounds;
@@ -229,7 +230,7 @@ public class EditorInputController
                 }
             }
 
-            // Click outside crop area ? cancel and fall through to start a new crop
+            // Click outside crop area → cancel and fall through to start a new crop
             CancelCrop();
         }
 
@@ -257,9 +258,11 @@ public class EditorInputController
 
         if (vm.ActiveTool == EditorTool.Crop)
         {
-            // If crop not yet active, full-image overlay + handles are shown when tool was selected (ActivateCropToFullImage).
-            // This pointer down is then for dragging a handle or moving the crop rect (handled in _cropActive block above).
-            if (!_cropActive)
+            if (IsQuickCropEnabled)
+            {
+                BeginQuickCrop();
+            }
+            else if (!_cropActive)
             {
                 ActivateCropToFullImage();
             }
@@ -315,10 +318,9 @@ public class EditorInputController
                 _currentShape.IsHitTestVisible = false;
                 break;
             case EditorTool.Arrow:
-                var arrowAnnotation = new ArrowAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var arrowAnnotation = new ArrowAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Style = vm.SelectedArrowStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 _currentShape = arrowAnnotation.CreateVisual();
                 _currentShape.IsHitTestVisible = false;
-                _selectionController.RegisterArrowEndpoint(_currentShape, _startPoint, _startPoint);
                 break;
             case EditorTool.Text:
                 HandleTextTool(canvas, brush, vm.StrokeWidth);
@@ -363,7 +365,7 @@ public class EditorInputController
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
-                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, FontFamily = vm.SelectedFontFamily, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 var balloonControl = balloonAnnotation.CreateVisual();
                 balloonControl.Width = 0;
                 balloonControl.Height = 0;
@@ -613,6 +615,25 @@ public class EditorInputController
             return;
         }
 
+        if (vm.ActiveTool == EditorTool.Crop && _currentShape.Name == "CropOverlay")
+        {
+            var cropLeft = Math.Min(_startPoint.X, currentPoint.X);
+            var cropTop = Math.Min(_startPoint.Y, currentPoint.Y);
+            var cropWidth = Math.Abs(currentPoint.X - _startPoint.X);
+            var cropHeight = Math.Abs(currentPoint.Y - _startPoint.Y);
+
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+            {
+                cropWidth = Math.Max(cropWidth, cropHeight);
+                cropHeight = cropWidth;
+                if (currentPoint.X < _startPoint.X) cropLeft = _startPoint.X - cropWidth;
+                if (currentPoint.Y < _startPoint.Y) cropTop = _startPoint.Y - cropHeight;
+            }
+
+            UpdateQuickCropPreview(new Rect(cropLeft, cropTop, cropWidth, cropHeight));
+            return;
+        }
+
         // Standard shape resizing
         var left = Math.Min(_startPoint.X, currentPoint.X);
         var top = Math.Min(_startPoint.Y, currentPoint.Y);
@@ -640,26 +661,21 @@ public class EditorInputController
             else if (_currentShape.Tag is EllipseAnnotation ellAnn) { ellAnn.StartPoint = ToSKPoint(new Point(left, top)); ellAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
             else if (_currentShape.Tag is BaseEffectAnnotation effectAnn) { effectAnn.StartPoint = ToSKPoint(new Point(left, top)); effectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
         }
-        else if (_currentShape is global::Avalonia.Controls.Shapes.Line line)
+        else if (_currentShape is global::Avalonia.Controls.Shapes.Path linePath && linePath.Tag is LineAnnotation lineAnn)
         {
             var lineEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
                 ? SnapTo45Degrees(_startPoint, currentPoint)
                 : currentPoint;
-            line.EndPoint = lineEnd;
-            if (line.Tag is LineAnnotation lineAnn) lineAnn.EndPoint = ToSKPoint(lineEnd);
+            lineAnn.EndPoint = ToSKPoint(lineEnd);
+            AnnotationVisualFactory.UpdateVisualControl(linePath, lineAnn);
         }
-        else if (_currentShape is global::Avalonia.Controls.Shapes.Path path) // Arrow
+        else if (_currentShape is global::Avalonia.Controls.Shapes.Path arrowPath && arrowPath.Tag is ArrowAnnotation arrowAnn)
         {
             var arrowEnd = e.KeyModifiers.HasFlag(KeyModifiers.Shift)
                 ? SnapTo45Degrees(_startPoint, currentPoint)
                 : currentPoint;
-            if (path.Tag is ArrowAnnotation arrowAnn)
-            {
-                arrowAnn.EndPoint = ToSKPoint(arrowEnd);
-                AnnotationVisualFactory.UpdateVisualControl(path, arrowAnn);
-            }
-
-            _selectionController.RegisterArrowEndpoint(path, _startPoint, arrowEnd);
+            arrowAnn.EndPoint = ToSKPoint(arrowEnd);
+            AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnn);
         }
         else if (_currentShape is ShareX.ImageEditor.Presentation.Controls.SpotlightControl spotlight)
         {
@@ -723,7 +739,7 @@ public class EditorInputController
             {
                 if (_currentShape != null)
                 {
-                    _currentShape.Cursor = null;
+                    _view.SyncAnnotationCursor(_currentShape);
                 }
 
                 if (vm.ActiveTool == EditorTool.Crop)
@@ -731,19 +747,25 @@ public class EditorInputController
                     var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
                     if (cropOverlay != null && cropOverlay.IsVisible && cropOverlay.Width >= MinShapeSize && cropOverlay.Height >= MinShapeSize)
                     {
-                        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
-                        if (overlayCanvas != null)
+                        if (IsQuickCropEnabled)
                         {
-                            var cropRect = GetCropOverlayCanvasRect(cropOverlay);
-                            ShowCropHandles(overlayCanvas, cropRect);
-                            _cropActive = true;
+                            HideCropChrome();
+                            PerformCrop();
+                        }
+                        else
+                        {
+                            var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+                            if (overlayCanvas != null)
+                            {
+                                var cropRect = GetCropOverlayCanvasRect(cropOverlay);
+                                ShowCropHandles(overlayCanvas, cropRect);
+                                _cropActive = true;
+                            }
                         }
                     }
                     else if (cropOverlay != null)
                     {
-                        cropOverlay.IsVisible = false;
-                        cropOverlay.Width = 0;
-                        cropOverlay.Height = 0;
+                        CancelCrop();
                     }
                     _currentShape = null;
                     return;
@@ -840,7 +862,13 @@ public class EditorInputController
         if (_cropActive) CancelCrop();
         if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle rect)
         {
-            if (rect.Name == "CropOverlay") { rect.IsVisible = false; rect.Width = 0; rect.Height = 0; }
+            if (rect.Name == "CropOverlay")
+            {
+                HideCropChrome();
+                rect.IsVisible = false;
+                rect.Width = 0;
+                rect.Height = 0;
+            }
             else if (rect.Name == "CutOutOverlay") { canvas.Children.Remove(rect); }
         }
         _currentShape = null;
@@ -879,14 +907,7 @@ public class EditorInputController
     public bool TryConfirmCrop()
     {
         if (!_cropActive) return false;
-        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
-        if (overlayCanvas != null)
-        {
-            HideCropHandles(overlayCanvas);
-            HideCropAdorners();
-        }
-        ResetCropDragState();
-        _cropActive = false;
+        HideCropChrome();
         PerformCrop();
         return true;
     }
@@ -896,16 +917,12 @@ public class EditorInputController
     /// </summary>
     public bool CancelCrop()
     {
-        if (!_cropActive) return false;
-        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
-        if (overlayCanvas != null)
-        {
-            HideCropHandles(overlayCanvas);
-            HideCropAdorners();
-        }
-        ResetCropDragState();
-        _cropActive = false;
         var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+        bool hasVisibleOverlay = cropOverlay != null && cropOverlay.IsVisible;
+        if (!_cropActive && !hasVisibleOverlay) return false;
+
+        HideCropChrome();
+
         if (cropOverlay != null)
         {
             cropOverlay.IsVisible = false;
@@ -946,6 +963,26 @@ public class EditorInputController
         EnsureCropAdorners(overlayCanvas);
         UpdateCropAdorners(overlayCanvas, cropRect);
         ShowCropHandles(overlayCanvas, cropRect);
+    }
+
+    private void BeginQuickCrop()
+    {
+        var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+        if (cropOverlay == null) return;
+
+        HideCropChrome();
+
+        cropOverlay.Fill = Brushes.Transparent;
+        cropOverlay.Stroke = Brushes.White;
+        cropOverlay.StrokeThickness = 2;
+        cropOverlay.StrokeDashArray = new global::Avalonia.Collections.AvaloniaList<double> { 4, 2 };
+        cropOverlay.SetValue(Panel.ZIndexProperty, CropOverlayZIndex);
+        cropOverlay.IsVisible = true;
+        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(_startPoint.X));
+        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(_startPoint.Y));
+        cropOverlay.Width = 0;
+        cropOverlay.Height = 0;
+        _currentShape = cropOverlay;
     }
 
     /// <summary>
@@ -1031,6 +1068,19 @@ public class EditorInputController
             overlay.Children.Remove(handle);
         _cropHandles.Clear();
         HideCropConfirmButton(overlay);
+    }
+
+    private void HideCropChrome()
+    {
+        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+        if (overlayCanvas != null)
+        {
+            HideCropHandles(overlayCanvas);
+        }
+
+        HideCropAdorners();
+        ResetCropDragState();
+        _cropActive = false;
     }
 
     private void ResetCropDragState()
@@ -1320,11 +1370,11 @@ public class EditorInputController
         // The polygon traces the outer boundary of the L clockwise.
         //
         // For TopLeft corner (arms extend right and down into the crop area):
-        //   P0 -------- P1
-        //   �            �
-        //   �   P3 -- P2
-        //   �   �
-        //   �   �
+        //   P0 ──────── P1
+        //   │            │
+        //   │   P3 ── P2
+        //   │   │
+        //   │   │
         //   P5  P4
         //
         bool extendsLeft = tag.Contains("Right", StringComparison.Ordinal);
@@ -1410,6 +1460,31 @@ public class EditorInputController
         {
             // Recreate handles so the nodes stay aligned with the latest crop bounds.
             ShowCropHandles(overlay, newRect);
+        }
+    }
+
+    private void UpdateQuickCropPreview(Rect newRect)
+    {
+        var cropOverlay = _view.FindControl<global::Avalonia.Controls.Shapes.Rectangle>("CropOverlay");
+        if (cropOverlay == null) return;
+
+        Canvas.SetLeft(cropOverlay, ToOverlayCoordinate(newRect.Left));
+        Canvas.SetTop(cropOverlay, ToOverlayCoordinate(newRect.Top));
+        cropOverlay.Width = newRect.Width;
+        cropOverlay.Height = newRect.Height;
+        cropOverlay.IsVisible = newRect.Width > 0 && newRect.Height > 0;
+
+        var overlayCanvas = _view.FindControl<Canvas>("OverlayCanvas");
+        if (overlayCanvas == null) return;
+
+        if (cropOverlay.IsVisible)
+        {
+            EnsureCropAdorners(overlayCanvas);
+            UpdateCropAdorners(overlayCanvas, newRect);
+        }
+        else
+        {
+            HideCropAdorners();
         }
     }
 
@@ -1499,7 +1574,7 @@ public class EditorInputController
         }
 
         // Canvas coordinates are already in image-pixel space (AnnotationCanvas is sized
-        // to CanvasSize = bitmap.Width/Height). No DPI scaling needed � RenderScaling
+        // to CanvasSize = bitmap.Width/Height). No DPI scaling needed — RenderScaling
         // only affects physical display pixels, not the logical layout coordinate space.
         var cropX = (int)Math.Round(x);
         var cropY = (int)Math.Round(y);
@@ -1522,7 +1597,7 @@ public class EditorInputController
             {
                 // XIP0039 Guardrail 1: Annotation model coordinates are logical image pixels.
                 // AnnotationCanvas is sized 1:1 with the source bitmap in logical pixels,
-                // so no RenderScaling factor is needed � consistent with the Crop path.
+                // so no RenderScaling factor is needed — consistent with the Crop path.
                 // The previous code incorrectly multiplied by RenderScaling, which caused
                 // CutOut bounds to be scaled by the display DPI factor on high-DPI screens.
                 if (_cutOutDirection.Value) // Vertical
@@ -1567,6 +1642,7 @@ public class EditorInputController
                 var annotation = new ImageAnnotation();
                 annotation.SetImage(BitmapConversionHelpers.ToSKBitmap(bitmap));
                 imageControl.Tag = annotation;
+                _view.SyncAnnotationCursor(imageControl);
 
                 Canvas.SetLeft(imageControl, point.X - bitmap.Size.Width / 2);
                 Canvas.SetTop(imageControl, point.Y - bitmap.Size.Height / 2);
@@ -1611,6 +1687,7 @@ public class EditorInputController
             TextColor = textColor,
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
+            FontFamily = vm.SelectedFontFamily,
             IsBold = vm.TextBold,
             IsItalic = vm.TextItalic,
             IsUnderline = vm.TextUnderline,
@@ -1627,6 +1704,7 @@ public class EditorInputController
             BorderThickness = new Thickness(1),
             BorderBrush = Brushes.White,
             FontSize = vm.FontSize,
+            FontFamily = new Avalonia.Media.FontFamily(textAnnotation.FontFamily),
             FontWeight = vm.TextBold ? Avalonia.Media.FontWeight.Bold : Avalonia.Media.FontWeight.Normal,
             FontStyle = vm.TextItalic ? Avalonia.Media.FontStyle.Italic : Avalonia.Media.FontStyle.Normal,
             TextAlignment = Avalonia.Media.TextAlignment.Center,
@@ -1737,9 +1815,21 @@ public class EditorInputController
 
         textBox.LostFocus += OnCreationLostFocus;
 
+        textBox.KeyDown += (s, args) =>
+        {
+            if (args.Key == Key.Enter && args.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                args.Handled = true;
+                int caretIndex = textBox.CaretIndex;
+                string currentText = textBox.Text ?? string.Empty;
+                textBox.Text = currentText.Substring(0, caretIndex) + "\n" + currentText.Substring(caretIndex);
+                textBox.CaretIndex = caretIndex + 1;
+            }
+        };
+
         textBox.KeyUp += (s, args) =>
         {
-            if (args.Key == Key.Enter || args.Key == Key.Escape)
+            if ((args.Key == Key.Enter && !args.KeyModifiers.HasFlag(KeyModifiers.Control)) || args.Key == Key.Escape)
             {
                 args.Handled = true;
                 _view.Focus();
@@ -1780,7 +1870,7 @@ public class EditorInputController
 
     /// <summary>
     /// Snaps the endpoint so the line from <paramref name="start"/> to <paramref name="end"/>
-    /// is locked to the nearest 45-degree increment (0�, 45�, 90�, 135�, etc.).
+    /// is locked to the nearest 45-degree increment (0°, 45°, 90°, 135°, etc.).
     /// The distance from start to end is preserved.
     /// </summary>
     internal static Point SnapTo45Degrees(Point start, Point end)

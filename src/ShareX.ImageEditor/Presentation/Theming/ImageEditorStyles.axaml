@@ -69,7 +69,7 @@
             <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
         </Style>
 
-        <Style Selector="^.active TextBlock">
+        <Style Selector="^.active /template/ ContentPresenter#PART_ContentPresenter TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
         </Style>
 
@@ -127,7 +127,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Cancel.Border}"/>
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
 
-        <Style Selector="^ TextBlock">
+        <Style Selector="^ > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
         </Style>
     </Style>
@@ -147,7 +147,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.TaskMode.Continue.Border}"/>
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
 
-        <Style Selector="^ TextBlock">
+        <Style Selector="^ > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.TaskMode.Foreground}"/>
         </Style>
     </Style>

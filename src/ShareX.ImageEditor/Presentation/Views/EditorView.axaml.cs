@@ -70,8 +70,10 @@ namespace ShareX.ImageEditor.Presentation.Views
         private bool _pendingZoomToFitOnOpen;
         private int _pendingZoomToFitRetryCount;
         private int _pendingAutoCopyImageVersion;
+        private bool _overlayCanvasLayoutUpdatePending;
         private Rect? _lastOverlayCanvasRect;
         private double _lastOverlayCanvasZoom = -1;
+        private double _lastRenderScaling = 1.0;
         private EffectBrowserPanel? _effectBrowserPanel;
         private ImageEditorOptions? _effectBrowserPanelOptions;
         private Cursor? _interactionCursorOverride;
@@ -102,40 +104,53 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             // SIP0018: Subscribe to Core events
             _editorCore.InvalidateRequested += () => Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore);
-            _editorCore.ImageChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            _editorCore.ImageChanged += () =>
             {
-                if (_canvasControl != null)
+                // Capture the one-shot skip synchronously so it applies to the event
+                // raised by the VM->Core sync, not the next unrelated crop/cut/undo event.
+                bool skipVmSync = _skipNextCoreImageChanged;
+                _skipNextCoreImageChanged = false;
+
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
-                    RenderCore();
-                    if (DataContext is MainViewModel vm)
+                    if (_canvasControl != null)
                     {
-                        UpdateViewModelHistoryState(vm);
-                        UpdateViewModelMetadata(vm);
-
-                        // Sync Core image back to VM if change originated from Core (Undo/Redo, Core Crop)
-                        if (!_isSyncingFromVM && !_isSyncingToVM && _editorCore.SourceImage != null)
+                        _canvasControl.Initialize((int)_editorCore.CanvasSize.Width, (int)_editorCore.CanvasSize.Height);
+                        RenderCore();
+                        if (DataContext is MainViewModel vm)
                         {
-                            // SIP-FIX: Break feedback loop from async ImageChanged events (e.g. Smart Padding)
-                            if (_skipNextCoreImageChanged)
-                            {
-                                _skipNextCoreImageChanged = false;
-                                return;
-                            }
+                            UpdateViewModelHistoryState(vm);
+                            UpdateViewModelMetadata(vm);
+                            vm.SyncImageDimensions(_editorCore.CanvasSize.Width, _editorCore.CanvasSize.Height);
 
-                            try
+                            // Sync Core image back to VM if change originated from Core (Undo/Redo, Core Crop)
+                            if (!_isSyncingFromVM && !_isSyncingToVM && _editorCore.SourceImage != null)
                             {
-                                _isSyncingToVM = true;
-                                vm.UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
-                            }
-                            finally
-                            {
-                                _isSyncingToVM = false;
+                                if (skipVmSync)
+                                {
+                                    return;
+                                }
+
+                                try
+                                {
+                                    _isSyncingToVM = true;
+                                    vm.UpdatePreviewImageOnly(_editorCore.SourceImage, syncSourceState: true);
+
+                                    // Core-driven destructive image changes resize the backing bitmap
+                                    // before the VM size bindings have updated the layout container.
+                                    // Queue one more redraw after the render pass so the raster layer
+                                    // is repainted against the settled post-resize bounds.
+                                    Avalonia.Threading.Dispatcher.UIThread.Post(RenderCore, DispatcherPriority.Render);
+                                }
+                                finally
+                                {
+                                    _isSyncingToVM = false;
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            };
             _editorCore.AnnotationsRestored += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationsRestored);
             _editorCore.AnnotationOrderChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(OnAnnotationOrderChanged);
             _editorCore.HistoryChanged += () => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
@@ -164,12 +179,53 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void OnLayoutUpdated(object? sender, EventArgs e)
         {
-            UpdateOverlayCanvasLayout();
+            UpdateDpiScaleFromTopLevel();
+            RequestOverlayCanvasLayoutUpdate();
+        }
+
+        /// <summary>
+        /// Reads the current render scaling from the host TopLevel and propagates it to the
+        /// ViewModel so that <see cref="MainViewModel.EffectiveZoom"/> can compensate for the
+        /// Windows display scale factor.  Called on every layout pass so that a move to a
+        /// different-DPI monitor is picked up without a dedicated event subscription.
+        /// </summary>
+        private void UpdateDpiScaleFromTopLevel()
+        {
+            double scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
+            if (Math.Abs(scaling - _lastRenderScaling) <= 0.0001)
+            {
+                return;
+            }
+
+            _lastRenderScaling = scaling;
+            if (DataContext is MainViewModel vm)
+            {
+                vm.DpiScale = scaling;
+            }
+
+            // Force an immediate overlay canvas refresh after the DPI change so that
+            // selection handles reposition correctly on the rescaled canvas.
+            RequestOverlayCanvasLayoutUpdate();
         }
 
         private void OnCanvasScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
-            UpdateOverlayCanvasLayout();
+            RequestOverlayCanvasLayoutUpdate();
+        }
+
+        private void RequestOverlayCanvasLayoutUpdate()
+        {
+            if (_overlayCanvasLayoutUpdatePending)
+            {
+                return;
+            }
+
+            _overlayCanvasLayoutUpdatePending = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _overlayCanvasLayoutUpdatePending = false;
+                UpdateOverlayCanvasLayout();
+            }, DispatcherPriority.Render);
         }
 
         private void UpdateOverlayCanvasLayout()
@@ -198,14 +254,17 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return;
             }
 
-            double zoom = vm?.Zoom ?? 1;
+            double zoom = vm?.EffectiveZoom ?? (vm?.Zoom ?? 1.0);
             var overlayRect = new Rect(
                 contentOrigin.Value.X - (OverlayCanvasBleed * zoom),
                 contentOrigin.Value.Y - (OverlayCanvasBleed * zoom),
                 contentWidth + (OverlayCanvasBleed * 2),
                 contentHeight + (OverlayCanvasBleed * 2));
 
-            if (_lastOverlayCanvasRect == overlayRect && Math.Abs(_lastOverlayCanvasZoom - zoom) < 0.0001)
+            Rect? previousOverlayRect = _lastOverlayCanvasRect;
+            bool zoomChanged = Math.Abs(_lastOverlayCanvasZoom - zoom) >= 0.0001;
+
+            if (previousOverlayRect == overlayRect && !zoomChanged)
             {
                 return;
             }
@@ -213,12 +272,31 @@ namespace ShareX.ImageEditor.Presentation.Views
             _lastOverlayCanvasRect = overlayRect;
             _lastOverlayCanvasZoom = zoom;
 
-            overlayCanvas.Width = overlayRect.Width;
-            overlayCanvas.Height = overlayRect.Height;
-            Canvas.SetLeft(overlayCanvas, overlayRect.Left);
-            Canvas.SetTop(overlayCanvas, overlayRect.Top);
-            overlayCanvas.RenderTransformOrigin = new RelativePoint(0, 0, RelativeUnit.Absolute);
-            overlayCanvas.RenderTransform = new ScaleTransform(zoom, zoom);
+            if (!previousOverlayRect.HasValue || Math.Abs(previousOverlayRect.Value.Width - overlayRect.Width) >= 0.0001)
+            {
+                overlayCanvas.Width = overlayRect.Width;
+            }
+
+            if (!previousOverlayRect.HasValue || Math.Abs(previousOverlayRect.Value.Height - overlayRect.Height) >= 0.0001)
+            {
+                overlayCanvas.Height = overlayRect.Height;
+            }
+
+            if (!previousOverlayRect.HasValue || Math.Abs(previousOverlayRect.Value.Left - overlayRect.Left) >= 0.0001)
+            {
+                Canvas.SetLeft(overlayCanvas, overlayRect.Left);
+            }
+
+            if (!previousOverlayRect.HasValue || Math.Abs(previousOverlayRect.Value.Top - overlayRect.Top) >= 0.0001)
+            {
+                Canvas.SetTop(overlayCanvas, overlayRect.Top);
+            }
+
+            if (zoomChanged || overlayCanvas.RenderTransform is null)
+            {
+                overlayCanvas.RenderTransformOrigin = new RelativePoint(0, 0, RelativeUnit.Absolute);
+                overlayCanvas.RenderTransform = new ScaleTransform(zoom, zoom);
+            }
         }
 
         private void OnSelectionChanged(bool hasSelection)
@@ -267,6 +345,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                     else if (vm.SelectedAnnotation is TextAnnotation text)
                     {
                         vm.FontSize = text.FontSize;
+                        vm.SelectedFontFamily = text.FontFamily;
                         vm.TextBold = text.IsBold;
                         vm.TextItalic = text.IsItalic;
                         vm.TextUnderline = text.IsUnderline;
@@ -276,6 +355,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                     else if (vm.SelectedAnnotation is SpeechBalloonAnnotation balloon)
                     {
                         vm.FontSize = balloon.FontSize;
+                        vm.SelectedFontFamily = balloon.FontFamily;
                         vm.FillColor = balloon.FillColor;
                         vm.CornerRadius = balloon.CornerRadius;
                         if (!string.IsNullOrEmpty(balloon.TextColor))
@@ -285,6 +365,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                     {
                         vm.FillColor = rect.FillColor;
                         vm.CornerRadius = rect.CornerRadius;
+                    }
+                    else if (vm.SelectedAnnotation is ArrowAnnotation arrow)
+                    {
+                        vm.SelectedArrowStyle = arrow.Style;
                     }
                     else if (vm.SelectedAnnotation is EllipseAnnotation ellipse)
                     {
@@ -378,11 +462,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                 }
                 else if (vm.ShowStartScreen)
                 {
-                    // No image loaded � show the start screen dialog
+                    // No image loaded — show the start screen dialog
                     vm.RequestStartScreen();
                 }
 
-                // Reset dirty flag after initial load � loading the image fires HistoryChanged
+                // Reset dirty flag after initial load — loading the image fires HistoryChanged
                 // and OnPreviewImageChanged which both set IsDirty=true as a side-effect.
                 vm.IsDirty = false;
             }
@@ -788,7 +872,14 @@ namespace ShareX.ImageEditor.Presentation.Views
 
                     if (vm.ActiveTool == EditorTool.Crop)
                     {
-                        _inputController.ActivateCropToFullImage();
+                        if (vm.Options.QuickCrop)
+                        {
+                            _inputController.CancelCrop();
+                        }
+                        else
+                        {
+                            _inputController.ActivateCropToFullImage();
+                        }
                         this.Focus();
                     }
                     else
@@ -835,6 +926,36 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// ISSUE-018 fix: Updates the editor canvas cursor based on the active tool.
         /// The overlay canvas sits on top of the annotation canvas, so both must stay in sync.
         /// </summary>
+        internal Cursor GetCursorForActiveTool()
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return ArrowCursor;
+            }
+
+            return vm.ActiveTool switch
+            {
+                EditorTool.Select => ArrowCursor,
+                EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
+                _ => CursorAssetLoader.GetCrosshairCursor()
+            };
+        }
+
+        internal void ApplyAnnotationCursor(Control? control, Cursor cursor)
+        {
+            if (control == null || control.Tag is not Annotation)
+            {
+                return;
+            }
+
+            ApplyCursorToControlTree(control, cursor);
+        }
+
+        internal void SyncAnnotationCursor(Control? control)
+        {
+            ApplyAnnotationCursor(control, GetCursorForActiveTool());
+        }
+
         private void UpdateCursorForTool()
         {
             if (DataContext is not MainViewModel vm) return;
@@ -856,21 +977,43 @@ namespace ShareX.ImageEditor.Presentation.Views
             var overlayCanvas = this.FindControl<Canvas>("OverlayCanvas");
             if (annotationCanvas == null && overlayCanvas == null) return;
 
-            Cursor cursor = vm.ActiveTool switch
-            {
-                EditorTool.Select => ArrowCursor,
-                EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
-                _ => CursorAssetLoader.GetCrosshairCursor() // Drawing tools (Rectangle, Ellipse, Pen, etc.)
-            };
+            Cursor cursor = GetCursorForActiveTool();
 
             if (annotationCanvas != null)
             {
                 annotationCanvas.Cursor = cursor;
+                UpdateAnnotationCanvasChildCursors(annotationCanvas, cursor);
             }
 
             if (overlayCanvas != null)
             {
                 overlayCanvas.Cursor = cursor;
+            }
+
+            _selectionController.RefreshHoveredShapeCursor();
+        }
+
+        private void UpdateAnnotationCanvasChildCursors(Canvas annotationCanvas, Cursor cursor)
+        {
+            foreach (var child in annotationCanvas.Children)
+            {
+                if (child is Control control && control.Tag is Annotation)
+                {
+                    ApplyCursorToControlTree(control, cursor);
+                }
+            }
+        }
+
+        private static void ApplyCursorToControlTree(Control control, Cursor cursor)
+        {
+            control.Cursor = cursor;
+
+            foreach (var descendant in control.GetVisualDescendants())
+            {
+                if (descendant is InputElement inputElement)
+                {
+                    inputElement.Cursor = cursor;
+                }
             }
         }
 
@@ -1119,7 +1262,13 @@ namespace ShareX.ImageEditor.Presentation.Views
                     switch (e.Key)
                     {
                         case Key.Z: vm.RedoCommand.Execute(null); e.Handled = true; break;
-                        case Key.C: vm.CopyCommand.Execute(null); e.Handled = true; break;
+                        case Key.C:
+                            if (vm.CopyAnnotationCommand.CanExecute(null))
+                            {
+                                vm.CopyAnnotationCommand.Execute(null);
+                                e.Handled = true;
+                            }
+                            break;
                         case Key.F: vm.FlattenImageCommand.Execute(null); e.Handled = true; break;
                         case Key.S: vm.SaveAsCommand.Execute(null); e.Handled = true; break;
                     }
@@ -1132,11 +1281,11 @@ namespace ShareX.ImageEditor.Presentation.Views
                         case Key.Y: vm.RedoCommand.Execute(null); e.Handled = true; break;
                         case Key.X: vm.CutAnnotationCommand.Execute(null); e.Handled = true; break;
                         case Key.C:
-                            if (vm.CopyAnnotationCommand.CanExecute(null))
-                                vm.CopyAnnotationCommand.Execute(null);
-                            else
+                            if (vm.CopyCommand.CanExecute(null))
+                            {
                                 vm.CopyCommand.Execute(null);
-                            e.Handled = true;
+                                e.Handled = true;
+                            }
                             break;
                         case Key.V: vm.PasteCommand.Execute(null); e.Handled = true; break;
                         case Key.D: DuplicateSelectedAnnotation(); e.Handled = true; break;
@@ -1329,6 +1478,8 @@ namespace ShareX.ImageEditor.Presentation.Views
                 OnRequestUpdateEffect(control);
             }
 
+            SyncAnnotationCursor(control);
+
             return control;
         }
 
@@ -1422,39 +1573,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// </remarks>
         public void InsertImageAnnotation(SKBitmap skBitmap, Point? dropPosition = null)
         {
-            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-            if (canvas == null || DataContext is not MainViewModel vm)
-            {
-                return;
-            }
-
-            // Calculate position: drop point or center of canvas
-            var posX = dropPosition?.X ?? (_editorCore.CanvasSize.Width / 2 - skBitmap.Width / 2);
-            var posY = dropPosition?.Y ?? (_editorCore.CanvasSize.Height / 2 - skBitmap.Height / 2);
-
-            var annotation = new ImageAnnotation();
-            annotation.SetImage(skBitmap);
-            annotation.StartPoint = new SKPoint((float)posX, (float)posY);
-            annotation.EndPoint = new SKPoint(
-                (float)posX + skBitmap.Width,
-                (float)posY + skBitmap.Height);
-
-            var avBitmap = BitmapConversionHelpers.ToAvaloniBitmap(skBitmap);
-            var imageControl = new Image
-            {
-                Source = avBitmap,
-                Width = skBitmap.Width,
-                Height = skBitmap.Height,
-                Tag = annotation
-            };
-            Canvas.SetLeft(imageControl, posX);
-            Canvas.SetTop(imageControl, posY);
-
-            canvas.Children.Add(imageControl);
-            _editorCore.AddAnnotation(annotation);
-            vm.HasAnnotations = true;
-            vm.ActiveTool = EditorTool.Select; // Auto-switch to Select tool
-            _selectionController.SetSelectedShape(imageControl);
+            InsertImageAnnotationCore(skBitmap, dropPosition);
         }
 
         private void InsertEmojiAnnotation(string unicodeSequence, string displayName, Point? dropPosition = null)
@@ -1523,14 +1642,6 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             if (droppedItems.Count > 0)
             {
-                // Get drop position relative to the annotation canvas
-                var canvas = this.FindControl<Canvas>("AnnotationCanvas");
-                Point? dropPos = null;
-                if (canvas != null)
-                {
-                    dropPos = e.GetPosition(canvas);
-                }
-
                 foreach (var item in droppedItems)
                 {
                     if (item is IStorageFile file)
@@ -1556,11 +1667,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                                         return;
                                     }
 
-                                    // Otherwise add it as an image annotation on top of the current canvas.
-                                    var centeredPos = dropPos.HasValue
-                                        ? new Point(dropPos.Value.X - skBitmap.Width / 2, dropPos.Value.Y - skBitmap.Height / 2)
-                                        : (Point?)null;
-                                    InsertImageAnnotation(skBitmap, centeredPos);
+                                    await InsertExternalImageAsync(skBitmap, file.Path.LocalPath);
                                 }
                             }
                             catch (Exception ex)
@@ -1640,11 +1747,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                         vm.IsDirty = false;
                         vm.HasAnnotations = false;
                         vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
-
-                        using var image = SKImage.FromBitmap(skBitmap);
-                        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                        using var stream = new MemoryStream(data.ToArray());
-                        vm.PreviewImage = new Avalonia.Media.Imaging.Bitmap(stream);
+                        vm.UpdatePreviewImageOnly(skBitmap, syncSourceState: true);
                     }
                     finally
                     {
@@ -1966,11 +2069,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                 vm.IsDirty = false;
                 vm.HasAnnotations = false;
                 vm.UpdateCoreHistoryState(_editorCore.CanUndo, _editorCore.CanRedo);
-
-                using var image = SKImage.FromBitmap(skBitmap);
-                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                using var pngStream = new MemoryStream(data.ToArray());
-                vm.PreviewImage = new Avalonia.Media.Imaging.Bitmap(pngStream);
+                vm.UpdatePreviewImageOnly(skBitmap, syncSourceState: true);
             }
             finally
             {
@@ -2119,10 +2218,10 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         public void OpenContextMenu(Control target)
         {
-            if (this.Resources["EditorContextFlyout"] is MenuFlyout flyout)
+            if (this.Resources["EditorContextMenu"] is ContextMenu menu)
             {
-                target.ContextFlyout = flyout;
-                flyout.ShowAt(target);
+                menu.PlacementTarget = target;
+                menu.Open(target);
             }
         }
 

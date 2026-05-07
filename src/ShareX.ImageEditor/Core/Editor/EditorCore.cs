@@ -1282,8 +1282,15 @@ public class EditorCore : IDisposable
         }
 
         _annotations.Remove(annotation);
+        if (renumbered)
+        {
+            SyncNumberCounterFromAnnotations();
+        }
+
         if (_selectedAnnotation == annotation)
+        {
             _selectedAnnotation = null;
+        }
 
         HistoryChanged?.Invoke();
         InvalidateRequested?.Invoke();
@@ -1303,6 +1310,11 @@ public class EditorCore : IDisposable
                 numberAnnotation.Number--;
             }
         }
+    }
+
+    private void SyncNumberCounterFromAnnotations()
+    {
+        NumberCounter = _annotations.OfType<NumberAnnotation>().Select(annotation => annotation.Number).DefaultIfEmpty(0).Max() + 1;
     }
 
     /// <summary>
@@ -1372,7 +1384,7 @@ public class EditorCore : IDisposable
         _currentAnnotation = null;
         _selectedAnnotation = null;
         _isDrawing = false;
-        NumberCounter = _annotations.OfType<NumberAnnotation>().Select(annotation => annotation.Number).DefaultIfEmpty(0).Max() + 1;
+        SyncNumberCounterFromAnnotations();
 
         RefreshAnnotationsForCurrentImage();
 
@@ -1398,6 +1410,7 @@ public class EditorCore : IDisposable
 
         // Restore annotation list
         _annotations.AddRange(memento.Annotations);
+        SyncNumberCounterFromAnnotations();
 
         // If memento has a canvas bitmap, restore it (for crop/cutout undo)
         if (memento.Canvas != null)
@@ -1438,7 +1451,7 @@ public class EditorCore : IDisposable
     {
         canvas.Clear(SKColors.Transparent);
 
-        // Draw source image only � annotations are handled by Avalonia controls
+        // Draw source image only — annotations are handled by Avalonia controls
         if (SourceImage != null)
         {
             canvas.DrawBitmap(SourceImage, 0, 0);

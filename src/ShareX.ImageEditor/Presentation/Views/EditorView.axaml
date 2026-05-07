@@ -25,6 +25,9 @@
         <DataTemplate DataType="{x:Type vm:NewImageDialogViewModel}" x:DataType="vm:NewImageDialogViewModel">
             <views:NewImageDialogView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:InsertImageDialogViewModel}" x:DataType="vm:InsertImageDialogViewModel">
+            <views:InsertImageDialogView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EmojiPickerDialogViewModel}" x:DataType="vm:EmojiPickerDialogViewModel">
             <views:EmojiPickerDialogView />
         </DataTemplate>
@@ -43,8 +46,13 @@
         <converters:DoubleToCornerRadiusConverter x:Key="DoubleToCornerRadius" />
         <converters:EqualsConverter x:Key="EqualsConverter" />
 
-        <MenuFlyout x:Key="EditorContextFlyout"
-                    Placement="Pointer">
+        <ContextMenu x:Key="EditorContextMenu"
+                     Placement="Pointer"
+                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                     BorderThickness="1"
+                     CornerRadius="6"
+                     Padding="6,2"
+                     Cursor="Arrow">
             <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionUndo}"/>
@@ -81,7 +89,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ToolCutOut}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Copy" Command="{Binding CopyContextCommand}" InputGesture="Ctrl+C">
+            <MenuItem Header="Copy" Command="{Binding CopyAnnotationCommand}" InputGesture="Ctrl+Shift+C">
                 <MenuItem.Icon>
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionCopy}"/>
                 </MenuItem.Icon>
@@ -119,17 +127,7 @@
                     <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.ActionSendToBack}"/>
                 </MenuItem.Icon>
             </MenuItem>
-
-            <Separator/>
-
-            <MenuItem Header="Theme">
-                <MenuItem.Icon>
-                    <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.MenuTheme}"/>
-                </MenuItem.Icon>
-                <MenuItem Header="Dark" Command="{Binding SetThemeCommand}" CommandParameter="ShareXDark"/>
-                <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="ShareXLight"/>
-            </MenuItem>
-        </MenuFlyout>
+        </ContextMenu>
     </UserControl.Resources>
 
     <ThemeVariantScope x:Name="EditorThemeScope"
@@ -189,6 +187,7 @@
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
                             <CheckBox x:Name="BackgroundSmartPaddingCheckBox"
                                       IsChecked="{Binding BackgroundSmartPadding}"
+                                      IsEnabled="{Binding CanUseBackgroundSmartPadding}"
                                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                                       Content="Smart padding"
                                       Margin="0,0,0,8"/>
@@ -367,7 +366,7 @@
                               PointerReleased="OnScrollViewerPointerReleased">
                     <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
                         <LayoutTransformControl.LayoutTransform>
-                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                            <ScaleTransform ScaleX="{Binding EffectiveZoom}" ScaleY="{Binding EffectiveZoom}" />
                         </LayoutTransformControl.LayoutTransform>
                         <!-- Main Canvas Container with Checkered Background and Shadow -->
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -390,7 +389,7 @@
                                     <Border Background="{Binding SmartPaddingColor}"
                                             Padding="{Binding SmartPaddingThickness}"
                                             CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}"
-                                            ClipToBounds="False">
+                                            ClipToBounds="True">
                                         <Canvas Background="Transparent"
                                                 Width="{Binding SmartPaddingViewportWidth}"
                                                 Height="{Binding SmartPaddingViewportHeight}"
@@ -456,7 +455,6 @@
                     <Canvas Name="OverlayCanvas"
                             Width="0"
                             Height="0"
-                            Background="Transparent"
                             ClipToBounds="False"
                             IsHitTestVisible="True"
                             Cursor="Arrow"
@@ -559,7 +557,7 @@
 
                 <Button Classes="editor-button" Command="{Binding CopyCommand}" Width="40" Padding="0"
                         IsVisible="{Binding ShowBottomToolbar}"
-                        ToolTip.Tip="Copy image to clipboard (Ctrl+Shift+C)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                        ToolTip.Tip="Copy image to clipboard (Ctrl+C)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
                     <TextBlock Text="{x:Static theming:EditorIcons.ActionCopy}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 

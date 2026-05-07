@@ -47,11 +47,8 @@ public partial class ArrowAnnotation
             Tag = this
         };
 
-        // Populate the arrow geometry using the annotation's points
-        path.Data = CreateArrowGeometry(
-            new Point(StartPoint.X, StartPoint.Y),
-            new Point(EndPoint.X, EndPoint.Y),
-            StrokeWidth * ArrowHeadWidthMultiplier);
+        // Populate the arrow geometry using the annotation's points.
+        path.Data = CreateArrowGeometry();
 
         if (ShadowEnabled)
         {
@@ -71,17 +68,66 @@ public partial class ArrowAnnotation
     /// Creates arrow geometry for the Avalonia Path.
     /// Consumes <see cref="ComputeArrowPoints"/> to guarantee identical shape with <see cref="Render"/>.
     /// </summary>
+    public Geometry CreateArrowGeometry()
+    {
+        var start = new Point(StartPoint.X, StartPoint.Y);
+        var end = new Point(EndPoint.X, EndPoint.Y);
+        return CreateArrowGeometry(start, end, StrokeWidth * GetArrowHeadWidthMultiplier(Style));
+    }
+
     public Geometry CreateArrowGeometry(Point start, Point end, double headSize)
+    {
+        return Style switch
+        {
+            ArrowStyle.Modern when CurvedSegmentHelper.HasCurve(this) => CreateCurvedModernArrowGeometry(start, end, headSize),
+            ArrowStyle.Modern => CreateModernArrowGeometry(start, end, headSize),
+            _ when CurvedSegmentHelper.HasCurve(this) => CreateCurvedClassicArrowGeometry(start, end, headSize),
+            _ => CreateClassicArrowGeometry(start, end, headSize)
+        };
+    }
+
+    private Geometry CreateClassicArrowGeometry(Point start, Point end, double headSize)
     {
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
         {
-            var pts = ComputeArrowPoints(
+            var cap = ComputeArrowCapPoints(
                 (float)start.X, (float)start.Y,
                 (float)end.X, (float)end.Y,
                 headSize);
 
-            if (pts is { } p)
+            if (cap is { } p)
+            {
+                ctx.BeginFigure(start, false);
+                ctx.LineTo(end);
+                ctx.EndFigure(false);
+
+                AppendArrowCapFigure(ctx, end, p);
+            }
+            else
+            {
+                var radius = 2.0;
+                ctx.BeginFigure(new Point(start.X - radius, start.Y), true);
+                ctx.ArcTo(new Point(start.X + radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
+                ctx.ArcTo(new Point(start.X - radius, start.Y), new Size(radius, radius), 0, false, SweepDirection.Clockwise);
+                ctx.EndFigure(true);
+            }
+        }
+
+        return geometry;
+    }
+
+    private Geometry CreateModernArrowGeometry(Point start, Point end, double headSize)
+    {
+        var geometry = new StreamGeometry();
+        using (var ctx = geometry.Open())
+        {
+            var points = ComputeArrowPoints(
+                (float)start.X, (float)start.Y,
+                (float)end.X, (float)end.Y,
+                headSize);
+
+            if (points is { } p)
             {
                 ctx.BeginFigure(start, true);
                 ctx.LineTo(new Point(p.ShaftEndLeft.X, p.ShaftEndLeft.Y));
@@ -102,5 +148,78 @@ public partial class ArrowAnnotation
         }
 
         return geometry;
+    }
+
+    private Geometry CreateCurvedClassicArrowGeometry(Point start, Point end, double headSize)
+    {
+        var geometry = new StreamGeometry();
+        var controlPoint = CurvedSegmentHelper.GetQuadraticControlPoint(this);
+        var tangent = CurvedSegmentHelper.GetQuadraticTangentAtEnd(this);
+
+        using (var context = geometry.Open())
+        {
+            context.BeginFigure(start, false);
+            context.QuadraticBezierTo(new Point(controlPoint.X, controlPoint.Y), end);
+            context.EndFigure(false);
+
+            var cap = ComputeArrowCapPointsFromTangent(
+                (float)end.X,
+                (float)end.Y,
+                tangent.X,
+                tangent.Y,
+                headSize);
+
+            if (cap is null)
+            {
+                return geometry;
+            }
+
+            AppendArrowCapFigure(context, end, cap.Value);
+        }
+
+        return geometry;
+    }
+
+    private Geometry CreateCurvedModernArrowGeometry(Point start, Point end, double headSize)
+    {
+        var geometry = new StreamGeometry();
+        var controlPoint = CurvedSegmentHelper.GetQuadraticControlPoint(this);
+        var tangent = CurvedSegmentHelper.GetQuadraticTangentAtEnd(this);
+
+        using (var context = geometry.Open())
+        {
+            context.BeginFigure(start, false);
+            context.QuadraticBezierTo(new Point(controlPoint.X, controlPoint.Y), end);
+            context.EndFigure(false);
+
+            var head = ComputeModernArrowHeadPointsFromTangent(
+                (float)end.X,
+                (float)end.Y,
+                tangent.X,
+                tangent.Y,
+                headSize);
+
+            if (head is null)
+            {
+                return geometry;
+            }
+
+            context.BeginFigure(end, true);
+            context.LineTo(new Point(head.Value.WingLeft.X, head.Value.WingLeft.Y));
+            context.LineTo(new Point(head.Value.WingRight.X, head.Value.WingRight.Y));
+            context.EndFigure(true);
+        }
+
+        return geometry;
+    }
+
+    private static void AppendArrowCapFigure(StreamGeometryContext context, Point tip, ArrowCapPoints cap)
+    {
+        context.BeginFigure(tip, true);
+        context.LineTo(new Point(cap.LeftBase.X, cap.LeftBase.Y));
+        context.QuadraticBezierTo(
+            new Point(cap.BackCurveControl.X, cap.BackCurveControl.Y),
+            new Point(cap.RightBase.X, cap.RightBase.Y));
+        context.EndFigure(true);
     }
 }

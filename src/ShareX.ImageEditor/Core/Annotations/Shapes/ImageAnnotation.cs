@@ -1,7 +1,7 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
-    ShareX - A program that allows you to take screenshots and share any file type
+    ShareX.ImageEditor - The UI-agnostic Editor library for ShareX
     Copyright (c) 2007-2026 ShareX Team
 
     This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 #endregion License Information (GPL v3)
 
 using SkiaSharp;
-using System.Text.Json.Serialization;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -44,7 +43,6 @@ public class ImageAnnotation : Annotation, IDisposable
     /// <summary>
     /// The loaded image bitmap
     /// </summary>
-    [JsonIgnore]
     public SKBitmap? ImageBitmap => _imageBitmap;
 
     public ImageAnnotation()

@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.ArrowStylePickerDropdown"
+             x:Name="ArrowStylePickerDropdownRoot"
+             mc:Ignorable="d"
+             d:DesignWidth="160"
+             d:DesignHeight="40">
+    <Grid HorizontalAlignment="Stretch">
+        <Button x:Name="DropdownButton"
+                Classes="editor-button"
+                Click="OnDropdownButtonClick"
+                Height="40"
+                MinWidth="{Binding MinWidth, ElementName=ArrowStylePickerDropdownRoot}"
+                MaxWidth="{Binding MaxWidth, ElementName=ArrowStylePickerDropdownRoot}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding SelectedArrowStyle, ElementName=ArrowStylePickerDropdownRoot}"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           FontSize="12"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           Margin="0,0,6,0"/>
+
+                <TextBlock Grid.Column="1"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #ArrowStylePopup.IsOpen}"
+                           Text="{x:Static theming:EditorIcons.ChevronDown}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="10"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Button>
+
+        <Popup x:Name="ArrowStylePopup"
+               PlacementTarget="{Binding #DropdownButton}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True"
+               VerticalOffset="4">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #ArrowStylePopup.IsOpen}">
+                <ItemsControl ItemsSource="{Binding ArrowStyleOptions, ElementName=ArrowStylePickerDropdownRoot}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button MinWidth="80"
+                                    Height="32"
+                                    Padding="8,0"
+                                    Classes="picker-button"
+                                    Click="OnArrowStyleSelected"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{Binding .}">
+                                <TextBlock Text="{Binding .}"
+                                           FontSize="14"
+                                           Foreground="{DynamicResource ShareX.Brush.Text}"
+                                           VerticalAlignment="Center"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

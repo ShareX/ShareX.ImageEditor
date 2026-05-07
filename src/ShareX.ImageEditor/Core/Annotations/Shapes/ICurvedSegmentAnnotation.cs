@@ -27,27 +27,10 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
-/// <summary>
-/// Line annotation
-/// </summary>
-public partial class LineAnnotation : Annotation, ICurvedSegmentAnnotation
+internal interface ICurvedSegmentAnnotation
 {
-    public override AnnotationCategory Category => AnnotationCategory.Shapes;
-    public SKPoint CurvePoint { get; set; }
-    public bool CurvePointActivated { get; set; }
-
-    public LineAnnotation()
-    {
-        ToolType = EditorTool.Line;
-    }
-
-    public override bool HitTest(SKPoint point, float tolerance = 5)
-    {
-        return CurvedSegmentHelper.DistanceToPath(this, point) <= tolerance;
-    }
-
-    public override SKRect GetBounds()
-    {
-        return CurvedSegmentHelper.GetBounds(this);
-    }
+    SKPoint StartPoint { get; set; }
+    SKPoint EndPoint { get; set; }
+    SKPoint CurvePoint { get; set; }
+    bool CurvePointActivated { get; set; }
 }

@@ -30,6 +30,7 @@ using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ShareX.ImageEditor.Presentation.Views
 {
@@ -221,6 +222,25 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        /// <summary>
+        /// Loads an image from an existing SKBitmap instance.
+        /// Ownership is transferred to the view model.
+        /// </summary>
+        public void LoadImage(SKBitmap bitmap)
+        {
+            if (bitmap == null) return;
+
+            try
+            {
+                _viewModel.UpdatePreview(bitmap);
+                _viewModel.IsDirty = false;
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportError(nameof(EditorWindow), "Failed to load image from bitmap.", ex);
+            }
+        }
+
         private static string GetWindowTitle(string? dimensions)
         {
             return string.IsNullOrEmpty(dimensions)
@@ -258,16 +278,66 @@ namespace ShareX.ImageEditor.Presentation.Views
         }
 
         /// <summary>
-        /// Gets the encoded image data in the specified format.
-        /// Useful for interoperability with other frameworks (e.g. WinForms).
+        /// Gets the encoded image data as a BMP byte array.
+        /// Uses direct pixel copy (no compression) for maximum performance.
         /// </summary>
-        public byte[]? GetResultBytes(SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+        public byte[]? GetResultBytes()
         {
             using var bitmap = GetResultBitmap();
-            if (bitmap == null) return null;
+            return bitmap != null ? EncodeBitmapAsBmp(bitmap) : null;
+        }
 
-            using var data = bitmap.Encode(format, quality);
-            return data.ToArray();
+        private static byte[] EncodeBitmapAsBmp(SKBitmap bitmap)
+        {
+            SKBitmap? converted = null;
+            if (bitmap.ColorType != SKColorType.Bgra8888)
+            {
+                converted = new SKBitmap(bitmap.Width, bitmap.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+                bitmap.CopyTo(converted, SKColorType.Bgra8888);
+                bitmap = converted;
+            }
+
+            try
+            {
+                int w = bitmap.Width;
+                int h = bitmap.Height;
+                int pixelDataSize = w * h * 4;
+                byte[] buf = new byte[54 + pixelDataSize];
+
+                // BMP file header (14 bytes)
+                buf[0] = 0x42; buf[1] = 0x4D;       // "BM"
+                WriteLE32(buf, 2, 54 + pixelDataSize); // file size
+                WriteLE32(buf, 10, 54);                // pixel data offset
+
+                // BITMAPINFOHEADER (40 bytes)
+                WriteLE32(buf, 14, 40);          // header size
+                WriteLE32(buf, 18, w);            // width
+                WriteLE32(buf, 22, -h);           // negative height = top-down
+                WriteLE16(buf, 26, 1);            // color planes
+                WriteLE16(buf, 28, 32);           // bits per pixel (BGRA)
+                WriteLE32(buf, 34, pixelDataSize); // image size
+
+                Marshal.Copy(bitmap.GetPixels(), buf, 54, pixelDataSize);
+                return buf;
+            }
+            finally
+            {
+                converted?.Dispose();
+            }
+        }
+
+        private static void WriteLE32(byte[] buf, int offset, int value)
+        {
+            buf[offset] = (byte)value;
+            buf[offset + 1] = (byte)(value >> 8);
+            buf[offset + 2] = (byte)(value >> 16);
+            buf[offset + 3] = (byte)(value >> 24);
+        }
+
+        private static void WriteLE16(byte[] buf, int offset, int value)
+        {
+            buf[offset] = (byte)value;
+            buf[offset + 1] = (byte)(value >> 8);
         }
 
         /// <summary>

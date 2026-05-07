@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
+             xmlns:theming="clr-namespace:ShareX.ImageEditor.Presentation.Theming"
+             mc:Ignorable="d" d:DesignWidth="430" d:DesignHeight="310"
+             x:Class="ShareX.ImageEditor.Presentation.Views.InsertImageDialogView"
+             x:DataType="vm:InsertImageDialogViewModel">
+
+    <Border Background="{DynamicResource ShareX.Brush.Background.Popup}"
+            BorderBrush="{DynamicResource ShareX.Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="0"
+            Width="370"
+            BoxShadow="0 8 24 0 #50000000">
+        <Grid RowDefinitions="Auto,*" Background="{DynamicResource ShareX.Brush.Background.Panel}">
+            <Border Grid.Row="0"
+                    Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+                    BorderBrush="{DynamicResource ShareX.Brush.Border}"
+                    BorderThickness="0,0,0,1"
+                    Padding="14,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="15"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource ShareX.Brush.Text}"/>
+
+                    <Button Grid.Column="1"
+                            Classes="editor-button toolbar-button"
+                            Command="{Binding CancelCommand}"
+                            Width="32"
+                            MinWidth="32"
+                            Height="32"
+                            Padding="0"
+                            HorizontalAlignment="Right">
+                        <TextBlock Text="{x:Static theming:LucideIcons.x}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontWeight="Normal"
+                                   FontSize="16"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="1" Margin="20" Spacing="12">
+                <Button x:Name="CenterButton"
+                        Classes="editor-button"
+                        Command="{Binding InsertCenterCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="14,10"
+                        MinHeight="58">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Insert image in the center" FontWeight="Normal"/>
+                        <TextBlock Text="Keeps the current canvas size."
+                                   FontSize="11"
+                                   FontWeight="Normal"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="editor-button"
+                        Command="{Binding InsertBelowCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="14,10"
+                        MinHeight="58">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Insert image below" FontWeight="Normal"/>
+                        <TextBlock Text="Expands the canvas downward before adding the image."
+                                   FontSize="11"
+                                   FontWeight="Normal"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="editor-button"
+                        Command="{Binding InsertRightCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Padding="14,10"
+                        MinHeight="58">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Insert image on right side" FontWeight="Normal"/>
+                        <TextBlock Text="Expands the canvas to the right before adding the image."
+                                   FontSize="11"
+                                   FontWeight="Normal"
+                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

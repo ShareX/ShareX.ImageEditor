@@ -37,18 +37,20 @@ public partial class LineAnnotation
     public Control CreateVisual()
     {
         var brush = new SolidColorBrush(Color.Parse(StrokeColor));
-        var line = new Avalonia.Controls.Shapes.Line
+        var path = new Avalonia.Controls.Shapes.Path
         {
             Stroke = brush,
             StrokeThickness = StrokeWidth,
-            StartPoint = new Point(StartPoint.X, StartPoint.Y),
-            EndPoint = new Point(EndPoint.X, EndPoint.Y),
+            StrokeLineCap = PenLineCap.Round,
+            StrokeJoin = PenLineJoin.Round,
+            Fill = Brushes.Transparent,
+            Data = CreateLineGeometry(),
             Tag = this
         };
 
         if (ShadowEnabled)
         {
-            line.Effect = new Avalonia.Media.DropShadowEffect
+            path.Effect = new Avalonia.Media.DropShadowEffect
             {
                 OffsetX = 3,
                 OffsetY = 3,
@@ -57,6 +59,32 @@ public partial class LineAnnotation
             };
         }
 
-        return line;
+        return path;
+    }
+
+    public Geometry CreateLineGeometry()
+    {
+        var start = new Point(StartPoint.X, StartPoint.Y);
+        var end = new Point(EndPoint.X, EndPoint.Y);
+        var geometry = new StreamGeometry();
+
+        using (var context = geometry.Open())
+        {
+            context.BeginFigure(start, false);
+
+            if (CurvedSegmentHelper.HasCurve(this))
+            {
+                var controlPoint = CurvedSegmentHelper.GetQuadraticControlPoint(this);
+                context.QuadraticBezierTo(new Point(controlPoint.X, controlPoint.Y), end);
+            }
+            else
+            {
+                context.LineTo(end);
+            }
+
+            context.EndFigure(false);
+        }
+
+        return geometry;
     }
 }

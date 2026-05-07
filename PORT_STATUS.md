@@ -1,11 +1,93 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-04-26
+Last updated: 2026-05-08
 
 ## Port Source
-- ShareX.ImageEditor commit: `c98176bf1` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-04-26)
-- XerahS submodule last synced to: `c98176bf1` (pending submodule commit)
-- XerahS submodule current HEAD: `d285844` (submodule's own commit history before this porting session)
+- ShareX.ImageEditor commit: `9ca8f54fd` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-05-08)
+- XerahS submodule last synced to: `9ca8f54fd` (pending submodule commit)
+- XerahS submodule current HEAD before this session: `360eeab`
+
+## Port Activity (2026-05-08)
+
+- Previous recorded ShareX sync: `c98176bf1`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `9ca8f54fd`
+- Result: caught up through `9ca8f54fd` in the working tree
+- Method: mapped sync from the local `C:\Users\liveu\source\repos\ShareX Team\ShareX\ShareX.ImageEditor` checkout into `src/ShareX.ImageEditor`, followed by XerahS host integration fixes
+- Risk: high; the range spans smart padding layout, cursor handling, SKBitmap migration, DPI-aware zoom, annotation toolbar features, curved arrows and lines, insert image flow, quick crop, copy behavior, and bitmap dimension handling
+
+### Commits reviewed and ported
+
+- `f98e7dbdc` Remove background color from OverlayCanvas in EditorView.axaml
+- `4882e8dc9` Refactor smart padding logic and improve overlay canvas layout updates
+- `5ce18a230` Refactor smart padding handling and improve state management in image editor
+- `a84f2f7f8` Simplify SmartPaddingColor logic by removing unnecessary sampling conditions
+- `e9673afbd` Enable clipping for SmartPaddingBorder to improve rendering behavior
+- `ca628eed3` Enhance WindowsDesktopWallpaperService to retrieve wallpaper from registry cache and improve error handling
+- `f92e16aa4` Refactor WindowsDesktopWallpaperService to update MaxWallpaperPath constant and clean up using directives
+- `a1a8174dc` Refactor code to ensure consistent formatting and remove unnecessary comments across multiple files
+- `b8a330217` Enhance cursor synchronization for active tools in the image editor
+- `dedde99d7` Refactor cursor handling for hovered shapes and active tools in the image editor
+- `a78eac137` Improve image rendering and synchronization in the editor
+- `53a2a7e9c` Add aspect ratio anchor support to ResizeImageEffect and update related logic
+- `18887222b` Implement DPI scaling for zoom functionality in image editor
+- `07bc2f32d` Add support for Ctrl+Enter to insert new lines in text boxes
+- `8a6b6ab1a` Refactor image handling to use SKBitmap for improved performance and memory efficiency
+- `9d47239ce` Refactor image handling to use SKBitmap for improved performance and memory efficiency in image processing functions
+- `e7a301902` Add font family selection support in annotation toolbar and related components
+- `332594318` Implement FontFamilyPickerDropdown control for enhanced font selection in annotation toolbar
+- `8fadd17e0` Add StringToFontFamilyConverter for font family binding in FontFamilyPickerDropdown
+- `4448d0feb` Implement curved segment annotations for Arrow and Line shapes with helper methods for curve management
+- `f028be397` Refactor ArrowAnnotation to improve arrow cap geometry calculations and streamline rendering logic
+- `6f7f04d7e` Add ArrowStyle support to annotation tools and UI components
+- `245adc539` Enhance tool selection logic to include Freehand tool in shape selection and hover state updates
+- `847cdb2c7` Enhance selection logic to include FreehandAnnotation in Polyline shape handling
+- `2ec1b0713` Refactor ArrowAnnotation and CurvedSegmentHelper to support modern arrow styles and improve curve handling
+- `a55bd97c4` Enhance ArrowAnnotation rendering by updating visual properties in AnnotationVisualFactory
+- `1f2b20405` Refactor curve point calculations to use quadratic control points for arrow and line annotations
+- `d2b3aa3bd` Fix style selectors in ImageEditorStyles.axaml for improved TextBlock specificity
+- `612c49a78` Refactor CanSave method to remove unnecessary ImageFilePath check
+- `c1308f5e7` Add InsertImageDialog and refactor image insertion logic
+- `889273c4a` Refactor copy functionality in EditorView to use CopyAnnotationCommand and update key bindings
+- `4472dbea1` Add Quick Crop feature to Image Editor and update related settings
+- `ccc87f9e0` Refactor bitmap handling to use pixel size for dimensions in image processing
+- `9ca8f54fd` Add SkiaSharp.Views.WindowsForms package and enhance image loading functionality
+
+### Files added
+
+- `src/ShareX.ImageEditor/Core/Annotations/ArrowStyle.cs`
+- `src/ShareX.ImageEditor/Core/Annotations/Shapes/CurvedSegmentHelper.cs`
+- `src/ShareX.ImageEditor/Core/Annotations/Shapes/ICurvedSegmentAnnotation.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/ArrowStylePickerDropdown.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/ArrowStylePickerDropdown.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/FontFamilyPickerDropdown.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/FontFamilyPickerDropdown.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Converters/StringToFontFamilyConverter.cs`
+- `src/ShareX.ImageEditor/Presentation/ViewModels/InsertImageDialogViewModel.cs`
+- `src/ShareX.ImageEditor/Presentation/Views/EditorView.ImageInsert.cs`
+- `src/ShareX.ImageEditor/Presentation/Views/InsertImageDialogView.axaml`
+- `src/ShareX.ImageEditor/Presentation/Views/InsertImageDialogView.axaml.cs`
+
+### Files updated
+
+- Updated mapped upstream changes across `Core/Abstractions`, `Core/Annotations`, `Core/Editor`, `Core/ImageEffects`, `Hosting`, `Presentation/Controllers`, `Presentation/Controls`, `Presentation/Rendering`, `Presentation/Theming`, `Presentation/ViewModels`, and `Presentation/Views`.
+- Updated RegionCapture's toolbar adapter for the new font family and arrow style members.
+- Updated XerahS UI integration hooks for editor application title and annotation snapshot persistence.
+- Updated tests for the renamed classic arrow-head multiplier constant and Step undo numbering behavior.
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout.
+- Preserved XerahS annotation persistence hooks on `EditorCore` and `EditorView`.
+- Preserved XerahS `StepTailStyle` support and tail-style picker contract.
+- Preserved embedded-editor start screen suppression in XerahS host flows.
+- Kept SkiaSharp package usage aligned with XerahS central package management instead of adopting ShareX root package changes directly.
+- Fixed Step annotation numbering after undo/redo by syncing the next number from the restored annotation layer.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor\src\ShareX.ImageEditor\ShareX.ImageEditor.csproj -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-05-08.
+- `dotnet build -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-05-08.
+- `dotnet test tests\XerahS.Tests\XerahS.Tests.csproj --filter "FullyQualifiedName~StepAnnotation_AfterUndo_UsesNextVisibleNumber" -m:1 /nodeReuse:false /p:UseSharedCompilation=false --no-restore` passed on 2026-05-08.
 
 ## Port Activity (2026-04-26)
 

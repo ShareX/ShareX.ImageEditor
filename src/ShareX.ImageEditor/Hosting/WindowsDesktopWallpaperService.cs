@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -34,7 +35,9 @@ namespace ShareX.ImageEditor.Hosting;
 internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
 {
     private const int SpiGetDesktopWallpaper = 0x0073;
-    private const int MaxWallpaperPath = 32767;
+    private const int MaxWallpaperPath = short.MaxValue;
+    private const string DesktopRegistrySubKey = @"Control Panel\Desktop";
+    private const string TranscodedImageCacheValueName = "TranscodedImageCache";
 
     public bool IsSupported => OperatingSystem.IsWindows();
     public bool RequiresDesktopWallpaperPrewarm => false;
@@ -49,12 +52,46 @@ internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
         }
 
         StringBuilder buffer = new StringBuilder(MaxWallpaperPath);
-        if (!SystemParametersInfo(SpiGetDesktopWallpaper, buffer.Capacity, buffer, 0))
+        if (SystemParametersInfo(SpiGetDesktopWallpaper, buffer.Capacity, buffer, 0))
+        {
+            string wallpaperPath = buffer.ToString().TrimEnd('\0');
+            if (TryCreateDesktopWallpaperInfo(wallpaperPath, out wallpaper))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(wallpaperPath))
+            {
+                return false;
+            }
+        }
+
+        return TryGetDesktopWallpaperFromRegistryCache(out wallpaper);
+    }
+
+    private static bool TryGetDesktopWallpaperFromRegistryCache(out DesktopWallpaperInfo? wallpaper)
+    {
+        wallpaper = null;
+
+        if (!OperatingSystem.IsWindows())
         {
             return false;
         }
 
-        string wallpaperPath = buffer.ToString().TrimEnd('\0');
+        using RegistryKey? desktopKey = Registry.CurrentUser.OpenSubKey(DesktopRegistrySubKey);
+        if (desktopKey?.GetValue(TranscodedImageCacheValueName) is not byte[] transcodedImageCache || transcodedImageCache.Length == 0)
+        {
+            return false;
+        }
+
+        string? wallpaperPath = TryExtractWallpaperPathFromTranscodedCache(transcodedImageCache);
+        return TryCreateDesktopWallpaperInfo(wallpaperPath, out wallpaper);
+    }
+
+    private static bool TryCreateDesktopWallpaperInfo(string? wallpaperPath, out DesktopWallpaperInfo? wallpaper)
+    {
+        wallpaper = null;
+
         if (string.IsNullOrWhiteSpace(wallpaperPath) || !File.Exists(wallpaperPath))
         {
             return false;
@@ -67,6 +104,41 @@ internal sealed class WindowsDesktopWallpaperService : IDesktopWallpaperService
         };
 
         return true;
+    }
+
+    private static string? TryExtractWallpaperPathFromTranscodedCache(byte[] transcodedImageCache)
+    {
+        string decoded = Encoding.Unicode.GetString(transcodedImageCache);
+        int pathStart = FindWallpaperPathStart(decoded);
+        if (pathStart < 0)
+        {
+            return null;
+        }
+
+        int terminatorIndex = decoded.IndexOf('\0', pathStart);
+        string candidate = terminatorIndex >= 0
+            ? decoded[pathStart..terminatorIndex]
+            : decoded[pathStart..];
+
+        return candidate.Trim();
+    }
+
+    private static int FindWallpaperPathStart(string decoded)
+    {
+        for (int index = 0; index < decoded.Length - 2; index++)
+        {
+            if (char.IsLetter(decoded[index]) && decoded[index + 1] == ':' && decoded[index + 2] == '\\')
+            {
+                return index;
+            }
+
+            if (decoded[index] == '\\' && decoded[index + 1] == '\\')
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     public void PrewarmDesktopWallpaper()

@@ -29,6 +29,13 @@ using SkiaSharp;
 
 namespace ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 
+public enum ResizeImageEffectAspectRatioAnchor
+{
+    LargestDimension,
+    Width,
+    Height
+}
+
 public sealed class ResizeImageEffect : ImageEffectBase
 {
     public override string Id => "resize_image";
@@ -46,15 +53,22 @@ public sealed class ResizeImageEffect : ImageEffectBase
     public int Width { get; set; }
     public int Height { get; set; }
     public bool MaintainAspectRatio { get; set; }
+    public ResizeImageEffectAspectRatioAnchor AspectRatioAnchor { get; set; } = ResizeImageEffectAspectRatioAnchor.LargestDimension;
 
     public SKSizeI GetTargetSize(SKBitmap source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        return ResolveTargetSize(source.Width, source.Height, Width, Height, MaintainAspectRatio);
+        return ResolveTargetSize(source.Width, source.Height, Width, Height, MaintainAspectRatio, AspectRatioAnchor);
     }
 
-    public static SKSizeI ResolveTargetSize(int sourceWidth, int sourceHeight, int requestedWidth, int requestedHeight, bool maintainAspectRatio)
+    public static SKSizeI ResolveTargetSize(
+        int sourceWidth,
+        int sourceHeight,
+        int requestedWidth,
+        int requestedHeight,
+        bool maintainAspectRatio,
+        ResizeImageEffectAspectRatioAnchor aspectRatioAnchor = ResizeImageEffectAspectRatioAnchor.LargestDimension)
     {
         if (sourceWidth <= 0) throw new ArgumentOutOfRangeException(nameof(sourceWidth));
         if (sourceHeight <= 0) throw new ArgumentOutOfRangeException(nameof(sourceHeight));
@@ -83,6 +97,18 @@ public sealed class ResizeImageEffect : ImageEffectBase
         if (height <= 0)
         {
             height = Math.Max(1, (int)Math.Round((double)width / sourceWidth * sourceHeight));
+            return new SKSizeI(width, height);
+        }
+
+        if (aspectRatioAnchor == ResizeImageEffectAspectRatioAnchor.Width)
+        {
+            height = Math.Max(1, (int)Math.Round((double)width / sourceWidth * sourceHeight));
+            return new SKSizeI(width, height);
+        }
+
+        if (aspectRatioAnchor == ResizeImageEffectAspectRatioAnchor.Height)
+        {
+            width = Math.Max(1, (int)Math.Round((double)height / sourceHeight * sourceWidth));
             return new SKSizeI(width, height);
         }
 

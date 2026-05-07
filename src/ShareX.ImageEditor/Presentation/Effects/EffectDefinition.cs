@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using ShareX.ImageEditor.Core.ImageEffects;
+using ShareX.ImageEditor.Core.ImageEffects.Manipulations;
 using CoreEffectParameter = ShareX.ImageEditor.Core.ImageEffects.Parameters.EffectParameter;
 
 namespace ShareX.ImageEditor.Presentation.Effects;
@@ -106,13 +107,52 @@ public sealed class EffectDefinition
     public ImageEffect CreateConfiguredEffect(IEnumerable<EffectParameterState> parameterStates)
     {
         ImageEffect effect = CreateEffect();
+        bool isResizeImageEffect = effect is ResizeImageEffect;
+        NumericParameterState? widthState = null;
+        NumericParameterState? heightState = null;
 
         foreach (EffectParameterState parameterState in parameterStates)
         {
             parameterState.ApplyValue(effect);
+
+            if (!isResizeImageEffect || parameterState is not NumericParameterState numericParameter)
+            {
+                continue;
+            }
+
+            if (string.Equals(parameterState.Key, "width", StringComparison.OrdinalIgnoreCase))
+            {
+                widthState = numericParameter;
+            }
+            else if (string.Equals(parameterState.Key, "height", StringComparison.OrdinalIgnoreCase))
+            {
+                heightState = numericParameter;
+            }
+        }
+
+        if (effect is ResizeImageEffect resizeImageEffect)
+        {
+            resizeImageEffect.AspectRatioAnchor = ResolveResizeImageAspectRatioAnchor(widthState, heightState);
         }
 
         return effect;
+    }
+
+    private static ResizeImageEffectAspectRatioAnchor ResolveResizeImageAspectRatioAnchor(
+        NumericParameterState? widthState,
+        NumericParameterState? heightState)
+    {
+        long widthSequence = widthState?.LastChangedSequence ?? 0;
+        long heightSequence = heightState?.LastChangedSequence ?? 0;
+
+        if (widthSequence == heightSequence)
+        {
+            return ResizeImageEffectAspectRatioAnchor.LargestDimension;
+        }
+
+        return widthSequence > heightSequence
+            ? ResizeImageEffectAspectRatioAnchor.Width
+            : ResizeImageEffectAspectRatioAnchor.Height;
     }
 
     private static string DeriveName(string browserLabel)

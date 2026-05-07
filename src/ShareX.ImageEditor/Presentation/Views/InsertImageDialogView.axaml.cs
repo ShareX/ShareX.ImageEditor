@@ -24,14 +24,43 @@
 #endregion License Information (GPL v3)
 
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
+using ShareX.ImageEditor.Presentation.ViewModels;
 
 namespace ShareX.ImageEditor.Presentation.Views
 {
-    public partial class StartScreenDialogView : UserControl
+    public partial class InsertImageDialogView : UserControl
     {
-        public StartScreenDialogView()
+        public InsertImageDialogView()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
+            AddHandler(KeyUpEvent, OnEscapeKeyUp, RoutingStrategies.Bubble, handledEventsToo: true);
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
+
+        private void OnLoaded(object? sender, RoutedEventArgs e)
+        {
+            this.FindControl<Button>("CenterButton")?.Focus();
+        }
+
+        private void OnEscapeKeyUp(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None)
+            {
+                if (DataContext is InsertImageDialogViewModel viewModel)
+                {
+                    viewModel.CancelCommand.Execute(null);
+                }
+
+                e.Handled = true;
+            }
         }
     }
 }

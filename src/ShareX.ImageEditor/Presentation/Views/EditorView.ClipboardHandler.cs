@@ -192,14 +192,6 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     canvas.Children.Add(control);
 
-                    // XIP0039 Guardrail 4: Rehydrate arrow cache on paste
-                    if (newAnnotation is ArrowAnnotation pasteArrow)
-                    {
-                        var start = new Point(pasteArrow.StartPoint.X, pasteArrow.StartPoint.Y);
-                        var end = new Point(pasteArrow.EndPoint.X, pasteArrow.EndPoint.Y);
-                        _selectionController.RegisterArrowEndpoint(control, start, end);
-                    }
-
                     // Update selection to the pasted object
                     _selectionController.SetSelectedShape(control);
                 }
@@ -243,7 +235,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                                     var skBitmap = SKBitmap.Decode(memStream);
                                     if (skBitmap != null)
                                     {
-                                        InsertImageAnnotation(skBitmap);
+                                        await InsertExternalImageAsync(skBitmap, storageFile.Path.LocalPath);
                                         return;
                                     }
                                 }
@@ -263,7 +255,7 @@ namespace ShareX.ImageEditor.Presentation.Views
                     var skBitmap = BitmapConversionHelpers.ToSKBitmap(clipboardBitmap);
                     if (skBitmap != null)
                     {
-                        InsertImageAnnotation(skBitmap);
+                        await InsertExternalImageAsync(skBitmap);
                         return;
                     }
                 }
@@ -368,13 +360,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             if (control != null)
             {
                 canvas.Children.Add(control);
-                // XIP0039 Guardrail 4: Rehydrate arrow cache on duplicate
-                if (clone is ArrowAnnotation dupArrow)
-                {
-                    var start = new Point(dupArrow.StartPoint.X, dupArrow.StartPoint.Y);
-                    var end = new Point(dupArrow.EndPoint.X, dupArrow.EndPoint.Y);
-                    _selectionController.RegisterArrowEndpoint(control, start, end);
-                }
                 _selectionController.SetSelectedShape(control);
             }
 

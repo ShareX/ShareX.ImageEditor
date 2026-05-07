@@ -33,7 +33,6 @@ using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Emoji;
-using ShareX.ImageEditor.Presentation.Theming;
 using System.Collections.ObjectModel;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
@@ -71,6 +70,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         [ObservableProperty]
         private string _windowTitle = "ShareX - Image Editor";
+
+        [ObservableProperty]
+        private string _applicationName = "ShareX";
+
+        public string EditorTitle => $"{ApplicationName} Editor";
+
+        partial void OnApplicationNameChanged(string value)
+        {
+            OnPropertyChanged(nameof(EditorTitle));
+        }
 
         [ObservableProperty]
         private bool _showFileMenu;
@@ -132,15 +141,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void Cancel()
         {
             RequestClose();
-        }
-
-        [RelayCommand]
-        private void SetTheme(string themeName)
-        {
-            ThemeManager.SetTheme(
-                string.Equals(themeName, nameof(ThemeManager.ShareXLight), StringComparison.OrdinalIgnoreCase)
-                    ? ThemeManager.ShareXLight
-                    : ThemeManager.ShareXDark);
         }
 
         public void RequestClose(bool ignoreModal = false)
@@ -220,22 +220,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public bool HasHostCopyHandler { get; set; }
         public bool CanCopy() => _copyRequested != null && HasPreviewImage;
 
-        /// <summary>
-        /// Smart copy used by the context menu: copies the selected annotation when one is
-        /// selected, otherwise copies the full canvas to the clipboard (same as Ctrl+C behaviour).
-        /// Enabled whenever the editor has a loaded image.
-        /// </summary>
-        public bool CanCopyContext() => HasPreviewImage;
-
-        [RelayCommand(CanExecute = nameof(CanCopyContext))]
-        private void CopyContext()
-        {
-            if (HasSelectedAnnotation)
-                CopyAnnotationRequested?.Invoke(this, EventArgs.Empty);
-            else
-                _copyRequested?.Invoke();
-        }
-
         private Action? _saveRequested;
         public event Action? SaveRequested
         {
@@ -243,7 +227,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             remove { _saveRequested -= value; SaveCommand.NotifyCanExecuteChanged(); }
         }
         public bool HasHostSaveHandler { get; set; }
-        public bool CanSave() => _saveRequested != null && HasPreviewImage && !string.IsNullOrEmpty(ImageFilePath);
+        public bool CanSave() => _saveRequested != null && HasPreviewImage;
 
         private Action? _saveAsRequested;
         public event Action? SaveAsRequested
@@ -293,7 +277,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 {
                     ToggleEffectsPanelCommand.NotifyCanExecuteChanged();
                     CopyCommand.NotifyCanExecuteChanged();
-                    CopyContextCommand.NotifyCanExecuteChanged();
                     SaveCommand.NotifyCanExecuteChanged();
                     SaveAsCommand.NotifyCanExecuteChanged();
                     PinToScreenCommand.NotifyCanExecuteChanged();
@@ -354,6 +337,17 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private double _imageHeight;
 
         private Thickness _smartPaddingCropInsets;
+        private bool _smartPaddingCacheValid;
+        private bool _suppressSmartPaddingChangeHandling;
+
+        private bool HasDetectedSmartPadding =>
+            _smartPaddingCropInsets.Left > 0 ||
+            _smartPaddingCropInsets.Top > 0 ||
+            _smartPaddingCropInsets.Right > 0 ||
+            _smartPaddingCropInsets.Bottom > 0;
+
+        public bool CanUseBackgroundSmartPadding =>
+            HasPreviewImage && (!_smartPaddingCacheValid || HasDetectedSmartPadding);
 
         public double SmartPaddingViewportWidth
         {
@@ -361,7 +355,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 double width = ImageWidth;
 
-                if (BackgroundSmartPadding && AreBackgroundEffectsActive)
+                if (IsSmartPaddingActive)
                 {
                     width -= _smartPaddingCropInsets.Left + _smartPaddingCropInsets.Right;
                 }
@@ -376,7 +370,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             {
                 double height = ImageHeight;
 
-                if (BackgroundSmartPadding && AreBackgroundEffectsActive)
+                if (IsSmartPaddingActive)
                 {
                     height -= _smartPaddingCropInsets.Top + _smartPaddingCropInsets.Bottom;
                 }
@@ -389,7 +383,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             get
             {
-                if (!BackgroundSmartPadding || !AreBackgroundEffectsActive)
+                if (!IsSmartPaddingActive)
                 {
                     return 0;
                 }
@@ -402,7 +396,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             get
             {
-                if (!BackgroundSmartPadding || !AreBackgroundEffectsActive)
+                if (!IsSmartPaddingActive)
                 {
                     return 0;
                 }
@@ -411,8 +405,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
-        private void NotifySmartPaddingLayoutChanged()
+        private void NotifySmartPaddingStateChanged()
         {
+            OnPropertyChanged(nameof(CanUseBackgroundSmartPadding));
             OnPropertyChanged(nameof(SmartPaddingColor));
             OnPropertyChanged(nameof(SmartPaddingThickness));
             OnPropertyChanged(nameof(SmartPaddingViewportWidth));
@@ -421,39 +416,65 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(SmartPaddingOffsetY));
         }
 
-        private void OnPreviewImageChanged(Bitmap? value)
+        private void NotifySmartPaddingPaddingChanged()
         {
-            if (value != null)
+            OnPropertyChanged(nameof(SmartPaddingThickness));
+        }
+
+        private void RefreshSmartPaddingState(bool ensureCache = false, bool forceCacheRefresh = false)
+        {
+            if (ensureCache && AreBackgroundEffectsActive)
             {
-                ImageWidth = value.Size.Width;
-                ImageHeight = value.Size.Height;
-                HasPreviewImage = true;
+                EnsureSmartPaddingCache(forceCacheRefresh);
+            }
 
-                if (!_isSyncingFromCore && !_isApplyingSmartPadding)
-                {
-                    IsDirty = true;
-                }
+            UpdateCanvasProperties();
+            NotifySmartPaddingStateChanged();
+        }
 
-                NotifySmartPaddingLayoutChanged();
+        internal void SyncImageDimensions(double width, double height)
+        {
+            bool hasImage = width > 0 && height > 0;
 
-                // Apply smart padding crop if enabled (but not if we're already applying it)
-                // Only trigger if background effects are active to avoid overwriting live previews
-                // Also skip if we are syncing from Core (to prevent infinite loops)
-                if (BackgroundSmartPadding && !_isApplyingSmartPadding && AreBackgroundEffectsActive && !_isSyncingFromCore)
-                {
-                    ApplySmartPaddingCrop();
-                }
+            if (ImageWidth == width && ImageHeight == height && HasPreviewImage == hasImage)
+            {
+                return;
+            }
+
+            ImageWidth = width;
+            ImageHeight = height;
+            HasPreviewImage = hasImage;
+
+            InvalidateSmartPaddingCache();
+
+            if (hasImage)
+            {
+                RefreshSmartPaddingState(ensureCache: AreBackgroundEffectsActive, forceCacheRefresh: AreBackgroundEffectsActive);
 
                 var fileName = GetFileNameFromPath(ImageFilePath);
                 WindowTitle = BuildWindowTitle(ImageWidth, ImageHeight, fileName);
             }
             else
             {
-                ImageWidth = 0;
-                ImageHeight = 0;
-                _smartPaddingCropInsets = new Thickness(0);
-                NotifySmartPaddingLayoutChanged();
-                HasPreviewImage = false;
+                NotifySmartPaddingStateChanged();
+            }
+        }
+
+        private void OnPreviewImageChanged(Bitmap? value)
+        {
+            if (value != null)
+            {
+                var pixelSize = value.PixelSize;
+                SyncImageDimensions(pixelSize.Width, pixelSize.Height);
+
+                if (!_isSyncingFromCore && !_isApplyingSmartPadding)
+                {
+                    IsDirty = true;
+                }
+            }
+            else
+            {
+                SyncImageDimensions(0, 0);
             }
         }
 
@@ -466,10 +487,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private bool _backgroundSmartPadding = true;
 
+        private bool IsSmartPaddingActive =>
+            BackgroundSmartPadding && AreBackgroundEffectsActive && HasDetectedSmartPadding;
+
         /// <summary>
         /// ISSUE-022 fix: Recursion guard flag for smart padding event chain.
-        /// Prevents infinite loop: BackgroundSmartPadding property change ? ApplySmartPaddingCrop ?
-        /// UpdatePreview ? PreviewImage changed ? ApplySmartPaddingCrop (again).
+        /// Prevents infinite loop: BackgroundSmartPadding property change → ApplySmartPaddingCrop →
+        /// UpdatePreview → PreviewImage changed → ApplySmartPaddingCrop (again).
         /// Set to true during ApplySmartPaddingCrop execution to break the cycle.
         /// </summary>
         private bool _isApplyingSmartPadding = false;
@@ -486,23 +510,14 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             get
             {
-                if (!AreBackgroundEffectsActive || PreviewImage == null || BackgroundPadding <= 0)
+                if (!AreBackgroundEffectsActive || PreviewImage == null)
                 {
                     return Brushes.Transparent;
                 }
 
                 try
                 {
-                    int sampleX = 0;
-                    int sampleY = 0;
-
-                    if (BackgroundSmartPadding && AreBackgroundEffectsActive)
-                    {
-                        sampleX = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Left));
-                        sampleY = (int)Math.Round(Math.Max(0, _smartPaddingCropInsets.Top));
-                    }
-
-                    var topLeftColor = SamplePixelColor(PreviewImage, sampleX, sampleY);
+                    var topLeftColor = SamplePixelColor(PreviewImage, 0, 0);
                     return new SolidColorBrush(topLeftColor);
                 }
                 catch (Exception ex)
@@ -525,6 +540,30 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         [ObservableProperty]
         private double _zoom = 1.0;
+
+        // DPI scale reported by the host window (1.0 at 100 %, 1.5 at 150 %, etc.).
+        // Set by EditorView when the window is loaded or moved to a different monitor.
+        private double _dpiScale = 1.0;
+        public double DpiScale
+        {
+            get => _dpiScale;
+            set
+            {
+                double safe = Math.Max(0.01, value);
+                if (Math.Abs(_dpiScale - safe) <= 0.0001) return;
+                _dpiScale = safe;
+                OnPropertyChanged(nameof(DpiScale));
+                OnPropertyChanged(nameof(EffectiveZoom));
+            }
+        }
+
+        /// <summary>
+        /// The scale factor applied to the LayoutTransformControl.
+        /// Combines the user-selected zoom with an inverse DPI compensation so that
+        /// 100 % zoom always shows one image pixel per physical screen pixel,
+        /// regardless of the Windows display scaling setting.
+        /// </summary>
+        public double EffectiveZoom => Zoom / _dpiScale;
 
         [ObservableProperty]
         private string _imageDimensions = "No image";
@@ -562,15 +601,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             // Toggle background effects visibility
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
-            UpdateCanvasProperties();
-
-            // Re-evaluate Smart Padding application
-            // If we closed the panel, we might need to revert crop. If opened, apply crop.
-            // But ApplySmartPaddingCrop depends on BackgroundSmartPadding too.
-            if (_originalSourceImage != null)
-            {
-                ApplySmartPaddingCrop();
-            }
+            RefreshSmartPaddingState(ensureCache: value && _originalSourceImage != null, forceCacheRefresh: value);
         }
 
         public void UpdateCoreHistoryState(bool canUndo, bool canRedo)
@@ -764,11 +795,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private string? _imageFilePath;
 
-        [ObservableProperty]
-        private string _applicationName = "ShareX";
-
-        public string EditorTitle => $"{ApplicationName} Editor";
-
         public static MainViewModel Current { get; private set; } = null!;
 
         public MainViewModel(ImageEditorOptions? options = null)
@@ -794,6 +820,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _strokeWidth = _options.Thickness;
             _cornerRadius = _options.CornerRadius;
             _fontSize = _options.TextFontSize;
+            _selectedFontFamily = NormalizeFontFamily(_options.TextFontFamily);
+            _selectedArrowStyle = NormalizeArrowStyle(_options.ArrowStyle);
             _shadowEnabled = _options.Shadow;
             _textBold = _options.TextBold;
             _textItalic = _options.TextItalic;
@@ -912,11 +940,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             return true;
         }
 
-        partial void OnApplicationNameChanged(string value)
-        {
-            OnPropertyChanged(nameof(EditorTitle));
-        }
-
         partial void OnSelectedOutputRatioChanged(string value)
         {
             TargetOutputAspectRatio = ParseAspectRatio(value);
@@ -942,8 +965,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             Options.BackgroundPadding = value;
-            NotifySmartPaddingLayoutChanged();
             UpdateCanvasProperties();
+            NotifySmartPaddingPaddingChanged();
         }
 
         partial void OnBackgroundSmartPaddingChanged(bool value)
@@ -954,7 +977,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             Options.BackgroundSmartPadding = value;
-            ApplySmartPaddingCrop();
+
+            if (_suppressSmartPaddingChangeHandling)
+            {
+                return;
+            }
+
+            RefreshSmartPaddingState(ensureCache: value, forceCacheRefresh: value);
         }
 
         partial void OnBackgroundRoundedCornerChanged(double value)
@@ -987,6 +1016,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 Zoom = clamped;
                 return;
             }
+
+            OnPropertyChanged(nameof(EffectiveZoom));
         }
 
         // Static color palette for annotation toolbar

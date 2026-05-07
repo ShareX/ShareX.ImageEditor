@@ -363,7 +363,12 @@ public class EditorZoomController
         double availableWidth = Math.Max(1, scrollViewer.Viewport.Width - margin);
         double availableHeight = Math.Max(1, scrollViewer.Viewport.Height - margin);
 
-        double fitZoom = Math.Min(availableWidth / contentWidth, availableHeight / contentHeight);
+        // previewFrame.Bounds is in the LayoutTransformControl's child coordinate space
+        // (i.e. the pre-transform image-pixel space).  availableWidth/Height are in logical
+        // pixels.  Multiplying by DpiScale converts the fit ratio from image-pixels-per-
+        // logical-pixel to the Zoom unit (image pixels per physical screen pixel).
+        double dpiScale = vm.DpiScale;
+        double fitZoom = Math.Min(availableWidth / contentWidth, availableHeight / contentHeight) * dpiScale;
         fitZoom = Math.Clamp(fitZoom, MinZoom, MaxZoom);
 
         _lastZoom = vm.Zoom;

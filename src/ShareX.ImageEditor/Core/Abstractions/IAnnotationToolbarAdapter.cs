@@ -23,11 +23,12 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia.Media;
 using Avalonia.Controls;
+using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace ShareX.ImageEditor.Core.Abstractions;
@@ -41,6 +42,10 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     string StrokeColor { get; set; }
     string FillColor { get; set; }
     string TextColor { get; set; }
+    string SelectedFontFamily { get; set; }
+    ArrowStyle SelectedArrowStyle { get; set; }
+    IReadOnlyList<string> AvailableFontFamilies { get; }
+    IReadOnlyList<ArrowStyle> AvailableArrowStyles { get; }
     IBrush SelectedColorBrush { get; set; }
     IBrush FillColorBrush { get; set; }
     IBrush TextColorBrush { get; set; }
@@ -64,6 +69,8 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowTextColor { get; }
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
+    bool ShowFontFamily { get; }
+    bool ShowArrowStyle { get; }
     bool ShowCornerRadius { get; }
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }

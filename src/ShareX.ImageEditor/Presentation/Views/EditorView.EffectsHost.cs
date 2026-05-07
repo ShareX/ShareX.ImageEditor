@@ -162,7 +162,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         /// <summary>
         /// Single handler for all registry-backed effect dialogs.
         /// Adding a new dialog-based effect requires only an <see cref="EffectDialogRegistry"/>
-        /// entry plus a menu item that calls <c>RaiseDialog("id")</c> � no new method here.
+        /// entry plus a menu item that calls <c>RaiseDialog("id")</c> — no new method here.
         /// </summary>
         private void OnEffectDialogRequested(object? sender, EffectDialogRequestedEventArgs e)
         {
@@ -317,33 +317,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                         _editorCore.Crop(new SKRect(x, y, x + w, y + h));
                         break;
                     case EditorOperationKind.ResizeImage:
-                        int rw = 0, rh = 0;
-                        bool maintainAspectRatio = false;
-                        foreach (EffectParameterState state in dialog.ParameterStates)
+                        if (_editorCore.SourceImage != null &&
+                            dialog.Definition.CreateConfiguredEffect(dialog.ParameterStates) is ResizeImageEffect resizeImageEffect)
                         {
-                            if (state is NumericParameterState n)
-                            {
-                                switch (state.Key)
-                                {
-                                    case "width": rw = (int)(n.Value ?? 0); break;
-                                    case "height": rh = (int)(n.Value ?? 0); break;
-                                }
-                            }
-                            else if (state is CheckboxParameterState cb &&
-                                     string.Equals(state.Key, "maintain_aspect_ratio", StringComparison.OrdinalIgnoreCase))
-                            {
-                                maintainAspectRatio = cb.Value;
-                            }
-                        }
-
-                        if (_editorCore.SourceImage != null)
-                        {
-                            SKSizeI targetSize = ResizeImageEffect.ResolveTargetSize(
-                                _editorCore.SourceImage.Width,
-                                _editorCore.SourceImage.Height,
-                                rw,
-                                rh,
-                                maintainAspectRatio);
+                            SKSizeI targetSize = resizeImageEffect.GetTargetSize(_editorCore.SourceImage);
 
                             _editorCore.ResizeImage(targetSize.Width, targetSize.Height);
                         }

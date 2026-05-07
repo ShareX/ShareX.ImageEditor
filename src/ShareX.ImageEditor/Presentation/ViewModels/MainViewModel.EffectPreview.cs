@@ -195,8 +195,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _isPreviewingEffect = true;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
-            UpdateCanvasProperties();
-            ApplySmartPaddingCrop();
+            RefreshSmartPaddingState();
         }
 
         /// <summary>
@@ -323,8 +322,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
-            UpdateCanvasProperties();
-            ApplySmartPaddingCrop();
+            RefreshSmartPaddingState(ensureCache: AreBackgroundEffectsActive);
         }
 
         /// <summary>
@@ -363,8 +361,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
-            UpdateCanvasProperties();
-            ApplySmartPaddingCrop();
+            RefreshSmartPaddingState(ensureCache: AreBackgroundEffectsActive);
         }
 
         /// <summary>
@@ -400,7 +397,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _isPreviewingEffect = false;
             OnPropertyChanged(nameof(AreBackgroundEffectsActive));
             OnPropertyChanged(nameof(EffectiveCanvasBackground));
-            UpdateCanvasProperties();
+            RefreshSmartPaddingState(ensureCache: AreBackgroundEffectsActive);
         }
 
         /// <summary>
