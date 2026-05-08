@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using SkiaSharp;
+using System.Text.Json.Serialization;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -43,6 +44,7 @@ public class ImageAnnotation : Annotation, IDisposable
     /// <summary>
     /// The loaded image bitmap
     /// </summary>
+    [JsonIgnore]
     public SKBitmap? ImageBitmap => _imageBitmap;
 
     public ImageAnnotation()
