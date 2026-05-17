@@ -2185,8 +2185,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             using var image = SKImage.FromBitmap(bitmap);
             using var data = image.Encode(format, format == SKEncodedImageFormat.Jpeg ? 95 : 100);
-            using var stream = System.IO.File.OpenWrite(path);
-            data.SaveTo(stream);
+            EditorImageFileWriter.SaveEncodedData(path, data);
         }
 
         private void OnZoomToFitRequested(object? sender, EventArgs e)
