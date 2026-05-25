@@ -60,6 +60,11 @@ public class EditorInputController
     private static bool UsesCrosshairInteractionCapture(EditorTool tool)
         => tool != EditorTool.Image && tool != EditorTool.Text;
 
+    private static Point ClampPointToCanvasBounds(Canvas canvas, Point point)
+        => new(
+            Math.Clamp(point.X, 0, canvas.Bounds.Width),
+            Math.Clamp(point.Y, 0, canvas.Bounds.Height));
+
     // Track cut-out direction (null = not determined yet, true = vertical, false = horizontal)
     private bool? _cutOutDirection;
 
@@ -91,6 +96,8 @@ public class EditorInputController
     private static double ToOverlayCoordinate(double value) => value + EditorView.OverlayCanvasBleed;
     private static double FromOverlayCoordinate(double value) => value - EditorView.OverlayCanvasBleed;
     private static Point ToOverlayPoint(Point value) => new(ToOverlayCoordinate(value.X), ToOverlayCoordinate(value.Y));
+    private static bool ShouldClearSelectionOnMouseDrawStart(EditorTool tool)
+        => tool != EditorTool.Select && tool != EditorTool.Image && tool != EditorTool.Emoji;
 
     private static Rect GetCropOverlayCanvasRect(global::Avalonia.Controls.Shapes.Rectangle cropOverlay)
         => new(
@@ -240,9 +247,23 @@ public class EditorInputController
             return;
         }
 
+        if (ShouldClearSelectionOnMouseDrawStart(vm.ActiveTool))
+        {
+            _selectionController.ClearSelection();
+        }
+        else
+        {
+            _selectionController.ClearHoverFeedback();
+        }
+
         // ISSUE-019 fix: Dead code removed - redo stack cleared by EditorCore
 
         var point = e.GetPosition(canvas);
+        if (vm.ActiveTool == EditorTool.Crop || vm.ActiveTool == EditorTool.CutOut)
+        {
+            point = ClampPointToCanvasBounds(canvas, point);
+        }
+
         _startPoint = point;
         _isDrawing = true;
         if (UsesCrosshairInteractionCapture(vm.ActiveTool))
@@ -253,6 +274,8 @@ public class EditorInputController
         {
             e.Pointer.Capture(canvas);
         }
+
+        e.Handled = true;
 
         var brush = new SolidColorBrush(Color.Parse(vm.SelectedColor));
 
@@ -271,11 +294,6 @@ public class EditorInputController
 
         if (vm.ActiveTool == EditorTool.CutOut)
         {
-            // Clamp start point to canvas bounds
-            var clampedX = Math.Max(0, Math.Min(_startPoint.X, canvas.Bounds.Width));
-            var clampedY = Math.Max(0, Math.Min(_startPoint.Y, canvas.Bounds.Height));
-            _startPoint = new Point(clampedX, clampedY);
-
             _cutOutDirection = null;
             var cutOutOverlay = new global::Avalonia.Controls.Shapes.Rectangle
             {
@@ -321,6 +339,34 @@ public class EditorInputController
                 var arrowAnnotation = new ArrowAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Style = vm.SelectedArrowStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
                 _currentShape = arrowAnnotation.CreateVisual();
                 _currentShape.IsHitTestVisible = false;
+                break;
+            case EditorTool.Cursor:
+                var cursorAnnotation = new CursorAnnotation { CursorType = vm.SelectedCursorType };
+                var cursorBitmap = WindowsCursorBitmapRenderer.CreateAnnotationBitmap(vm.SelectedCursorType);
+
+                if (cursorBitmap == null)
+                {
+                    _isDrawing = false;
+                    return;
+                }
+
+                cursorAnnotation.SetImage(cursorBitmap);
+                cursorAnnotation.StartPoint = ToSKPoint(_startPoint);
+                cursorAnnotation.EndPoint = new SKPoint((float)(_startPoint.X + cursorBitmap.Width), (float)(_startPoint.Y + cursorBitmap.Height));
+
+                _currentShape = AnnotationVisualFactory.CreateVisualControl(cursorAnnotation, AnnotationVisualMode.Persisted);
+                if (_currentShape == null)
+                {
+                    _isDrawing = false;
+                    return;
+                }
+
+                AnnotationVisualFactory.UpdateVisualControl(
+                    _currentShape,
+                    cursorAnnotation,
+                    AnnotationVisualMode.Persisted,
+                    canvas.Bounds.Width,
+                    canvas.Bounds.Height);
                 break;
             case EditorTool.Text:
                 HandleTextTool(canvas, brush, vm.StrokeWidth);
@@ -495,10 +541,19 @@ public class EditorInputController
 
     public void OnCanvasPointerMoved(object? sender, PointerEventArgs e)
     {
+        bool wasPanning = _zoomController.IsPanning;
         _zoomController.OnScrollViewerPointerMoved(_view.FindControl<ScrollViewer>("CanvasScrollViewer"), e);
 
+        if (wasPanning && !_zoomController.IsPanning)
+        {
+            RestoreInteractionCaptureAfterPanning(e.Pointer);
+        }
+
         var selectionSender = sender ?? _view;
-        if (_selectionController.OnPointerMoved(selectionSender, e)) return;
+        if (!_isDrawing && _selectionController.OnPointerMoved(selectionSender, e))
+        {
+            return;
+        }
 
         // Handle active crop handle / move drag
         if (_isDraggingCropHandle)
@@ -699,6 +754,17 @@ public class EditorInputController
             }
             balloon.InvalidateVisual();
         }
+        else if (_currentShape is Image imageControl && _currentShape.Tag is CursorAnnotation cursorAnnotation)
+        {
+            double cursorWidth = Math.Max(1, imageControl.Width);
+            double cursorHeight = Math.Max(1, imageControl.Height);
+
+            Canvas.SetLeft(imageControl, currentPoint.X);
+            Canvas.SetTop(imageControl, currentPoint.Y);
+
+            cursorAnnotation.StartPoint = ToSKPoint(currentPoint);
+            cursorAnnotation.EndPoint = ToSKPoint(new Point(currentPoint.X + cursorWidth, currentPoint.Y + cursorHeight));
+        }
         else if (_currentShape is StepControl && _currentShape.Tag is NumberAnnotation numberAnn)
         {
             // Allow dragging the step shape immediately after inserting it
@@ -711,7 +777,15 @@ public class EditorInputController
 
     public void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
+        bool wasPanning = _zoomController.IsPanning;
         _zoomController.OnScrollViewerPointerReleased(_view.FindControl<ScrollViewer>("CanvasScrollViewer"), e);
+
+        if (wasPanning && !_zoomController.IsPanning)
+        {
+            RestoreInteractionCaptureAfterPanning(e.Pointer);
+            return;
+        }
+
         var selectionSender = sender ?? _view;
         if (_selectionController.OnPointerReleased(selectionSender, e)) return;
 
@@ -781,7 +855,8 @@ public class EditorInputController
                     // Skip check for Number (single-click), Pen, and Text.
                     bool isSizeBased = vm.ActiveTool != EditorTool.Step
                                     && vm.ActiveTool != EditorTool.Freehand
-                                    && vm.ActiveTool != EditorTool.Text;
+                                    && vm.ActiveTool != EditorTool.Text
+                                    && vm.ActiveTool != EditorTool.Cursor;
 
                     if (isSizeBased)
                     {
@@ -875,6 +950,24 @@ public class EditorInputController
         _cutOutDirection = null;
         _isDrawing = false;
         _view.RestoreEditorSurfaceCursorForActiveTool();
+    }
+
+    private void RestoreInteractionCaptureAfterPanning(IPointer pointer)
+    {
+        if (_isDraggingCropHandle)
+        {
+            _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.GetClosedHandCursor());
+            return;
+        }
+
+        if (_isDrawing)
+        {
+            var vm = ViewModel;
+            if (vm != null && UsesCrosshairInteractionCapture(vm.ActiveTool))
+            {
+                _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.GetCrosshairCursor());
+            }
+        }
     }
 
     private void UpdateEffectVisual(Control shape, double x, double y, double width, double height)

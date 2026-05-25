@@ -1,8 +1,13 @@
-<Styles xmlns="https://github.com/avaloniaui">
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--
         Project-wide style entry point.
         Keep reusable selectors and style classes here so views stay focused on layout and behavior.
     -->
+
+    <Styles.Resources>
+        <Thickness x:Key="ComboBoxDropdownContentMargin">6</Thickness>
+    </Styles.Resources>
 
     <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Controls/EffectSlider.axaml" />
@@ -491,8 +496,33 @@
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
     </Style>
 
+    <!-- Fluent paints ComboBoxItem selection on the inner ContentPresenter. -->
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Control.Background.Hover}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+    </Style>
+
     <Style Selector="ComboBoxItem:selected">
         <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
         <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
     </Style>
 
@@ -646,6 +676,144 @@
             <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
+    </Style>
+
+    <Style Selector="ToggleSwitch">
+        <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled) /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled) /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled):pointerover /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled):pointerover /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled):pressed /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        </Style>
+
+        <Style Selector="^:checked:not(:disabled):pressed /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+        </Style>
+    </Style>
+
+    <Style Selector="ToggleSwitch.side-panel-toggle-proxy">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="0,0,-12,0"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="CornerRadius" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none"/>
+        </Style>
+
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="^:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="^:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pointerover ToggleSwitch.side-panel-toggle-proxy /template/ Border#OuterBorder">
+        <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffPointerOver}"/>
+        <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffPointerOver}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pointerover ToggleSwitch.side-panel-toggle-proxy /template/ Ellipse#SwitchKnobOff">
+        <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPointerOver}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pointerover ToggleSwitch.side-panel-toggle-proxy /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Fill" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pointerover ToggleSwitch.side-panel-toggle-proxy /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pointerover ToggleSwitch.side-panel-toggle-proxy /template/ Grid#SwitchAreaGrid">
+        <Setter Property="Background" Value="{DynamicResource ToggleSwitchContainerBackgroundPointerOver}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pressed ToggleSwitch.side-panel-toggle-proxy /template/ Border#OuterBorder">
+        <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffPressed}"/>
+        <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffPressed}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pressed ToggleSwitch.side-panel-toggle-proxy /template/ Ellipse#SwitchKnobOff">
+        <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPressed}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pressed ToggleSwitch.side-panel-toggle-proxy /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Fill" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pressed ToggleSwitch.side-panel-toggle-proxy /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+    </Style>
+
+    <Style Selector="ToggleButton.side-panel-toggle-row:pressed ToggleSwitch.side-panel-toggle-proxy /template/ Grid#SwitchAreaGrid">
+        <Setter Property="Background" Value="{DynamicResource ToggleSwitchContainerBackgroundPressed}"/>
     </Style>
 
     <Style Selector="Separator">

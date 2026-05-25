@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             mc:Ignorable="d" d:DesignWidth="180" d:DesignHeight="40"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.NumberPickerDropdown"
+             x:Name="NumberPickerDropdownRoot">
+    <Grid>
+        <Button x:Name="DropdownButton"
+                Classes="editor-button"
+                Click="OnDropdownButtonClick"
+                Height="40"
+                MinWidth="60"
+                HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                <TextBlock Text="{Binding SelectedNumber, ElementName=NumberPickerDropdownRoot}"
+                       Foreground="{DynamicResource ShareX.Brush.Text}"
+                       FontSize="12"
+                       VerticalAlignment="Center"/>
+                <TextBlock Text="..."
+                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                       FontSize="12"
+                       VerticalAlignment="Center"/>
+            </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #NumberPopup.IsOpen}"
+                           Text="{x:Static theming:EditorIcons.ChevronDown}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="10"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Button>
+
+        <Popup x:Name="NumberPopup"
+               PlacementTarget="{Binding #DropdownButton}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True"
+               VerticalOffset="4">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #NumberPopup.IsOpen}">
+                <ItemsControl ItemsSource="{Binding NumberOptions, ElementName=NumberPickerDropdownRoot}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button MinWidth="50"
+                                    Height="32"
+                                    Padding="8,0"
+                                    Classes="picker-button"
+                                    Click="OnNumberSelected"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center">
+                                <TextBlock Text="{Binding .}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource ShareX.Brush.Text}"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

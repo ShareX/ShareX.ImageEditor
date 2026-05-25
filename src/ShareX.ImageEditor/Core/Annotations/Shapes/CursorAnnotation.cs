@@ -25,11 +25,16 @@
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
-public enum ArrowStyle
+/// <summary>
+/// Image-backed cursor annotation.
+/// </summary>
+public class CursorAnnotation : ImageAnnotation
 {
-    Classic = 0,
-    Modern = 1,
-    Double = 2,
-    Basic = 3,
-    Line = 4
+    public CursorType CursorType { get; set; } = CursorType.Default;
+
+    public CursorAnnotation()
+    {
+        ToolType = EditorTool.Cursor;
+        StrokeWidth = 0;
+    }
 }

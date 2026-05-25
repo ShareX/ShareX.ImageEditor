@@ -85,6 +85,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private bool _showFileMenu;
 
         [ObservableProperty]
+        private bool _showOptionsButton = true;
+
+        [ObservableProperty]
         private bool _showTaskButtons = true;
 
         [ObservableProperty]
@@ -107,6 +110,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public event EventHandler? CopyAnnotationRequested;
         public event EventHandler? ZoomToFitRequested;
         public event EventHandler? CloseRequested;
+        public event EventHandler? ImageInsertionRequested;
         public event EventHandler<EmojiSelectionRequest>? EmojiInsertionRequested;
 
         // File menu events (Image Editor Mode)
@@ -238,6 +242,14 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         public bool HasHostSaveAsHandler { get; set; }
         public bool CanSaveAs() => _saveAsRequested != null && HasPreviewImage;
 
+        private Action? _printRequested;
+        public event Action? PrintRequested
+        {
+            add { _printRequested += value; PrintCommand.NotifyCanExecuteChanged(); }
+            remove { _printRequested -= value; PrintCommand.NotifyCanExecuteChanged(); }
+        }
+        public bool CanPrint() => _printRequested != null && HasPreviewImage;
+
         private Action? _pinRequested;
         public event Action? PinRequested
         {
@@ -279,6 +291,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     CopyCommand.NotifyCanExecuteChanged();
                     SaveCommand.NotifyCanExecuteChanged();
                     SaveAsCommand.NotifyCanExecuteChanged();
+                    PrintCommand.NotifyCanExecuteChanged();
                     PinToScreenCommand.NotifyCanExecuteChanged();
                     UploadCommand.NotifyCanExecuteChanged();
                     ZoomInCommand.NotifyCanExecuteChanged();
@@ -678,7 +691,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void ResetNumberCounter()
         {
-            NumberCounter = 1;
+            NumberCounter = StepStartNumber;
         }
 
         public void RecalculateNumberCounter(IEnumerable<Annotation> annotations)
@@ -694,7 +707,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     }
                 }
             }
-            NumberCounter = max + 1;
+            NumberCounter = Math.Max(max + 1, StepStartNumber);
         }
 
         [RelayCommand]
@@ -705,6 +718,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         // Effects Panel Properties
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsEffectBrowserVisible))]
+        [NotifyPropertyChangedFor(nameof(IsRightEffectsSidebarVisible))]
         private bool _isEffectsPanelOpen;
 
         [ObservableProperty]
@@ -1034,6 +1049,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [RelayCommand]
         private void SelectTool(EditorTool tool)
         {
+            if (tool == EditorTool.Image)
+            {
+                DeselectRequested?.Invoke(this, EventArgs.Empty);
+                RequestImageInsertion();
+                return;
+            }
+
             if (tool == EditorTool.Emoji)
             {
                 DeselectRequested?.Invoke(this, EventArgs.Empty);
@@ -1056,6 +1078,16 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             ActiveTool = tool;
+        }
+
+        private void RequestImageInsertion()
+        {
+            if (IsModalOpen)
+            {
+                return;
+            }
+
+            ImageInsertionRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void ShowEmojiPickerDialog()
@@ -1190,6 +1222,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void SaveAs()
         {
             _saveAsRequested?.Invoke();
+            CloseAfterTaskActionIfEnabled();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanPrint))]
+        private void Print()
+        {
+            _printRequested?.Invoke();
             CloseAfterTaskActionIfEnabled();
         }
 

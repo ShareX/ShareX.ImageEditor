@@ -30,98 +30,24 @@ namespace ShareX.ImageEditor.Core.Annotations;
 /// </summary>
 public enum EditorTool
 {
-    /// <summary>
-    /// Select and manipulate existing annotations
-    /// </summary>
     Select,
-
-    /// <summary>
-    /// Draw rectangles
-    /// </summary>
     Rectangle,
-
-    /// <summary>
-    /// Draw ellipses/circles
-    /// </summary>
     Ellipse,
-
-    /// <summary>
-    /// Draw straight lines
-    /// </summary>
     Line,
-
-    /// <summary>
-    /// Draw arrows
-    /// </summary>
     Arrow,
-
-    /// <summary>
-    /// Freehand pen drawing
-    /// </summary>
     Freehand,
-
-    /// <summary>
-    /// Add text annotations
-    /// </summary>
     Text,
-
-    /// <summary>
-    /// Speech balloon
-    /// </summary>
     SpeechBalloon,
-
-    /// <summary>
-    /// Add numbered markers (auto-incrementing)
-    /// </summary>
     Step,
-
-    /// <summary>
-    /// Smart eraser
-    /// </summary>
-    SmartEraser,
-
-    /// <summary>
-    /// Blur effect
-    /// </summary>
-    Blur,
-
-    /// <summary>
-    /// Pixelate effect
-    /// </summary>
-    Pixelate,
-
-    /// <summary>
-    /// Magnify effect
-    /// </summary>
-    Magnify,
-
-    /// <summary>
-    /// Freehand highlighter (translucent)
-    /// </summary>
-    Highlight,
-
-    /// <summary>
-    /// Create spotlight effect (darken everything except highlighted area)
-    /// </summary>
-    Spotlight,
-
-    /// <summary>
-    /// Crop the image
-    /// </summary>
-    Crop,
-
-    /// <summary>
-    /// Cut out a section and join remaining parts
-    /// </summary>
-    CutOut,
-
-    /// <summary>
-    /// Insert image/sticker
-    /// </summary>
     Image,
-
-    /// <summary>
-    /// Insert emoji sticker
-    /// </summary>
-    Emoji
+    Emoji,
+    Cursor,
+    Highlight,
+    SmartEraser,
+    Blur,
+    Pixelate,
+    Magnify,
+    Spotlight,
+    Crop,
+    CutOut
 }

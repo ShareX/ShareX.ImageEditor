@@ -39,9 +39,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private const string DefaultAnnotationFontFamily = "Segoe UI";
         private static readonly IReadOnlyList<string> _availableFontFamilies = BuildAvailableFontFamilies();
         private static readonly IReadOnlyList<ArrowStyle> _availableArrowStyles = BuildAvailableArrowStyles();
+        private static readonly IReadOnlyList<CursorType> _availableCursorTypes = BuildAvailableCursorTypes();
+        private static readonly IReadOnlyList<int> _availableStepStartNumbers = Enumerable.Range(1, 10).ToArray();
 
         public IReadOnlyList<string> AvailableFontFamilies => _availableFontFamilies;
         public IReadOnlyList<ArrowStyle> AvailableArrowStyles => _availableArrowStyles;
+        public IReadOnlyList<CursorType> AvailableCursorTypes => _availableCursorTypes;
+        public IReadOnlyList<int> AvailableStepStartNumbers => _availableStepStartNumbers;
 
         [ObservableProperty]
         private string _selectedColor = "#EF4444";
@@ -287,6 +291,21 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private float _fontSize = 30;
 
+        [ObservableProperty]
+        private int _stepStartNumber = 1;
+
+        partial void OnStepStartNumberChanged(int value)
+        {
+            int clamped = Math.Clamp(value, 1, 10);
+            if (clamped != value)
+            {
+                StepStartNumber = clamped;
+                return;
+            }
+
+            NumberCounter = clamped;
+        }
+
         partial void OnFontSizeChanged(float value)
         {
             bool isStep = ActiveTool == EditorTool.Step;
@@ -317,6 +336,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         [ObservableProperty]
         private ArrowStyle _selectedArrowStyle = ArrowStyle.Classic;
+
+        [ObservableProperty]
+        private CursorType _selectedCursorType = CursorType.Default;
 
         partial void OnSelectedFontFamilyChanged(string value)
         {
@@ -365,6 +387,28 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             if (isArrow)
             {
                 Options.ArrowStyle = normalizedArrowStyle;
+            }
+        }
+
+        partial void OnSelectedCursorTypeChanged(CursorType value)
+        {
+            CursorType normalizedCursorType = NormalizeCursorType(value);
+            if (normalizedCursorType != value)
+            {
+                SelectedCursorType = normalizedCursorType;
+                return;
+            }
+
+            bool isCursor = ActiveTool == EditorTool.Cursor;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                isCursor = SelectedAnnotation is CursorAnnotation;
+            }
+
+            if (isCursor)
+            {
+                Options.CursorType = normalizedCursorType;
             }
         }
 
@@ -523,6 +567,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
+        public bool ShowStepStartNumber => ActiveTool == EditorTool.Step;
+
         public bool ShowFontFamily => ActiveTool switch
         {
             EditorTool.Text or EditorTool.SpeechBalloon => true,
@@ -538,6 +584,13 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         {
             EditorTool.Arrow => true,
             EditorTool.Select => _selectedAnnotation is ArrowAnnotation,
+            _ => false
+        };
+
+        public bool ShowCursorType => ActiveTool switch
+        {
+            EditorTool.Cursor => true,
+            EditorTool.Select => _selectedAnnotation is CursorAnnotation,
             _ => false
         };
 
@@ -623,6 +676,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     EditorTool.Arrow => "Arrow",
                     EditorTool.Freehand => "Freehand",
                     EditorTool.Text => "Text",
+                    EditorTool.Cursor => "Cursor",
                     EditorTool.Emoji => "Emoji",
                     EditorTool.SpeechBalloon => "Speech Balloon",
                     EditorTool.Step => "Step",
@@ -661,8 +715,10 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowTextColor));
             OnPropertyChanged(nameof(ShowThickness));
             OnPropertyChanged(nameof(ShowFontSize));
+            OnPropertyChanged(nameof(ShowStepStartNumber));
             OnPropertyChanged(nameof(ShowFontFamily));
             OnPropertyChanged(nameof(ShowArrowStyle));
+            OnPropertyChanged(nameof(ShowCursorType));
             OnPropertyChanged(nameof(ShowCornerRadius));
             OnPropertyChanged(nameof(ShowStrength));
             OnPropertyChanged(nameof(ShowTextStyle));
@@ -673,7 +729,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowFontFamily || ShowArrowStyle || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStepStartNumber || ShowFontFamily || ShowArrowStyle || ShowCursorType || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -710,6 +766,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             EditorTool.Text or
             EditorTool.SpeechBalloon or
             EditorTool.Step or
+            EditorTool.Cursor or
             EditorTool.Highlight or
             EditorTool.SmartEraser or
             EditorTool.Blur or
@@ -774,6 +831,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.TextFontSize;
                     SelectedArrowStyle = NormalizeArrowStyle(Options.ArrowStyle);
+                    break;
+                case EditorTool.Cursor:
+                    SelectedCursorType = NormalizeCursorType(Options.CursorType);
                     break;
                 case EditorTool.Text:
                     SelectedColorValue = Options.TextBorderColor;
@@ -853,7 +913,49 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private static IReadOnlyList<ArrowStyle> BuildAvailableArrowStyles()
         {
-            return Enum.GetValues<ArrowStyle>();
+            return new[]
+            {
+                ArrowStyle.Classic,
+                ArrowStyle.Double,
+                ArrowStyle.Modern,
+                ArrowStyle.Basic,
+                ArrowStyle.Line
+            };
+        }
+
+        private static IReadOnlyList<CursorType> BuildAvailableCursorTypes()
+        {
+            return new[]
+            {
+                CursorType.AppStarting,
+                CursorType.Arrow,
+                CursorType.Cross,
+                CursorType.Default,
+                CursorType.Hand,
+                CursorType.Help,
+                CursorType.HSplit,
+                CursorType.IBeam,
+                CursorType.No,
+                CursorType.NoMove2D,
+                CursorType.NoMoveHoriz,
+                CursorType.NoMoveVert,
+                CursorType.PanEast,
+                CursorType.PanNE,
+                CursorType.PanNorth,
+                CursorType.PanNW,
+                CursorType.PanSE,
+                CursorType.PanSouth,
+                CursorType.PanSW,
+                CursorType.PanWest,
+                CursorType.SizeAll,
+                CursorType.SizeNESW,
+                CursorType.SizeNS,
+                CursorType.SizeNWSE,
+                CursorType.SizeWE,
+                CursorType.UpArrow,
+                CursorType.VSplit,
+                CursorType.WaitCursor
+            };
         }
 
         private static string NormalizeFontFamily(string? fontFamily)
@@ -864,6 +966,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private static ArrowStyle NormalizeArrowStyle(ArrowStyle arrowStyle)
         {
             return Enum.IsDefined(arrowStyle) ? arrowStyle : ArrowStyle.Classic;
+        }
+
+        private static CursorType NormalizeCursorType(CursorType cursorType)
+        {
+            return Enum.IsDefined(cursorType) ? cursorType : CursorType.Default;
         }
 
     }

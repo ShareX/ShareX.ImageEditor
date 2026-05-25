@@ -23,13 +23,24 @@
 
 #endregion License Information (GPL v3)
 
-namespace ShareX.ImageEditor.Core.Annotations;
+using Avalonia.Data.Converters;
+using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Rendering;
+using System.Globalization;
 
-public enum ArrowStyle
+namespace ShareX.ImageEditor.Presentation.Converters
 {
-    Classic = 0,
-    Modern = 1,
-    Double = 2,
-    Basic = 3,
-    Line = 4
+    public class CursorTypePreviewBitmapConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            CursorType cursorType = value is CursorType typedCursor ? typedCursor : CursorType.Default;
+            return WindowsCursorBitmapRenderer.GetPreviewBitmap(cursorType);
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            return CursorType.Default;
+        }
+    }
 }

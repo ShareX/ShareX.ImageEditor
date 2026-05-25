@@ -50,7 +50,11 @@ namespace ShareX.ImageEditor.Hosting
         private static Color HexToColor(string hex) => Color.Parse(hex);
 
         // Editor
+        public string Theme { get; set; } = "Dark";
         public bool UseSystemTheme { get; set; } = true;
+        public string AccentColorHex { get; set; } = "#3E83F2";
+        [JsonIgnore]
+        public Color AccentColor { get => HexToColor(AccentColorHex); set => AccentColorHex = ColorToHex(value); }
         public bool UseSystemAccentColor { get; set; } = true;
         public bool RememberWindowState { get; set; } = true;
         public bool IsWindowMaximized { get; set; } = true;
@@ -61,6 +65,7 @@ namespace ShareX.ImageEditor.Hosting
         public bool QuickCrop { get; set; } = true;
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
+        public bool ShowInsertImageDialog { get; set; } = true;
         public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
 
         // Shared
@@ -76,6 +81,7 @@ namespace ShareX.ImageEditor.Hosting
         public int CornerRadius { get; set; } = 4;
         public bool Shadow { get; set; } = false;
         public ArrowStyle ArrowStyle { get; set; } = ArrowStyle.Classic;
+        public CursorType CursorType { get; set; } = CursorType.Default;
 
         // Text
         public string TextBorderColorHex { get; set; } = ColorToHex(PrimaryColor);

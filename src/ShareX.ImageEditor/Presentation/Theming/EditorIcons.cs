@@ -39,6 +39,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string ToolText = LucideIcons.type;
         public const string ToolSpeechBalloon = LucideIcons.message_square;
         public const string ToolStep = LucideIcons.hash;
+        public const string ToolCursor = LucideIcons.mouse_pointer;
         public const string ToolBlur = LucideIcons.droplet;
         public const string ToolPixelate = LucideIcons.grid_2x2;
         public const string ToolMagnify = LucideIcons.search;
@@ -62,6 +63,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string ActionSendToBack = LucideIcons.send_to_back;
         public const string ActionSave = LucideIcons.save;
         public const string ActionSaveAs = LucideIcons.save_all;
+        public const string ActionPrint = LucideIcons.printer;
         public const string ActionDownload = LucideIcons.download;
         public const string ActionPinToScreen = LucideIcons.pin;
         public const string ActionUpload = LucideIcons.cloud_upload;
@@ -75,7 +77,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string FormatItalic = LucideIcons.italic;
         public const string FormatUnderline = LucideIcons.underline;
         public const string MenuTheme = LucideIcons.moon_star;
-        public const string PanelBackground = LucideIcons.image;
+        public const string PanelBackground = LucideIcons.wallpaper;
         public const string PanelEffects = LucideIcons.sparkles;
         public const string LayerFlatten = LucideIcons.layers_2;
         public const string ChevronDown = LucideIcons.chevron_down;
@@ -101,6 +103,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
             EditorTool.Text => ToolText,
             EditorTool.SpeechBalloon => ToolSpeechBalloon,
             EditorTool.Step => ToolStep,
+            EditorTool.Cursor => ToolCursor,
             EditorTool.Blur => ToolBlur,
             EditorTool.Pixelate => ToolPixelate,
             EditorTool.Magnify => ToolMagnify,

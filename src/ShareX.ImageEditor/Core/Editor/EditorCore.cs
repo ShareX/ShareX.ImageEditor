@@ -1139,7 +1139,8 @@ public class EditorCore : IDisposable
 
         if (x < 0 || y < 0 || x >= snapshot.Width || y >= snapshot.Height)
         {
-            return null;
+            x = 0;
+            y = 0;
         }
 
         var color = snapshot.GetPixel(x, y);
@@ -1477,7 +1478,7 @@ public class EditorCore : IDisposable
 
     private IEnumerable<(HandleType Type, SKPoint Position)> GetAnnotationHandles(Annotation annotation)
     {
-        if (annotation is FreehandAnnotation)
+        if (annotation is FreehandAnnotation or CursorAnnotation)
         {
             yield break;
         }
@@ -1511,8 +1512,8 @@ public class EditorCore : IDisposable
             yield return (HandleType.BottomLeft, rotate ? RotatePoint(bl, center, angle) : bl);
             yield return (HandleType.MiddleLeft, rotate ? RotatePoint(ml, center, angle) : ml);
 
-            // Rotation handle above the top-center for text and emoji annotations
-            if (annotation is TextAnnotation or EmojiAnnotation)
+            // Rotation handle above the top-center for rotatable text, image, and emoji annotations.
+            if (annotation is TextAnnotation or ImageAnnotation or EmojiAnnotation)
             {
                 var rotHandle = new SKPoint(bounds.MidX, bounds.Top - RotationHandleOffset);
                 yield return (HandleType.Rotate, rotate ? RotatePoint(rotHandle, center, angle) : rotHandle);
@@ -1551,6 +1552,7 @@ public class EditorCore : IDisposable
             EditorTool.Freehand => new FreehandAnnotation(),
             EditorTool.SmartEraser => new SmartEraserAnnotation(),
             EditorTool.Step => new NumberAnnotation(),
+            EditorTool.Cursor => new CursorAnnotation(),
             EditorTool.Blur => new BlurAnnotation(),
             EditorTool.Pixelate => new PixelateAnnotation(),
             EditorTool.Highlight => new HighlightAnnotation(),

@@ -51,6 +51,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             toolbar.FontSizeChanged += OnFontSizeChanged;
             toolbar.FontFamilyChanged += OnFontFamilyChanged;
             toolbar.ArrowStyleChanged += OnArrowStyleChanged;
+            toolbar.CursorTypeChanged += OnCursorTypeChanged;
             toolbar.StrengthChanged += OnStrengthChanged;
             toolbar.TextBoldChanged += OnToolbarTextBoldChanged;
             toolbar.TextItalicChanged += OnToolbarTextItalicChanged;
@@ -74,6 +75,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             toolbar.FontSizeChanged -= OnFontSizeChanged;
             toolbar.FontFamilyChanged -= OnFontFamilyChanged;
             toolbar.ArrowStyleChanged -= OnArrowStyleChanged;
+            toolbar.CursorTypeChanged -= OnCursorTypeChanged;
             toolbar.StrengthChanged -= OnStrengthChanged;
             toolbar.TextBoldChanged -= OnToolbarTextBoldChanged;
             toolbar.TextItalicChanged -= OnToolbarTextItalicChanged;
@@ -132,6 +134,15 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 vm.SelectedArrowStyle = arrowStyle;
                 ApplySelectedArrowStyle(arrowStyle);
+            }
+        }
+
+        private void OnCursorTypeChanged(object? sender, CursorType cursorType)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.SelectedCursorType = cursorType;
+                ApplySelectedCursorType(cursorType);
             }
         }
 
@@ -509,6 +520,25 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 arrowAnnotation.Style = arrowStyle;
                 AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnnotation);
+                _selectionController.UpdateSelectionHandles();
+            }
+        }
+
+        private void ApplySelectedCursorType(CursorType cursorType)
+        {
+            var selected = _selectionController.SelectedShape;
+
+            if (selected?.Tag is CursorAnnotation cursorAnnotation && selected is Image cursorImage)
+            {
+                cursorAnnotation.CursorType = cursorType;
+
+                var cursorBitmap = WindowsCursorBitmapRenderer.CreateAnnotationBitmap(cursorType);
+                if (cursorBitmap != null)
+                {
+                    cursorAnnotation.SetImage(cursorBitmap);
+                }
+
+                AnnotationVisualFactory.UpdateVisualControl(cursorImage, cursorAnnotation);
                 _selectionController.UpdateSelectionHandles();
             }
         }

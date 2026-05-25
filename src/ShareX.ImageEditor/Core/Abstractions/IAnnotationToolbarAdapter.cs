@@ -44,14 +44,18 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     string TextColor { get; set; }
     string SelectedFontFamily { get; set; }
     ArrowStyle SelectedArrowStyle { get; set; }
+    CursorType SelectedCursorType { get; set; }
     IReadOnlyList<string> AvailableFontFamilies { get; }
     IReadOnlyList<ArrowStyle> AvailableArrowStyles { get; }
+    IReadOnlyList<CursorType> AvailableCursorTypes { get; }
+    IReadOnlyList<int> AvailableStepStartNumbers { get; }
     IBrush SelectedColorBrush { get; set; }
     IBrush FillColorBrush { get; set; }
     IBrush TextColorBrush { get; set; }
     int StrokeWidth { get; set; }
     int CornerRadius { get; set; }
     float FontSize { get; set; }
+    int StepStartNumber { get; set; }
     float EffectStrength { get; set; }
     float EffectStrengthMaximum { get; }
     bool ShadowEnabled { get; set; }
@@ -69,18 +73,23 @@ public interface IAnnotationToolbarAdapter : INotifyPropertyChanged
     bool ShowTextColor { get; }
     bool ShowThickness { get; }
     bool ShowFontSize { get; }
+    bool ShowStepStartNumber { get; }
     bool ShowFontFamily { get; }
     bool ShowArrowStyle { get; }
+    bool ShowCursorType { get; }
     bool ShowCornerRadius { get; }
     bool ShowStrength { get; }
     bool ShowTextStyle { get; }
     bool ShowShadow { get; }
     bool ShowToolOptions { get; }
     bool ShowToolOptionsSeparator { get; }
+    bool ShowOptionsButton { get; }
     ReadOnlyObservableCollection<MenuItem> RecentImageMenuItems { get; }
     ReadOnlyObservableCollection<string> RecentImageFiles { get; }
     bool HasRecentImageFiles { get; }
+    bool IsEffectsButtonActive { get; }
     ICommand OpenRecentImageCommand { get; }
+    ICommand OpenOptionsPanelCommand { get; }
     void SelectTool(EditorTool tool);
     void Undo();
     void Redo();

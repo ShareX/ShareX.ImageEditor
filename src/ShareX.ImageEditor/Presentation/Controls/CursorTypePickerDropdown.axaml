@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="using:ShareX.ImageEditor.Presentation.Converters"
              xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
-             x:Class="ShareX.ImageEditor.Presentation.Controls.ArrowStylePickerDropdown"
-             x:Name="ArrowStylePickerDropdownRoot"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.CursorTypePickerDropdown"
+             x:Name="CursorTypePickerDropdownRoot"
              mc:Ignorable="d"
-             d:DesignWidth="160"
+             d:DesignWidth="180"
              d:DesignHeight="40">
     <UserControl.Resources>
-        <converters:ArrowStylePreviewGeometryConverter x:Key="ArrowStylePreviewGeometry" />
+        <converters:CursorTypeDisplayNameConverter x:Key="CursorTypeDisplayName" />
+        <converters:CursorTypePreviewBitmapConverter x:Key="CursorTypePreviewBitmap" />
     </UserControl.Resources>
 
     <Grid HorizontalAlignment="Stretch">
@@ -18,35 +19,30 @@
                 Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
-                MinWidth="{Binding MinWidth, ElementName=ArrowStylePickerDropdownRoot}"
-                MaxWidth="{Binding MaxWidth, ElementName=ArrowStylePickerDropdownRoot}"
+                MinWidth="{Binding MinWidth, ElementName=CursorTypePickerDropdownRoot}"
+                MaxWidth="{Binding MaxWidth, ElementName=CursorTypePickerDropdownRoot}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch">
-                        <Grid ColumnDefinitions="*,Auto,Auto">
-                                <TextBlock Grid.Column="0"
-                           Text="{Binding SelectedArrowStyle, ElementName=ArrowStylePickerDropdownRoot}"
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding SelectedCursorType, ElementName=CursorTypePickerDropdownRoot, Converter={StaticResource CursorTypeDisplayName}}"
                            Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
                            FontSize="12"
                            TextTrimming="CharacterEllipsis"
                            VerticalAlignment="Center"
                            Margin="0,0,6,0"/>
 
-                                <Path Grid.Column="1"
-                                            Width="36"
-                                            Height="14"
-                                            Margin="8,0,8,0"
-                                            Data="{Binding SelectedArrowStyle, ElementName=ArrowStylePickerDropdownRoot, Converter={StaticResource ArrowStylePreviewGeometry}}"
-                                            Stroke="{DynamicResource ShareX.Brush.Text.Secondary}"
-                                            Fill="{DynamicResource ShareX.Brush.Text.Secondary}"
-                                            StrokeThickness="1.75"
-                                            StrokeLineCap="Round"
-                                            StrokeJoin="Round"
-                                            Stretch="None"
-                                            VerticalAlignment="Center"/>
+                <Image Grid.Column="1"
+                       Width="24"
+                       Height="24"
+                       Margin="8,0,8,0"
+                       Source="{Binding SelectedCursorType, ElementName=CursorTypePickerDropdownRoot, Converter={StaticResource CursorTypePreviewBitmap}}"
+                       Stretch="Uniform"
+                       VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Column="2"
                            Classes="dropdown-chevron"
-                           Classes.open="{Binding #ArrowStylePopup.IsOpen}"
+                           Classes.open="{Binding #CursorTypePopup.IsOpen}"
                            Text="{x:Static theming:EditorIcons.ChevronDown}"
                            FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                            FontWeight="Normal"
@@ -56,14 +52,15 @@
             </Grid>
         </Button>
 
-        <Popup x:Name="ArrowStylePopup"
+        <Popup x:Name="CursorTypePopup"
                PlacementTarget="{Binding #DropdownButton}"
                Placement="Bottom"
                IsLightDismissEnabled="True"
                VerticalOffset="4">
             <Border Classes="popup-border popup-surface"
-                    Classes.open="{Binding #ArrowStylePopup.IsOpen}">
-                <ItemsControl ItemsSource="{Binding ArrowStyleOptions, ElementName=ArrowStylePickerDropdownRoot}">
+                    Classes.open="{Binding #CursorTypePopup.IsOpen}">
+                <ItemsControl ItemsSource="{Binding CursorTypeOptions, ElementName=CursorTypePickerDropdownRoot}"
+                              HorizontalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical"/>
@@ -71,34 +68,30 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                                <Button MinWidth="122"
+                            <Button MinWidth="136"
                                     Height="32"
                                     Padding="8,0"
                                     Classes="picker-button"
-                                    Click="OnArrowStyleSelected"
+                                    Click="OnCursorTypeSelected"
                                     CommandParameter="{Binding .}"
+                                    HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
                                     VerticalContentAlignment="Center"
-                                    ToolTip.Tip="{Binding .}">
+                                    ToolTip.Tip="{Binding ., Converter={StaticResource CursorTypeDisplayName}}">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0"
-                                               Text="{Binding .}"
+                                               Text="{Binding ., Converter={StaticResource CursorTypeDisplayName}}"
                                                FontSize="14"
                                                Foreground="{DynamicResource ShareX.Brush.Text}"
                                                VerticalAlignment="Center"/>
 
-                                    <Path Grid.Column="1"
-                                          Width="36"
-                                          Height="14"
-                                          Margin="8,0,0,0"
-                                          Data="{Binding ., Converter={StaticResource ArrowStylePreviewGeometry}}"
-                                          Stroke="{DynamicResource ShareX.Brush.Text}"
-                                          Fill="{DynamicResource ShareX.Brush.Text}"
-                                          StrokeThickness="1.75"
-                                          StrokeLineCap="Round"
-                                          StrokeJoin="Round"
-                                          Stretch="None"
-                                          VerticalAlignment="Center"/>
+                                    <Image Grid.Column="1"
+                                           Width="24"
+                                           Height="24"
+                                           Margin="8,0,0,0"
+                                           Source="{Binding ., Converter={StaticResource CursorTypePreviewBitmap}}"
+                                           Stretch="Uniform"
+                                           VerticalAlignment="Center"/>
                                 </Grid>
                             </Button>
                         </DataTemplate>

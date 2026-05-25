@@ -104,6 +104,11 @@ public class EditorSelectionController
         }
     }
 
+    internal void ClearHoverFeedback()
+    {
+        ClearHoverOutline();
+    }
+
     public void SetSelectedShape(Control shape)
     {
         var wasNull = _selectedShape == null;
@@ -484,6 +489,17 @@ public class EditorSelectionController
             return;
         }
 
+        if (TryGetRotatableAnnotation(_selectedShape, out Annotation? resizableRotatedAnnotation)
+            && resizableRotatedAnnotation is not null
+            && resizableRotatedAnnotation is not EmojiAnnotation
+            && resizableRotatedAnnotation.RotationAngle != 0
+            && TryResizeRotatedAnnotation(resizableRotatedAnnotation, currentPoint, handleTag))
+        {
+            _startPoint = currentPoint;
+            UpdateSelectionHandles();
+            return;
+        }
+
         if (_selectedShape.Tag is EmojiAnnotation emojiAnnotation)
         {
             ResizeEmojiAnnotation(emojiAnnotation, currentPoint, handleTag);
@@ -602,76 +618,13 @@ public class EditorSelectionController
 
         const double minSize = 16;
 
-        var bounds = GetLogicalRect(imageControl);
-        double left = bounds.Left;
-        double top = bounds.Top;
-        double right = bounds.Right;
-        double bottom = bounds.Bottom;
-        double centerX = bounds.Center.X;
-        double centerY = bounds.Center.Y;
-        Point workingPoint = annotation.RotationAngle != 0
-            ? UnrotatePoint(currentPoint, bounds.Center, annotation.RotationAngle)
-            : currentPoint;
-
-        double newLeft = left;
-        double newTop = top;
-        double newSize;
-
-        if (handleTag.Contains("Left") && handleTag.Contains("Top"))
-        {
-            newSize = Math.Max(minSize, Math.Max(right - workingPoint.X, bottom - workingPoint.Y));
-            newLeft = right - newSize;
-            newTop = bottom - newSize;
-        }
-        else if (handleTag.Contains("Right") && handleTag.Contains("Top"))
-        {
-            newSize = Math.Max(minSize, Math.Max(workingPoint.X - left, bottom - workingPoint.Y));
-            newLeft = left;
-            newTop = bottom - newSize;
-        }
-        else if (handleTag.Contains("Left") && handleTag.Contains("Bottom"))
-        {
-            newSize = Math.Max(minSize, Math.Max(right - workingPoint.X, workingPoint.Y - top));
-            newLeft = right - newSize;
-            newTop = top;
-        }
-        else if (handleTag.Contains("Right") && handleTag.Contains("Bottom"))
-        {
-            newSize = Math.Max(minSize, Math.Max(workingPoint.X - left, workingPoint.Y - top));
-            newLeft = left;
-            newTop = top;
-        }
-        else if (handleTag.Contains("Left"))
-        {
-            newSize = Math.Max(minSize, right - workingPoint.X);
-            newLeft = right - newSize;
-            newTop = centerY - (newSize / 2.0);
-        }
-        else if (handleTag.Contains("Right"))
-        {
-            newSize = Math.Max(minSize, workingPoint.X - left);
-            newLeft = left;
-            newTop = centerY - (newSize / 2.0);
-        }
-        else if (handleTag.Contains("Top"))
-        {
-            newSize = Math.Max(minSize, bottom - workingPoint.Y);
-            newLeft = centerX - (newSize / 2.0);
-            newTop = bottom - newSize;
-        }
-        else if (handleTag.Contains("Bottom"))
-        {
-            newSize = Math.Max(minSize, workingPoint.Y - top);
-            newLeft = centerX - (newSize / 2.0);
-            newTop = top;
-        }
-        else
+        if (!TryGetRotatedSquareResizeBounds(annotation, currentPoint, handleTag, minSize, out Rect resizedBounds))
         {
             return;
         }
 
-        annotation.StartPoint = new SKPoint((float)newLeft, (float)newTop);
-        annotation.EndPoint = new SKPoint((float)(newLeft + newSize), (float)(newTop + newSize));
+        annotation.StartPoint = new SKPoint((float)resizedBounds.Left, (float)resizedBounds.Top);
+        annotation.EndPoint = new SKPoint((float)resizedBounds.Right, (float)resizedBounds.Bottom);
         _pendingEmojiExactRender = true;
 
         AnnotationVisualFactory.UpdateVisualControl(
@@ -681,6 +634,158 @@ public class EditorSelectionController
             _view.EditorCore.CanvasSize.Width,
             _view.EditorCore.CanvasSize.Height,
             useInteractiveEmojiRender: true);
+    }
+
+    private bool TryGetRotatedSquareResizeBounds(Annotation annotation, Point currentPoint, string handleTag, double minSize, out Rect resizedBounds)
+    {
+        resizedBounds = default;
+
+        if (_selectedShape == null || !TryGetHandleDirection(handleTag, out int horizontalDirection, out int verticalDirection))
+        {
+            return false;
+        }
+
+        var bounds = GetLogicalRect(_selectedShape);
+        double size = Math.Max(bounds.Width, bounds.Height);
+        if (size <= 0)
+        {
+            return false;
+        }
+
+        Point origin = default;
+        Point localCenter = UnrotatePoint(bounds.Center, origin, annotation.RotationAngle);
+        Point localPointer = UnrotatePoint(currentPoint, origin, annotation.RotationAngle);
+        double halfSize = size / 2.0;
+        double newLocalCenterX = localCenter.X;
+        double newLocalCenterY = localCenter.Y;
+        double newSize;
+
+        if (horizontalDirection != 0 && verticalDirection != 0)
+        {
+            double anchorX = localCenter.X - (horizontalDirection * halfSize);
+            double anchorY = localCenter.Y - (verticalDirection * halfSize);
+            double sizeFromX = horizontalDirection < 0 ? anchorX - localPointer.X : localPointer.X - anchorX;
+            double sizeFromY = verticalDirection < 0 ? anchorY - localPointer.Y : localPointer.Y - anchorY;
+
+            newSize = Math.Max(minSize, Math.Max(sizeFromX, sizeFromY));
+            double draggedX = anchorX + (horizontalDirection * newSize);
+            double draggedY = anchorY + (verticalDirection * newSize);
+            newLocalCenterX = (anchorX + draggedX) / 2.0;
+            newLocalCenterY = (anchorY + draggedY) / 2.0;
+        }
+        else if (horizontalDirection != 0)
+        {
+            double anchorX = localCenter.X - (horizontalDirection * halfSize);
+            double sizeFromX = horizontalDirection < 0 ? anchorX - localPointer.X : localPointer.X - anchorX;
+
+            newSize = Math.Max(minSize, sizeFromX);
+            double draggedX = anchorX + (horizontalDirection * newSize);
+            newLocalCenterX = (anchorX + draggedX) / 2.0;
+        }
+        else if (verticalDirection != 0)
+        {
+            double anchorY = localCenter.Y - (verticalDirection * halfSize);
+            double sizeFromY = verticalDirection < 0 ? anchorY - localPointer.Y : localPointer.Y - anchorY;
+
+            newSize = Math.Max(minSize, sizeFromY);
+            double draggedY = anchorY + (verticalDirection * newSize);
+            newLocalCenterY = (anchorY + draggedY) / 2.0;
+        }
+        else
+        {
+            return false;
+        }
+
+        Point newWorldCenter = RotatePoint(new Point(newLocalCenterX, newLocalCenterY), origin, annotation.RotationAngle);
+        resizedBounds = new Rect(newWorldCenter.X - (newSize / 2.0), newWorldCenter.Y - (newSize / 2.0), newSize, newSize);
+        return true;
+    }
+
+    private bool TryResizeRotatedAnnotation(Annotation annotation, Point currentPoint, string handleTag)
+    {
+        if (_selectedShape == null || !TryGetHandleDirection(handleTag, out int horizontalDirection, out int verticalDirection))
+        {
+            return false;
+        }
+
+        var bounds = GetLogicalRect(_selectedShape);
+        if (bounds.Width <= 0 || bounds.Height <= 0)
+        {
+            return false;
+        }
+
+        double minWidth = annotation is TextAnnotation ? 10 : 1;
+        double minHeight = annotation is TextAnnotation ? 10 : 1;
+        Point origin = default;
+
+        // Project the drag point into the annotation's local axes so resize follows the rotated frame.
+        Point localCenter = UnrotatePoint(bounds.Center, origin, annotation.RotationAngle);
+        Point localPointer = UnrotatePoint(currentPoint, origin, annotation.RotationAngle);
+
+        double halfWidth = bounds.Width / 2.0;
+        double halfHeight = bounds.Height / 2.0;
+        double anchorX = localCenter.X - (horizontalDirection * halfWidth);
+        double anchorY = localCenter.Y - (verticalDirection * halfHeight);
+        double newLocalCenterX = localCenter.X;
+        double newLocalCenterY = localCenter.Y;
+        double newWidth = bounds.Width;
+        double newHeight = bounds.Height;
+
+        if (horizontalDirection != 0)
+        {
+            double clampedPointerX = horizontalDirection < 0
+                ? Math.Min(localPointer.X, anchorX - minWidth)
+                : Math.Max(localPointer.X, anchorX + minWidth);
+
+            newWidth = Math.Abs(anchorX - clampedPointerX);
+            newLocalCenterX = (anchorX + clampedPointerX) / 2.0;
+        }
+
+        if (verticalDirection != 0)
+        {
+            double clampedPointerY = verticalDirection < 0
+                ? Math.Min(localPointer.Y, anchorY - minHeight)
+                : Math.Max(localPointer.Y, anchorY + minHeight);
+
+            newHeight = Math.Abs(anchorY - clampedPointerY);
+            newLocalCenterY = (anchorY + clampedPointerY) / 2.0;
+        }
+
+        Point newWorldCenter = RotatePoint(new Point(newLocalCenterX, newLocalCenterY), origin, annotation.RotationAngle);
+        ApplyResizedBounds(annotation, newWorldCenter.X - (newWidth / 2.0), newWorldCenter.Y - (newHeight / 2.0), newWidth, newHeight);
+        return true;
+    }
+
+    private void ApplyResizedBounds(Annotation annotation, double left, double top, double width, double height)
+    {
+        if (_selectedShape == null)
+        {
+            return;
+        }
+
+        Canvas.SetLeft(_selectedShape, left);
+        Canvas.SetTop(_selectedShape, top);
+        _selectedShape.Width = Math.Max(1, width);
+        _selectedShape.Height = Math.Max(1, height);
+
+        annotation.StartPoint = new SKPoint((float)left, (float)top);
+        annotation.EndPoint = new SKPoint((float)(left + width), (float)(top + height));
+
+        if (annotation.RotationAngle != 0)
+        {
+            _selectedShape.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+            _selectedShape.RenderTransform = new RotateTransform(annotation.RotationAngle);
+        }
+
+        _selectedShape.InvalidateVisual();
+        _selectedShape.InvalidateMeasure();
+    }
+
+    private static bool TryGetHandleDirection(string handleTag, out int horizontalDirection, out int verticalDirection)
+    {
+        horizontalDirection = handleTag.Contains("Left") ? -1 : handleTag.Contains("Right") ? 1 : 0;
+        verticalDirection = handleTag.Contains("Top") ? -1 : handleTag.Contains("Bottom") ? 1 : 0;
+        return horizontalDirection != 0 || verticalDirection != 0;
     }
 
     public void MoveSelectedShape(double deltaX, double deltaY)
@@ -890,6 +995,12 @@ public class EditorSelectionController
             return;
         }
 
+        if (_selectedShape is global::Avalonia.Controls.Image { Tag: CursorAnnotation })
+        {
+            UpdateHoverOutline();
+            return;
+        }
+
         if (_selectedShape is Polyline
             || _selectedShape is global::Avalonia.Controls.Shapes.Path { Tag: FreehandAnnotation })
         {
@@ -1013,13 +1124,29 @@ public class EditorSelectionController
         {
             StartPoint = ToOverlayPoint(topCenter),
             EndPoint = ToOverlayPoint(rotateHandlePoint),
-            Stroke = new SolidColorBrush(Color.FromRgb(30, 144, 255)),
-            StrokeThickness = 1.5,
-            StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 4, 4 },
+            Stroke = Brushes.Black,
+            StrokeThickness = 1,
+            StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 3 },
             IsHitTestVisible = false
         };
+        _rotationLine.SetValue(Panel.ZIndexProperty, 1);
+
+        var rotationLineWhite = new global::Avalonia.Controls.Shapes.Line
+        {
+            StartPoint = ToOverlayPoint(topCenter),
+            EndPoint = ToOverlayPoint(rotateHandlePoint),
+            Stroke = Brushes.White,
+            StrokeThickness = 1,
+            StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 3 },
+            StrokeDashOffset = 3,
+            IsHitTestVisible = false
+        };
+        rotationLineWhite.SetValue(Panel.ZIndexProperty, 1);
+
         overlay.Children.Add(_rotationLine);
+        overlay.Children.Add(rotationLineWhite);
         _selectionHandles.Add(_rotationLine);
+        _selectionHandles.Add(rotationLineWhite);
 
         CreateHandle(rotateHandlePoint.X, rotateHandlePoint.Y, "Rotate");
         UpdateHoverOutline();
@@ -1035,6 +1162,12 @@ public class EditorSelectionController
                 return true;
             case global::Avalonia.Controls.Image { Tag: EmojiAnnotation emojiAnnotation }:
                 annotation = emojiAnnotation;
+                return true;
+            case global::Avalonia.Controls.Image { Tag: CursorAnnotation }:
+                annotation = null;
+                return false;
+            case global::Avalonia.Controls.Image { Tag: ImageAnnotation imageAnnotation }:
+                annotation = imageAnnotation;
                 return true;
             default:
                 annotation = null;
@@ -1119,6 +1252,7 @@ public class EditorSelectionController
                 Color = Color.FromArgb(100, 0, 0, 0)
             })
         };
+        handleBorder.SetValue(Panel.ZIndexProperty, 2);
 
         Canvas.SetLeft(handleBorder, ToOverlayCoordinate(x) - handleBorder.Width / 2);
         Canvas.SetTop(handleBorder, ToOverlayCoordinate(y) - handleBorder.Height / 2);

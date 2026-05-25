@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+/* TODO: SkiaSharp bug
 using ShareX.ImageEditor.Core.ImageEffects.Parameters;
 using ShareX.ImageEditor.Presentation.Theming;
 using SkiaSharp;
@@ -197,3 +198,4 @@ public sealed class Rotate3DBoxImageEffect : ImageEffectBase
         return result;
     }
 }
+*/

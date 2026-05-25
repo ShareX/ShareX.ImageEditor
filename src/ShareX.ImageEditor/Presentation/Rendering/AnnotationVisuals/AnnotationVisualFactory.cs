@@ -175,6 +175,10 @@ public static class AnnotationVisualFactory
                 spotlightControl.InvalidateVisual();
                 break;
 
+            case CursorAnnotation cursorAnnotation when control is Image cursorControl:
+                RefreshCursorImage(cursorAnnotation, cursorControl);
+                break;
+
             case EmojiAnnotation emojiAnnotation when control is Image emojiControl:
                 RefreshEmojiImage(emojiAnnotation, emojiControl, useInteractiveEmojiRender);
                 break;
@@ -190,6 +194,7 @@ public static class AnnotationVisualFactory
                 Canvas.SetTop(imageControl, imageBounds.Top);
                 imageControl.Width = Math.Max(1, imageBounds.Width);
                 imageControl.Height = Math.Max(1, imageBounds.Height);
+                ApplyRotationTransform(imageControl, imageAnnotation.RotationAngle);
                 break;
 
             default:
@@ -216,10 +221,22 @@ public static class AnnotationVisualFactory
             HighlightAnnotation highlight => highlight.CreateVisual(),
             SpotlightAnnotation spotlight => spotlight.CreateVisual(),
             FreehandAnnotation freehand => freehand.CreateVisual(),
+            CursorAnnotation cursor => CreateCursorVisual(cursor),
             EmojiAnnotation emoji => CreateEmojiVisual(emoji),
             ImageAnnotation image => CreateImageVisual(image),
             _ => null
         };
+    }
+
+    private static Control CreateCursorVisual(CursorAnnotation cursorAnnotation)
+    {
+        var image = new Image
+        {
+            Tag = cursorAnnotation
+        };
+
+        RefreshCursorImage(cursorAnnotation, image);
+        return image;
     }
 
     private static Control CreateEmojiVisual(EmojiAnnotation emojiAnnotation)
@@ -248,8 +265,32 @@ public static class AnnotationVisualFactory
         var imageBounds = imageAnnotation.GetBounds();
         image.Width = Math.Max(1, imageBounds.Width);
         image.Height = Math.Max(1, imageBounds.Height);
+        ApplyRotationTransform(image, imageAnnotation.RotationAngle);
 
         return image;
+    }
+
+    private static void RefreshCursorImage(CursorAnnotation cursorAnnotation, Image imageControl)
+    {
+        if (cursorAnnotation.ImageBitmap == null)
+        {
+            SKBitmap? renderedBitmap = WindowsCursorBitmapRenderer.CreateAnnotationBitmap(cursorAnnotation.CursorType);
+            if (renderedBitmap != null)
+            {
+                cursorAnnotation.SetImage(renderedBitmap);
+            }
+        }
+
+        imageControl.Source = cursorAnnotation.ImageBitmap != null
+            ? BitmapConversionHelpers.ToAvaloniBitmap(cursorAnnotation.ImageBitmap)
+            : null;
+
+        var cursorBounds = cursorAnnotation.GetBounds();
+        Canvas.SetLeft(imageControl, cursorBounds.Left);
+        Canvas.SetTop(imageControl, cursorBounds.Top);
+        imageControl.Width = Math.Max(1, cursorBounds.Width);
+        imageControl.Height = Math.Max(1, cursorBounds.Height);
+        ApplyRotationTransform(imageControl, cursorAnnotation.RotationAngle);
     }
 
     private static void RefreshEmojiImage(EmojiAnnotation emojiAnnotation, Image imageControl, bool useInteractiveRender = false)

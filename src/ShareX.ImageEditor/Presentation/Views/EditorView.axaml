@@ -185,12 +185,11 @@
                                     Maximum="200"
                                     Value="{Binding BackgroundPadding}"
                                     Background="{DynamicResource ShareX.Brush.Control.Background.Disabled}"/>
-                            <CheckBox x:Name="BackgroundSmartPaddingCheckBox"
-                                      IsChecked="{Binding BackgroundSmartPadding}"
-                                      IsEnabled="{Binding CanUseBackgroundSmartPadding}"
-                                      Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
-                                      Content="Smart padding"
-                                      Margin="0,0,0,8"/>
+                            <controls:LabeledToggleSwitch Label="Smart padding"
+                                                          IsChecked="{Binding BackgroundSmartPadding}"
+                                                          IsEnabled="{Binding CanUseBackgroundSmartPadding}"
+                                                          ToggleForeground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                                          Margin="0,0,0,16"/>
                         </StackPanel>
 
                         <!-- Background Rounded Corner -->
@@ -381,7 +380,8 @@
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Stretch"
                                      Background="{Binding EffectiveCanvasBackground}"
-                                     Padding="{Binding CanvasPadding}">
+                                     Padding="{Binding CanvasPadding}"
+                                     PointerPressed="OnCanvasPointerPressed">
                                 <!-- Outer Border: User-controlled Shadow effect -->
                                 <Border BoxShadow="{Binding CanvasShadow}"
                                        CornerRadius="{Binding CanvasCornerRadius, Converter={StaticResource DoubleToCornerRadius}}">
@@ -434,7 +434,6 @@
                                                                 HorizontalAlignment="Stretch"
                                                                 VerticalAlignment="Stretch"
                                                                 Cursor="Arrow"
-                                                                PointerPressed="OnCanvasPointerPressed"
                                                                 PointerMoved="OnCanvasPointerMoved"
                                                                 PointerReleased="OnCanvasPointerReleased">
                                                         </Canvas>
@@ -579,6 +578,12 @@
                     <TextBlock Text="{x:Static theming:EditorIcons.ActionPinToScreen}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
                 </Button>
 
+                <Button Classes="editor-button" Command="{Binding PrintCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
+                        IsVisible="{Binding ShowBottomToolbar}"
+                        ToolTip.Tip="Print image... (Ctrl+Shift+P)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
+                    <TextBlock Text="{x:Static theming:EditorIcons.ActionPrint}" FontSize="18" FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal"/>
+                </Button>
+
                 <Button Classes="editor-button" Command="{Binding UploadCommand}" IsEnabled="{Binding HasPreviewImage}" Width="40" Padding="0"
                         IsVisible="{Binding ShowBottomToolbar}"
                         ToolTip.Tip="Upload image (Ctrl+U)" ToolTip.Placement="Top" ToolTip.VerticalOffset="-5">
@@ -594,6 +599,7 @@
                 IsHitTestVisible="False"
                 Cursor="Arrow"
                 ZIndex="25"
+                PointerPressed="OnCanvasPointerPressed"
                 PointerMoved="OnCanvasPointerMoved"
                 PointerReleased="OnCanvasPointerReleased"/>
 

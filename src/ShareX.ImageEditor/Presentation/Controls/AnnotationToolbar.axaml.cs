@@ -34,6 +34,8 @@ using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Abstractions;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Theming;
+using ShareX.ImageEditor.Presentation.ViewModels;
+using ShareX.ImageEditor.Presentation.Views;
 
 namespace ShareX.ImageEditor.Presentation.Controls;
 
@@ -59,6 +61,7 @@ public partial class AnnotationToolbar : UserControl
     public event EventHandler<float>? FontSizeChanged;
     public event EventHandler<string>? FontFamilyChanged;
     public event EventHandler<ArrowStyle>? ArrowStyleChanged;
+    public event EventHandler<CursorType>? CursorTypeChanged;
     public event EventHandler<float>? StrengthChanged;
     public event EventHandler<bool>? TextBoldChanged;
     public event EventHandler<bool>? TextItalicChanged;
@@ -71,6 +74,7 @@ public partial class AnnotationToolbar : UserControl
         _activeBrush = Resources["AnnotationToolbarActiveBrush"] as SolidColorBrush;
         _activeForegroundBrush = Resources["AnnotationToolbarActiveForegroundBrush"] as SolidColorBrush;
         WireCompatibilityEvents();
+        DataContextChanged += OnDataContextChanged;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
@@ -134,6 +138,11 @@ public partial class AnnotationToolbar : UserControl
             arrowStylePicker.ArrowStyleChanged += (_, arrowStyle) => ArrowStyleChanged?.Invoke(this, arrowStyle);
         }
 
+        if (this.FindControl<CursorTypePickerDropdown>("CursorTypePicker") is CursorTypePickerDropdown cursorTypePicker)
+        {
+            cursorTypePicker.CursorTypeChanged += (_, cursorType) => CursorTypeChanged?.Invoke(this, cursorType);
+        }
+
         if (this.FindControl<StrengthSlider>("EffectStrengthSlider") is StrengthSlider strengthSlider)
         {
             strengthSlider.StrengthChanged += (_, strength) => StrengthChanged?.Invoke(this, strength);
@@ -152,14 +161,30 @@ public partial class AnnotationToolbar : UserControl
         SetPlatformSettings(null);
     }
 
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        if (IsLoaded)
+        {
+            RefreshPlatformColorTracking();
+        }
+    }
+
     private void OnThemeChanged(object? sender, Avalonia.Styling.ThemeVariant theme)
     {
         Dispatcher.UIThread.Post(() => UpdateAccentBrushes());
     }
 
+    public void RefreshAccentBrushes()
+    {
+        UpdateAccentBrushes(_platformSettings?.GetColorValues());
+    }
+
     private void RefreshPlatformColorTracking()
     {
-        SetPlatformSettings(this.GetPlatformSettings() ?? Application.Current?.PlatformSettings);
+        SetPlatformSettings(ShouldUseSystemAccentColor()
+            ? this.GetPlatformSettings() ?? Application.Current?.PlatformSettings
+            : null);
+
         UpdateAccentBrushes(_platformSettings?.GetColorValues());
     }
 
@@ -228,6 +253,16 @@ public partial class AnnotationToolbar : UserControl
         }
     }
 
+    private void OnOpenOptionsClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is IAnnotationToolbarAdapter toolbar &&
+            toolbar.OpenOptionsPanelCommand.CanExecute(null))
+        {
+            toolbar.OpenOptionsPanelCommand.Execute(null);
+            e.Handled = true;
+        }
+    }
+
     private void OnTextBoldClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is IAnnotationToolbarAdapter toolbar)
@@ -271,18 +306,7 @@ public partial class AnnotationToolbar : UserControl
             return;
         }
 
-        Color accentColor = colorValues?.AccentColor1 ?? default;
-        if (accentColor.A == 0 &&
-            Application.Current?.TryGetResource("SystemAccentColor", ActualThemeVariant, out object? resourceValue) == true)
-        {
-            accentColor = resourceValue switch
-            {
-                Color color => color,
-                SolidColorBrush brush => brush.Color,
-                _ => default
-            };
-        }
-
+        Color accentColor = ResolveAccentColor(colorValues);
         if (accentColor.A == 0)
         {
             return;
@@ -290,6 +314,86 @@ public partial class AnnotationToolbar : UserControl
 
         _activeBrush.Color = accentColor;
         _activeForegroundBrush.Color = GetAccentForegroundColor(accentColor);
+    }
+
+    private Color ResolveAccentColor(PlatformColorValues? colorValues)
+    {
+        if (TryGetConfiguredAccentColor(out Color configuredAccentColor))
+        {
+            return configuredAccentColor;
+        }
+
+        Color accentColor = default;
+
+        if (ShouldUseSystemAccentColor())
+        {
+            accentColor = colorValues?.AccentColor1 ?? default;
+            if (accentColor.A == 0 &&
+                Application.Current?.TryGetResource("SystemAccentColor", ActualThemeVariant, out object? resourceValue) == true)
+            {
+                accentColor = resourceValue switch
+                {
+                    Color color => color,
+                    SolidColorBrush brush => brush.Color,
+                    _ => default
+                };
+            }
+
+            if (accentColor.A != 0)
+            {
+                return accentColor;
+            }
+        }
+
+        if (TryGetResourceColor("ShareX.Color.Accent.Start", out Color resourceAccentColor))
+        {
+            return resourceAccentColor;
+        }
+
+        return accentColor;
+    }
+
+    private bool ShouldUseSystemAccentColor()
+    {
+        return GetOwnerViewModel()?.Options.UseSystemAccentColor ?? true;
+    }
+
+    private bool TryGetConfiguredAccentColor(out Color accentColor)
+    {
+        if (!ShouldUseSystemAccentColor() &&
+            GetOwnerViewModel() is MainViewModel { Options.AccentColorHex: var accentColorHex } &&
+            Color.TryParse(accentColorHex, out accentColor) &&
+            accentColor.A != 0)
+        {
+            return true;
+        }
+
+        accentColor = default;
+        return false;
+    }
+
+    private MainViewModel? GetOwnerViewModel()
+    {
+        return this.FindAncestorOfType<EditorView>()?.DataContext as MainViewModel;
+    }
+
+    private bool TryGetResourceColor(string resourceKey, out Color color)
+    {
+        if (TryGetResource(resourceKey, ActualThemeVariant, out object? resourceValue))
+        {
+            switch (resourceValue)
+            {
+                case Color resourceColor when resourceColor.A != 0:
+                    color = resourceColor;
+                    return true;
+                case SolidColorBrush brush when brush.Color.A != 0:
+                    color = brush.Color;
+                    return true;
+            }
+        }
+
+        color = default;
+        return false;
     }
 
     private Color GetAccentForegroundColor(Color accentColor)

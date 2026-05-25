@@ -51,12 +51,19 @@
                         HorizontalContentAlignment="Left"
                         Padding="14,10"
                         MinHeight="58">
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="Insert image in the center" FontWeight="Normal"/>
-                        <TextBlock Text="Keeps the current canvas size."
-                                   FontSize="11"
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{x:Static theming:LucideIcons.locate_fixed}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="18"
                                    FontWeight="Normal"
-                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Insert image in the center" FontWeight="Normal"/>
+                            <TextBlock Text="Keeps the current canvas size."
+                                       FontSize="11"
+                                       FontWeight="Normal"
+                                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Button>
 
@@ -66,12 +73,19 @@
                         HorizontalContentAlignment="Left"
                         Padding="14,10"
                         MinHeight="58">
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="Insert image below" FontWeight="Normal"/>
-                        <TextBlock Text="Expands the canvas downward before adding the image."
-                                   FontSize="11"
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{x:Static theming:LucideIcons.arrow_down_to_line}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="18"
                                    FontWeight="Normal"
-                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Insert image below" FontWeight="Normal"/>
+                            <TextBlock Text="Expands the canvas downward before adding the image."
+                                       FontSize="11"
+                                       FontWeight="Normal"
+                                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Button>
 
@@ -81,12 +95,19 @@
                         HorizontalContentAlignment="Left"
                         Padding="14,10"
                         MinHeight="58">
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="Insert image on right side" FontWeight="Normal"/>
-                        <TextBlock Text="Expands the canvas to the right before adding the image."
-                                   FontSize="11"
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{x:Static theming:LucideIcons.arrow_right_to_line}"
+                                   FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                   FontSize="18"
                                    FontWeight="Normal"
-                                   Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Insert image on right side" FontWeight="Normal"/>
+                            <TextBlock Text="Expands the canvas to the right before adding the image."
+                                       FontSize="11"
+                                       FontWeight="Normal"
+                                       Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+                        </StackPanel>
                     </StackPanel>
                 </Button>
             </StackPanel>

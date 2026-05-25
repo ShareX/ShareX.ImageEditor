@@ -199,6 +199,19 @@ internal static class CurvedSegmentHelper
         return new SKRect(left, top, right, bottom);
     }
 
+    public static SKPoint GetQuadraticTangentAtStart(ICurvedSegmentAnnotation annotation)
+    {
+        var controlPoint = GetQuadraticControlPoint(annotation);
+        var tangent = new SKPoint(controlPoint.X - annotation.StartPoint.X, controlPoint.Y - annotation.StartPoint.Y);
+
+        if (Math.Abs(tangent.X) < 0.001f && Math.Abs(tangent.Y) < 0.001f)
+        {
+            tangent = new SKPoint(annotation.EndPoint.X - annotation.StartPoint.X, annotation.EndPoint.Y - annotation.StartPoint.Y);
+        }
+
+        return tangent;
+    }
+
     public static SKPoint GetQuadraticTangentAtEnd(ICurvedSegmentAnnotation annotation)
     {
         var controlPoint = GetQuadraticControlPoint(annotation);

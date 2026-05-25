@@ -40,9 +40,9 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type effects:CheckboxParameterState}" x:DataType="effects:CheckboxParameterState">
-                    <CheckBox Content="{Binding Label}"
-                              IsChecked="{Binding Value, Mode=TwoWay}"
-                              Margin="0,0,0,10"/>
+                    <controls:LabeledToggleSwitch Label="{Binding Label}"
+                                                  IsChecked="{Binding Value, Mode=TwoWay}"
+                                                  Margin="0,0,0,10"/>
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type effects:EnumParameterState}" x:DataType="effects:EnumParameterState">

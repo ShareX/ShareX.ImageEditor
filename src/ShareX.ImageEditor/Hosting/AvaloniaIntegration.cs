@@ -25,13 +25,13 @@
 
 using Avalonia;
 using Avalonia.Controls;
-using SkiaSharp;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using ShareX.ImageEditor.Hosting.Diagnostics;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views;
+using SkiaSharp;
 
 namespace ShareX.ImageEditor.Hosting
 {
@@ -59,6 +59,7 @@ namespace ShareX.ImageEditor.Hosting
         public Action<SKBitmap>? CopyImageRequested { get; set; }
         public Func<SKBitmap, string?, string?>? SaveImageRequested { get; set; }
         public Func<SKBitmap, string?, string?>? SaveImageAsRequested { get; set; }
+        public Action<SKBitmap>? PrintImageRequested { get; set; }
         public Action<SKBitmap>? PinImageRequested { get; set; }
         public Action<SKBitmap>? UploadImageRequested { get; set; }
         public Action<EditorDiagnosticEvent>? DiagnosticReported { get; set; }
@@ -239,6 +240,7 @@ namespace ShareX.ImageEditor.Hosting
                 }
 
                 vm.ShowFileMenu = !taskMode;
+                vm.ShowOptionsButton = true;
                 vm.ShowTaskButtons = true;
                 vm.UseContinueWorkflow = taskMode;
                 vm.ShowBottomToolbar = true;
@@ -322,6 +324,18 @@ namespace ShareX.ImageEditor.Hosting
                             vm.ImageFilePath = savedPath;
                             vm.IsDirty = false;
                         }
+                    }
+                };
+            }
+
+            if (events.PrintImageRequested != null)
+            {
+                vm.PrintRequested += () =>
+                {
+                    using var skBitmap = window.GetResultBitmap();
+                    if (skBitmap != null)
+                    {
+                        InvokeHostCallback(skBitmap, events.PrintImageRequested, nameof(EditorEvents.PrintImageRequested));
                     }
                 };
             }

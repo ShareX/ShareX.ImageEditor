@@ -88,6 +88,14 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <Separator/>
+                                                                        <MenuItem Header="Options"
+                                                                                          IsVisible="{ReflectionBinding ShowOptionsButton}"
+                                                                                          Click="OnOpenOptionsClick">
+                                        <MenuItem.Icon>
+                                            <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:LucideIcons.settings}"/>
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <Separator IsVisible="{ReflectionBinding ShowOptionsButton}"/>
                                     <MenuItem Header="Exit"
                                               Command="{ReflectionBinding ExitEditorCommand}"
                                               InputGesture="Escape">
@@ -146,12 +154,6 @@
                             ToolTip.Tip="Text (T)"
                             Content="{x:Static theming:EditorIcons.ToolText}"/>
                     <Button Classes="editor-button toolbar-button"
-                            Tag="{x:Static models:EditorTool.Emoji}"
-                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Emoji}"
-                            Click="OnSelectToolClick"
-                            ToolTip.Tip="Emoji (J)"
-                            Content="{x:Static theming:EditorIcons.ToolEmoji}"/>
-                    <Button Classes="editor-button toolbar-button"
                             Tag="{x:Static models:EditorTool.SpeechBalloon}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=SpeechBalloon}"
                             Click="OnSelectToolClick"
@@ -163,6 +165,24 @@
                             Click="OnSelectToolClick"
                             ToolTip.Tip="Step (N)"
                             Content="{x:Static theming:EditorIcons.ToolStep}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Image}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Image}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Image (I)"
+                            Content="{x:Static theming:EditorIcons.ToolImage}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Emoji}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Emoji}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Emoji (J)"
+                            Content="{x:Static theming:EditorIcons.ToolEmoji}"/>
+                    <Button Classes="editor-button toolbar-button"
+                            Tag="{x:Static models:EditorTool.Cursor}"
+                            Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Cursor}"
+                            Click="OnSelectToolClick"
+                            ToolTip.Tip="Cursor (K)"
+                            Content="{x:Static theming:EditorIcons.ToolCursor}"/>
                     <Button Classes="editor-button toolbar-button"
                             Tag="{x:Static models:EditorTool.Highlight}"
                             Classes.active="{Binding ActiveTool, Converter={StaticResource EqualsConverter}, ConverterParameter=Highlight}"
@@ -222,7 +242,7 @@
                                 ToolTip.Tip="Background"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelBackground}"/>
                         <Button Classes="editor-button toolbar-button"
-                                Classes.active="{ReflectionBinding IsEffectsPanelOpen}"
+                                Classes.active="{ReflectionBinding IsEffectsButtonActive}"
                                 Command="{ReflectionBinding ToggleEffectsPanelCommand}"
                                 ToolTip.Tip="Image Effects"
                                 FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" FontSize="18" Content="{x:Static theming:EditorIcons.PanelEffects}"/>
@@ -279,7 +299,7 @@
                                    FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
                                    FontSize="18"
                                    FontWeight="Normal"
-                                   Foreground="{DynamicResource ShareX.Brush.Separator}"
+                                   Foreground="{DynamicResource ShareX.Brush.Accent}"
                                    VerticalAlignment="Center"
                                    HorizontalAlignment="Center"
                                    TextAlignment="Center"
@@ -336,11 +356,27 @@
                                                        IsVisible="{Binding ShowArrowStyle}"
                                                        ToolTip.Tip="Arrow style"/>
 
+                    <controls:CursorTypePickerDropdown x:Name="CursorTypePicker"
+                                                       CursorTypeOptions="{Binding AvailableCursorTypes}"
+                                                       SelectedCursorType="{Binding SelectedCursorType, Mode=TwoWay}"
+                                                       MinWidth="90"
+                                                       MaxWidth="180"
+                                                       Height="40"
+                                                       IsVisible="{Binding ShowCursorType}"
+                                                       ToolTip.Tip="Cursor type"/>
+
                     <controls:FontSizePickerDropdown x:Name="FontSizePicker"
                                                      SelectedFontSize="{Binding FontSize, Mode=TwoWay}"
                                                      Height="40"
                                                      IsVisible="{Binding ShowFontSize}"
                                                      ToolTip.Tip="Font size"/>
+
+                    <controls:NumberPickerDropdown x:Name="StepStartPicker"
+                                                   NumberOptions="{Binding AvailableStepStartNumbers}"
+                                                   SelectedNumber="{Binding StepStartNumber, Mode=TwoWay}"
+                                                   Height="40"
+                                                   IsVisible="{Binding ShowStepStartNumber}"
+                                                   ToolTip.Tip="Starting number"/>
 
                     <controls:StrengthSlider x:Name="EffectStrengthSlider"
                                              SelectedStrength="{Binding EffectStrength, Mode=TwoWay}"

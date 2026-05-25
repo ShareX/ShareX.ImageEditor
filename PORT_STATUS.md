@@ -1,11 +1,63 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-05-08
+Last updated: 2026-05-26
 
 ## Port Source
-- ShareX.ImageEditor commit: `9ca8f54fd` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-05-08)
-- XerahS submodule last synced to: `9ca8f54fd` (pending submodule commit)
-- XerahS submodule current HEAD before this session: `360eeab`
+- ShareX.ImageEditor commit: `abff8a8f8` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-05-26)
+- XerahS submodule last synced to: `abff8a8f8`
+- XerahS submodule current HEAD before this session: `8ccc249`
+
+## Port Activity (2026-05-26)
+
+- Previous recorded ShareX sync: `9ca8f54fd`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `abff8a8f8`
+- Result: caught up through `abff8a8f8` in the working tree
+- Method: mapped sync from the local `C:\Users\liveu\source\repos\ShareX Team\ShareX\ShareX.ImageEditor` checkout into `src/ShareX.ImageEditor`, followed by XerahS host integration fixes
+- Risk: high; the range spans arrow geometry, editor options, panning and rotated annotation interaction, image insertion, step start numbering, print command wiring, dirty-state suppression, and cursor annotations
+
+### Commits reviewed and ported
+
+- Arrow styles and preview UI: `b9286ebabe`, `2f00fad40`, `1218fd71c`, `aecc769b8`, `a59c2a2b8`, `66c38f0f7`
+- Canvas interaction, panning, hover, rotation, and rotated resize fixes: `ce4b1b4cb`, `caec7dca3`, `66b80b566`, `9ad14b90a`, `979260991`, `0f99fd4b0`, `2524605cb`, `ee02dcf7d`, `48f73fa67`
+- Editor options, theme/accent UI, options button, accent toolbar icons, and toggle controls: `3165f10b9`, `b2e5e6550`, `cc8bf8a54`, `42465d3e9`, `5e6b677ef`, `be34b85b9`, `48e15ec02`, `80b7998cf`, `f97e51250`, `035ea2059`, `2729b6954`, `10ea0bb53`, `5c44595a0`, `eaeb26cc7`, `d5a0789e1`
+- Image insertion toolbar flow and dialog layout: `046c5561a`, `51b87e453`, `a4a4e4d5`, `e2ec8dc9a`, `1310dcb0f`
+- Step start number picker: `bb42f0ab0`, `78409f28f`
+- Print command: `d96ee5513`
+- Dirty-state suppression after internal history changes: `72b53b5d0`
+- Cursor annotation tool, picker, rendering, and selection behavior: `27c3bbc8b`, `e4b0367cc`, `7f703012c`, `abff8a8f8`
+- Low-risk/reverted cleanup reviewed: `72d98818f`, `f15c42028`, `9ea30c7bf`, `2c5bc1489`, `c1a556d3a`, `4783beb2`, `b767d271`, `fea1938e`, `5d0524ef`, `ad030131`, `71ca3e1`, `676e058e`, `f65640d6`
+
+### Files added
+
+- `src/ShareX.ImageEditor/Core/Annotations/CursorType.cs`
+- `src/ShareX.ImageEditor/Core/Annotations/Shapes/CursorAnnotation.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/CursorTypePickerDropdown.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/CursorTypePickerDropdown.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/EditorOptionsPanel.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/EditorOptionsPanel.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/LabeledToggleSwitch.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/LabeledToggleSwitch.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Controls/NumberPickerDropdown.axaml`
+- `src/ShareX.ImageEditor/Presentation/Controls/NumberPickerDropdown.axaml.cs`
+- `src/ShareX.ImageEditor/Presentation/Converters/ArrowStylePreviewGeometryConverter.cs`
+- `src/ShareX.ImageEditor/Presentation/Converters/CursorTypeDisplayNameConverter.cs`
+- `src/ShareX.ImageEditor/Presentation/Converters/CursorTypePreviewBitmapConverter.cs`
+- `src/ShareX.ImageEditor/Presentation/Rendering/WindowsCursorBitmapRenderer.cs`
+- `src/ShareX.ImageEditor/Presentation/ViewModels/MainViewModel.EditorOptions.cs`
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout and XerahS license-header wording.
+- Preserved XerahS annotation persistence hooks through `GetAnnotationsSnapshotForPersistence()` and `RestoreAnnotations(...)`.
+- Preserved `StepTailStyle`, tail-style picker contracts, and tail-style icon constants while adding upstream step start numbering.
+- Preserved XerahS product-title customization through `MainViewModel.ApplicationName` and `EditorTitle`.
+- Preserved task-mode start-screen suppression and `ShowFileMenu = !taskMode` while adding the upstream options button.
+- Combined upstream image-annotation rotation handles with XerahS emoji rotation handles.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor\src\ShareX.ImageEditor\ShareX.ImageEditor.csproj -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-05-26.
+- `dotnet build src\desktop\XerahS.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-05-26.
 
 ## Port Activity (2026-05-08)
 

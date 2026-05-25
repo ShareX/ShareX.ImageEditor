@@ -25,16 +25,58 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System.ComponentModel;
+using System.IO;
 
 namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {
+        private async void OnImageInsertionRequested(object? sender, EventArgs e)
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel?.StorageProvider == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Select image",
+                AllowMultiple = false,
+                FileTypeFilter = [FilePickerFileTypes.ImageAll]
+            });
+
+            if (files.Count == 0)
+            {
+                return;
+            }
+
+            using var stream = await files[0].OpenReadAsync();
+            using var memStream = new MemoryStream();
+            await stream.CopyToAsync(memStream);
+            memStream.Position = 0;
+
+            SKBitmap? skBitmap = SKBitmap.Decode(memStream);
+            if (skBitmap == null)
+            {
+                return;
+            }
+
+            await InsertExternalImageAsync(skBitmap, files[0].Path.LocalPath);
+        }
+
         private async Task InsertExternalImageAsync(SKBitmap skBitmap, string? sourceFilePath = null)
         {
             if (DataContext is not MainViewModel vm)
@@ -49,7 +91,10 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return;
             }
 
-            InsertImagePlacement? placement = await ShowInsertImageDialogAsync(vm, skBitmap);
+            InsertImagePlacement? placement = vm.Options.ShowInsertImageDialog
+                ? await ShowInsertImageDialogAsync(vm, skBitmap)
+                : InsertImagePlacement.Center;
+
             if (!placement.HasValue)
             {
                 skBitmap.Dispose();
@@ -154,8 +199,23 @@ namespace ShareX.ImageEditor.Presentation.Views
                 return;
             }
 
-            double posX = position?.X ?? (_editorCore.CanvasSize.Width / 2 - skBitmap.Width / 2.0);
-            double posY = position?.Y ?? (_editorCore.CanvasSize.Height / 2 - skBitmap.Height / 2.0);
+            double posX;
+            double posY;
+
+            if (position.HasValue)
+            {
+                posX = position.Value.X;
+                posY = position.Value.Y;
+            }
+            else
+            {
+                Point visibleCanvasCenter = GetVisibleCanvasCenter(canvas) ?? new Point(
+                    _editorCore.CanvasSize.Width / 2,
+                    _editorCore.CanvasSize.Height / 2);
+
+                posX = visibleCanvasCenter.X - skBitmap.Width / 2.0;
+                posY = visibleCanvasCenter.Y - skBitmap.Height / 2.0;
+            }
 
             var annotation = new ImageAnnotation();
             annotation.SetImage(skBitmap);
@@ -173,6 +233,33 @@ namespace ShareX.ImageEditor.Presentation.Views
             vm.HasAnnotations = true;
             vm.ActiveTool = EditorTool.Select;
             _selectionController.SetSelectedShape(control);
+        }
+
+        private Point? GetVisibleCanvasCenter(Canvas canvas)
+        {
+            var canvasScrollViewer = this.FindControl<ScrollViewer>("CanvasScrollViewer");
+            if (canvasScrollViewer == null)
+            {
+                return null;
+            }
+
+            Size viewport = canvasScrollViewer.Viewport;
+            if (viewport.Width <= 0 || viewport.Height <= 0)
+            {
+                return null;
+            }
+
+            Point viewportCenter = new(viewport.Width / 2, viewport.Height / 2);
+            Point? visibleCanvasCenter = canvasScrollViewer.TranslatePoint(viewportCenter, canvas);
+
+            if (!visibleCanvasCenter.HasValue)
+            {
+                return null;
+            }
+
+            return new Point(
+                Math.Clamp(visibleCanvasCenter.Value.X, 0, _editorCore.CanvasSize.Width),
+                Math.Clamp(visibleCanvasCenter.Value.Y, 0, _editorCore.CanvasSize.Height));
         }
     }
 }

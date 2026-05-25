@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="260"
+             d:DesignHeight="36"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.LabeledToggleSwitch"
+             x:Name="LabeledToggleSwitchRoot"
+             HorizontalAlignment="Stretch">
+    <ToggleButton Classes="side-panel-toggle-row"
+                  IsChecked="{Binding IsChecked, ElementName=LabeledToggleSwitchRoot, Mode=TwoWay}"
+                  IsEnabled="{Binding IsEnabled, ElementName=LabeledToggleSwitchRoot}"
+                  HorizontalAlignment="Stretch">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <TextBlock Text="{Binding Label, ElementName=LabeledToggleSwitchRoot}"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch Grid.Column="1"
+                          Classes="side-panel-toggle-proxy"
+                          IsHitTestVisible="False"
+                          Focusable="False"
+                          OnContent=""
+                          OffContent=""
+                          IsChecked="{Binding IsChecked, ElementName=LabeledToggleSwitchRoot, Mode=OneWay}"
+                          IsEnabled="{Binding IsEnabled, ElementName=LabeledToggleSwitchRoot}"
+                          Foreground="{Binding ToggleForeground, ElementName=LabeledToggleSwitchRoot}"
+                          VerticalAlignment="Center"/>
+        </Grid>
+    </ToggleButton>
+</UserControl>

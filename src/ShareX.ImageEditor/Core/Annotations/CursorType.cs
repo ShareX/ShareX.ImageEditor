@@ -25,11 +25,37 @@
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
-public enum ArrowStyle
+/// <summary>
+/// Available cursor images for cursor annotations.
+/// </summary>
+public enum CursorType
 {
-    Classic = 0,
-    Modern = 1,
-    Double = 2,
-    Basic = 3,
-    Line = 4
+    AppStarting,
+    Arrow,
+    Cross,
+    Default,
+    Hand,
+    Help,
+    HSplit,
+    IBeam,
+    No,
+    NoMove2D,
+    NoMoveHoriz,
+    NoMoveVert,
+    PanEast,
+    PanNE,
+    PanNorth,
+    PanNW,
+    PanSE,
+    PanSouth,
+    PanSW,
+    PanWest,
+    SizeAll,
+    SizeNESW,
+    SizeNS,
+    SizeNWSE,
+    SizeWE,
+    UpArrow,
+    VSplit,
+    WaitCursor
 }
