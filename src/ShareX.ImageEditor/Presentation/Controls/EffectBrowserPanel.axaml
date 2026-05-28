@@ -6,6 +6,10 @@
              xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="600"
              x:Class="ShareX.ImageEditor.Presentation.Controls.EffectBrowserPanel">
+    <UserControl.Styles>
+        <StyleInclude Source="avares://ShareX.ImageEditor/Presentation/Theming/ImageEditorStyles.axaml"/>
+    </UserControl.Styles>
+
     <Grid RowDefinitions="Auto,*">
         <!-- Search Box -->
         <TextBox x:Name="SearchBox"
