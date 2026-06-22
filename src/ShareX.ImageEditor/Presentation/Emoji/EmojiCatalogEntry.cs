@@ -73,7 +73,7 @@ public sealed class EmojiCatalogEntry
             return 2;
         }
 
-        if (SearchIndex.Contains(search, StringComparison.Ordinal))
+        if (SearchIndex.Contains(search, StringComparison.OrdinalIgnoreCase))
         {
             return 3;
         }
