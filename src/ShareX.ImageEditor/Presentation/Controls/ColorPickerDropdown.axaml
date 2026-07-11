@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
+             xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ShareX.ImageEditor.Presentation.Controls.ColorPickerDropdown"
@@ -10,7 +10,6 @@
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"
-                Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
                 MinWidth="60"
@@ -22,18 +21,18 @@
                       Height="24" 
                       VerticalAlignment="Center" 
                       Margin="0,0,6,0">
-                    
+
                     <!-- Checkered Background -->
                     <Border CornerRadius="4" ClipToBounds="True">
                         <Border.Background>
                             <DynamicResource ResourceKey="ShareX.Brush.Checkered.Small"/>
                         </Border.Background>
                     </Border>
-                    
+
                     <!-- Color Overlay -->
                     <Border Background="{Binding SelectedColor, ElementName=ColorPickerDropdownRoot}"
                             CornerRadius="4"/>
-                    
+
                     <!-- Border Color: Hole in center showing checkered through -->
                     <Border IsVisible="{Binding ShowBorderHole, ElementName=ColorPickerDropdownRoot}"
                             Margin="5"
@@ -44,7 +43,7 @@
                             <DynamicResource ResourceKey="ShareX.Brush.Checkered.Small"/>
                         </Border.Background>
                     </Border>
-                    
+
                     <!-- Text Color: Plain 'A' label -->
                     <TextBlock Text="A"
                                IsVisible="{Binding ShowTextLabel, ElementName=ColorPickerDropdownRoot}"
@@ -80,17 +79,14 @@
                VerticalOffset="4">
             <Border Classes="popup-border popup-surface"
                     Classes.open="{Binding #ColorPopup.IsOpen}"
-                    Background="{DynamicResource ShareX.Brush.Background.Popup}" 
-                    CornerRadius="8" 
+                    Background="{DynamicResource ShareX.Brush.Background.Panel}"
+                    CornerRadius="8"
                     Padding="4"
                     BorderBrush="{DynamicResource ShareX.Brush.Border}"
                     BorderThickness="1">
-                <cp:ColorView x:Name="ColorViewControl"
-                              Color="{Binding SelectedColorValue, ElementName=ColorPickerDropdownRoot, Mode=TwoWay}"
-                              IsAlphaVisible="True"
-                              IsColorPreviewVisible="True"
-                              SelectedIndex="1"
-                              HsvColor="{Binding SelectedHsvColor, ElementName=ColorPickerDropdownRoot, Mode=TwoWay}"/>
+                <controls:ColorPickerPanel SelectedColorValue="{Binding SelectedColorValue, ElementName=ColorPickerDropdownRoot, Mode=TwoWay}"
+                                           SelectedHsvColor="{Binding SelectedHsvColor, ElementName=ColorPickerDropdownRoot, Mode=TwoWay}"
+                                           HostPopup="{Binding #ColorPopup}"/>
             </Border>
         </Popup>
     </Grid>

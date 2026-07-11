@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cp="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.ColorPickerPanel"
+             x:Name="ColorPickerPanelRoot">
+    <StackPanel>
+        <cp:ColorView x:Name="ColorViewControl"
+                      Color="{Binding SelectedColorValue, ElementName=ColorPickerPanelRoot, Mode=TwoWay}"
+                      IsAlphaVisible="True"
+                      IsColorPreviewVisible="True"
+                      SelectedIndex="1"
+                      HsvColor="{Binding SelectedHsvColor, ElementName=ColorPickerPanelRoot, Mode=TwoWay}"/>
+
+        <Button
+                Margin="4"
+                Height="40"
+                HorizontalAlignment="Center"
+                HorizontalContentAlignment="Left"
+                Click="OnScreenColorPickerClick">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{x:Static theming:EditorIcons.ScreenColorPicker}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="16"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text="Pick color from screen"
+                           FontWeight="Normal"
+                           FontSize="16"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+    </StackPanel>
+</UserControl>
