@@ -28,6 +28,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using ShareX.ImageEditor.Presentation.Emoji;
 using ShareX.ImageEditor.Presentation.ViewModels;
 
 namespace ShareX.ImageEditor.Presentation.Views;
@@ -75,6 +76,16 @@ public partial class EmojiPickerDialogView : UserControl
                     searchBox.Focus();
                 }
             }, DispatcherPriority.Background);
+        }
+    }
+
+    private void OnEmojiSelected(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: EmojiCatalogEntry emoji }
+            && DataContext is EmojiPickerDialogViewModel viewModel
+            && viewModel.SelectEmojiCommand.CanExecute(emoji))
+        {
+            viewModel.SelectEmojiCommand.Execute(emoji);
         }
     }
 }

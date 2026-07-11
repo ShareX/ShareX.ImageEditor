@@ -29,7 +29,7 @@
                                Foreground="{DynamicResource ShareX.Brush.Text}"/>
 
                     <Button Grid.Column="1"
-                            Classes="editor-button toolbar-button"
+                            Classes="toolbar-button"
                             Command="{Binding CloseCommand}"
                             Width="32"
                             MinWidth="32"
@@ -68,7 +68,7 @@
                         </Grid>
                     </Border>
 
-                    <Button Classes="editor-button" Command="{Binding NewImageCommand}"
+                    <Button Command="{Binding NewImageCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" Height="42">
                         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -80,7 +80,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Classes="editor-button" Command="{Binding OpenFileCommand}"
+                    <Button Command="{Binding OpenFileCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" Height="42">
                         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -92,7 +92,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Classes="editor-button" Command="{Binding LoadFromClipboardCommand}"
+                    <Button Command="{Binding LoadFromClipboardCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" Height="42">
                         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -104,7 +104,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Classes="editor-button" Command="{Binding LoadFromUrlCommand}"
+                    <Button Command="{Binding LoadFromUrlCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" Height="42">
                         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -128,11 +128,11 @@
                                          IsIndeterminate="True"
                                          Height="4"/>
                             <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
-                                <Button Classes="editor-button"
+                                <Button
                                         Content="Load"
                                         Command="{Binding SubmitUrlCommand}"
                                         Padding="18,0"/>
-                                <Button Classes="editor-button"
+                                <Button
                                         Content="Cancel"
                                         Command="{Binding CancelUrlCommand}"
                                         Padding="18,0"/>
@@ -140,7 +140,7 @@
                         </StackPanel>
                     </Border>
 
-                    <Button Classes="editor-button" Command="{Binding ExitCommand}"
+                    <Button Command="{Binding ExitCommand}"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                             Padding="12,10" Height="42">
                         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -196,7 +196,7 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="x:String">
-                                            <Button Classes="editor-button"
+                                            <Button
                                                     Command="{Binding $parent[ItemsControl].((vm:StartScreenDialogViewModel)DataContext).OpenRecentFileCommand}"
                                                     CommandParameter="{Binding}"
                                                     HorizontalAlignment="Stretch"

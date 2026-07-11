@@ -7,16 +7,16 @@
              x:Class="ShareX.ImageEditor.Presentation.Views.ConfirmationDialogView"
              x:DataType="vm:ConfirmationDialogViewModel">
 
-    <Border Background="{DynamicResource ShareX.Brush.Background.Popup}"
-            BorderBrush="{DynamicResource ShareX.Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="4"
-            Padding="0"
+    <Border Background="{DynamicResource ShareX.Brush.Background.Popup}" 
+            BorderBrush="{DynamicResource ShareX.Brush.Border}" 
+            BorderThickness="1" 
+            CornerRadius="4" 
+            Padding="0" 
             Width="400"
             BoxShadow="0 4 10 0 #40000000">
         <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource ShareX.Brush.Background.Panel}">
             <!-- Title Bar -->
-            <Border Grid.Row="0" Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+            <Border Grid.Row="0" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" 
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,0,0,1"
                     Padding="14,8">
                 <TextBlock Text="{Binding Title}" FontSize="15" VerticalAlignment="Center"/>
@@ -31,13 +31,13 @@
             </Border>
 
             <!-- Buttons -->
-            <Border Grid.Row="2" Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
+            <Border Grid.Row="2" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" 
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,1,0,0"
                     Padding="10">
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
-                    <Button Classes="editor-button" Padding="20,0" Content="Yes" Command="{Binding YesCommand}" HorizontalContentAlignment="Center"/>
-                    <Button Classes="editor-button" Padding="20,0" Content="No" Command="{Binding NoCommand}" HorizontalContentAlignment="Center"/>
-                    <Button Classes="editor-button" Padding="20,0" Content="Cancel" Command="{Binding CancelCommand}" HorizontalContentAlignment="Center"/>
+                    <Button x:Name="YesButton" Padding="20,0" Content="Yes" Command="{Binding YesCommand}" HorizontalContentAlignment="Center"/>
+                    <Button Padding="20,0" Content="No" Command="{Binding NoCommand}" HorizontalContentAlignment="Center"/>
+                    <Button Padding="20,0" Content="Cancel" Command="{Binding CancelCommand}" HorizontalContentAlignment="Center"/>
                 </StackPanel>
             </Border>
         </Grid>

@@ -27,7 +27,6 @@
                            VerticalAlignment="Center"/>
             </StackPanel>
                 <Button Grid.Column="1"
-                    Classes="editor-button"
                     Command="{Binding CloseEffectsPanelCommand}"
                     Width="32"
                     Height="32"
@@ -95,5 +94,16 @@
         <controls:LabeledToggleSwitch Label="Show insert image dialog"
                                       IsChecked="{Binding EditorShowInsertImageDialog, Mode=TwoWay}"
                                       Margin="0,0,0,8"/>
+
+        <controls:LabeledToggleSwitch Label="Show notifications"
+                                      IsChecked="{Binding EditorShowNotifications, Mode=TwoWay}"
+                                      Margin="0,0,0,8"/>
+
+        <Button
+                Command="{Binding OpenToolbarCustomizationDialogCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
+                Margin="0,0,0,12"
+                Content="Customize toolbar..."/>
     </StackPanel>
 </UserControl>

@@ -72,11 +72,14 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string ActionReset = LucideIcons.refresh_cw;
         public const string ActionRotateLeft = LucideIcons.rotate_ccw_square;
         public const string ActionRotateRight = LucideIcons.rotate_cw_square;
+        public const string ActionToggleToolbars = LucideIcons.chevrons_up_down;
+        public const string Achievement = LucideIcons.trophy;
 
         public const string FormatBold = LucideIcons.bold;
         public const string FormatItalic = LucideIcons.italic;
-        public const string FormatUnderline = LucideIcons.underline;
         public const string MenuTheme = LucideIcons.moon_star;
+        public const string ToggleSpeechBalloonTail = LucideIcons.message_square_check;
+        public const string ToggleEllipseShape = ToolEllipse;
         public const string PanelBackground = LucideIcons.wallpaper;
         public const string PanelEffects = LucideIcons.sparkles;
         public const string LayerFlatten = LucideIcons.layers_2;
@@ -84,6 +87,7 @@ namespace ShareX.ImageEditor.Presentation.Theming
         public const string Zoom = LucideIcons.zoom_in;
         public const string TailStyleTriangle = LucideIcons.triangle;
         public const string TailStyleArrow = LucideIcons.arrow_right;
+        public const string ScreenColorPicker = LucideIcons.pipette;
 
         public const string FileMenu = LucideIcons.file;
         public const string FileNew = LucideIcons.file_plus;

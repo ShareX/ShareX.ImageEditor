@@ -299,15 +299,12 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         private void ApplyGradientPreset(GradientPreset preset)
         {
             bool wasGradientMode = SelectedBackgroundModeOption?.Mode == CanvasBackgroundMode.Gradient;
-            SelectedGradientPreset = preset;
+            BackgroundGradientColor1Value = preset.Color1;
+            BackgroundGradientColor2Value = preset.Color2;
 
             if (!wasGradientMode)
             {
                 SelectedBackgroundModeOption = FindBackgroundModeOption(CanvasBackgroundMode.Gradient);
-            }
-            else
-            {
-                ApplyGradientBackground(preset);
             }
         }
 
@@ -316,13 +313,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             if (AreBackgroundEffectsActive)
             {
                 CanvasPadding = CalculateOutputPadding(BackgroundMargin, TargetOutputAspectRatio);
-                CanvasShadow = new BoxShadows(new BoxShadow
-                {
-                    Blur = BackgroundShadowRadius,
-                    Color = Color.FromArgb(80, 0, 0, 0),
-                    OffsetX = 0,
-                    OffsetY = 10
-                });
+                CanvasShadow = new BoxShadows(ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateCanvasShadow(_options.ShadowColor, BackgroundShadowRadius));
                 CanvasCornerRadius = Math.Max(0, BackgroundRoundedCorner);
             }
             else
@@ -391,16 +382,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         private static ObservableCollection<GradientPreset> BuildGradientPresets()
         {
-            static LinearGradientBrush Make(string start, string end) => new()
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
-                GradientStops = new GradientStops
-                {
-                    new Avalonia.Media.GradientStop(Color.Parse(start), 0),
-                    new Avalonia.Media.GradientStop(Color.Parse(end), 1)
-                }
-            };
+            static LinearGradientBrush Make(string start, string end) => CreateGradientBrush(Color.Parse(start), Color.Parse(end));
 
             // Ordered so the most common day-to-day gradients stay near the top.
             return new ObservableCollection<GradientPreset>
@@ -468,34 +450,19 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             };
         }
 
-        private static IBrush CopyBrush(IBrush brush)
+        private static LinearGradientBrush CreateGradientBrush(Color color1, Color color2)
         {
-            switch (brush)
+            return new LinearGradientBrush
             {
-                case SolidColorBrush solid:
-                    return new SolidColorBrush(solid.Color)
-                    {
-                        Opacity = solid.Opacity
-                    };
-                case LinearGradientBrush linear:
-                    var stops = new GradientStops();
-                    foreach (var stop in linear.GradientStops)
-                    {
-                        stops.Add(new Avalonia.Media.GradientStop(stop.Color, stop.Offset));
-                    }
-
-                    return new LinearGradientBrush
-                    {
-                        StartPoint = linear.StartPoint,
-                        EndPoint = linear.EndPoint,
-                        GradientStops = stops,
-                        SpreadMethod = linear.SpreadMethod,
-                        Opacity = linear.Opacity
-                    };
-                default:
-                    // Fall back to the original reference if an unsupported brush type is supplied.
-                    return brush;
-            }
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
+                GradientStops = new GradientStops
+                {
+                    new Avalonia.Media.GradientStop(color1, 0),
+                    new Avalonia.Media.GradientStop(color2, 1)
+                }
+            };
         }
+
     }
 }

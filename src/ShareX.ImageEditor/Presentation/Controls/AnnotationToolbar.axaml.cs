@@ -25,6 +25,8 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -36,6 +38,7 @@ using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Theming;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views;
+using System.ComponentModel;
 
 namespace ShareX.ImageEditor.Presentation.Controls;
 
@@ -46,27 +49,30 @@ public partial class AnnotationToolbar : UserControl
     public static readonly StyledProperty<bool> ShowEditingActionsProperty =
         AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowEditingActions), true);
 
-    public static readonly StyledProperty<bool> ShowTrailingActionsProperty =
-        AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowTrailingActions), true);
-
     private readonly SolidColorBrush? _activeBrush;
     private readonly SolidColorBrush? _activeForegroundBrush;
     private IPlatformSettings? _platformSettings;
+    private IAnnotationToolbarAdapter? _toolbarAdapter;
 
     public event EventHandler<IBrush>? ColorChanged;
     public event EventHandler<IBrush>? FillColorChanged;
     public event EventHandler<IBrush>? TextColorChanged;
     public event EventHandler<int>? WidthChanged;
+    public event EventHandler<BorderStyle>? BorderStyleChanged;
     public event EventHandler<int>? CornerRadiusChanged;
     public event EventHandler<float>? FontSizeChanged;
     public event EventHandler<string>? FontFamilyChanged;
     public event EventHandler<ArrowStyle>? ArrowStyleChanged;
     public event EventHandler<CursorType>? CursorTypeChanged;
     public event EventHandler<float>? StrengthChanged;
+    public event EventHandler<float>? SpotlightBlurChanged;
     public event EventHandler<bool>? TextBoldChanged;
     public event EventHandler<bool>? TextItalicChanged;
-    public event EventHandler<bool>? TextUnderlineChanged;
     public event EventHandler<bool>? ShadowChanged;
+    public event EventHandler? ShadowSettingsChanged;
+    public event EventHandler<bool>? SpeechBalloonTailChanged;
+    public event EventHandler<bool>? EffectEllipseChanged;
+    public event EventHandler<Control>? FavoriteEffectsMenuRequested;
 
     public AnnotationToolbar()
     {
@@ -85,10 +91,16 @@ public partial class AnnotationToolbar : UserControl
         set => SetValue(ShowEditingActionsProperty, value);
     }
 
-    public bool ShowTrailingActions
+    public void OpenFileMenu()
     {
-        get => GetValue(ShowTrailingActionsProperty);
-        set => SetValue(ShowTrailingActionsProperty, value);
+        Button? fileButton = this.GetVisualDescendants()
+            .OfType<Button>()
+            .FirstOrDefault(button => button.DataContext is ToolbarCustomizationItemViewModel item && item.IsFileMenu);
+
+        if (fileButton?.Flyout is FlyoutBase flyout)
+        {
+            flyout.ShowAt(fileButton);
+        }
     }
 
     private void InitializeComponent()
@@ -116,6 +128,11 @@ public partial class AnnotationToolbar : UserControl
         if (this.FindControl<WidthPickerDropdown>("StrokeWidthPicker") is WidthPickerDropdown widthPicker)
         {
             widthPicker.WidthChanged += (_, width) => WidthChanged?.Invoke(this, width);
+        }
+
+        if (this.FindControl<BorderStylePickerDropdown>("BorderStylePicker") is BorderStylePickerDropdown borderStylePicker)
+        {
+            borderStylePicker.BorderStyleChanged += (_, borderStyle) => BorderStyleChanged?.Invoke(this, borderStyle);
         }
 
         if (this.FindControl<CornerRadiusPickerDropdown>("CornerRadiusPicker") is CornerRadiusPickerDropdown cornerRadiusPicker)
@@ -147,11 +164,17 @@ public partial class AnnotationToolbar : UserControl
         {
             strengthSlider.StrengthChanged += (_, strength) => StrengthChanged?.Invoke(this, strength);
         }
+
+        if (this.FindControl<StrengthSlider>("SpotlightBlurSlider") is StrengthSlider spotlightBlurSlider)
+        {
+            spotlightBlurSlider.StrengthChanged += (_, blurAmount) => SpotlightBlurChanged?.Invoke(this, blurAmount);
+        }
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         ThemeManager.ThemeChanged += OnThemeChanged;
+        SetToolbarAdapter(DataContext as IAnnotationToolbarAdapter);
         RefreshPlatformColorTracking();
     }
 
@@ -159,13 +182,48 @@ public partial class AnnotationToolbar : UserControl
     {
         ThemeManager.ThemeChanged -= OnThemeChanged;
         SetPlatformSettings(null);
+        SetToolbarAdapter(null);
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
+        SetToolbarAdapter(DataContext as IAnnotationToolbarAdapter);
+
         if (IsLoaded)
         {
             RefreshPlatformColorTracking();
+        }
+    }
+
+    private void SetToolbarAdapter(IAnnotationToolbarAdapter? toolbarAdapter)
+    {
+        if (ReferenceEquals(_toolbarAdapter, toolbarAdapter))
+        {
+            return;
+        }
+
+        if (_toolbarAdapter != null)
+        {
+            _toolbarAdapter.PropertyChanged -= OnToolbarAdapterPropertyChanged;
+        }
+
+        _toolbarAdapter = toolbarAdapter;
+
+        if (_toolbarAdapter != null)
+        {
+            _toolbarAdapter.PropertyChanged += OnToolbarAdapterPropertyChanged;
+        }
+    }
+
+    private void OnToolbarAdapterPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(IAnnotationToolbarAdapter.ShadowColorBrush)
+            or nameof(IAnnotationToolbarAdapter.ShadowBlurRadius)
+            or nameof(IAnnotationToolbarAdapter.ShadowOpacity)
+            or nameof(IAnnotationToolbarAdapter.ShadowOffsetX)
+            or nameof(IAnnotationToolbarAdapter.ShadowOffsetY))
+        {
+            ShadowSettingsChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -221,6 +279,16 @@ public partial class AnnotationToolbar : UserControl
         }
     }
 
+    private void OnToolbarItemClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: ToolbarCustomizationItemViewModel item } &&
+            DataContext is EditorToolbarAdapter toolbar)
+        {
+            toolbar.ExecuteToolbarItem(item);
+            e.Handled = true;
+        }
+    }
+
     private void OnUndoClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is IAnnotationToolbarAdapter toolbar)
@@ -253,6 +321,24 @@ public partial class AnnotationToolbar : UserControl
         }
     }
 
+    private void OnToolbarItemPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Control { DataContext: ToolbarCustomizationItemViewModel item } control ||
+            item.Id != ToolbarCustomizationItemViewModel.ImageEffectsItemId)
+        {
+            return;
+        }
+
+        PointerPointProperties properties = e.GetCurrentPoint(control).Properties;
+        if (!properties.IsRightButtonPressed)
+        {
+            return;
+        }
+
+        FavoriteEffectsMenuRequested?.Invoke(this, control);
+        e.Handled = true;
+    }
+
     private void OnOpenOptionsClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is IAnnotationToolbarAdapter toolbar &&
@@ -281,21 +367,50 @@ public partial class AnnotationToolbar : UserControl
         }
     }
 
-    private void OnTextUnderlineClick(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is IAnnotationToolbarAdapter toolbar)
-        {
-            toolbar.TextUnderline = !toolbar.TextUnderline;
-            TextUnderlineChanged?.Invoke(this, toolbar.TextUnderline);
-        }
-    }
-
     private void OnShadowClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is IAnnotationToolbarAdapter toolbar)
         {
             toolbar.ShadowEnabled = !toolbar.ShadowEnabled;
             ShadowChanged?.Invoke(this, toolbar.ShadowEnabled);
+        }
+    }
+
+    private void OnShadowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Control control)
+        {
+            return;
+        }
+
+        PointerPointProperties properties = e.GetCurrentPoint(control).Properties;
+        if (!properties.IsRightButtonPressed)
+        {
+            return;
+        }
+
+        if (this.FindControl<Popup>("ShadowOptionsPopup") is Popup popup)
+        {
+            popup.IsOpen = true;
+            e.Handled = true;
+        }
+    }
+
+    private void OnSpeechBalloonTailClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is IAnnotationToolbarAdapter toolbar)
+        {
+            toolbar.SpeechBalloonTail = !toolbar.SpeechBalloonTail;
+            SpeechBalloonTailChanged?.Invoke(this, toolbar.SpeechBalloonTail);
+        }
+    }
+
+    private void OnEffectEllipseClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is IAnnotationToolbarAdapter toolbar)
+        {
+            toolbar.EffectEllipse = !toolbar.EffectEllipse;
+            EffectEllipseChanged?.Invoke(this, toolbar.EffectEllipse);
         }
     }
 

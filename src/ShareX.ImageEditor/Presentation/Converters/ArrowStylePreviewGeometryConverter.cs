@@ -25,7 +25,6 @@
 
 using Avalonia;
 using Avalonia.Data.Converters;
-using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
 using System.Globalization;
 

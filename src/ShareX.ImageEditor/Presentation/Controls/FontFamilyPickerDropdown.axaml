@@ -12,7 +12,6 @@
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch">
         <Button x:Name="DropdownButton"
-                Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
                 MinWidth="{Binding MinWidth, ElementName=FontFamilyPickerDropdownRoot}"

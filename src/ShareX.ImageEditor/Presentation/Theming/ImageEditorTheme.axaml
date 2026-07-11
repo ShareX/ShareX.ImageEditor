@@ -10,7 +10,7 @@
 
     <ResourceDictionary.ThemeDictionaries>
 
-        <!-- ShareX Dark -->
+        <!-- ShareX Dark theme -->
         <ResourceDictionary x:Key="{x:Static helpers:ThemeManager.ShareXDark}">
             <Color x:Key="ShareX.Color.Accent.Start">#3E83F2</Color>
             <Color x:Key="ShareX.Color.Accent.End">#3975D5</Color>
@@ -39,6 +39,7 @@
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.End}" Offset="1" />
             </LinearGradientBrush>
+            <SolidColorBrush x:Key="ShareX.Brush.Accent.Start" Color="{StaticResource ShareX.Color.Accent.Start}" />
             <SolidColorBrush x:Key="ShareX.Brush.Accent.Foreground" Color="{StaticResource ShareX.Color.Accent.Foreground}" />
 
             <SolidColorBrush x:Key="ShareX.Brush.Text" Color="{StaticResource ShareX.Color.Text}" />
@@ -133,6 +134,7 @@
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.Start}" Offset="0" />
                 <GradientStop Color="{StaticResource ShareX.Color.Accent.End}" Offset="1" />
             </LinearGradientBrush>
+            <SolidColorBrush x:Key="ShareX.Brush.Accent.Start" Color="{StaticResource ShareX.Color.Accent.Start}" />
             <SolidColorBrush x:Key="ShareX.Brush.Accent.Foreground" Color="{StaticResource ShareX.Color.Accent.Foreground}" />
 
             <SolidColorBrush x:Key="ShareX.Brush.Text" Color="{StaticResource ShareX.Color.Text}" />

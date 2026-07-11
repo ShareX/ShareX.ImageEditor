@@ -23,11 +23,13 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Helpers;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 
@@ -47,16 +49,21 @@ namespace ShareX.ImageEditor.Presentation.Views
             toolbar.FillColorChanged += OnFillColorChanged;
             toolbar.TextColorChanged += OnTextColorChanged;
             toolbar.WidthChanged += OnWidthChanged;
+            toolbar.BorderStyleChanged += OnBorderStyleChanged;
             toolbar.CornerRadiusChanged += OnCornerRadiusChanged;
             toolbar.FontSizeChanged += OnFontSizeChanged;
             toolbar.FontFamilyChanged += OnFontFamilyChanged;
             toolbar.ArrowStyleChanged += OnArrowStyleChanged;
             toolbar.CursorTypeChanged += OnCursorTypeChanged;
             toolbar.StrengthChanged += OnStrengthChanged;
+            toolbar.SpotlightBlurChanged += OnSpotlightBlurChanged;
             toolbar.TextBoldChanged += OnToolbarTextBoldChanged;
             toolbar.TextItalicChanged += OnToolbarTextItalicChanged;
-            toolbar.TextUnderlineChanged += OnToolbarTextUnderlineChanged;
             toolbar.ShadowChanged += OnToolbarShadowChanged;
+            toolbar.ShadowSettingsChanged += OnToolbarShadowSettingsChanged;
+            toolbar.SpeechBalloonTailChanged += OnToolbarSpeechBalloonTailChanged;
+            toolbar.EffectEllipseChanged += OnToolbarEffectEllipseChanged;
+            toolbar.FavoriteEffectsMenuRequested += OnFavoriteEffectsMenuRequested;
         }
 
         private void UnhookAnnotationToolbarEvents()
@@ -71,16 +78,49 @@ namespace ShareX.ImageEditor.Presentation.Views
             toolbar.FillColorChanged -= OnFillColorChanged;
             toolbar.TextColorChanged -= OnTextColorChanged;
             toolbar.WidthChanged -= OnWidthChanged;
+            toolbar.BorderStyleChanged -= OnBorderStyleChanged;
             toolbar.CornerRadiusChanged -= OnCornerRadiusChanged;
             toolbar.FontSizeChanged -= OnFontSizeChanged;
             toolbar.FontFamilyChanged -= OnFontFamilyChanged;
             toolbar.ArrowStyleChanged -= OnArrowStyleChanged;
             toolbar.CursorTypeChanged -= OnCursorTypeChanged;
             toolbar.StrengthChanged -= OnStrengthChanged;
+            toolbar.SpotlightBlurChanged -= OnSpotlightBlurChanged;
             toolbar.TextBoldChanged -= OnToolbarTextBoldChanged;
             toolbar.TextItalicChanged -= OnToolbarTextItalicChanged;
-            toolbar.TextUnderlineChanged -= OnToolbarTextUnderlineChanged;
             toolbar.ShadowChanged -= OnToolbarShadowChanged;
+            toolbar.ShadowSettingsChanged -= OnToolbarShadowSettingsChanged;
+            toolbar.SpeechBalloonTailChanged -= OnToolbarSpeechBalloonTailChanged;
+            toolbar.EffectEllipseChanged -= OnToolbarEffectEllipseChanged;
+            toolbar.FavoriteEffectsMenuRequested -= OnFavoriteEffectsMenuRequested;
+        }
+
+        private void OnFavoriteEffectsMenuRequested(object? sender, Control target)
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            EffectBrowserPanel effectBrowserPanel = EnsureEffectBrowserPanel(vm);
+            IReadOnlyList<MenuItem> favoriteMenuItems = effectBrowserPanel.CreateFavoriteMenuItems();
+            if (favoriteMenuItems.Count == 0)
+            {
+                return;
+            }
+
+            var menu = new ContextMenu
+            {
+                Placement = PlacementMode.BottomEdgeAlignedLeft,
+                PlacementTarget = target,
+                ItemsSource = favoriteMenuItems,
+                BorderBrush = (IBrush?)Resources["ShareX.Brush.Border"],
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(6, 2)
+            };
+
+            menu.Open(target);
         }
 
         private void OnColorChanged(object? sender, IBrush color)
@@ -128,6 +168,15 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void OnBorderStyleChanged(object? sender, BorderStyle borderStyle)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.SelectedBorderStyle = borderStyle;
+                ApplySelectedBorderStyle(borderStyle);
+            }
+        }
+
         private void OnArrowStyleChanged(object? sender, ArrowStyle arrowStyle)
         {
             if (DataContext is MainViewModel vm)
@@ -152,6 +201,15 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 vm.EffectStrength = strength;
                 ApplySelectedEffectStrength(strength);
+            }
+        }
+
+        private void OnSpotlightBlurChanged(object? sender, float blurAmount)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.SpotlightBlur = blurAmount;
+                ApplySelectedSpotlightBlur(blurAmount);
             }
         }
 
@@ -181,15 +239,6 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
-        private void OnUnderlineButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (DataContext is MainViewModel vm)
-            {
-                vm.TextUnderline = !vm.TextUnderline;
-                ApplySelectedTextUnderline(vm.TextUnderline);
-            }
-        }
-
         private void OnToolbarTextBoldChanged(object? sender, bool isBold)
         {
             ApplySelectedTextBold(isBold);
@@ -200,14 +249,24 @@ namespace ShareX.ImageEditor.Presentation.Views
             ApplySelectedTextItalic(isItalic);
         }
 
-        private void OnToolbarTextUnderlineChanged(object? sender, bool isUnderline)
-        {
-            ApplySelectedTextUnderline(isUnderline);
-        }
-
         private void OnToolbarShadowChanged(object? sender, bool isEnabled)
         {
             ApplySelectedShadowState(isEnabled);
+        }
+
+        private void OnToolbarShadowSettingsChanged(object? sender, EventArgs e)
+        {
+            ApplySelectedShadowSettings();
+        }
+
+        private void OnToolbarSpeechBalloonTailChanged(object? sender, bool isEnabled)
+        {
+            ApplySelectedSpeechBalloonTail(isEnabled);
+        }
+
+        private void OnToolbarEffectEllipseChanged(object? sender, bool isEllipse)
+        {
+            ApplySelectedEffectEllipse(isEllipse);
         }
 
         private void OnWidthChanged(object? sender, int width)
@@ -480,6 +539,78 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void ApplySelectedTextHorizontalAlignment(TextHorizontalAlignment alignment)
+        {
+            var selected = _selectionController.SelectedShape;
+            if (selected?.Tag is TextAnnotation textAnnotation)
+            {
+                textAnnotation.HorizontalAlignment = alignment;
+
+                if (selected is OutlinedTextControl outlinedText)
+                {
+                    outlinedText.InvalidateVisual();
+                }
+
+                if (FindActiveTextEditor(textAnnotation) is TextBox textEditor)
+                {
+                    ApplyTextHorizontalAlignment(textEditor, alignment);
+                }
+            }
+            else if (selected?.Tag is SpeechBalloonAnnotation balloonAnnotation)
+            {
+                balloonAnnotation.HorizontalAlignment = alignment;
+
+                if (selected is SpeechBalloonControl balloonControl)
+                {
+                    balloonControl.InvalidateVisual();
+                }
+
+                if (FindActiveTextEditor(balloonAnnotation) is TextBox textEditor)
+                {
+                    ApplyTextHorizontalAlignment(textEditor, alignment);
+                }
+            }
+        }
+
+        private void ApplyStepTypeToAnnotations(StepType stepType)
+        {
+            bool hasSteps = false;
+
+            foreach (var annotation in _editorCore.Annotations)
+            {
+                if (annotation is NumberAnnotation numberAnnotation)
+                {
+                    numberAnnotation.StepType = stepType;
+                    hasSteps = true;
+                }
+            }
+
+            if (!hasSteps)
+            {
+                return;
+            }
+
+            var canvas = this.FindControl<Canvas>("AnnotationCanvas");
+            if (canvas == null)
+            {
+                return;
+            }
+
+            foreach (var child in canvas.Children)
+            {
+                if (child is StepControl stepControl && stepControl.Annotation != null)
+                {
+                    stepControl.Annotation.StepType = stepType;
+                    AnnotationVisualFactory.UpdateVisualControl(stepControl, stepControl.Annotation);
+                }
+            }
+
+            if (_selectionController.SelectedShape is StepControl)
+            {
+                _selectionController.UpdateSelectionHandles();
+            }
+        }
+
         private void ApplySelectedFontFamily(string fontFamily)
         {
             if (string.IsNullOrWhiteSpace(fontFamily))
@@ -524,6 +655,35 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void ApplySelectedBorderStyle(BorderStyle borderStyle)
+        {
+            var selected = _selectionController.SelectedShape;
+
+            switch (selected?.Tag)
+            {
+                case RectangleAnnotation rectangleAnnotation when selected is global::Avalonia.Controls.Shapes.Rectangle rectangle:
+                    rectangleAnnotation.BorderStyle = borderStyle;
+                    rectangle.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(borderStyle);
+                    rectangle.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(borderStyle);
+                    break;
+                case EllipseAnnotation ellipseAnnotation when selected is global::Avalonia.Controls.Shapes.Ellipse ellipse:
+                    ellipseAnnotation.BorderStyle = borderStyle;
+                    ellipse.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(borderStyle);
+                    ellipse.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(borderStyle);
+                    break;
+                case LineAnnotation lineAnnotation when selected is global::Avalonia.Controls.Shapes.Path linePath:
+                    lineAnnotation.BorderStyle = borderStyle;
+                    linePath.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(borderStyle);
+                    linePath.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(borderStyle);
+                    break;
+                case FreehandAnnotation freehandAnnotation when selected is global::Avalonia.Controls.Shapes.Path freehandPath:
+                    freehandAnnotation.BorderStyle = borderStyle;
+                    freehandPath.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(borderStyle);
+                    freehandPath.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(borderStyle);
+                    break;
+            }
+        }
+
         private void ApplySelectedCursorType(CursorType cursorType)
         {
             var selected = _selectionController.SelectedShape;
@@ -565,6 +725,52 @@ namespace ShareX.ImageEditor.Presentation.Views
             }
         }
 
+        private void ApplySelectedSpotlightBlur(float blurAmount)
+        {
+            if (_selectionController.SelectedShape?.Tag is SpotlightAnnotation spotlightAnnotation)
+            {
+                spotlightAnnotation.BlurAmount = blurAmount;
+                RefreshSpotlightOverlay();
+            }
+        }
+
+        private void ApplySelectedEffectEllipse(bool isEllipse)
+        {
+            var selected = _selectionController.SelectedShape;
+
+            if (selected?.Tag is MagnifyAnnotation magnifyAnnotation)
+            {
+                magnifyAnnotation.IsEllipse = isEllipse;
+                selected.Clip = CreateEllipseClipIfNeeded(selected, isEllipse);
+                OnRequestUpdateEffect(selected);
+                _selectionController.UpdateSelectionHandles();
+            }
+            else if (selected?.Tag is SpotlightAnnotation spotlightAnnotation)
+            {
+                spotlightAnnotation.IsEllipse = isEllipse;
+                RefreshSpotlightOverlay();
+                _selectionController.UpdateSelectionHandles();
+            }
+        }
+
+        private static Geometry? CreateEllipseClipIfNeeded(Control control, bool isEllipse)
+        {
+            if (!isEllipse)
+            {
+                return null;
+            }
+
+            double width = Math.Max(1, control.Width);
+            double height = Math.Max(1, control.Height);
+            if (double.IsNaN(width) || double.IsNaN(height))
+            {
+                width = Math.Max(1, control.Bounds.Width);
+                height = Math.Max(1, control.Bounds.Height);
+            }
+
+            return new EllipseGeometry(new Rect(0, 0, width, height));
+        }
+
         private void ApplySelectedShadowState(bool isEnabled)
         {
             var selected = _selectionController.SelectedShape;
@@ -579,18 +785,57 @@ namespace ShareX.ImageEditor.Presentation.Views
             {
                 if (isEnabled)
                 {
-                    control.Effect = new Avalonia.Media.DropShadowEffect
-                    {
-                        OffsetX = 3,
-                        OffsetY = 3,
-                        BlurRadius = 4,
-                        Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-                    };
+                    control.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(annotation);
                 }
                 else
                 {
                     control.Effect = null;
                 }
+            }
+        }
+
+        private void ApplySelectedShadowSettings()
+        {
+            if (DataContext is not MainViewModel vm)
+            {
+                return;
+            }
+
+            var selected = _selectionController.SelectedShape;
+            if (selected?.Tag is not Annotation annotation)
+            {
+                return;
+            }
+
+            annotation.ShadowColor = vm.Options.ShadowColorHex;
+            annotation.ShadowBlurRadius = vm.Options.ShadowBlurRadius;
+            annotation.ShadowOpacity = vm.Options.ShadowOpacity;
+            annotation.ShadowOffsetX = vm.Options.ShadowOffsetX;
+            annotation.ShadowOffsetY = vm.Options.ShadowOffsetY;
+
+            if (selected is Control control && annotation.ShadowEnabled)
+            {
+                control.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(annotation);
+            }
+        }
+
+        private void ApplySelectedSpeechBalloonTail(bool isEnabled)
+        {
+            if (_selectionController.SelectedShape is SpeechBalloonControl balloonControl &&
+                balloonControl.Annotation is SpeechBalloonAnnotation balloonAnnotation)
+            {
+                balloonAnnotation.TailEnabled = isEnabled;
+                balloonControl.InvalidateVisual();
+                _selectionController.UpdateSelectionHandles();
+                return;
+            }
+
+            if (_selectionController.SelectedShape is StepControl stepControl &&
+                stepControl.Annotation is NumberAnnotation numberAnnotation)
+            {
+                numberAnnotation.TailEnabled = isEnabled;
+                AnnotationVisualFactory.UpdateVisualControl(stepControl, numberAnnotation);
+                _selectionController.UpdateSelectionHandles();
             }
         }
 
@@ -603,6 +848,35 @@ namespace ShareX.ImageEditor.Presentation.Views
                 {
                     outlinedText.InvalidateMeasure();
                     outlinedText.InvalidateVisual();
+                }
+
+                if (FindActiveTextEditor(textAnn) is TextBox textEditor)
+                {
+                    ApplyTextFontStyle(textEditor, textAnn.IsBold, textAnn.IsItalic);
+                }
+            }
+            else if (_selectionController.SelectedShape?.Tag is SpeechBalloonAnnotation balloonAnnotation)
+            {
+                balloonAnnotation.IsBold = isBold;
+
+                if (_selectionController.SelectedShape is SpeechBalloonControl balloonControl)
+                {
+                    balloonControl.InvalidateVisual();
+                }
+
+                if (FindActiveTextEditor(balloonAnnotation) is TextBox textEditor)
+                {
+                    ApplyTextFontStyle(textEditor, balloonAnnotation.IsBold, balloonAnnotation.IsItalic);
+                }
+            }
+            else if (_selectionController.SelectedShape?.Tag is NumberAnnotation numberAnnotation)
+            {
+                numberAnnotation.IsBold = isBold;
+
+                if (_selectionController.SelectedShape is StepControl stepControl)
+                {
+                    AnnotationVisualFactory.UpdateVisualControl(stepControl, numberAnnotation);
+                    _selectionController.UpdateSelectionHandles();
                 }
             }
         }
@@ -617,18 +891,24 @@ namespace ShareX.ImageEditor.Presentation.Views
                     outlinedText.InvalidateMeasure();
                     outlinedText.InvalidateVisual();
                 }
-            }
-        }
 
-        private void ApplySelectedTextUnderline(bool isUnderline)
-        {
-            if (_selectionController.SelectedShape?.Tag is TextAnnotation textAnn)
-            {
-                textAnn.IsUnderline = isUnderline;
-                if (_selectionController.SelectedShape is OutlinedTextControl outlinedText)
+                if (FindActiveTextEditor(textAnn) is TextBox textEditor)
                 {
-                    outlinedText.InvalidateMeasure();
-                    outlinedText.InvalidateVisual();
+                    ApplyTextFontStyle(textEditor, textAnn.IsBold, textAnn.IsItalic);
+                }
+            }
+            else if (_selectionController.SelectedShape?.Tag is SpeechBalloonAnnotation balloonAnnotation)
+            {
+                balloonAnnotation.IsItalic = isItalic;
+
+                if (_selectionController.SelectedShape is SpeechBalloonControl balloonControl)
+                {
+                    balloonControl.InvalidateVisual();
+                }
+
+                if (FindActiveTextEditor(balloonAnnotation) is TextBox textEditor)
+                {
+                    ApplyTextFontStyle(textEditor, balloonAnnotation.IsBold, balloonAnnotation.IsItalic);
                 }
             }
         }
@@ -636,6 +916,24 @@ namespace ShareX.ImageEditor.Presentation.Views
         private static Color ApplyHighlightAlpha(Color baseColor)
         {
             return Color.FromArgb(0x55, baseColor.R, baseColor.G, baseColor.B);
+        }
+
+        private TextBox? FindActiveTextEditor(Annotation annotation)
+        {
+            var overlay = this.FindControl<Canvas>("OverlayCanvas");
+            return overlay?.Children.OfType<TextBox>().FirstOrDefault(textBox => ReferenceEquals(textBox.Tag, annotation));
+        }
+
+        private static void ApplyTextHorizontalAlignment(TextBox textBox, TextHorizontalAlignment alignment)
+        {
+            textBox.TextAlignment = TextHorizontalAlignmentHelper.ToAvaloniaTextAlignment(alignment);
+            textBox.HorizontalContentAlignment = TextHorizontalAlignmentHelper.ToHorizontalContentAlignment(alignment);
+        }
+
+        private static void ApplyTextFontStyle(TextBox textBox, bool isBold, bool isItalic)
+        {
+            textBox.FontWeight = isBold ? FontWeight.Bold : FontWeight.Normal;
+            textBox.FontStyle = isItalic ? FontStyle.Italic : FontStyle.Normal;
         }
 
     }

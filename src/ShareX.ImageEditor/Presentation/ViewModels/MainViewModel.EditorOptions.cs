@@ -190,6 +190,26 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
         }
 
+        public bool EditorShowNotifications
+        {
+            get => Options.ShowNotifications;
+            set
+            {
+                if (Options.ShowNotifications == value)
+                {
+                    return;
+                }
+
+                Options.ShowNotifications = value;
+                OnPropertyChanged(nameof(EditorShowNotifications));
+
+                if (!value)
+                {
+                    HideNotification();
+                }
+            }
+        }
+
         [RelayCommand]
         private void OpenOptionsPanel()
         {

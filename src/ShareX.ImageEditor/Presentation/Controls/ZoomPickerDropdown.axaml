@@ -10,7 +10,6 @@
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"
-                Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
                 MinWidth="80"
@@ -66,11 +65,10 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="x:Double">
-                                <Button Height="32"
+                                <Button Classes="transparent-button"
+                                        Height="32"
                                         MinWidth="60"
                                         Margin="0"
-                                        Background="Transparent"
-                                        BorderThickness="0"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Center"
                                         Click="OnZoomSelected"
@@ -87,11 +85,10 @@
                     <!-- Separator -->
                     <Border Height="1" Background="{DynamicResource ShareX.Brush.Separator}" Margin="4,4"/>
                     <!-- Zoom to Fit -->
-                    <Button Height="32"
+                    <Button Classes="transparent-button"
+                            Height="32"
                             MinWidth="60"
                             Margin="0,0,0,6"
-                            Background="Transparent"
-                            BorderThickness="0"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
                             Click="OnZoomToFitSelected">

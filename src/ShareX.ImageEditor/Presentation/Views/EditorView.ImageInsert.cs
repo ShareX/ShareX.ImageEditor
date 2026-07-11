@@ -27,12 +27,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using SkiaSharp;
 using System.ComponentModel;
-using System.IO;
 
 namespace ShareX.ImageEditor.Presentation.Views
 {
@@ -40,27 +40,75 @@ namespace ShareX.ImageEditor.Presentation.Views
     {
         private async void OnImageInsertionRequested(object? sender, EventArgs e)
         {
-            if (DataContext is not MainViewModel vm)
+            if (DataContext is not MainViewModel)
             {
                 return;
             }
 
+            var pickedImage = await PickImageBitmapAsync("Select image");
+            if (!pickedImage.HasValue)
+            {
+                return;
+            }
+
+            await InsertExternalImageAsync(pickedImage.Value.Bitmap, pickedImage.Value.SourceFilePath);
+        }
+
+        internal async Task<bool> ReplaceImageAnnotationFromFilePickerAsync(ImageAnnotation annotation, Image imageControl)
+        {
+            try
+            {
+                var pickedImage = await PickImageBitmapAsync("Select image");
+                if (!pickedImage.HasValue)
+                {
+                    return false;
+                }
+
+                SKRect existingBounds = annotation.GetBounds();
+                float centerX = existingBounds.MidX;
+                float centerY = existingBounds.MidY;
+                float newWidth = pickedImage.Value.Bitmap.Width;
+                float newHeight = pickedImage.Value.Bitmap.Height;
+
+                annotation.StartPoint = new SKPoint(centerX - newWidth / 2f, centerY - newHeight / 2f);
+                annotation.EndPoint = new SKPoint(centerX + newWidth / 2f, centerY + newHeight / 2f);
+                annotation.ImagePath = pickedImage.Value.SourceFilePath ?? string.Empty;
+                annotation.SetImage(pickedImage.Value.Bitmap);
+                AnnotationVisualFactory.UpdateVisualControl(imageControl, annotation);
+
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.HasAnnotations = true;
+                    vm.IsDirty = true;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                EditorServices.ReportWarning(nameof(EditorView), "Failed to replace image annotation.", ex);
+                return false;
+            }
+        }
+
+        private async Task<(SKBitmap Bitmap, string? SourceFilePath)?> PickImageBitmapAsync(string dialogTitle)
+        {
             TopLevel? topLevel = TopLevel.GetTopLevel(this);
             if (topLevel?.StorageProvider == null)
             {
-                return;
+                return null;
             }
 
             IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Select image",
+                Title = dialogTitle,
                 AllowMultiple = false,
                 FileTypeFilter = [FilePickerFileTypes.ImageAll]
             });
 
             if (files.Count == 0)
             {
-                return;
+                return null;
             }
 
             using var stream = await files[0].OpenReadAsync();
@@ -69,12 +117,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             memStream.Position = 0;
 
             SKBitmap? skBitmap = SKBitmap.Decode(memStream);
-            if (skBitmap == null)
-            {
-                return;
-            }
-
-            await InsertExternalImageAsync(skBitmap, files[0].Path.LocalPath);
+            return skBitmap == null ? null : (skBitmap, files[0].Path.LocalPath);
         }
 
         private async Task InsertExternalImageAsync(SKBitmap skBitmap, string? sourceFilePath = null)
@@ -233,6 +276,7 @@ namespace ShareX.ImageEditor.Presentation.Views
             vm.HasAnnotations = true;
             vm.ActiveTool = EditorTool.Select;
             _selectionController.SetSelectedShape(control);
+            vm.ShowImageInsertedNotification();
         }
 
         private Point? GetVisibleCanvasCenter(Canvas canvas)

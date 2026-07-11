@@ -26,10 +26,9 @@
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Hosting;
 using ShareX.ImageEditor.Presentation.Theming;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -37,15 +36,23 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
     {
         private static EditorTool? _sessionLastUsedAnnotationTool;
         private const string DefaultAnnotationFontFamily = "Segoe UI";
+        private const string SpotlightBlurOptionPropertyName = "SpotlightBlur";
         private static readonly IReadOnlyList<string> _availableFontFamilies = BuildAvailableFontFamilies();
+        private static readonly IReadOnlyList<TextHorizontalAlignment> _availableTextHorizontalAlignments = BuildAvailableTextHorizontalAlignments();
+        private static readonly IReadOnlyList<BorderStyle> _availableBorderStyles = BuildAvailableBorderStyles();
         private static readonly IReadOnlyList<ArrowStyle> _availableArrowStyles = BuildAvailableArrowStyles();
         private static readonly IReadOnlyList<CursorType> _availableCursorTypes = BuildAvailableCursorTypes();
         private static readonly IReadOnlyList<int> _availableStepStartNumbers = Enumerable.Range(1, 10).ToArray();
+        private static readonly IReadOnlyList<StepType> _availableStepTypes = BuildAvailableStepTypes();
+        private static readonly PropertyInfo? _spotlightBlurOptionProperty = typeof(ImageEditorOptions).GetProperty(SpotlightBlurOptionPropertyName);
 
         public IReadOnlyList<string> AvailableFontFamilies => _availableFontFamilies;
+        public IReadOnlyList<TextHorizontalAlignment> AvailableTextHorizontalAlignments => _availableTextHorizontalAlignments;
+        public IReadOnlyList<BorderStyle> AvailableBorderStyles => _availableBorderStyles;
         public IReadOnlyList<ArrowStyle> AvailableArrowStyles => _availableArrowStyles;
         public IReadOnlyList<CursorType> AvailableCursorTypes => _availableCursorTypes;
         public IReadOnlyList<int> AvailableStepStartNumbers => _availableStepStartNumbers;
+        public IReadOnlyList<StepType> AvailableStepTypes => _availableStepTypes;
 
         [ObservableProperty]
         private string _selectedColor = "#EF4444";
@@ -294,6 +301,12 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         [ObservableProperty]
         private int _stepStartNumber = 1;
 
+        [ObservableProperty]
+        private StepType _selectedStepType = StepType.Numeric;
+
+        [ObservableProperty]
+        private TextHorizontalAlignment _selectedTextHorizontalAlignment = TextHorizontalAlignment.Center;
+
         partial void OnStepStartNumberChanged(int value)
         {
             int clamped = Math.Clamp(value, 1, 10);
@@ -304,6 +317,46 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             }
 
             NumberCounter = clamped;
+        }
+
+        partial void OnSelectedStepTypeChanged(StepType value)
+        {
+            StepType normalizedStepType = NormalizeStepType(value);
+            if (normalizedStepType != value)
+            {
+                SelectedStepType = normalizedStepType;
+                return;
+            }
+
+            Options.StepType = normalizedStepType;
+        }
+
+        partial void OnSelectedTextHorizontalAlignmentChanged(TextHorizontalAlignment value)
+        {
+            TextHorizontalAlignment normalizedAlignment = NormalizeTextHorizontalAlignment(value);
+            if (normalizedAlignment != value)
+            {
+                SelectedTextHorizontalAlignment = normalizedAlignment;
+                return;
+            }
+
+            bool isText = ActiveTool == EditorTool.Text;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                isText = SelectedAnnotation is TextAnnotation;
+                isSpeechBalloon = SelectedAnnotation is SpeechBalloonAnnotation;
+            }
+
+            if (isText)
+            {
+                Options.TextHorizontalAlignment = normalizedAlignment;
+            }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonTextHorizontalAlignment = normalizedAlignment;
+            }
         }
 
         partial void OnFontSizeChanged(float value)
@@ -333,6 +386,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         [ObservableProperty]
         private string _selectedFontFamily = DefaultAnnotationFontFamily;
+
+        [ObservableProperty]
+        private BorderStyle _selectedBorderStyle = BorderStyle.Solid;
 
         [ObservableProperty]
         private ArrowStyle _selectedArrowStyle = ArrowStyle.Classic;
@@ -365,6 +421,28 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             else if (isSpeechBalloon)
             {
                 Options.SpeechBalloonFontFamily = normalizedFontFamily;
+            }
+        }
+
+        partial void OnSelectedBorderStyleChanged(BorderStyle value)
+        {
+            BorderStyle normalizedBorderStyle = NormalizeBorderStyle(value);
+            if (normalizedBorderStyle != value)
+            {
+                SelectedBorderStyle = normalizedBorderStyle;
+                return;
+            }
+
+            bool supportsBorderStyle = ActiveTool is EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Freehand;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                supportsBorderStyle = SelectedAnnotation.ToolType is EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Freehand;
+            }
+
+            if (supportsBorderStyle)
+            {
+                Options.BorderStyle = normalizedBorderStyle;
             }
         }
 
@@ -444,6 +522,8 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         public float EffectStrengthMaximum => GetMaxEffectStrength(GetEffectiveStrengthTool());
 
+        public float SpotlightBlurMaximum => MaxBlurStrength;
+
         partial void OnEffectStrengthChanged(float value)
         {
             var clamped = Math.Clamp(value, MinEffectStrength, EffectStrengthMaximum);
@@ -478,6 +558,94 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         [ObservableProperty]
+        private float _spotlightBlur;
+
+        partial void OnSpotlightBlurChanged(float value)
+        {
+            float clamped = Math.Clamp(value, 0, SpotlightBlurMaximum);
+            if (Math.Abs(clamped - value) > float.Epsilon)
+            {
+                SpotlightBlur = clamped;
+                return;
+            }
+
+            if (_isLoadingOptions)
+            {
+                return;
+            }
+
+            bool isSpotlight = ActiveTool == EditorTool.Spotlight;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation is SpotlightAnnotation)
+            {
+                isSpotlight = true;
+            }
+
+            if (isSpotlight)
+            {
+                SetSpotlightBlurOption(value);
+            }
+        }
+
+        private float GetSpotlightBlurOption()
+        {
+            object? value = _spotlightBlurOptionProperty?.GetValue(Options);
+
+            return value switch
+            {
+                float floatValue => floatValue,
+                double doubleValue => (float)doubleValue,
+                int intValue => intValue,
+                _ => 0
+            };
+        }
+
+        private void SetSpotlightBlurOption(float value)
+        {
+            if (_spotlightBlurOptionProperty == null || !_spotlightBlurOptionProperty.CanWrite)
+            {
+                return;
+            }
+
+            if (_spotlightBlurOptionProperty.PropertyType == typeof(float))
+            {
+                _spotlightBlurOptionProperty.SetValue(Options, value);
+            }
+            else if (_spotlightBlurOptionProperty.PropertyType == typeof(double))
+            {
+                _spotlightBlurOptionProperty.SetValue(Options, (double)value);
+            }
+            else if (_spotlightBlurOptionProperty.PropertyType == typeof(int))
+            {
+                _spotlightBlurOptionProperty.SetValue(Options, (int)MathF.Round(value));
+            }
+        }
+
+        [ObservableProperty]
+        private bool _effectEllipse;
+
+        partial void OnEffectEllipseChanged(bool value)
+        {
+            bool isMagnify = ActiveTool == EditorTool.Magnify;
+            bool isSpotlight = ActiveTool == EditorTool.Spotlight;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                isMagnify = SelectedAnnotation is MagnifyAnnotation;
+                isSpotlight = SelectedAnnotation is SpotlightAnnotation;
+            }
+
+            if (isMagnify)
+            {
+                Options.MagnifierEllipse = value;
+            }
+            else if (isSpotlight)
+            {
+                Options.SpotlightEllipse = value;
+            }
+        }
+
+        [ObservableProperty]
         private bool _shadowEnabled = true;
 
         partial void OnShadowEnabledChanged(bool value)
@@ -486,11 +654,135 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         }
 
         [ObservableProperty]
+        private string _shadowColor = Annotation.DefaultShadowColorHex;
+
+        public IBrush ShadowColorBrush
+        {
+            get => new SolidColorBrush(Color.Parse(ShadowColor));
+            set
+            {
+                if (value is SolidColorBrush solidBrush)
+                {
+                    ShadowColor = $"#{solidBrush.Color.A:X2}{solidBrush.Color.R:X2}{solidBrush.Color.G:X2}{solidBrush.Color.B:X2}";
+                }
+            }
+        }
+
+        public Color ShadowColorValue
+        {
+            get => Color.Parse(ShadowColor);
+            set => ShadowColor = $"#{value.A:X2}{value.R:X2}{value.G:X2}{value.B:X2}";
+        }
+
+        partial void OnShadowColorChanged(string value)
+        {
+            OnPropertyChanged(nameof(ShadowColorBrush));
+            OnPropertyChanged(nameof(ShadowColorValue));
+
+            if (Color.TryParse(value, out Color color))
+            {
+                Options.ShadowColor = color;
+            }
+        }
+
+        [ObservableProperty]
+        private double _shadowBlurRadius = Annotation.DefaultShadowBlurRadius;
+
+        partial void OnShadowBlurRadiusChanged(double value)
+        {
+            double clamped = Math.Max(0, value);
+            if (Math.Abs(clamped - value) > double.Epsilon)
+            {
+                ShadowBlurRadius = clamped;
+                return;
+            }
+
+            Options.ShadowBlurRadius = clamped;
+        }
+
+        [ObservableProperty]
+        private double _shadowOpacity = Annotation.DefaultShadowOpacity;
+
+        partial void OnShadowOpacityChanged(double value)
+        {
+            double clamped = Math.Clamp(value, 0, 1);
+            if (Math.Abs(clamped - value) > double.Epsilon)
+            {
+                ShadowOpacity = clamped;
+                return;
+            }
+
+            Options.ShadowOpacity = clamped;
+        }
+
+        [ObservableProperty]
+        private double _shadowOffsetX = Annotation.DefaultShadowOffsetX;
+
+        partial void OnShadowOffsetXChanged(double value)
+        {
+            Options.ShadowOffsetX = value;
+        }
+
+        [ObservableProperty]
+        private double _shadowOffsetY = Annotation.DefaultShadowOffsetY;
+
+        partial void OnShadowOffsetYChanged(double value)
+        {
+            Options.ShadowOffsetY = value;
+        }
+
+        [ObservableProperty]
+        private bool _speechBalloonTail = true;
+
+        partial void OnSpeechBalloonTailChanged(bool value)
+        {
+            bool appliesToSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
+            bool appliesToStep = ActiveTool == EditorTool.Step;
+
+            if (ActiveTool == EditorTool.Select)
+            {
+                appliesToSpeechBalloon = SelectedAnnotation is SpeechBalloonAnnotation;
+                appliesToStep = SelectedAnnotation is NumberAnnotation;
+            }
+
+            if (appliesToSpeechBalloon)
+            {
+                Options.SpeechBalloonTail = value;
+            }
+            else if (appliesToStep)
+            {
+                Options.StepTail = value;
+            }
+        }
+
+        [ObservableProperty]
         private bool _textBold = true;
 
         partial void OnTextBoldChanged(bool value)
         {
-            Options.TextBold = value;
+            bool isText = ActiveTool == EditorTool.Text;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
+            bool isStep = ActiveTool == EditorTool.Step;
+
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                isText = SelectedAnnotation is TextAnnotation;
+                isSpeechBalloon = SelectedAnnotation is SpeechBalloonAnnotation;
+                isStep = SelectedAnnotation is NumberAnnotation;
+            }
+
+            if (isText)
+            {
+                Options.TextBold = value;
+            }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonTextBold = value;
+            }
+            else if (isStep)
+            {
+                Options.StepTextBold = value;
+            }
         }
 
         [ObservableProperty]
@@ -498,15 +790,23 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         partial void OnTextItalicChanged(bool value)
         {
-            Options.TextItalic = value;
-        }
+            bool isText = ActiveTool == EditorTool.Text;
+            bool isSpeechBalloon = ActiveTool == EditorTool.SpeechBalloon;
 
-        [ObservableProperty]
-        private bool _textUnderline;
+            if (ActiveTool == EditorTool.Select && SelectedAnnotation != null)
+            {
+                isText = SelectedAnnotation is TextAnnotation;
+                isSpeechBalloon = SelectedAnnotation is SpeechBalloonAnnotation;
+            }
 
-        partial void OnTextUnderlineChanged(bool value)
-        {
-            Options.TextUnderline = value;
+            if (isText)
+            {
+                Options.TextItalic = value;
+            }
+            else if (isSpeechBalloon)
+            {
+                Options.SpeechBalloonTextItalic = value;
+            }
         }
 
         // Visibility computed properties based on ActiveTool
@@ -569,12 +869,36 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
 
         public bool ShowStepStartNumber => ActiveTool == EditorTool.Step;
 
+        public bool ShowStepType => ActiveTool == EditorTool.Step;
+
+        public bool ShowTextHorizontalAlignment => ActiveTool switch
+        {
+            EditorTool.Text or EditorTool.SpeechBalloon => true,
+            EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
+            {
+                EditorTool.Text or EditorTool.SpeechBalloon => true,
+                _ => false
+            },
+            _ => false
+        };
+
         public bool ShowFontFamily => ActiveTool switch
         {
             EditorTool.Text or EditorTool.SpeechBalloon => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
                 EditorTool.Text or EditorTool.SpeechBalloon => true,
+                _ => false
+            },
+            _ => false
+        };
+
+        public bool ShowBorderStyle => ActiveTool switch
+        {
+            EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Freehand => true,
+            EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
+            {
+                EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Freehand => true,
                 _ => false
             },
             _ => false
@@ -616,6 +940,20 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
+        public bool ShowSpotlightBlur => ActiveTool switch
+        {
+            EditorTool.Spotlight => true,
+            EditorTool.Select => SelectedAnnotation is SpotlightAnnotation,
+            _ => false
+        };
+
+        public bool ShowEffectEllipse => ActiveTool switch
+        {
+            EditorTool.Magnify or EditorTool.Spotlight => true,
+            EditorTool.Select => SelectedAnnotation is MagnifyAnnotation or SpotlightAnnotation,
+            _ => false
+        };
+
         public bool ShowShadow => ActiveTool switch
         {
             EditorTool.Rectangle or EditorTool.Ellipse or EditorTool.Line or EditorTool.Arrow
@@ -629,12 +967,30 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             _ => false
         };
 
+        public bool ShowSpeechBalloonTail => ActiveTool switch
+        {
+            EditorTool.SpeechBalloon or EditorTool.Step => true,
+            EditorTool.Select => SelectedAnnotation is SpeechBalloonAnnotation or NumberAnnotation,
+            _ => false
+        };
+
         public bool ShowTextStyle => ActiveTool switch
         {
-            EditorTool.Text => true,
+            EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
             EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
             {
-                EditorTool.Text => true,
+                EditorTool.Text or EditorTool.SpeechBalloon or EditorTool.Step => true,
+                _ => false
+            },
+            _ => false
+        };
+
+        public bool ShowTextItalic => ActiveTool switch
+        {
+            EditorTool.Text or EditorTool.SpeechBalloon => true,
+            EditorTool.Select => _selectedAnnotation != null && _selectedAnnotation.ToolType switch
+            {
+                EditorTool.Text or EditorTool.SpeechBalloon => true,
                 _ => false
             },
             _ => false
@@ -716,20 +1072,27 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             OnPropertyChanged(nameof(ShowThickness));
             OnPropertyChanged(nameof(ShowFontSize));
             OnPropertyChanged(nameof(ShowStepStartNumber));
+            OnPropertyChanged(nameof(ShowStepType));
+            OnPropertyChanged(nameof(ShowTextHorizontalAlignment));
             OnPropertyChanged(nameof(ShowFontFamily));
+            OnPropertyChanged(nameof(ShowBorderStyle));
             OnPropertyChanged(nameof(ShowArrowStyle));
             OnPropertyChanged(nameof(ShowCursorType));
             OnPropertyChanged(nameof(ShowCornerRadius));
             OnPropertyChanged(nameof(ShowStrength));
+            OnPropertyChanged(nameof(ShowSpotlightBlur));
+            OnPropertyChanged(nameof(ShowEffectEllipse));
             OnPropertyChanged(nameof(ShowTextStyle));
+            OnPropertyChanged(nameof(ShowTextItalic));
             OnPropertyChanged(nameof(ShowShadow));
+            OnPropertyChanged(nameof(ShowSpeechBalloonTail));
             OnPropertyChanged(nameof(ActiveToolIcon));
             OnPropertyChanged(nameof(ActiveToolName));
             OnPropertyChanged(nameof(EffectStrengthMaximum));
             OnPropertyChanged(nameof(ShowToolOptionsSeparator));
         }
 
-        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStepStartNumber || ShowFontFamily || ShowArrowStyle || ShowCursorType || ShowCornerRadius || ShowStrength || ShowTextStyle || ShowShadow;
+        public bool ShowToolOptionsSeparator => ShowBorderColor || ShowFillColor || ShowTextColor || ShowThickness || ShowFontSize || ShowStepStartNumber || ShowStepType || ShowTextHorizontalAlignment || ShowFontFamily || ShowBorderStyle || ShowArrowStyle || ShowCursorType || ShowCornerRadius || ShowStrength || ShowSpotlightBlur || ShowEffectEllipse || ShowTextStyle || ShowShadow || ShowSpeechBalloonTail;
 
         [ObservableProperty]
         private EditorTool _activeTool = EditorTool.Rectangle;
@@ -737,6 +1100,7 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
         partial void OnActiveToolChanged(EditorTool value)
         {
             RememberAnnotationToolIfEligible(value);
+            UpdateToolbarActiveStates();
 
             _isLoadingOptions = true;
             try
@@ -810,17 +1174,32 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             // Use a flag to suppress updates back to Options?
             // Actually, if we set the property to the value from Options, updating Options back to the same value is harmless.
 
+            ShadowColorValue = Options.ShadowColor;
+            ShadowBlurRadius = Options.ShadowBlurRadius;
+            ShadowOpacity = Options.ShadowOpacity;
+            ShadowOffsetX = Options.ShadowOffsetX;
+            ShadowOffsetY = Options.ShadowOffsetY;
+
             switch (tool)
             {
                 case EditorTool.Rectangle:
                 case EditorTool.Ellipse:
                 case EditorTool.Line:
+                    SelectedColorValue = Options.BorderColor;
+                    FillColorValue = Options.FillColor;
+                    StrokeWidth = Options.Thickness;
+                    CornerRadius = Options.CornerRadius;
+                    ShadowEnabled = Options.Shadow;
+                    SelectedBorderStyle = NormalizeBorderStyle(Options.BorderStyle);
+                    FontSize = Options.TextFontSize;
+                    break;
                 case EditorTool.Freehand:
                     SelectedColorValue = Options.BorderColor;
                     FillColorValue = Options.FillColor;
                     StrokeWidth = Options.Thickness;
                     CornerRadius = Options.CornerRadius;
                     ShadowEnabled = Options.Shadow;
+                    SelectedBorderStyle = NormalizeBorderStyle(Options.BorderStyle);
                     FontSize = Options.TextFontSize;
                     break;
                 case EditorTool.Arrow:
@@ -842,9 +1221,9 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     ShadowEnabled = Options.Shadow;
                     FontSize = Options.TextFontSize;
                     SelectedFontFamily = NormalizeFontFamily(Options.TextFontFamily);
+                    SelectedTextHorizontalAlignment = NormalizeTextHorizontalAlignment(Options.TextHorizontalAlignment);
                     TextBold = Options.TextBold;
                     TextItalic = Options.TextItalic;
-                    TextUnderline = Options.TextUnderline;
                     break;
                 case EditorTool.SpeechBalloon:
                     SelectedColorValue = Options.SpeechBalloonBorderColor;
@@ -853,11 +1232,12 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     StrokeWidth = Options.SpeechBalloonThickness;
                     CornerRadius = Options.CornerRadius;
                     ShadowEnabled = Options.Shadow;
+                    SpeechBalloonTail = Options.SpeechBalloonTail;
                     FontSize = Options.SpeechBalloonFontSize;
                     SelectedFontFamily = NormalizeFontFamily(Options.SpeechBalloonFontFamily);
-                    TextBold = Options.TextBold;
-                    TextItalic = Options.TextItalic;
-                    TextUnderline = Options.TextUnderline;
+                    SelectedTextHorizontalAlignment = NormalizeTextHorizontalAlignment(Options.SpeechBalloonTextHorizontalAlignment);
+                    TextBold = Options.SpeechBalloonTextBold;
+                    TextItalic = Options.SpeechBalloonTextItalic;
                     break;
                 case EditorTool.Step:
                     SelectedColorValue = Options.StepBorderColor;
@@ -865,10 +1245,11 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     TextColorValue = Options.StepTextColor;
                     StrokeWidth = Options.StepThickness;
                     ShadowEnabled = Options.Shadow;
+                    SpeechBalloonTail = Options.StepTail;
                     FontSize = Options.StepFontSize;
-                    TextBold = Options.TextBold;
+                    SelectedStepType = NormalizeStepType(Options.StepType);
+                    TextBold = Options.StepTextBold;
                     TextItalic = Options.TextItalic;
-                    TextUnderline = Options.TextUnderline;
                     break;
                 case EditorTool.Highlight:
                     FillColorValue = Options.HighlightFillColor;
@@ -881,9 +1262,12 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                     break;
                 case EditorTool.Magnify:
                     EffectStrength = Options.MagnifierStrength;
+                    EffectEllipse = Options.MagnifierEllipse;
                     break;
                 case EditorTool.Spotlight:
                     EffectStrength = Options.SpotlightStrength;
+                    SpotlightBlur = GetSpotlightBlurOption();
+                    EffectEllipse = Options.SpotlightEllipse;
                     break;
             }
         }
@@ -923,6 +1307,28 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             };
         }
 
+        private static IReadOnlyList<BorderStyle> BuildAvailableBorderStyles()
+        {
+            return new[]
+            {
+                BorderStyle.Solid,
+                BorderStyle.Dash,
+                BorderStyle.Dot,
+                BorderStyle.DashDot,
+                BorderStyle.DashDotDot
+            };
+        }
+
+        private static IReadOnlyList<TextHorizontalAlignment> BuildAvailableTextHorizontalAlignments()
+        {
+            return new[]
+            {
+                TextHorizontalAlignment.Left,
+                TextHorizontalAlignment.Center,
+                TextHorizontalAlignment.Right
+            };
+        }
+
         private static IReadOnlyList<CursorType> BuildAvailableCursorTypes()
         {
             return new[]
@@ -958,6 +1364,18 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             };
         }
 
+        private static IReadOnlyList<StepType> BuildAvailableStepTypes()
+        {
+            return new[]
+            {
+                StepType.Numeric,
+                StepType.UppercaseLetter,
+                StepType.LowercaseLetter,
+                StepType.UppercaseRoman,
+                StepType.LowercaseRoman
+            };
+        }
+
         private static string NormalizeFontFamily(string? fontFamily)
         {
             return string.IsNullOrWhiteSpace(fontFamily) ? DefaultAnnotationFontFamily : fontFamily;
@@ -968,9 +1386,24 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             return Enum.IsDefined(arrowStyle) ? arrowStyle : ArrowStyle.Classic;
         }
 
+        private static BorderStyle NormalizeBorderStyle(BorderStyle borderStyle)
+        {
+            return Enum.IsDefined(borderStyle) ? borderStyle : BorderStyle.Solid;
+        }
+
         private static CursorType NormalizeCursorType(CursorType cursorType)
         {
             return Enum.IsDefined(cursorType) ? cursorType : CursorType.Default;
+        }
+
+        private static TextHorizontalAlignment NormalizeTextHorizontalAlignment(TextHorizontalAlignment alignment)
+        {
+            return Enum.IsDefined(alignment) ? alignment : TextHorizontalAlignment.Center;
+        }
+
+        private static StepType NormalizeStepType(StepType stepType)
+        {
+            return Enum.IsDefined(stepType) ? stepType : StepType.Numeric;
         }
 
     }

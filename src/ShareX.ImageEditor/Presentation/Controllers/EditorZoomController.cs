@@ -232,7 +232,7 @@ public class EditorZoomController
         _isPanning = true;
         _panStart = e.GetPosition(scrollViewer);
         _panOrigin = scrollViewer.Offset;
-        _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
+        _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.CustomCursorKind.ClosedHand);
         UpdateCanvasCursorsForPanning(true);
         e.Handled = true;
     }
@@ -259,7 +259,7 @@ public class EditorZoomController
             _isPanning = true;
             _panStart = e.GetPosition(scrollViewer);
             _panOrigin = scrollViewer.Offset;
-            _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
+            _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.CustomCursorKind.ClosedHand);
             UpdateCanvasCursorsForPanning(true);
             e.Handled = true;
             return;
@@ -311,7 +311,7 @@ public class EditorZoomController
     {
         if (isPanning)
         {
-            _view.ApplyInteractionCursor(CursorAssetLoader.GetClosedHandCursor());
+            _view.ApplyInteractionCursor(CursorAssetLoader.CustomCursorKind.ClosedHand);
         }
         else
         {
@@ -329,8 +329,8 @@ public class EditorZoomController
         return vm.ActiveTool switch
         {
             EditorTool.Select => ArrowCursor,
-            EditorTool.Crop or EditorTool.CutOut => CursorAssetLoader.GetCrosshairCursor(),
-            _ => CursorAssetLoader.GetCrosshairCursor()
+            EditorTool.Crop or EditorTool.CutOut => _view.GetCrosshairCursor(),
+            _ => _view.GetCrosshairCursor()
         };
     }
 

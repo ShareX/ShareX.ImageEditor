@@ -65,8 +65,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="emoji:EmojiCatalogEntry">
                                     <Button Classes="effect-item emoji-tile"
-                                            Command="{ReflectionBinding DataContext.SelectEmojiCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
+                                            Click="OnEmojiSelected"
                                             ToolTip.Tip="{Binding Name}">
                                         <controls:EmojiPreviewImage UnicodeSequence="{Binding Unicode}"
                                                                     PreviewSize="48"
@@ -89,7 +88,7 @@
                                        HorizontalAlignment="Center"
                                        FontSize="11"
                                        Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"/>
-                            <Button Classes="editor-button"
+                            <Button
                                     Content="Cancel"
                                     Command="{Binding CancelCommand}"
                                     Padding="20,0"

@@ -127,8 +127,10 @@ namespace ShareX.ImageEditor.Presentation.Rendering
             {
                 var info = skBitmap.Info;
 
-                // If the source is already Bgra8888, we can copy directly
-                if (info.ColorType == SKColorType.Bgra8888)
+                // Raw byte copy is only valid when the source pixels are already in the
+                // premultiplied format expected by Avalonia's WriteableBitmap buffer.
+                if (info.ColorType == SKColorType.Bgra8888 &&
+                    (info.AlphaType == SKAlphaType.Premul || info.AlphaType == SKAlphaType.Opaque))
                 {
                     unsafe
                     {

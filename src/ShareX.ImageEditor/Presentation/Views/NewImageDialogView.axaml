@@ -75,8 +75,8 @@
                     BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="0,1,0,0"
                     Padding="10">
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
-                    <Button Classes="editor-button" Padding="20,0" Content="OK" Command="{Binding OkCommand}" HorizontalContentAlignment="Center"/>
-                    <Button Classes="editor-button" Padding="20,0" Content="Cancel" Command="{Binding CancelCommand}" HorizontalContentAlignment="Center"/>
+                    <Button Padding="20,0" Content="OK" Command="{Binding OkCommand}" HorizontalContentAlignment="Center"/>
+                    <Button Padding="20,0" Content="Cancel" Command="{Binding CancelCommand}" HorizontalContentAlignment="Center"/>
                 </StackPanel>
             </Border>
         </Grid>

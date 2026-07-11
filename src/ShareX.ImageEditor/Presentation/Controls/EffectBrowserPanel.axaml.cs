@@ -26,6 +26,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -260,6 +261,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         private const string FavoritesHeaderHint = "Right-click an effect item to add or remove it from Favorites.";
         private const int MaxRecentEffects = 10;
         private const string SearchWatermarkFormat = "Search image effects... ({0})";
+        private static readonly FontFamily IconFontFamily = new("avares://ShareX.ImageEditor/Assets#lucide");
 
         private static readonly Dictionary<string, string> EffectAliases = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -308,6 +310,14 @@ namespace ShareX.ImageEditor.Presentation.Controls
             LoadFavoriteEffects(options.FavoriteEffects, persistToOptions: true);
         }
 
+        public IReadOnlyList<MenuItem> CreateFavoriteMenuItems()
+        {
+            return _favoritesCategory.AllEffects
+                .OrderBy(effect => effect.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(CreateFavoriteMenuItem)
+                .ToList();
+        }
+
         private void OnSearchTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
         {
             ApplyCurrentFilter();
@@ -332,6 +342,30 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             var args = new EffectDialogRequestedEventArgs(effectId);
             Dispatcher.UIThread.Post(() => EffectDialogRequested?.Invoke(this, args));
+        }
+
+        private static MenuItem CreateFavoriteMenuItem(EffectItem effect)
+        {
+            var menuItem = new MenuItem
+            {
+                Header = effect.Name,
+                Command = effect.ExecuteCommand
+            };
+
+            if (!string.IsNullOrWhiteSpace(effect.Icon))
+            {
+                var iconBlock = new TextBlock
+                {
+                    Text = effect.Icon,
+                    FontFamily = IconFontFamily,
+                    FontSize = 16,
+                    FontWeight = FontWeight.Normal
+                };
+
+                menuItem.Icon = iconBlock;
+            }
+
+            return menuItem;
         }
 
         private void OnEffectItemPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -636,7 +670,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
         {
             foreach (EffectDefinition definition in ImageEffectCatalog.GetByCategory(targetCategory))
             {
-                // Skip effects that are registered as editor operations � they are added separately.
+                // Skip effects that are registered as editor operations — they are added separately.
                 if (EditorOperationCatalog.TryGetDefinition(definition.Id, out _))
                 {
                     continue;

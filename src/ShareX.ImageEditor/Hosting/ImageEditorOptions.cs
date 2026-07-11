@@ -33,6 +33,7 @@ namespace ShareX.ImageEditor.Hosting
     {
         public static readonly Color PrimaryColor = Color.FromArgb(255, 242, 60, 60);
         public static readonly Color SecondaryColor = Color.FromArgb(255, 250, 250, 250);
+        public static readonly Color DefaultShadowColor = Color.Parse(Annotation.DefaultShadowColorHex);
         public static readonly IReadOnlyList<string> DefaultFavoriteEffects = new[]
         {
             "resize_image",
@@ -50,6 +51,7 @@ namespace ShareX.ImageEditor.Hosting
         private static Color HexToColor(string hex) => Color.Parse(hex);
 
         // Editor
+        public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
         public string Theme { get; set; } = "Dark";
         public bool UseSystemTheme { get; set; } = true;
         public string AccentColorHex { get; set; } = "#3E83F2";
@@ -66,7 +68,8 @@ namespace ShareX.ImageEditor.Hosting
         public bool AutoCloseEditorOnTask { get; set; } = false;
         public bool AutoCopyImageToClipboard { get; set; } = false;
         public bool ShowInsertImageDialog { get; set; } = true;
-        public EditorTool LastUsedAnnotationTool { get; set; } = EditorTool.Rectangle;
+        public bool ShowNotifications { get; set; } = true;
+        public List<ImageEditorToolbarItemOptions> ToolbarItems { get; set; } = new List<ImageEditorToolbarItemOptions>();
 
         // Shared
         public string BorderColorHex { get; set; } = ColorToHex(PrimaryColor);
@@ -80,6 +83,14 @@ namespace ShareX.ImageEditor.Hosting
         public int Thickness { get; set; } = 4;
         public int CornerRadius { get; set; } = 4;
         public bool Shadow { get; set; } = false;
+        public string ShadowColorHex { get; set; } = Annotation.DefaultShadowColorHex;
+        [JsonIgnore]
+        public Color ShadowColor { get => HexToColor(ShadowColorHex); set => ShadowColorHex = ColorToHex(value); }
+        public double ShadowBlurRadius { get; set; } = Annotation.DefaultShadowBlurRadius;
+        public double ShadowOpacity { get; set; } = Annotation.DefaultShadowOpacity;
+        public double ShadowOffsetX { get; set; } = Annotation.DefaultShadowOffsetX;
+        public double ShadowOffsetY { get; set; } = Annotation.DefaultShadowOffsetY;
+        public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
         public ArrowStyle ArrowStyle { get; set; } = ArrowStyle.Classic;
         public CursorType CursorType { get; set; } = CursorType.Default;
 
@@ -95,9 +106,9 @@ namespace ShareX.ImageEditor.Hosting
         public int TextThickness { get; set; } = 8;
         public float TextFontSize { get; set; } = 48;
         public string TextFontFamily { get; set; } = "Segoe UI";
+        public TextHorizontalAlignment TextHorizontalAlignment { get; set; } = TextHorizontalAlignment.Center;
         public bool TextBold { get; set; } = true;
         public bool TextItalic { get; set; } = false;
-        public bool TextUnderline { get; set; } = false;
 
         // Speech Balloon
         public string SpeechBalloonBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
@@ -115,6 +126,10 @@ namespace ShareX.ImageEditor.Hosting
         public int SpeechBalloonThickness { get; set; } = 4;
         public float SpeechBalloonFontSize { get; set; } = 48;
         public string SpeechBalloonFontFamily { get; set; } = "Segoe UI";
+        public TextHorizontalAlignment SpeechBalloonTextHorizontalAlignment { get; set; } = TextHorizontalAlignment.Center;
+        public bool SpeechBalloonTextBold { get; set; } = true;
+        public bool SpeechBalloonTextItalic { get; set; } = false;
+        public bool SpeechBalloonTail { get; set; } = true;
 
         // Step
         public string StepBorderColorHex { get; set; } = ColorToHex(Colors.Transparent);
@@ -131,6 +146,9 @@ namespace ShareX.ImageEditor.Hosting
 
         public int StepThickness { get; set; } = 4;
         public float StepFontSize { get; set; } = 30;
+        public bool StepTextBold { get; set; } = true;
+        public StepType StepType { get; set; } = StepType.Numeric;
+        public bool StepTail { get; set; } = true;
 
         // Highlight
         public string HighlightFillColorHex { get; set; } = ColorToHex(Colors.Yellow);
@@ -141,7 +159,10 @@ namespace ShareX.ImageEditor.Hosting
         public float BlurStrength { get; set; } = 30;
         public float PixelateStrength { get; set; } = 20;
         public float MagnifierStrength { get; set; } = 2;
+        public bool MagnifierEllipse { get; set; }
         public float SpotlightStrength { get; set; } = 30;
+        public float SpotlightBlur { get; set; } = 0;
+        public bool SpotlightEllipse { get; set; }
 
         // Background
         public double BackgroundMargin { get; set; } = 80;
@@ -150,7 +171,12 @@ namespace ShareX.ImageEditor.Hosting
         public double BackgroundRoundedCorner { get; set; } = 20;
         public double BackgroundShadowRadius { get; set; } = 30;
         public string BackgroundType { get; set; } = "Transparent";
-        public string BackgroundGradientPresetName { get; set; } = "Sunset Glow";
+        public string BackgroundGradientColor1Hex { get; set; } = ColorToHex(Color.FromArgb(255, 221, 36, 118));
+        [JsonIgnore]
+        public Color BackgroundGradientColor1 { get => HexToColor(BackgroundGradientColor1Hex); set => BackgroundGradientColor1Hex = ColorToHex(value); }
+        public string BackgroundGradientColor2Hex { get; set; } = ColorToHex(Color.FromArgb(255, 255, 81, 47));
+        [JsonIgnore]
+        public Color BackgroundGradientColor2 { get => HexToColor(BackgroundGradientColor2Hex); set => BackgroundGradientColor2Hex = ColorToHex(value); }
         public string BackgroundColorHex { get; set; } = ColorToHex(Color.FromArgb(255, 34, 34, 34));
         [JsonIgnore]
         public Color BackgroundColor { get => HexToColor(BackgroundColorHex); set => BackgroundColorHex = ColorToHex(value); }

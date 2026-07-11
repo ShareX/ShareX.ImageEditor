@@ -30,7 +30,11 @@ namespace ShareX.ImageEditor.Presentation.Controls;
 
 public class SpotlightOverlayControl : SKCanvasControl
 {
-    public void UpdateSpotlights(IReadOnlyList<SpotlightAnnotation> spotlights, int width, int height)
+    private SKBitmap? _cachedBlurredSource;
+    private SKBitmap? _cachedSourceReference;
+    private float _cachedBlurAmount = -1;
+
+    public void UpdateSpotlights(IReadOnlyList<SpotlightAnnotation> spotlights, SKBitmap? sourceImage, int width, int height)
     {
         width = Math.Max(1, width);
         height = Math.Max(1, height);
@@ -40,6 +44,7 @@ public class SpotlightOverlayControl : SKCanvasControl
         if (spotlights == null || spotlights.Count == 0)
         {
             IsVisible = false;
+            ClearBlurCache();
             Draw(canvas => canvas.Clear(SKColors.Transparent));
             return;
         }
@@ -47,10 +52,19 @@ public class SpotlightOverlayControl : SKCanvasControl
         IsVisible = true;
 
         byte darkenOpacity = spotlights.Max(spotlight => spotlight.DarkenOpacity);
+        float blurAmount = spotlights.Max(spotlight => spotlight.BlurAmount);
+        SKBitmap? blurredSource = GetBlurredSource(sourceImage, blurAmount);
 
         Draw(canvas =>
         {
             canvas.Clear(SKColors.Transparent);
+
+            if (blurredSource != null)
+            {
+                var sourceRect = new SKRect(0, 0, blurredSource.Width, blurredSource.Height);
+                var destinationRect = new SKRect(0, 0, width, height);
+                canvas.DrawBitmap(blurredSource, sourceRect, destinationRect);
+            }
 
             using var darkPaint = new SKPaint
             {
@@ -70,8 +84,48 @@ public class SpotlightOverlayControl : SKCanvasControl
 
             foreach (SpotlightAnnotation spotlight in spotlights)
             {
-                canvas.DrawRect(spotlight.GetBounds(), clearPaint);
+                SKRect bounds = spotlight.GetBounds();
+                if (spotlight.IsEllipse)
+                {
+                    canvas.DrawOval(bounds, clearPaint);
+                }
+                else
+                {
+                    canvas.DrawRect(bounds, clearPaint);
+                }
             }
         });
+    }
+
+    private SKBitmap? GetBlurredSource(SKBitmap? sourceImage, float blurAmount)
+    {
+        if (sourceImage == null || blurAmount <= 0)
+        {
+            ClearBlurCache();
+            return null;
+        }
+
+        if (_cachedBlurredSource != null &&
+            ReferenceEquals(_cachedSourceReference, sourceImage) &&
+            Math.Abs(_cachedBlurAmount - blurAmount) < float.Epsilon)
+        {
+            return _cachedBlurredSource;
+        }
+
+        ClearBlurCache();
+
+        _cachedBlurredSource = BlurAnnotation.CreateBlurredSourceCache(sourceImage, blurAmount);
+        _cachedSourceReference = sourceImage;
+        _cachedBlurAmount = blurAmount;
+
+        return _cachedBlurredSource;
+    }
+
+    private void ClearBlurCache()
+    {
+        _cachedBlurredSource?.Dispose();
+        _cachedBlurredSource = null;
+        _cachedSourceReference = null;
+        _cachedBlurAmount = -1;
     }
 }

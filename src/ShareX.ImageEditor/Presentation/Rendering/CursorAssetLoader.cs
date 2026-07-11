@@ -2,43 +2,80 @@ using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using SkiaSharp;
 using System.Buffers.Binary;
 
 namespace ShareX.ImageEditor.Presentation.Rendering
 {
     internal static class CursorAssetLoader
     {
+        internal enum CustomCursorKind
+        {
+            ClosedHand,
+            Crosshair,
+            OpenHand
+        }
+
         private static readonly Uri ClosedHandCursorUri = new("avares://ShareX.ImageEditor/Assets/closedhand.cur");
         private static readonly Uri CrosshairCursorUri = new("avares://ShareX.ImageEditor/Assets/Crosshair.cur");
         private static readonly Uri OpenHandCursorUri = new("avares://ShareX.ImageEditor/Assets/openhand.cur");
         private static readonly Cursor FallbackClosedHandCursor = new(StandardCursorType.SizeAll);
         private static readonly Cursor FallbackCrosshairCursor = new(StandardCursorType.Cross);
         private static readonly Cursor FallbackOpenHandCursor = new(StandardCursorType.Hand);
-        private static readonly Lazy<LoadedCursor?> ClosedHandCursor = new(() => TryLoadCursor(ClosedHandCursorUri));
-        private static readonly Lazy<LoadedCursor?> CrosshairCursor = new(() => TryLoadCursor(CrosshairCursorUri));
-        private static readonly Lazy<LoadedCursor?> OpenHandCursor = new(() => TryLoadCursor(OpenHandCursorUri));
+        private static readonly object CursorCacheSyncRoot = new();
+        private static readonly Dictionary<(CustomCursorKind CursorKind, int ScaleKey), LoadedCursor?> CursorCache = new();
 
         public static Cursor GetCrosshairCursor()
+            => GetCrosshairCursor(1.0);
+
+        public static Cursor GetCrosshairCursor(double renderScaling)
         {
-            return CrosshairCursor.Value?.Cursor ?? FallbackCrosshairCursor;
+            return GetCursor(CustomCursorKind.Crosshair, renderScaling);
         }
 
         public static Cursor GetOpenHandCursor()
+            => GetOpenHandCursor(1.0);
+
+        public static Cursor GetOpenHandCursor(double renderScaling)
         {
-            return OpenHandCursor.Value?.Cursor ?? FallbackOpenHandCursor;
+            return GetCursor(CustomCursorKind.OpenHand, renderScaling);
         }
 
         public static Cursor GetClosedHandCursor()
+            => GetClosedHandCursor(1.0);
+
+        public static Cursor GetClosedHandCursor(double renderScaling)
         {
-            return ClosedHandCursor.Value?.Cursor ?? FallbackClosedHandCursor;
+            return GetCursor(CustomCursorKind.ClosedHand, renderScaling);
         }
 
-        private static LoadedCursor? TryLoadCursor(Uri cursorUri)
+        public static Cursor GetCursor(CustomCursorKind cursorKind, double renderScaling = 1.0)
+        {
+            return TryLoadCursor(cursorKind, renderScaling)?.Cursor ?? GetFallbackCursor(cursorKind);
+        }
+
+        private static LoadedCursor? TryLoadCursor(CustomCursorKind cursorKind, double renderScaling)
+        {
+            int scaleKey = NormalizeScaleKey(renderScaling);
+
+            lock (CursorCacheSyncRoot)
+            {
+                if (!CursorCache.TryGetValue((cursorKind, scaleKey), out LoadedCursor? loadedCursor))
+                {
+                    loadedCursor = TryLoadCursorCore(GetCursorUri(cursorKind), scaleKey / 100.0);
+                    CursorCache[(cursorKind, scaleKey)] = loadedCursor;
+                }
+
+                return loadedCursor;
+            }
+        }
+
+        private static LoadedCursor? TryLoadCursorCore(Uri cursorUri, double renderScaling)
         {
             try
             {
                 using Stream cursorStream = AssetLoader.Open(cursorUri);
-                return LoadCursor(cursorStream);
+                return LoadCursor(cursorStream, renderScaling);
             }
             catch
             {
@@ -46,7 +83,7 @@ namespace ShareX.ImageEditor.Presentation.Rendering
             }
         }
 
-        private static LoadedCursor LoadCursor(Stream cursorStream)
+        private static LoadedCursor LoadCursor(Stream cursorStream, double renderScaling)
         {
             using var memoryStream = new MemoryStream();
             cursorStream.CopyTo(memoryStream);
@@ -59,7 +96,76 @@ namespace ShareX.ImageEditor.Presentation.Rendering
                 ? LoadPngBitmap(data, entry.ImageOffset, entry.ImageLength)
                 : LoadBitmapInfoCursor(data, entry.ImageOffset);
 
+            if (TryGetScaledCursorSize(bitmap.PixelSize, renderScaling, out PixelSize scaledSize))
+            {
+                PixelPoint scaledHotSpot = ScaleHotSpot(hotSpot, bitmap.PixelSize, scaledSize);
+                Bitmap scaledBitmap = ScaleBitmap(bitmap, scaledSize);
+                bitmap.Dispose();
+                bitmap = scaledBitmap;
+                hotSpot = scaledHotSpot;
+            }
+
             return new LoadedCursor(bitmap, new Cursor(bitmap, hotSpot));
+        }
+
+        private static Cursor GetFallbackCursor(CustomCursorKind cursorKind)
+        {
+            return cursorKind switch
+            {
+                CustomCursorKind.ClosedHand => FallbackClosedHandCursor,
+                CustomCursorKind.Crosshair => FallbackCrosshairCursor,
+                _ => FallbackOpenHandCursor
+            };
+        }
+
+        private static Uri GetCursorUri(CustomCursorKind cursorKind)
+        {
+            return cursorKind switch
+            {
+                CustomCursorKind.ClosedHand => ClosedHandCursorUri,
+                CustomCursorKind.Crosshair => CrosshairCursorUri,
+                _ => OpenHandCursorUri
+            };
+        }
+
+        private static int NormalizeScaleKey(double renderScaling)
+        {
+            double safeRenderScaling = double.IsFinite(renderScaling) && renderScaling > 1.0
+                ? renderScaling
+                : 1.0;
+
+            return Math.Max(100, (int)Math.Round(safeRenderScaling * 100.0));
+        }
+
+        private static bool TryGetScaledCursorSize(PixelSize pixelSize, double renderScaling, out PixelSize scaledSize)
+        {
+            int targetWidth = Math.Max(1, (int)Math.Round(pixelSize.Width * renderScaling));
+            int targetHeight = Math.Max(1, (int)Math.Round(pixelSize.Height * renderScaling));
+            scaledSize = new PixelSize(targetWidth, targetHeight);
+
+            return targetWidth != pixelSize.Width || targetHeight != pixelSize.Height;
+        }
+
+        private static PixelPoint ScaleHotSpot(PixelPoint hotSpot, PixelSize sourceSize, PixelSize targetSize)
+        {
+            int scaledHotSpotX = Math.Clamp((int)Math.Round(hotSpot.X * (double)targetSize.Width / sourceSize.Width), 0, targetSize.Width - 1);
+            int scaledHotSpotY = Math.Clamp((int)Math.Round(hotSpot.Y * (double)targetSize.Height / sourceSize.Height), 0, targetSize.Height - 1);
+
+            return new PixelPoint(scaledHotSpotX, scaledHotSpotY);
+        }
+
+        private static Bitmap ScaleBitmap(Bitmap bitmap, PixelSize scaledSize)
+        {
+            using SKBitmap sourceBitmap = BitmapConversionHelpers.ToSKBitmap(bitmap);
+            SKImageInfo scaledInfo = new(scaledSize.Width, scaledSize.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+            using SKBitmap? scaledBitmap = sourceBitmap.Resize(scaledInfo, new SKSamplingOptions(SKCubicResampler.CatmullRom));
+
+            if (scaledBitmap == null)
+            {
+                throw new InvalidOperationException("Failed to resize cursor bitmap.");
+            }
+
+            return BitmapConversionHelpers.ToAvaloniBitmap(scaledBitmap);
         }
 
         private static CursorDirectoryEntry ReadCursorDirectoryEntry(byte[] data)

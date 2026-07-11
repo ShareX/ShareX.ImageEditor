@@ -9,7 +9,6 @@
     <Grid>
         <!-- Dropdown Button -->
         <Button x:Name="DropdownButton"
-                Classes="editor-button"
                 Click="OnDropdownButtonClick"
                 Height="40"
                 MinWidth="70"

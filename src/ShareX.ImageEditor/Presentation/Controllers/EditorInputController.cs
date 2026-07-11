@@ -36,6 +36,7 @@ using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.ImageEffects.Helpers;
 using ShareX.ImageEditor.Presentation.Controls;
+using ShareX.ImageEditor.Presentation.Helpers;
 using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Presentation.ViewModels;
 using ShareX.ImageEditor.Presentation.Views;
@@ -53,12 +54,15 @@ public class EditorInputController
     private const double MinShapeSize = 5;
 
     private Point _startPoint;
+    private Point _lastDrawPoint;
     private Control? _currentShape;
     private bool _isDrawing;
     private bool _isCreatingEffect;
+    private bool _isMovingShapeDuringCreation;
+    private bool _wasCtrlHeldDuringDraw;
 
     private static bool UsesCrosshairInteractionCapture(EditorTool tool)
-        => tool != EditorTool.Image && tool != EditorTool.Text;
+        => tool != EditorTool.Select && tool != EditorTool.Image && tool != EditorTool.Text;
 
     private static Point ClampPointToCanvasBounds(Canvas canvas, Point point)
         => new(
@@ -89,6 +93,7 @@ public class EditorInputController
         _zoomController = zoomController;
     }
 
+    public bool IsDrawingActive => _isDrawing;
     public bool IsCropInteractionActive => _isDraggingCropHandle;
 
     private MainViewModel? ViewModel => _view.DataContext as MainViewModel;
@@ -205,7 +210,7 @@ public class EditorInputController
                     _cropDragStartPoint = e.GetPosition(canvas);
                     _draggedCropHandleTag = cropTag;
                     _isDraggingCropHandle = true;
-                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
+                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.CustomCursorKind.ClosedHand);
                     e.Handled = true;
                     return;
                 }
@@ -231,7 +236,7 @@ public class EditorInputController
                     _cropDragStartPoint = clickPos;
                     _draggedCropHandleTag = "Crop_Move";
                     _isDraggingCropHandle = true;
-                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetClosedHandCursor());
+                    _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.CustomCursorKind.ClosedHand);
                     e.Handled = true;
                     return;
                 }
@@ -265,10 +270,13 @@ public class EditorInputController
         }
 
         _startPoint = point;
+        _lastDrawPoint = point;
+        _isMovingShapeDuringCreation = false;
+        _wasCtrlHeldDuringDraw = e.KeyModifiers.HasFlag(KeyModifiers.Control);
         _isDrawing = true;
         if (UsesCrosshairInteractionCapture(vm.ActiveTool))
         {
-            _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.GetCrosshairCursor());
+            _view.BeginInteractionCursorCapture(e.Pointer, CursorAssetLoader.CustomCursorKind.Crosshair);
         }
         else
         {
@@ -323,20 +331,24 @@ public class EditorInputController
         switch (vm.ActiveTool)
         {
             case EditorTool.Rectangle:
-                var rectAnnotation = new RectangleAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = vm.FillColor, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var rectAnnotation = new RectangleAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, BorderStyle = vm.SelectedBorderStyle, FillColor = vm.FillColor, CornerRadius = vm.CornerRadius, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                ApplyShadowOptions(rectAnnotation, vm);
                 _currentShape = rectAnnotation.CreateVisual();
                 break;
             case EditorTool.Ellipse:
-                var ellipseAnnotation = new EllipseAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = vm.FillColor, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var ellipseAnnotation = new EllipseAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, BorderStyle = vm.SelectedBorderStyle, FillColor = vm.FillColor, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                ApplyShadowOptions(ellipseAnnotation, vm);
                 _currentShape = ellipseAnnotation.CreateVisual();
                 break;
             case EditorTool.Line:
-                var lineAnnotation = new LineAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var lineAnnotation = new LineAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, BorderStyle = vm.SelectedBorderStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                ApplyShadowOptions(lineAnnotation, vm);
                 _currentShape = lineAnnotation.CreateVisual();
                 _currentShape.IsHitTestVisible = false;
                 break;
             case EditorTool.Arrow:
-                var arrowAnnotation = new ArrowAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Style = vm.SelectedArrowStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var arrowAnnotation = new ArrowAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, Style = vm.SelectedArrowStyle, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                ApplyShadowOptions(arrowAnnotation, vm);
                 _currentShape = arrowAnnotation.CreateVisual();
                 _currentShape.IsHitTestVisible = false;
                 break;
@@ -379,7 +391,9 @@ public class EditorInputController
                     StartPoint = ToSKPoint(_startPoint),
                     EndPoint = ToSKPoint(_startPoint),
                     CanvasSize = ToSKSize(canvas.Bounds.Size),
-                    DarkenOpacity = opacity
+                    DarkenOpacity = opacity,
+                    BlurAmount = vm.SpotlightBlur,
+                    IsEllipse = vm.EffectEllipse
                 };
                 var spotlightControl = spotlightAnnotation.CreateVisual();
                 spotlightControl.Width = canvas.Bounds.Width;
@@ -397,7 +411,7 @@ public class EditorInputController
                 _isCreatingEffect = true;
                 break;
             case EditorTool.Magnify:
-                _currentShape = new MagnifyAnnotation { Amount = vm.EffectStrength, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
+                _currentShape = new MagnifyAnnotation { Amount = vm.EffectStrength, IsEllipse = vm.EffectEllipse, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) }.CreateVisual();
                 _isCreatingEffect = true;
                 break;
             case EditorTool.Highlight:
@@ -411,7 +425,8 @@ public class EditorInputController
                 {
                     fillColor = IsColorLight(vm.SelectedColor) ? "#FF000000" : "#FFFFFFFF";
                 }
-                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, FontFamily = vm.SelectedFontFamily, CornerRadius = vm.CornerRadius, ShadowEnabled = vm.ShadowEnabled, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                var balloonAnnotation = new SpeechBalloonAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, FillColor = fillColor, TextColor = vm.TextColor, FontSize = vm.FontSize, FontFamily = vm.SelectedFontFamily, IsBold = vm.TextBold, IsItalic = vm.TextItalic, HorizontalAlignment = vm.SelectedTextHorizontalAlignment, CornerRadius = vm.CornerRadius, TailEnabled = vm.SpeechBalloonTail, StartPoint = ToSKPoint(_startPoint), EndPoint = ToSKPoint(_startPoint) };
+                ApplyShadowOptions(balloonAnnotation, vm);
                 var balloonControl = balloonAnnotation.CreateVisual();
                 balloonControl.Width = 0;
                 balloonControl.Height = 0;
@@ -427,10 +442,13 @@ public class EditorInputController
                     FillColor = vm.FillColor,
                     TextColor = vm.TextColor,
                     FontSize = vm.FontSize,
-                    ShadowEnabled = vm.ShadowEnabled,
+                    IsBold = vm.TextBold,
+                    StepType = vm.SelectedStepType,
+                    TailEnabled = vm.SpeechBalloonTail,
                     StartPoint = ToSKPoint(_startPoint),
                     Number = vm.NumberCounter
                 }; ;
+                ApplyShadowOptions(numberAnnotation, vm);
 
                 _currentShape = numberAnnotation.CreateVisual();
 
@@ -461,27 +479,23 @@ public class EditorInputController
                 {
                     Stroke = brush,
                     StrokeThickness = vm.StrokeWidth,
-                    StrokeLineCap = PenLineCap.Round,
+                    StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(vm.SelectedBorderStyle),
+                    StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(vm.SelectedBorderStyle),
                     StrokeJoin = PenLineJoin.Round,
                     UseLayoutRounding = false,
                     IsHitTestVisible = false
                     // Data will be set on move
                 };
 
-                if (vm.ShadowEnabled)
-                {
-                    path.Effect = new Avalonia.Media.DropShadowEffect
-                    {
-                        OffsetX = 3,
-                        OffsetY = 3,
-                        BlurRadius = 4,
-                        Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-                    };
-                }
-
                 path.SetValue(Panel.ZIndexProperty, 1);
 
-                var freehand = new FreehandAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, ShadowEnabled = vm.ShadowEnabled, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
+                var freehand = new FreehandAnnotation { StrokeColor = vm.SelectedColor, StrokeWidth = vm.StrokeWidth, BorderStyle = vm.SelectedBorderStyle, Points = new List<SKPoint> { ToSKPoint(_startPoint) } };
+                ApplyShadowOptions(freehand, vm);
+                if (freehand.ShadowEnabled)
+                {
+                    path.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(freehand);
+                }
+
                 path.Tag = freehand;
                 path.Data = freehand.CreateSmoothedGeometry();
                 _currentShape = path;
@@ -490,7 +504,7 @@ public class EditorInputController
 
         if (_currentShape != null)
         {
-            _currentShape.Cursor = CursorAssetLoader.GetCrosshairCursor();
+            _currentShape.Cursor = _view.GetCrosshairCursor();
 
             var currentLeft = Canvas.GetLeft(_currentShape);
             var currentTop = Canvas.GetTop(_currentShape);
@@ -561,7 +575,7 @@ public class EditorInputController
             var cvs = _view.FindControl<Canvas>("AnnotationCanvas") ?? sender as Canvas;
             if (cvs != null)
             {
-                _view.ApplyInteractionCursor(CursorAssetLoader.GetClosedHandCursor());
+                _view.ApplyInteractionCursor(CursorAssetLoader.CustomCursorKind.ClosedHand);
                 var cropCurrent = e.GetPosition(cvs);
                 var newRect = ComputeCropHandleResizedRect(_draggedCropHandleTag!, _cropDragStartPoint, cropCurrent, _cropDragStartRect, cvs.Bounds.Width, cvs.Bounds.Height);
                 UpdateCropOverlayBounds(newRect);
@@ -598,11 +612,27 @@ public class EditorInputController
 
         if (vm == null) return;
 
+        bool ctrlHeld = e.KeyModifiers.HasFlag(KeyModifiers.Control);
+        if (!ctrlHeld)
+        {
+            _isMovingShapeDuringCreation = false;
+        }
+        else if (CanMoveShapeDuringCreation(_currentShape) && (_isMovingShapeDuringCreation || !_wasCtrlHeldDuringDraw))
+        {
+            MoveShapeDuringCreation(currentPoint);
+            _isMovingShapeDuringCreation = true;
+            _lastDrawPoint = currentPoint;
+            _wasCtrlHeldDuringDraw = true;
+            return;
+        }
+
         if (_currentShape is global::Avalonia.Controls.Shapes.Path freehandPath && freehandPath.Tag is FreehandAnnotation freehand)
         {
             freehand.Points.Add(ToSKPoint(currentPoint));
             freehandPath.Data = freehand.CreateSmoothedGeometry();
             freehandPath.InvalidateVisual();
+            _lastDrawPoint = currentPoint;
+            _wasCtrlHeldDuringDraw = ctrlHeld;
             return;
         }
 
@@ -743,16 +773,17 @@ public class EditorInputController
         }
         else if (_currentShape is SpeechBalloonControl balloon)
         {
-            Canvas.SetLeft(balloon, left);
-            Canvas.SetTop(balloon, top);
-            balloon.Width = width;
-            balloon.Height = height;
             if (balloon.Annotation is SpeechBalloonAnnotation balloonAnn)
             {
                 balloonAnn.StartPoint = ToSKPoint(new Point(left, top));
                 balloonAnn.EndPoint = ToSKPoint(new Point(left + width, top + height));
+                AnnotationVisualFactory.UpdateVisualControl(
+                    balloon,
+                    balloonAnn,
+                    AnnotationVisualMode.Persisted,
+                    _view.EditorCore.CanvasSize.Width,
+                    _view.EditorCore.CanvasSize.Height);
             }
-            balloon.InvalidateVisual();
         }
         else if (_currentShape is Image imageControl && _currentShape.Tag is CursorAnnotation cursorAnnotation)
         {
@@ -773,6 +804,9 @@ public class EditorInputController
             Canvas.SetTop(_currentShape, currentPoint.Y - numberRadius);
             numberAnn.StartPoint = ToSKPoint(currentPoint);
         }
+
+        _lastDrawPoint = currentPoint;
+        _wasCtrlHeldDuringDraw = ctrlHeld;
     }
 
     public void OnCanvasPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -806,6 +840,8 @@ public class EditorInputController
 
             e.Pointer.Capture(null);
             _isDrawing = false;
+            _isMovingShapeDuringCreation = false;
+            _wasCtrlHeldDuringDraw = false;
             _view.RestoreEditorSurfaceCursorForActiveTool();
 
             var vm = ViewModel;
@@ -929,7 +965,19 @@ public class EditorInputController
 
     public void OnKeyDown(object sender, KeyEventArgs e)
     {
-        // Keyboard shortcuts are handled elsewhere; no pointer emulation needed here.
+        // Do not re-arm shape movement here. Ctrl KeyDown events can repeat while
+        // the key remains held, so movement must only be re-armed by OnKeyUp.
+    }
+
+    public void OnKeyUp(object sender, KeyEventArgs e)
+    {
+        if (!_isDrawing || e.Key is not Key.LeftCtrl and not Key.RightCtrl)
+        {
+            return;
+        }
+
+        _isMovingShapeDuringCreation = false;
+        _wasCtrlHeldDuringDraw = false;
     }
 
     private void CancelActiveRegionDrawing(Canvas canvas)
@@ -949,6 +997,8 @@ public class EditorInputController
         _currentShape = null;
         _cutOutDirection = null;
         _isDrawing = false;
+        _isMovingShapeDuringCreation = false;
+        _wasCtrlHeldDuringDraw = false;
         _view.RestoreEditorSurfaceCursorForActiveTool();
     }
 
@@ -956,7 +1006,7 @@ public class EditorInputController
     {
         if (_isDraggingCropHandle)
         {
-            _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.GetClosedHandCursor());
+            _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.CustomCursorKind.ClosedHand);
             return;
         }
 
@@ -965,7 +1015,7 @@ public class EditorInputController
             var vm = ViewModel;
             if (vm != null && UsesCrosshairInteractionCapture(vm.ActiveTool))
             {
-                _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.GetCrosshairCursor());
+                _view.BeginInteractionCursorCapture(pointer, CursorAssetLoader.CustomCursorKind.Crosshair);
             }
         }
     }
@@ -1199,7 +1249,6 @@ public class EditorInputController
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center
         };
-        button.Classes.Add("editor-button");
         button.SetValue(Panel.ZIndexProperty, CropConfirmButtonZIndex);
         button.Click += OnCropConfirmButtonClick;
 
@@ -1233,6 +1282,125 @@ public class EditorInputController
             _cropConfirmButton.Click -= OnCropConfirmButtonClick;
             overlay.Children.Remove(_cropConfirmButton);
             _cropConfirmButton = null;
+        }
+    }
+
+    private static bool CanMoveShapeDuringCreation(Control? shape)
+    {
+        return (shape is global::Avalonia.Controls.Shapes.Rectangle rectangle
+                && rectangle.Name != "CropOverlay"
+                && rectangle.Name != "CutOutOverlay")
+            || shape is global::Avalonia.Controls.Shapes.Ellipse
+            or SpeechBalloonControl
+            or SpotlightControl
+            || shape is global::Avalonia.Controls.Shapes.Path { Tag: FreehandAnnotation }
+            || shape is global::Avalonia.Controls.Shapes.Path { Tag: LineAnnotation }
+            || shape is global::Avalonia.Controls.Shapes.Path { Tag: ArrowAnnotation };
+    }
+
+    private void MoveShapeDuringCreation(Point currentPoint)
+    {
+        if (_currentShape == null)
+        {
+            return;
+        }
+
+        double deltaX = currentPoint.X - _lastDrawPoint.X;
+        double deltaY = currentPoint.Y - _lastDrawPoint.Y;
+
+        if (deltaX == 0 && deltaY == 0)
+        {
+            return;
+        }
+
+        _startPoint = new Point(_startPoint.X + deltaX, _startPoint.Y + deltaY);
+
+        if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle or global::Avalonia.Controls.Shapes.Ellipse)
+        {
+            double left = Canvas.GetLeft(_currentShape);
+            double top = Canvas.GetTop(_currentShape);
+            if (double.IsNaN(left)) left = 0;
+            if (double.IsNaN(top)) top = 0;
+
+            double newLeft = left + deltaX;
+            double newTop = top + deltaY;
+            Canvas.SetLeft(_currentShape, newLeft);
+            Canvas.SetTop(_currentShape, newTop);
+
+            UpdateEffectVisual(_currentShape, newLeft, newTop, _currentShape.Width, _currentShape.Height);
+
+            if (_currentShape.Tag is RectangleAnnotation rectAnn)
+            {
+                rectAnn.StartPoint = ToSKPoint(new Point(newLeft, newTop));
+                rectAnn.EndPoint = ToSKPoint(new Point(newLeft + _currentShape.Width, newTop + _currentShape.Height));
+            }
+            else if (_currentShape.Tag is EllipseAnnotation ellAnn)
+            {
+                ellAnn.StartPoint = ToSKPoint(new Point(newLeft, newTop));
+                ellAnn.EndPoint = ToSKPoint(new Point(newLeft + _currentShape.Width, newTop + _currentShape.Height));
+            }
+            else if (_currentShape.Tag is BaseEffectAnnotation effectAnn)
+            {
+                effectAnn.StartPoint = ToSKPoint(new Point(newLeft, newTop));
+                effectAnn.EndPoint = ToSKPoint(new Point(newLeft + _currentShape.Width, newTop + _currentShape.Height));
+            }
+
+            return;
+        }
+
+        if (_currentShape is SpeechBalloonControl balloon && balloon.Annotation is SpeechBalloonAnnotation balloonAnn)
+        {
+            balloonAnn.StartPoint = new SKPoint(balloonAnn.StartPoint.X + (float)deltaX, balloonAnn.StartPoint.Y + (float)deltaY);
+            balloonAnn.EndPoint = new SKPoint(balloonAnn.EndPoint.X + (float)deltaX, balloonAnn.EndPoint.Y + (float)deltaY);
+
+            if (balloonAnn.HasTailPoint)
+            {
+                balloonAnn.SetTailPoint(new SKPoint(balloonAnn.TailPoint.X + (float)deltaX, balloonAnn.TailPoint.Y + (float)deltaY));
+            }
+
+            AnnotationVisualFactory.UpdateVisualControl(
+                balloon,
+                balloonAnn,
+                AnnotationVisualMode.Persisted,
+                _view.EditorCore.CanvasSize.Width,
+                _view.EditorCore.CanvasSize.Height);
+            return;
+        }
+
+        if (_currentShape is global::Avalonia.Controls.Shapes.Path freehandPath && freehandPath.Tag is FreehandAnnotation freehand)
+        {
+            for (int index = 0; index < freehand.Points.Count; index++)
+            {
+                var point = freehand.Points[index];
+                freehand.Points[index] = new SKPoint(point.X + (float)deltaX, point.Y + (float)deltaY);
+            }
+
+            freehandPath.Data = freehand.CreateSmoothedGeometry();
+            freehandPath.InvalidateVisual();
+            return;
+        }
+
+        if (_currentShape is global::Avalonia.Controls.Shapes.Path linePath && linePath.Tag is LineAnnotation lineAnn)
+        {
+            lineAnn.StartPoint = new SKPoint(lineAnn.StartPoint.X + (float)deltaX, lineAnn.StartPoint.Y + (float)deltaY);
+            lineAnn.EndPoint = new SKPoint(lineAnn.EndPoint.X + (float)deltaX, lineAnn.EndPoint.Y + (float)deltaY);
+            AnnotationVisualFactory.UpdateVisualControl(linePath, lineAnn);
+            return;
+        }
+
+        if (_currentShape is global::Avalonia.Controls.Shapes.Path arrowPath && arrowPath.Tag is ArrowAnnotation arrowAnn)
+        {
+            arrowAnn.StartPoint = new SKPoint(arrowAnn.StartPoint.X + (float)deltaX, arrowAnn.StartPoint.Y + (float)deltaY);
+            arrowAnn.EndPoint = new SKPoint(arrowAnn.EndPoint.X + (float)deltaX, arrowAnn.EndPoint.Y + (float)deltaY);
+            AnnotationVisualFactory.UpdateVisualControl(arrowPath, arrowAnn);
+            return;
+        }
+
+        if (_currentShape is SpotlightControl spotlight && spotlight.Annotation is SpotlightAnnotation spotAnn)
+        {
+            spotAnn.StartPoint = new SKPoint(spotAnn.StartPoint.X + (float)deltaX, spotAnn.StartPoint.Y + (float)deltaY);
+            spotAnn.EndPoint = new SKPoint(spotAnn.EndPoint.X + (float)deltaX, spotAnn.EndPoint.Y + (float)deltaY);
+            _view.RefreshSpotlightOverlay();
         }
     }
 
@@ -1781,13 +1949,13 @@ public class EditorInputController
             StrokeWidth = (float)strokeWidth,
             FontSize = vm.FontSize,
             FontFamily = vm.SelectedFontFamily,
+            HorizontalAlignment = vm.SelectedTextHorizontalAlignment,
             IsBold = vm.TextBold,
             IsItalic = vm.TextItalic,
-            IsUnderline = vm.TextUnderline,
-            ShadowEnabled = vm.ShadowEnabled,
             StartPoint = ToSKPoint(_startPoint),
             EndPoint = ToSKPoint(_startPoint) // Will be updated when text is finalized
         };
+        ApplyShadowOptions(textAnnotation, vm);
 
         var textBrush = Avalonia.Media.Color.TryParse(textColor, out var c) ? new SolidColorBrush(c) : brush;
         var textBox = new TextBox
@@ -1800,8 +1968,8 @@ public class EditorInputController
             FontFamily = new Avalonia.Media.FontFamily(textAnnotation.FontFamily),
             FontWeight = vm.TextBold ? Avalonia.Media.FontWeight.Bold : Avalonia.Media.FontWeight.Normal,
             FontStyle = vm.TextItalic ? Avalonia.Media.FontStyle.Italic : Avalonia.Media.FontStyle.Normal,
-            TextAlignment = Avalonia.Media.TextAlignment.Center,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            TextAlignment = TextHorizontalAlignmentHelper.ToAvaloniaTextAlignment(textAnnotation.HorizontalAlignment),
+            HorizontalContentAlignment = TextHorizontalAlignmentHelper.ToHorizontalContentAlignment(textAnnotation.HorizontalAlignment),
             VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
             Text = string.Empty,
             Padding = new Thickness(4),
@@ -1815,15 +1983,9 @@ public class EditorInputController
         textBox.Resources["TextControlBackgroundFocused"] = Brushes.Transparent;
         textBox.Resources["TextControlBackgroundPointerOver"] = Brushes.Transparent;
 
-        if (vm.ShadowEnabled)
+        if (textAnnotation.ShadowEnabled)
         {
-            textBox.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
+            textBox.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(textAnnotation);
         }
 
         Canvas.SetLeft(textBox, _startPoint.X);
@@ -1956,6 +2118,16 @@ public class EditorInputController
             return lum > 0.5;
         }
         return true; // Default to light if parse fails
+    }
+
+    private static void ApplyShadowOptions(Annotation annotation, MainViewModel vm)
+    {
+        annotation.ShadowEnabled = vm.ShadowEnabled;
+        annotation.ShadowColor = vm.Options?.ShadowColorHex ?? Annotation.DefaultShadowColorHex;
+        annotation.ShadowBlurRadius = vm.Options?.ShadowBlurRadius ?? Annotation.DefaultShadowBlurRadius;
+        annotation.ShadowOpacity = vm.Options?.ShadowOpacity ?? Annotation.DefaultShadowOpacity;
+        annotation.ShadowOffsetX = vm.Options?.ShadowOffsetX ?? Annotation.DefaultShadowOffsetX;
+        annotation.ShadowOffsetY = vm.Options?.ShadowOffsetY ?? Annotation.DefaultShadowOffsetY;
     }
 
     private static SKPoint ToSKPoint(Point point) => new((float)point.X, (float)point.Y);

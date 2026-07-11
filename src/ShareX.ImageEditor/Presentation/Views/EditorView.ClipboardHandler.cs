@@ -23,7 +23,6 @@
 
 #endregion License Information (GPL v3)
 
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;

@@ -97,14 +97,13 @@
 
         <Grid ColumnDefinitions="*,*" Margin="0,16,0,0">
             <Button x:Name="CancelButton"
-                    Classes="editor-button"
                     Content="Cancel"
                     Click="OnCancelClick"
                     Margin="0,0,4,0"
                     HorizontalAlignment="Stretch"/>
             <Button x:Name="ApplyButton"
                     Grid.Column="1"
-                    Classes="editor-button active"
+                    Classes="active"
                     Content="Apply"
                     Click="OnApplyClick"
                     Margin="4,0,0,0"

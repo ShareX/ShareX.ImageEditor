@@ -23,8 +23,8 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.ImageEditor.Presentation.Rendering;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Rendering;
 
 namespace ShareX.ImageEditor.Presentation.ViewModels
 {
@@ -90,16 +90,6 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
             return null;
         }
 
-        public SkiaSharp.SKBitmap? CreateSourceImageCopyForPersistence()
-        {
-            return CreateSourceImageCopyForCore();
-        }
-
-        public IReadOnlyList<Annotation> GetAnnotationSnapshotForPersistence()
-        {
-            return _editorCore?.GetAnnotationsSnapshotForPersistence() ?? (IReadOnlyList<Annotation>)Array.Empty<Annotation>();
-        }
-
         /// <summary>
         /// Updates the preview image. **TAKES OWNERSHIP** of the bitmap parameter.
         /// </summary>
@@ -163,12 +153,40 @@ namespace ShareX.ImageEditor.Presentation.ViewModels
                 return;
             }
 
-            _editorCore.Crop(new SkiaSharp.SKRect(x, y, x + width, y + height));
+            if (_editorCore.Crop(new SkiaSharp.SKRect(x, y, x + width, y + height)))
+            {
+                (int newWidth, int newHeight) = GetCurrentImageSize();
+                ShowImageCroppedNotification(newWidth, newHeight);
+            }
         }
 
         public void CutOutImage(int startPos, int endPos, bool isVertical)
         {
-            _editorCore?.CutOut(startPos, endPos, isVertical);
+            if (_editorCore?.CutOut(startPos, endPos, isVertical) == true)
+            {
+                (int newWidth, int newHeight) = GetCurrentImageSize();
+                ShowImageCutOutNotification(newWidth, newHeight);
+            }
+        }
+
+        private (int Width, int Height) GetCurrentImageSize()
+        {
+            if (_editorCore?.SourceImage != null)
+            {
+                return (_editorCore.SourceImage.Width, _editorCore.SourceImage.Height);
+            }
+
+            return (0, 0);
+        }
+
+        public SkiaSharp.SKBitmap? CreateSourceImageCopyForPersistence()
+        {
+            return CreateSourceImageCopyForCore();
+        }
+
+        public IReadOnlyList<Annotation> GetAnnotationSnapshotForPersistence()
+        {
+            return _editorCore?.GetAnnotationsSnapshotForPersistence() ?? (IReadOnlyList<Annotation>)Array.Empty<Annotation>();
         }
     }
 }
