@@ -10,6 +10,7 @@ public partial class FreehandAnnotation : Annotation, IPointBasedAnnotation
 {
     public override AnnotationCategory Category => AnnotationCategory.Shapes;
     public List<SKPoint> Points { get; set; } = new List<SKPoint>();
+    public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
 
     /// <summary>
     /// Simplification tolerance for smoothing
@@ -27,8 +28,6 @@ public partial class FreehandAnnotation : Annotation, IPointBasedAnnotation
         clone.Points = new List<SKPoint>(Points); // Deep copy the points list
         return clone;
     }
-
-
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {

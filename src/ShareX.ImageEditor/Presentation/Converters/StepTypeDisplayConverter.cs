@@ -23,33 +23,25 @@
 
 #endregion License Information (GPL v3)
 
-using SkiaSharp;
+using Avalonia.Data.Converters;
+using ShareX.ImageEditor.Core.Annotations;
+using System.Globalization;
 
-namespace ShareX.ImageEditor.Core.Annotations;
-
-/// <summary>
-/// Line annotation
-/// </summary>
-public partial class LineAnnotation : Annotation, ICurvedSegmentAnnotation
+namespace ShareX.ImageEditor.Presentation.Converters
 {
-    public override AnnotationCategory Category => AnnotationCategory.Shapes;
-    public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
-
-    public SKPoint CurvePoint { get; set; }
-    public bool CurvePointActivated { get; set; }
-
-    public LineAnnotation()
+    public class StepTypeDisplayConverter : IValueConverter
     {
-        ToolType = EditorTool.Line;
-    }
+        public static readonly StepTypeDisplayConverter Instance = new();
 
-    public override bool HitTest(SKPoint point, float tolerance = 5)
-    {
-        return CurvedSegmentHelper.DistanceToPath(this, point) <= tolerance;
-    }
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            StepType stepType = value is StepType typedValue ? typedValue : StepType.Numeric;
+            return StepTypeFormatter.GetPreviewText(stepType);
+        }
 
-    public override SKRect GetBounds()
-    {
-        return CurvedSegmentHelper.GetBounds(this);
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            return StepType.Numeric;
+        }
     }
 }

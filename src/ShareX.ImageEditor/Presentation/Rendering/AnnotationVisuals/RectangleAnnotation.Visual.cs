@@ -25,6 +25,7 @@
 
 using Avalonia.Controls;
 using Avalonia.Media;
+using ShareX.ImageEditor.Presentation.Helpers;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -43,6 +44,8 @@ public partial class RectangleAnnotation
         {
             Stroke = strokeBrush,
             StrokeThickness = StrokeWidth,
+            StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(BorderStyle),
+            StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(BorderStyle),
             Fill = fillBrush,
             RadiusX = Math.Max(0, CornerRadius),
             RadiusY = Math.Max(0, CornerRadius),
@@ -53,13 +56,7 @@ public partial class RectangleAnnotation
 
         if (ShadowEnabled)
         {
-            rect.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
+            rect.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(this);
         }
 
         return rect;

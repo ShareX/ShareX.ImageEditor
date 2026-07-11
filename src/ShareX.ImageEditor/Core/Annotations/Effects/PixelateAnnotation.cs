@@ -66,12 +66,27 @@ public partial class PixelateAnnotation : BaseEffectAnnotation
 
     internal override void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
     {
+        if (RotationAngle != 0)
+        {
+            UpdateEffectFromProcessedSource(source, cachedEffectBitmap);
+            return;
+        }
+
         UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
     }
 
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
+
+        if (RotationAngle != 0)
+        {
+            using var pixelatedSource = CreatePixelatedSourceCache(source, Amount);
+            if (pixelatedSource == null) return;
+
+            UpdateEffectFromProcessedSource(source, pixelatedSource);
+            return;
+        }
 
         var rect = GetBounds();
         int fullW = (int)rect.Width;

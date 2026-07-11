@@ -81,6 +81,12 @@ public partial class BlurAnnotation : BaseEffectAnnotation
 
     internal override void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
     {
+        if (RotationAngle != 0)
+        {
+            UpdateEffectFromProcessedSource(source, cachedEffectBitmap);
+            return;
+        }
+
         UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
     }
 
@@ -91,6 +97,15 @@ public partial class BlurAnnotation : BaseEffectAnnotation
     public override void UpdateEffect(SKBitmap source)
     {
         if (source == null) return;
+
+        if (RotationAngle != 0)
+        {
+            using var blurredSource = CreateBlurredSourceCache(source, Amount);
+            if (blurredSource == null) return;
+
+            UpdateEffectFromProcessedSource(source, blurredSource);
+            return;
+        }
 
         var rect = GetBounds();
         int fullW = (int)rect.Width;

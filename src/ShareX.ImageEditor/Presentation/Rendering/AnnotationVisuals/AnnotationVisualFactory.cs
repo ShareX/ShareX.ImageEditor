@@ -23,14 +23,19 @@
 
 #endregion License Information (GPL v3)
 
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Emoji;
+using ShareX.ImageEditor.Presentation.Helpers;
 using SkiaSharp;
+using System.Runtime.CompilerServices;
 
 namespace ShareX.ImageEditor.Presentation.Rendering;
 
@@ -48,6 +53,9 @@ public enum AnnotationVisualMode
 /// </summary>
 public static class AnnotationVisualFactory
 {
+    private static readonly ConditionalWeakTable<Image, EmojiInteractiveRenderState> EmojiInteractiveRenderStates = new();
+    private static readonly SemaphoreSlim EmojiInteractiveRenderThrottle = new(2, 2);
+
     /// <summary>
     /// Creates the visual control for the provided annotation.
     /// </summary>
@@ -92,12 +100,24 @@ public static class AnnotationVisualFactory
         switch (annotation)
         {
             case RectangleAnnotation rectangle when control is Rectangle rectangleControl:
+                rectangleControl.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(rectangle.BorderStyle);
+                rectangleControl.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(rectangle.BorderStyle);
                 ApplyBoundsControl(rectangleControl, rectangle.GetBounds(), ensureMinimumSize);
                 rectangleControl.RadiusX = Math.Max(0, rectangle.CornerRadius);
                 rectangleControl.RadiusY = Math.Max(0, rectangle.CornerRadius);
+                ApplyRotationTransform(rectangleControl, rectangle.RotationAngle);
+                break;
+
+            case EllipseAnnotation ellipseAnnotation when control is Ellipse ellipseControl:
+                ellipseControl.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(ellipseAnnotation.BorderStyle);
+                ellipseControl.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(ellipseAnnotation.BorderStyle);
+                ApplyBoundsControl(ellipseControl, ellipseAnnotation.GetBounds(), ensureMinimumSize);
+                ApplyRotationTransform(ellipseControl, ellipseAnnotation.RotationAngle);
                 break;
 
             case LineAnnotation lineAnnotation when control is Avalonia.Controls.Shapes.Path linePath:
+                linePath.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(lineAnnotation.BorderStyle);
+                linePath.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(lineAnnotation.BorderStyle);
                 linePath.Data = lineAnnotation.CreateLineGeometry();
                 break;
 
@@ -112,12 +132,14 @@ public static class AnnotationVisualFactory
                 break;
 
             case FreehandAnnotation freehand when control is Avalonia.Controls.Shapes.Path freehandPath:
+                freehandPath.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(freehand.BorderStyle);
+                freehandPath.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(freehand.BorderStyle);
                 freehandPath.Data = freehand.CreateSmoothedGeometry();
                 break;
 
             case NumberAnnotation number when control is StepControl stepControl:
                 stepControl.Annotation = number;
-                ApplyBoundsControl(stepControl, number.GetBounds(), ensureMinimumSize);
+                ApplyBoundsControl(stepControl, number.GetInteractionBounds(), ensureMinimumSize);
                 stepControl.InvalidateVisual();
                 break;
 
@@ -152,12 +174,19 @@ public static class AnnotationVisualFactory
                 break;
 
             case SpeechBalloonAnnotation balloon when control is SpeechBalloonControl balloonControl:
+                var balloonBounds = balloon.GetInteractionBounds();
                 balloonControl.Annotation = balloon;
-                ApplyBoundsControl(balloonControl, balloon.GetBounds(), ensureMinimumSize);
+                ApplyBoundsControl(balloonControl, balloonBounds, ensureMinimumSize);
+                ApplyRotationTransform(balloonControl, balloon.RotationAngle, GetRelativeCenterOrigin(balloon.GetBounds(), balloonBounds));
                 balloonControl.InvalidateVisual();
                 break;
 
-            case SpotlightAnnotation spotlight when mode == AnnotationVisualMode.Preview && control is Rectangle:
+            case BaseEffectAnnotation effectAnnotation when control is Shape effectControl:
+                ApplyBoundsControl(effectControl, effectAnnotation.GetBounds(), ensureMinimumSize);
+                ApplyRotationTransform(effectControl, effectAnnotation.RotationAngle);
+                break;
+
+            case SpotlightAnnotation spotlight when mode == AnnotationVisualMode.Preview && control is Shape:
                 ApplyBoundsControl(control, spotlight.GetBounds(), ensureMinimumSize: true);
                 break;
 
@@ -300,11 +329,27 @@ public static class AnnotationVisualFactory
         int targetBitmapSize = useInteractiveRender
             ? WindowsEmojiBitmapRenderer.GetInteractiveStickerSize(renderSize)
             : renderSize;
+        bool hasUnicode = !string.IsNullOrWhiteSpace(emojiAnnotation.UnicodeSequence);
+        bool hasTargetBitmap = emojiAnnotation.ImageBitmap != null
+            && emojiAnnotation.ImageBitmap.Width == targetBitmapSize
+            && emojiAnnotation.ImageBitmap.Height == targetBitmapSize;
 
-        bool needsBitmapRefresh = !string.IsNullOrWhiteSpace(emojiAnnotation.UnicodeSequence)
-            && (emojiAnnotation.ImageBitmap == null
-                || emojiAnnotation.ImageBitmap.Width != targetBitmapSize
-                || emojiAnnotation.ImageBitmap.Height != targetBitmapSize);
+        bool shouldQueueAsyncRefresh = hasUnicode
+            && !hasTargetBitmap
+            && imageControl.Source != null;
+
+        if (shouldQueueAsyncRefresh)
+        {
+            QueueEmojiRefresh(emojiAnnotation, imageControl, renderSize, targetBitmapSize, useInteractiveRender);
+        }
+        else
+        {
+            CancelQueuedEmojiRefresh(imageControl);
+        }
+
+        bool needsBitmapRefresh = hasUnicode
+            && !hasTargetBitmap
+            && !shouldQueueAsyncRefresh;
 
         if (needsBitmapRefresh)
         {
@@ -320,12 +365,7 @@ public static class AnnotationVisualFactory
 
         if (emojiAnnotation.ImageBitmap != null && (needsBitmapRefresh || imageControl.Source == null))
         {
-            if (imageControl.Source is IDisposable previousSource)
-            {
-                previousSource.Dispose();
-            }
-
-            imageControl.Source = BitmapConversionHelpers.ToAvaloniBitmap(emojiAnnotation.ImageBitmap);
+            ReplaceImageSource(imageControl, BitmapConversionHelpers.ToAvaloniBitmap(emojiAnnotation.ImageBitmap));
         }
 
         Canvas.SetLeft(imageControl, imageBounds.Left);
@@ -333,6 +373,236 @@ public static class AnnotationVisualFactory
         imageControl.Width = Math.Max(1, imageBounds.Width);
         imageControl.Height = Math.Max(1, imageBounds.Height);
         ApplyRotationTransform(imageControl, emojiAnnotation.RotationAngle);
+    }
+
+    private static void QueueEmojiRefresh(EmojiAnnotation emojiAnnotation, Image imageControl, int renderSize, int targetBitmapSize, bool useInteractiveRender)
+    {
+        string unicodeSequence = emojiAnnotation.UnicodeSequence;
+        if (string.IsNullOrWhiteSpace(unicodeSequence))
+        {
+            return;
+        }
+
+        EmojiInteractiveRenderState state = EmojiInteractiveRenderStates.GetOrCreateValue(imageControl);
+        string requestKey = $"{unicodeSequence}:{(useInteractiveRender ? "interactive" : "exact")}:{targetBitmapSize}";
+        bool shouldStartWorker = false;
+
+        lock (state.SyncRoot)
+        {
+            if ((string.Equals(state.PendingRequestKey, requestKey, StringComparison.Ordinal) && ReferenceEquals(state.PendingAnnotation, emojiAnnotation))
+                || (string.Equals(state.InFlightRequestKey, requestKey, StringComparison.Ordinal) && ReferenceEquals(state.InFlightAnnotation, emojiAnnotation)))
+            {
+                return;
+            }
+
+            state.UpdateVersion++;
+            state.PendingRequestKey = requestKey;
+            state.PendingUnicodeSequence = unicodeSequence;
+            state.PendingRenderSize = renderSize;
+            state.PendingAnnotation = emojiAnnotation;
+            state.PendingUseInteractiveRender = useInteractiveRender;
+
+            if (!state.IsWorkerRunning)
+            {
+                state.IsWorkerRunning = true;
+                shouldStartWorker = true;
+            }
+        }
+
+        if (shouldStartWorker)
+        {
+            _ = UpdateQueuedEmojiImageAsync(imageControl, state);
+        }
+    }
+
+    private static void CancelQueuedEmojiRefresh(Image imageControl)
+    {
+        EmojiInteractiveRenderState state = EmojiInteractiveRenderStates.GetOrCreateValue(imageControl);
+        lock (state.SyncRoot)
+        {
+            state.UpdateVersion++;
+            state.PendingRequestKey = null;
+            state.PendingUnicodeSequence = null;
+            state.PendingRenderSize = 0;
+            state.PendingAnnotation = null;
+            state.PendingUseInteractiveRender = false;
+        }
+    }
+
+    private static async Task UpdateQueuedEmojiImageAsync(Image imageControl, EmojiInteractiveRenderState state)
+    {
+        try
+        {
+            while (true)
+            {
+                string? requestKey;
+                string? unicodeSequence;
+                int renderSize;
+                int version;
+                EmojiAnnotation? emojiAnnotation;
+                bool useInteractiveRender;
+
+                lock (state.SyncRoot)
+                {
+                    requestKey = state.PendingRequestKey;
+                    unicodeSequence = state.PendingUnicodeSequence;
+                    renderSize = state.PendingRenderSize;
+                    version = state.UpdateVersion;
+                    emojiAnnotation = state.PendingAnnotation;
+                    useInteractiveRender = state.PendingUseInteractiveRender;
+
+                    state.PendingRequestKey = null;
+                    state.PendingUnicodeSequence = null;
+                    state.PendingRenderSize = 0;
+                    state.PendingAnnotation = null;
+                    state.PendingUseInteractiveRender = false;
+                    state.InFlightRequestKey = requestKey;
+                    state.InFlightAnnotation = emojiAnnotation;
+                }
+
+                if (string.IsNullOrWhiteSpace(requestKey) || string.IsNullOrWhiteSpace(unicodeSequence) || renderSize <= 0 || emojiAnnotation == null)
+                {
+                    lock (state.SyncRoot)
+                    {
+                        state.InFlightRequestKey = null;
+                        state.InFlightAnnotation = null;
+
+                        if (state.PendingRequestKey == null)
+                        {
+                            state.IsWorkerRunning = false;
+                            return;
+                        }
+                    }
+
+                    continue;
+                }
+
+                await EmojiInteractiveRenderThrottle.WaitAsync();
+
+                try
+                {
+                    bool skipRender;
+
+                    lock (state.SyncRoot)
+                    {
+                        skipRender = version != state.UpdateVersion
+                            || !string.Equals(state.InFlightRequestKey, requestKey, StringComparison.Ordinal)
+                            || !ReferenceEquals(state.InFlightAnnotation, emojiAnnotation);
+                    }
+
+                    if (skipRender)
+                    {
+                        continue;
+                    }
+
+                    SKBitmap? renderedBitmap = null;
+                    Bitmap? bitmapSource = null;
+
+                    try
+                    {
+                        renderedBitmap = await Task.Run(() => useInteractiveRender
+                            ? WindowsEmojiBitmapRenderer.RenderInteractiveStickerBitmap(unicodeSequence, renderSize)
+                            : WindowsEmojiBitmapRenderer.RenderStickerBitmap(unicodeSequence, renderSize));
+                        if (renderedBitmap == null)
+                        {
+                            continue;
+                        }
+
+                        bitmapSource = BitmapConversionHelpers.ToAvaloniBitmap(renderedBitmap);
+                    }
+                    catch
+                    {
+                        renderedBitmap?.Dispose();
+                        bitmapSource?.Dispose();
+                        continue;
+                    }
+
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        bool isCurrentRequest;
+
+                        lock (state.SyncRoot)
+                        {
+                            isCurrentRequest = version == state.UpdateVersion
+                                && string.Equals(state.InFlightRequestKey, requestKey, StringComparison.Ordinal)
+                                && ReferenceEquals(state.InFlightAnnotation, emojiAnnotation)
+                                && ReferenceEquals(imageControl.Tag, emojiAnnotation);
+                        }
+
+                        if (!isCurrentRequest)
+                        {
+                            bitmapSource.Dispose();
+                            renderedBitmap.Dispose();
+                            return;
+                        }
+
+                        emojiAnnotation.SetImage(renderedBitmap);
+                        ReplaceImageSource(imageControl, bitmapSource);
+                    }, DispatcherPriority.Background);
+                }
+                finally
+                {
+                    EmojiInteractiveRenderThrottle.Release();
+                }
+
+                lock (state.SyncRoot)
+                {
+                    if (string.Equals(state.InFlightRequestKey, requestKey, StringComparison.Ordinal)
+                        && ReferenceEquals(state.InFlightAnnotation, emojiAnnotation))
+                    {
+                        state.InFlightRequestKey = null;
+                        state.InFlightAnnotation = null;
+                    }
+
+                    if (state.PendingRequestKey == null)
+                    {
+                        state.IsWorkerRunning = false;
+                        return;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            bool shouldRestartWorker;
+
+            lock (state.SyncRoot)
+            {
+                state.InFlightRequestKey = null;
+                state.InFlightAnnotation = null;
+                shouldRestartWorker = state.PendingRequestKey != null;
+                state.IsWorkerRunning = shouldRestartWorker;
+            }
+
+            if (shouldRestartWorker)
+            {
+                _ = UpdateQueuedEmojiImageAsync(imageControl, state);
+            }
+        }
+    }
+
+    private static void ReplaceImageSource(Image imageControl, Bitmap bitmapSource)
+    {
+        if (imageControl.Source is IDisposable previousSource)
+        {
+            previousSource.Dispose();
+        }
+
+        imageControl.Source = bitmapSource;
+    }
+
+    private sealed class EmojiInteractiveRenderState
+    {
+        public object SyncRoot { get; } = new();
+        public bool IsWorkerRunning;
+        public string? PendingRequestKey;
+        public string? PendingUnicodeSequence;
+        public int PendingRenderSize;
+        public EmojiAnnotation? PendingAnnotation;
+        public bool PendingUseInteractiveRender;
+        public string? InFlightRequestKey;
+        public EmojiAnnotation? InFlightAnnotation;
+        public int UpdateVersion;
     }
 
     private static Control CreateTextPreviewPlaceholder(TextAnnotation annotation)
@@ -362,14 +632,15 @@ public static class AnnotationVisualFactory
 
     private static Control CreateSpotlightPreviewPlaceholder(SpotlightAnnotation annotation)
     {
-        return new Rectangle
-        {
-            Fill = Brushes.Transparent,
-            Stroke = new SolidColorBrush(Color.FromArgb(200, 255, 255, 255)),
-            StrokeThickness = 2,
-            StrokeDashArray = new AvaloniaList<double> { 6, 3 },
-            Tag = annotation
-        };
+        Shape shape = annotation.IsEllipse ? new Ellipse() : new Rectangle();
+
+        shape.Fill = Brushes.Transparent;
+        shape.Stroke = new SolidColorBrush(Color.FromArgb(200, 255, 255, 255));
+        shape.StrokeThickness = 2;
+        shape.StrokeDashArray = new AvaloniaList<double> { 6, 3 };
+        shape.Tag = annotation;
+
+        return shape;
     }
 
     private static Control CreateBlurPreviewPlaceholder(BlurAnnotation annotation)
@@ -429,13 +700,33 @@ public static class AnnotationVisualFactory
         Canvas.SetTop(control, top);
         control.Width = width;
         control.Height = height;
+
+        if (control.Tag is MagnifyAnnotation magnifyAnnotation)
+        {
+            control.Clip = magnifyAnnotation.IsEllipse
+                ? new EllipseGeometry(new Rect(0, 0, Math.Max(1, width), Math.Max(1, height)))
+                : null;
+        }
     }
 
-    private static void ApplyRotationTransform(Control control, float rotationAngle)
+    private static RelativePoint GetRelativeCenterOrigin(SKRect innerBounds, SKRect outerBounds)
+    {
+        if (outerBounds.Width <= 0 || outerBounds.Height <= 0)
+        {
+            return new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+        }
+
+        return new RelativePoint(
+            (innerBounds.MidX - outerBounds.Left) / outerBounds.Width,
+            (innerBounds.MidY - outerBounds.Top) / outerBounds.Height,
+            RelativeUnit.Relative);
+    }
+
+    private static void ApplyRotationTransform(Control control, float rotationAngle, RelativePoint? transformOrigin = null)
     {
         if (rotationAngle != 0)
         {
-            control.RenderTransformOrigin = new Avalonia.RelativePoint(0.5, 0.5, Avalonia.RelativeUnit.Relative);
+            control.RenderTransformOrigin = transformOrigin ?? new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
             control.RenderTransform = new RotateTransform(rotationAngle);
         }
         else

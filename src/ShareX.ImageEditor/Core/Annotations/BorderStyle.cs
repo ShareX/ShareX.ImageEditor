@@ -23,33 +23,13 @@
 
 #endregion License Information (GPL v3)
 
-using SkiaSharp;
-
 namespace ShareX.ImageEditor.Core.Annotations;
 
-/// <summary>
-/// Line annotation
-/// </summary>
-public partial class LineAnnotation : Annotation, ICurvedSegmentAnnotation
+public enum BorderStyle
 {
-    public override AnnotationCategory Category => AnnotationCategory.Shapes;
-    public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
-
-    public SKPoint CurvePoint { get; set; }
-    public bool CurvePointActivated { get; set; }
-
-    public LineAnnotation()
-    {
-        ToolType = EditorTool.Line;
-    }
-
-    public override bool HitTest(SKPoint point, float tolerance = 5)
-    {
-        return CurvedSegmentHelper.DistanceToPath(this, point) <= tolerance;
-    }
-
-    public override SKRect GetBounds()
-    {
-        return CurvedSegmentHelper.GetBounds(this);
-    }
+    Solid = 0,
+    Dash = 1,
+    Dot = 2,
+    DashDot = 3,
+    DashDotDot = 4
 }

@@ -51,6 +51,11 @@ public partial class SpeechBalloonAnnotation : Annotation
     public bool TailPointInitialized { get; set; }
 
     /// <summary>
+    /// Controls whether the tail geometry and handle are shown.
+    /// </summary>
+    public bool TailEnabled { get; set; } = true;
+
+    /// <summary>
     /// Optional text content inside the balloon
     /// </summary>
     public string Text { get; set; } = "";
@@ -69,6 +74,21 @@ public partial class SpeechBalloonAnnotation : Annotation
     /// Text body color
     /// </summary>
     public string TextColor { get; set; } = "#FF000000";
+
+    /// <summary>
+    /// Bold style for balloon text.
+    /// </summary>
+    public bool IsBold { get; set; }
+
+    /// <summary>
+    /// Italic style for balloon text.
+    /// </summary>
+    public bool IsItalic { get; set; }
+
+    /// <summary>
+    /// Horizontal alignment for text within the balloon body.
+    /// </summary>
+    public TextHorizontalAlignment HorizontalAlignment { get; set; } = TextHorizontalAlignment.Center;
 
     /// <summary>
     /// Corner radius for the balloon body.
@@ -117,6 +137,11 @@ public partial class SpeechBalloonAnnotation : Annotation
 
     public bool IsTailVisible()
     {
+        if (!TailEnabled)
+        {
+            return false;
+        }
+
         var bounds = GetBounds();
         var tailPoint = GetEffectiveTailPoint();
         return !bounds.Contains(tailPoint.X, tailPoint.Y);
@@ -149,6 +174,11 @@ public partial class SpeechBalloonAnnotation : Annotation
         tailBaseStart = default;
         tailTip = default;
         tailBaseEnd = default;
+
+        if (!TailEnabled)
+        {
+            return false;
+        }
 
         var bounds = GetBounds();
         if (bounds.Width <= 0 || bounds.Height <= 0)
@@ -206,7 +236,21 @@ public partial class SpeechBalloonAnnotation : Annotation
 
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
-        var bodyBounds = SKRect.Inflate(GetBounds(), tolerance, tolerance);
+        var bounds = GetBounds();
+
+        if (RotationAngle != 0)
+        {
+            float cx = bounds.MidX;
+            float cy = bounds.MidY;
+            float rad = -RotationAngle * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
+            float dx = point.X - cx;
+            float dy = point.Y - cy;
+            point = new SKPoint(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
+        }
+
+        var bodyBounds = SKRect.Inflate(bounds, tolerance, tolerance);
         if (bodyBounds.Contains(point.X, point.Y))
         {
             return true;

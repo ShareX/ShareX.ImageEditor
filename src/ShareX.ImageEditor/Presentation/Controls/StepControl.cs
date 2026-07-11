@@ -57,10 +57,10 @@ public class StepControl : Control
         context.DrawGeometry(null, strokePen, geometry);
 
         var formattedText = new FormattedText(
-            Annotation.Number.ToString(),
+            Annotation.DisplayText,
             System.Globalization.CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight,
-            new Typeface(FontFamily.Default, FontStyle.Normal, FontWeight.Bold),
+            new Typeface(FontFamily.Default, FontStyle.Normal, Annotation.IsBold ? FontWeight.Bold : FontWeight.Normal),
             Annotation.FontSize * 0.6,
             new SolidColorBrush(Color.Parse(Annotation.TextColor)));
 

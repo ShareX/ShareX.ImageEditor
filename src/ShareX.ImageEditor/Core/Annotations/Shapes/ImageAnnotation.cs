@@ -73,6 +73,12 @@ public class ImageAnnotation : Annotation, IDisposable
         _imageBitmap = bitmap;
     }
 
+    public void ClearImage()
+    {
+        _imageBitmap?.Dispose();
+        _imageBitmap = null;
+    }
+
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var bounds = GetBounds();

@@ -22,6 +22,11 @@ public abstract class BaseEffectAnnotation : Annotation, IDisposable
     public bool IsFreehand { get; set; }
 
     /// <summary>
+    /// Whether the effect region is rendered as an ellipse instead of a rectangle.
+    /// </summary>
+    public bool IsEllipse { get; set; }
+
+    /// <summary>
     /// The generated bitmap for the effect (pre-rendered effect result)
     /// </summary>
     [JsonIgnore]
@@ -39,8 +44,36 @@ public abstract class BaseEffectAnnotation : Annotation, IDisposable
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var bounds = GetBounds();
+
+        if (RotationAngle != 0)
+        {
+            float cx = bounds.MidX;
+            float cy = bounds.MidY;
+            float rad = -RotationAngle * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
+            float dx = point.X - cx;
+            float dy = point.Y - cy;
+            point = new SKPoint(cx + dx * cos - dy * sin, cy + dx * sin + dy * cos);
+        }
+
         var inflatedBounds = SKRect.Inflate(bounds, tolerance, tolerance);
-        return inflatedBounds.Contains(point);
+
+        if (!IsEllipse)
+        {
+            return inflatedBounds.Contains(point);
+        }
+
+        float radiusX = inflatedBounds.Width / 2f;
+        float radiusY = inflatedBounds.Height / 2f;
+        if (radiusX <= 0 || radiusY <= 0)
+        {
+            return false;
+        }
+
+        float normalizedX = (point.X - inflatedBounds.MidX) / radiusX;
+        float normalizedY = (point.Y - inflatedBounds.MidY) / radiusY;
+        return normalizedX * normalizedX + normalizedY * normalizedY <= 1f;
     }
 
     public override Annotation Clone()
@@ -70,6 +103,37 @@ public abstract class BaseEffectAnnotation : Annotation, IDisposable
     internal virtual void UpdateEffectFromInteractionCache(SKBitmap source, SKBitmap cachedEffectBitmap)
     {
         UpdateEffectFromAlignedCache(source, cachedEffectBitmap);
+    }
+
+    protected void UpdateEffectFromProcessedSource(SKBitmap source, SKBitmap processedSource)
+    {
+        if (source == null || processedSource == null) return;
+        if (processedSource.Width != source.Width || processedSource.Height != source.Height) return;
+
+        var rect = GetBounds();
+        int fullW = (int)rect.Width;
+        int fullH = (int)rect.Height;
+        if (fullW <= 0 || fullH <= 0) return;
+
+        var result = new SKBitmap(fullW, fullH);
+        result.Erase(SKColors.Transparent);
+
+        using (var canvas = new SKCanvas(result))
+        {
+            if (RotationAngle != 0)
+            {
+                float localCenterX = fullW / 2f;
+                float localCenterY = fullH / 2f;
+                canvas.Translate(localCenterX, localCenterY);
+                canvas.RotateDegrees(-RotationAngle);
+                canvas.Translate(-localCenterX, -localCenterY);
+            }
+
+            canvas.DrawBitmap(processedSource, -rect.Left, -rect.Top);
+        }
+
+        EffectBitmap?.Dispose();
+        EffectBitmap = result;
     }
 
     protected void UpdateEffectFromAlignedCache(SKBitmap source, SKBitmap cachedEffectBitmap)

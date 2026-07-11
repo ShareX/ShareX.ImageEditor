@@ -27,6 +27,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Helpers;
 
 namespace ShareX.ImageEditor.Presentation.Controls
 {
@@ -50,19 +51,25 @@ namespace ShareX.ImageEditor.Presentation.Controls
             AffectsMeasure<SpeechBalloonControl>(AnnotationProperty);
         }
 
+        public SpeechBalloonControl()
+        {
+            ClipToBounds = false;
+        }
+
         public override void Render(DrawingContext context)
         {
             base.Render(context);
 
             if (Annotation == null || Bounds.Width <= 0 || Bounds.Height <= 0) return;
 
-            // Get the annotation's bounds
-            var annotationBounds = Annotation.GetBounds();
-            var width = Math.Max(annotationBounds.Width, 20);
-            var height = Math.Max(annotationBounds.Height, 20);
+            var bodyBounds = Annotation.GetBounds();
+            var renderBounds = Annotation.GetInteractionBounds();
+            var bodyOffset = new Point(bodyBounds.Left - renderBounds.Left, bodyBounds.Top - renderBounds.Top);
+            var width = Math.Max(bodyBounds.Width, 20);
+            var height = Math.Max(bodyBounds.Height, 20);
 
-            var bodyGeometry = CreateBodyGeometry(width, height, Annotation.CornerRadius);
-            var tailGeometry = CreateTailGeometry(Annotation);
+            var bodyGeometry = CreateBodyGeometry(bodyOffset.X, bodyOffset.Y, width, height, Annotation.CornerRadius);
+            var tailGeometry = CreateTailGeometry(Annotation, renderBounds);
             Geometry geometry = tailGeometry != null
                 ? new CombinedGeometry(GeometryCombineMode.Union, bodyGeometry, tailGeometry)
                 : bodyGeometry;
@@ -90,7 +97,10 @@ namespace ShareX.ImageEditor.Presentation.Controls
             {
                 var textColor = Color.Parse(Annotation.TextColor);
                 var fontFamily = string.IsNullOrWhiteSpace(Annotation.FontFamily) ? "Segoe UI" : Annotation.FontFamily;
-                var typeface = new Typeface(fontFamily);
+                var typeface = new Typeface(
+                    fontFamily,
+                    Annotation.IsItalic ? FontStyle.Italic : FontStyle.Normal,
+                    Annotation.IsBold ? FontWeight.Bold : FontWeight.Normal);
                 var formattedText = new FormattedText(
                     Annotation.Text,
                     System.Globalization.CultureInfo.CurrentCulture,
@@ -106,28 +116,28 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 // Allow wrapping
                 var maxTextWidth = Math.Max(0, width - (padding * 2));
                 formattedText.MaxTextWidth = maxTextWidth;
-                var textX = Math.Max(padding, (width - formattedText.Width) / 2);
-                var textY = Math.Max(padding, (height - formattedText.Height) / 2);
+                formattedText.TextAlignment = TextHorizontalAlignmentHelper.ToAvaloniaTextAlignment(Annotation.HorizontalAlignment);
+                var textX = bodyOffset.X + padding;
+                var textY = bodyOffset.Y + Math.Max(padding, (height - formattedText.Height) / 2);
 
                 // Ensure text stays within bounds
-                textX = Math.Min(textX, width - formattedText.Width - padding);
-                textY = Math.Min(textY, height - formattedText.Height - padding);
+                textY = Math.Min(textY, bodyOffset.Y + height - formattedText.Height - padding);
 
                 context.DrawText(formattedText, new Point(textX, textY));
             }
         }
 
-        private static Geometry CreateBodyGeometry(double width, double height, int cornerRadius)
+        private static Geometry CreateBodyGeometry(double x, double y, double width, double height, int cornerRadius)
         {
             var geometry = new StreamGeometry();
             double radius = Math.Clamp(cornerRadius, 0, (int)(Math.Min(width, height) / 2d));
 
             using (var ctx = geometry.Open())
             {
-                double left = 0;
-                double top = 0;
-                double right = width;
-                double bottom = height;
+                double left = x;
+                double top = y;
+                double right = x + width;
+                double bottom = y + height;
 
                 if (radius <= 0)
                 {
@@ -192,7 +202,7 @@ namespace ShareX.ImageEditor.Presentation.Controls
             return geometry;
         }
 
-        private Geometry? CreateTailGeometry(SpeechBalloonAnnotation annotation)
+        private Geometry? CreateTailGeometry(SpeechBalloonAnnotation annotation, SkiaSharp.SKRect renderBounds)
         {
             if (!annotation.TryGetTailPolygon(out var tailBaseStart, out var tailTip, out var tailBaseEnd))
             {
@@ -202,19 +212,18 @@ namespace ShareX.ImageEditor.Presentation.Controls
             var geometry = new StreamGeometry();
             using (var ctx = geometry.Open())
             {
-                ctx.BeginFigure(ToRenderPoint(annotation, tailBaseStart), true);
-                ctx.LineTo(ToRenderPoint(annotation, tailTip));
-                ctx.LineTo(ToRenderPoint(annotation, tailBaseEnd));
+                ctx.BeginFigure(ToRenderPoint(tailBaseStart, renderBounds), true);
+                ctx.LineTo(ToRenderPoint(tailTip, renderBounds));
+                ctx.LineTo(ToRenderPoint(tailBaseEnd, renderBounds));
                 ctx.EndFigure(true);
             }
 
             return geometry;
         }
 
-        private static Point ToRenderPoint(SpeechBalloonAnnotation annotation, SkiaSharp.SKPoint point)
+        private static Point ToRenderPoint(SkiaSharp.SKPoint point, SkiaSharp.SKRect renderBounds)
         {
-            var bounds = annotation.GetBounds();
-            return new Point(point.X - bounds.Left, point.Y - bounds.Top);
+            return new Point(point.X - renderBounds.Left, point.Y - renderBounds.Top);
         }
     }
 }

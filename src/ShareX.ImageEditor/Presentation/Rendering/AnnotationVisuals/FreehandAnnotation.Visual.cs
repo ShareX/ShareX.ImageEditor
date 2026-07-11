@@ -26,6 +26,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ShareX.ImageEditor.Presentation.Helpers;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -41,7 +42,8 @@ public partial class FreehandAnnotation
         {
             Stroke = brush,
             StrokeThickness = StrokeWidth,
-            StrokeLineCap = PenLineCap.Round,
+            StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(BorderStyle),
+            StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(BorderStyle),
             StrokeJoin = PenLineJoin.Round,
             Data = CreateSmoothedGeometry(),
             Tag = this
@@ -49,13 +51,7 @@ public partial class FreehandAnnotation
 
         if (ShadowEnabled)
         {
-            path.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
+            path.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(this);
         }
 
         return path;

@@ -71,6 +71,12 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
         int fullH = (int)rect.Height;
         if (fullW <= 0 || fullH <= 0) return;
 
+        if (RotationAngle != 0)
+        {
+            UpdateRotatedEffect(drawSource, rect, fullW, fullH);
+            return;
+        }
+
         // Convert annotation bounds to integer rect
         var annotationRect = new SKRectI((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom);
 
@@ -132,6 +138,34 @@ public partial class MagnifyAnnotation : BaseEffectAnnotation
             var sourceRect = new SKRect(captureRect.Left, captureRect.Top, captureRect.Right, captureRect.Bottom);
             var destinationRect = new SKRect(drawX, drawY, drawX + validRect.Width, drawY + validRect.Height);
             resultCanvas.DrawImage(drawSourceImage, sourceRect, destinationRect, new SKSamplingOptions(SKCubicResampler.Mitchell), paint);
+        }
+
+        EffectBitmap?.Dispose();
+        EffectBitmap = result;
+    }
+
+    private void UpdateRotatedEffect(SKBitmap drawSource, SKRect rect, int fullW, int fullH)
+    {
+        var result = new SKBitmap(fullW, fullH);
+        result.Erase(SKColors.Transparent);
+
+        float zoom = Math.Max(1.0f, Amount);
+        float localCenterX = fullW / 2f;
+        float localCenterY = fullH / 2f;
+        float worldCenterX = rect.MidX;
+        float worldCenterY = rect.MidY;
+
+        using (var resultCanvas = new SKCanvas(result))
+        using (var paint = new SKPaint())
+        using (var drawSourceImage = SKImage.FromBitmap(drawSource))
+        {
+            // Map source image points into the annotation's local space so the
+            // magnified content follows the rotated annotation axes.
+            resultCanvas.Translate(localCenterX, localCenterY);
+            resultCanvas.Scale(zoom, zoom);
+            resultCanvas.RotateDegrees(-RotationAngle);
+            resultCanvas.Translate(-worldCenterX, -worldCenterY);
+            resultCanvas.DrawImage(drawSourceImage, 0, 0, new SKSamplingOptions(SKCubicResampler.Mitchell), paint);
         }
 
         EffectBitmap?.Dispose();

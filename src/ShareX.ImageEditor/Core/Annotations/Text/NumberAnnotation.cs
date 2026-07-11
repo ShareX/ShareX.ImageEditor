@@ -34,13 +34,18 @@ namespace ShareX.ImageEditor.Core.Annotations;
 public partial class NumberAnnotation : Annotation
 {
     private const float GeometryEpsilon = 0.001f;
-    private const float TailWidthMultiplier = 1.5f;
+    private const float TextPaddingMultiplier = 0.35f;
 
     public override AnnotationCategory Category => AnnotationCategory.Text;
     /// <summary>
     /// Number to display (typically auto-incremented)
     /// </summary>
     public int Number { get; set; } = 1;
+
+    /// <summary>
+    /// Display style for the step label.
+    /// </summary>
+    public StepType StepType { get; set; } = StepType.Numeric;
 
     /// <summary>
     /// Font size for the number
@@ -51,6 +56,11 @@ public partial class NumberAnnotation : Annotation
     /// Text body color
     /// </summary>
     public string TextColor { get; set; } = "#FFFFFFFF";
+
+    /// <summary>
+    /// Bold style for the step label.
+    /// </summary>
+    public bool IsBold { get; set; } = true;
 
     /// <summary>
     /// Circle radius - auto-calculated based on FontSize if not explicitly set
@@ -72,13 +82,30 @@ public partial class NumberAnnotation : Annotation
     public bool TailPointInitialized { get; set; }
 
     /// <summary>
+    /// Controls whether the tail geometry and handle are shown.
+    /// </summary>
+    public bool TailEnabled { get; set; } = true;
+
+    /// <summary>
     /// Calculate radius based on font size to ensure text fits
     /// </summary>
     private float CalculateRadius()
     {
-        // Radius should be about 70% of FontSize to properly contain the number
-        // with some padding around it
-        return Math.Max(12, FontSize * 0.7f);
+        float baseRadius = Math.Max(12, FontSize * 0.7f);
+        string displayText = GetDisplayText();
+
+        using var font = new SKFont(SKTypeface.Default, Math.Max(1, FontSize * 0.6f))
+        {
+            Embolden = IsBold
+        };
+
+        float textWidth = font.MeasureText(displayText);
+        SKFontMetrics metrics = font.Metrics;
+        float textHeight = metrics.Descent - metrics.Ascent;
+        float padding = Math.Max(6, FontSize * TextPaddingMultiplier);
+        float measuredRadius = Math.Max(textWidth, textHeight) * 0.5f + padding;
+
+        return Math.Max(baseRadius, measuredRadius);
     }
 
     public NumberAnnotation()
@@ -88,6 +115,11 @@ public partial class NumberAnnotation : Annotation
 
     [JsonIgnore]
     public bool HasTailPoint => TailPointInitialized;
+
+    [JsonIgnore]
+    public string DisplayText => GetDisplayText();
+
+    public string GetDisplayText() => StepTypeFormatter.Format(Number, StepType);
 
     public SKPoint GetDefaultTailHandlePoint()
     {
@@ -109,6 +141,11 @@ public partial class NumberAnnotation : Annotation
 
     public bool IsTailVisible()
     {
+        if (!TailEnabled)
+        {
+            return false;
+        }
+
         return TailStyle switch
         {
             StepTailStyle.Arrow => TryGetArrowTailOutline(out _, out _, out _, out _, out _, out _, out _),
@@ -161,7 +198,7 @@ public partial class NumberAnnotation : Annotation
         tailTip = default;
         tailBaseEnd = default;
 
-        if (!HasTailPoint)
+        if (!TailEnabled || !HasTailPoint)
         {
             return false;
         }
@@ -186,19 +223,21 @@ public partial class NumberAnnotation : Annotation
         float normalizedDirectionX = directionX / directionLength;
         float normalizedDirectionY = directionY / directionLength;
 
-        float tailWidth = radius * TailWidthMultiplier;
-        float halfTailWidth = tailWidth / 2f;
-
         var perpendicular = new SKPoint(-normalizedDirectionY, normalizedDirectionX);
-        var baseStart = new SKPoint(
-            center.X + perpendicular.X * halfTailWidth,
-            center.Y + perpendicular.Y * halfTailWidth);
-        var baseEnd = new SKPoint(
-            center.X - perpendicular.X * halfTailWidth,
-            center.Y - perpendicular.Y * halfTailWidth);
+        float projectionDistance = (radius * radius) / directionLength;
+        float offsetDistance = radius * MathF.Sqrt((directionLength * directionLength) - (radius * radius)) / directionLength;
+        var tangentCenter = new SKPoint(
+            center.X + normalizedDirectionX * projectionDistance,
+            center.Y + normalizedDirectionY * projectionDistance);
 
-        return TryGetCircleSegmentExitPoint(center, radius, baseStart, tailTip, out tailBaseStart) &&
-               TryGetCircleSegmentExitPoint(center, radius, baseEnd, tailTip, out tailBaseEnd);
+        tailBaseStart = new SKPoint(
+            tangentCenter.X + perpendicular.X * offsetDistance,
+            tangentCenter.Y + perpendicular.Y * offsetDistance);
+        tailBaseEnd = new SKPoint(
+            tangentCenter.X - perpendicular.X * offsetDistance,
+            tangentCenter.Y - perpendicular.Y * offsetDistance);
+
+        return true;
     }
 
 
@@ -296,7 +335,7 @@ public partial class NumberAnnotation : Annotation
         shaftEndRight = default;
         shaftStartRight = default;
 
-        if (!HasTailPoint)
+        if (!TailEnabled || !HasTailPoint)
         {
             return false;
         }

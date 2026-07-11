@@ -50,6 +50,7 @@ public static class AnnotationEffectVisualUpdater
         annotation.StartPoint = new SKPoint((float)bounds.X, (float)bounds.Y);
         annotation.EndPoint = new SKPoint((float)(bounds.X + bounds.Width), (float)(bounds.Y + bounds.Height));
         annotation.UpdateEffect(sourceBitmap);
+        ApplyEffectClip(shape, annotation, bounds);
         ApplyEffectBrush(shape, annotation);
     }
 
@@ -94,5 +95,12 @@ public static class AnnotationEffectVisualUpdater
         }
 
         return new Rect(left, top, width, height);
+    }
+
+    public static void ApplyEffectClip(Control shape, BaseEffectAnnotation annotation, Rect bounds)
+    {
+        shape.Clip = annotation is MagnifyAnnotation { IsEllipse: true }
+            ? new EllipseGeometry(new Rect(0, 0, Math.Max(1, bounds.Width), Math.Max(1, bounds.Height)))
+            : null;
     }
 }

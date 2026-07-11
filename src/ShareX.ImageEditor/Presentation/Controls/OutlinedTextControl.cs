@@ -27,6 +27,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Presentation.Helpers;
 using System.Globalization;
 
 namespace ShareX.ImageEditor.Presentation.Controls
@@ -119,12 +120,13 @@ namespace ShareX.ImageEditor.Presentation.Controls
                 formattedText.MaxTextWidth = maxTextWidth;
             }
 
+            formattedText.TextAlignment = TextHorizontalAlignmentHelper.ToAvaloniaTextAlignment(Annotation.HorizontalAlignment);
+
             double textWidth = formattedText.Width;
             double textHeight = formattedText.Height;
-            double originX = Math.Max(horizontalPadding, (Bounds.Width - textWidth) / 2.0);
+            double originX = horizontalPadding;
             double originY = Math.Max(verticalPadding, (Bounds.Height - textHeight) / 2.0);
 
-            originX = Math.Min(originX, Math.Max(horizontalPadding, Bounds.Width - textWidth - horizontalPadding));
             originY = Math.Min(originY, Math.Max(verticalPadding, Bounds.Height - textHeight - verticalPadding));
 
             var textGeometry = formattedText.BuildGeometry(new Point(originX, originY));
@@ -164,19 +166,6 @@ namespace ShareX.ImageEditor.Presentation.Controls
             if (fillBrush != null)
             {
                 context.DrawGeometry(fillBrush, null, textGeometry);
-            }
-
-            // Draw underline if enabled
-            if (Annotation.IsUnderline)
-            {
-                var underlineBrush = fillBrush ?? (strokePen?.Brush) ?? Brushes.Black;
-                var underlineThickness = Math.Max(1.0, Annotation.FontSize / 14.0);
-                var underlineY = originY + textHeight * 0.95;
-                var underlineWidth = Math.Min(textWidth, Math.Max(0, Bounds.Width - (horizontalPadding * 2)));
-                var underlinePen = new Pen(underlineBrush, underlineThickness);
-                context.DrawLine(underlinePen,
-                    new Point(originX, underlineY),
-                    new Point(originX + underlineWidth, underlineY));
             }
         }
 

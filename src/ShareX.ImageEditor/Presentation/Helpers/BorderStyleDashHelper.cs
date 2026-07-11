@@ -23,33 +23,28 @@
 
 #endregion License Information (GPL v3)
 
-using SkiaSharp;
+using Avalonia.Collections;
+using Avalonia.Media;
+using ShareX.ImageEditor.Core.Annotations;
 
-namespace ShareX.ImageEditor.Core.Annotations;
+namespace ShareX.ImageEditor.Presentation.Helpers;
 
-/// <summary>
-/// Line annotation
-/// </summary>
-public partial class LineAnnotation : Annotation, ICurvedSegmentAnnotation
+public static class BorderStyleDashHelper
 {
-    public override AnnotationCategory Category => AnnotationCategory.Shapes;
-    public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
-
-    public SKPoint CurvePoint { get; set; }
-    public bool CurvePointActivated { get; set; }
-
-    public LineAnnotation()
+    public static AvaloniaList<double> CreateStrokeDashArray(BorderStyle borderStyle)
     {
-        ToolType = EditorTool.Line;
+        return borderStyle switch
+        {
+            BorderStyle.Dash => new AvaloniaList<double> { 3, 1 },
+            BorderStyle.Dot => new AvaloniaList<double> { 1, 1 },
+            BorderStyle.DashDot => new AvaloniaList<double> { 3, 1, 1, 1 },
+            BorderStyle.DashDotDot => new AvaloniaList<double> { 3, 1, 1, 1, 1, 1 },
+            _ => new AvaloniaList<double>()
+        };
     }
 
-    public override bool HitTest(SKPoint point, float tolerance = 5)
+    public static PenLineCap CreateStrokeLineCap(BorderStyle borderStyle)
     {
-        return CurvedSegmentHelper.DistanceToPath(this, point) <= tolerance;
-    }
-
-    public override SKRect GetBounds()
-    {
-        return CurvedSegmentHelper.GetBounds(this);
+        return borderStyle == BorderStyle.Solid ? PenLineCap.Round : PenLineCap.Flat;
     }
 }

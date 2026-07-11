@@ -33,16 +33,29 @@ namespace ShareX.ImageEditor.Core.Annotations;
 public partial class EllipseAnnotation : Annotation
 {
     public override AnnotationCategory Category => AnnotationCategory.Shapes;
+    public BorderStyle BorderStyle { get; set; } = BorderStyle.Solid;
+
     public EllipseAnnotation()
     {
         ToolType = EditorTool.Ellipse;
     }
 
-
-
     public override bool HitTest(SKPoint point, float tolerance = 5)
     {
         var rect = GetBounds();
+
+        if (RotationAngle != 0)
+        {
+            float cx = rect.MidX;
+            float cy = rect.MidY;
+            float rad = -RotationAngle * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(rad);
+            float sin = (float)Math.Sin(rad);
+            float rotatedDx = point.X - cx;
+            float rotatedDy = point.Y - cy;
+            point = new SKPoint(cx + rotatedDx * cos - rotatedDy * sin, cy + rotatedDx * sin + rotatedDy * cos);
+        }
+
         var expanded = SKRect.Inflate(rect, tolerance, tolerance);
 
         if (!expanded.Contains(point)) return false;

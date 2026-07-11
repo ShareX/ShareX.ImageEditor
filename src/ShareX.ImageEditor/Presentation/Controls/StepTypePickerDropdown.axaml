@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="using:ShareX.ImageEditor.Presentation.Converters"
+             xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+             x:Class="ShareX.ImageEditor.Presentation.Controls.StepTypePickerDropdown"
+             x:Name="StepTypePickerDropdownRoot"
+             mc:Ignorable="d"
+             d:DesignWidth="140"
+             d:DesignHeight="40">
+    <UserControl.Resources>
+        <converters:StepTypeDisplayConverter x:Key="StepTypeDisplayConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Button x:Name="DropdownButton"
+                Click="OnDropdownButtonClick"
+                Height="40"
+                MinWidth="90"
+                HorizontalContentAlignment="Stretch">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{Binding SelectedStepType, ElementName=StepTypePickerDropdownRoot, Converter={StaticResource StepTypeDisplayConverter}}"
+                           Foreground="{DynamicResource ShareX.Brush.Text}"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="0,0,8,0"/>
+
+                <TextBlock Grid.Column="1"
+                           Classes="dropdown-chevron"
+                           Classes.open="{Binding #StepTypePopup.IsOpen}"
+                           Text="{x:Static theming:EditorIcons.ChevronDown}"
+                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                           FontWeight="Normal"
+                           FontSize="10"
+                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Button>
+
+        <Popup x:Name="StepTypePopup"
+               PlacementTarget="{Binding #DropdownButton}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True"
+               VerticalOffset="4">
+            <Border Classes="popup-border popup-surface"
+                    Classes.open="{Binding #StepTypePopup.IsOpen}">
+                <ItemsControl ItemsSource="{Binding StepTypeOptions, ElementName=StepTypePickerDropdownRoot}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button MinWidth="118"
+                                    Height="32"
+                                    Padding="8,0"
+                                    Classes="picker-button"
+                                    Click="OnStepTypeSelected"
+                                    CommandParameter="{Binding .}"
+                                    HorizontalContentAlignment="Left"
+                                    VerticalContentAlignment="Center">
+                                <TextBlock Text="{Binding ., Converter={StaticResource StepTypeDisplayConverter}}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource ShareX.Brush.Text}"/>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

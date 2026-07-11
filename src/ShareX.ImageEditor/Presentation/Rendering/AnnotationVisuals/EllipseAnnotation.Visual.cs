@@ -25,6 +25,7 @@
 
 using Avalonia.Controls;
 using Avalonia.Media;
+using ShareX.ImageEditor.Presentation.Helpers;
 
 namespace ShareX.ImageEditor.Core.Annotations;
 
@@ -43,6 +44,8 @@ public partial class EllipseAnnotation
         {
             Stroke = strokeBrush,
             StrokeThickness = StrokeWidth,
+            StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(BorderStyle),
+            StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(BorderStyle),
             Fill = fillBrush,
             Tag = this,
             Width = 0,
@@ -51,13 +54,7 @@ public partial class EllipseAnnotation
 
         if (ShadowEnabled)
         {
-            ellipse.Effect = new Avalonia.Media.DropShadowEffect
-            {
-                OffsetX = 3,
-                OffsetY = 3,
-                BlurRadius = 4,
-                Color = Avalonia.Media.Color.FromArgb(128, 0, 0, 0)
-            };
+            ellipse.Effect = ShareX.ImageEditor.Presentation.Helpers.ShadowEffectHelper.CreateDropShadow(this);
         }
 
         return ellipse;
