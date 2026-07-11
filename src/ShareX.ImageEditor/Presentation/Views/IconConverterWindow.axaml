@@ -1,0 +1,153 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
+        xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+        mc:Ignorable="d" d:DesignWidth="860" d:DesignHeight="570"
+        x:Class="ShareX.ImageEditor.Presentation.Views.IconConverterWindow"
+        x:DataType="vm:IconConverterViewModel"
+        Title="ShareX - Icon Converter"
+        Width="860"
+        Height="570"
+        MinWidth="720"
+        MinHeight="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="Border.converter-panel">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Background.Panel}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="TextBlock.path-text">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+        <Style Selector="TextBlock.section-heading">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text}"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+    </Window.Styles>
+
+    <ThemeVariantScope RequestedThemeVariant="{x:Static theming:ThemeManager.ShareXDark}">
+        <Grid Background="{DynamicResource ShareX.Brush.Background.Main}">
+            <Grid RowDefinitions="Auto,*,Auto" Margin="16" RowSpacing="12">
+                <Border Grid.Row="0" Classes="converter-panel" Padding="12">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <TextBlock Grid.Column="0"
+                                   Classes="section-heading"
+                                   Text="Image"
+                                   Margin="0"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1"
+                                   Classes="path-text"
+                                   Text="{Binding ImagePath, TargetNullValue='No image selected'}"
+                                   VerticalAlignment="Center"/>
+                        <Button Grid.Column="2"
+                                Content="Browse..."
+                                Command="{Binding BrowseCommand}"/>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" ColumnDefinitions="340,*" ColumnSpacing="12">
+                    <Border Grid.Column="0" Classes="converter-panel" Padding="16">
+                        <StackPanel Spacing="20">
+                            <StackPanel>
+                                <TextBlock Classes="section-heading" Text="Sizes"/>
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="10" ColumnSpacing="12">
+                                    <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Is16Selected}">
+                                        <TextBlock Text="16 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding Is32Selected}">
+                                        <TextBlock Text="32 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                    <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding Is48Selected}">
+                                        <TextBlock Text="48 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                    <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding Is64Selected}">
+                                        <TextBlock Text="64 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                    <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding Is128Selected}">
+                                        <TextBlock Text="128 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                    <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding Is256Selected}">
+                                        <TextBlock Text="256 pixels" FontWeight="Normal"/>
+                                    </CheckBox>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel>
+                                <TextBlock Classes="section-heading" Text="Bit depth"/>
+                                <StackPanel Spacing="8">
+                                    <RadioButton GroupName="BitDepth"
+                                                 IsChecked="{Binding IsPalette8}">
+                                        <TextBlock Text="8 bits (256 colors)" FontWeight="Normal"/>
+                                    </RadioButton>
+                                    <RadioButton GroupName="BitDepth"
+                                                 IsChecked="{Binding IsTrueColor32}">
+                                        <TextBlock Text="32 bits (16.7M colors)" FontWeight="Normal"/>
+                                    </RadioButton>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="converter-panel" ClipToBounds="True">
+                        <Grid Margin="16">
+                            <StackPanel IsVisible="{Binding !HasImage}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="10">
+                                <TextBlock Text="{x:Static theming:LucideIcons.file_image}"
+                                           FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                           FontWeight="Normal"
+                                           FontSize="46"
+                                           Foreground="{DynamicResource ShareX.Brush.Text.Secondary}"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Drop an image here"
+                                           FontSize="16"
+                                           Foreground="{DynamicResource ShareX.Brush.Text}"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="or use Browse to choose a file"
+                                           FontWeight="Normal"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <Grid IsVisible="{Binding HasImage}" RowDefinitions="*,Auto" RowSpacing="12">
+                                <Image Grid.Row="0"
+                                       Source="{Binding PreviewImage}"
+                                       Stretch="Uniform"
+                                       Margin="8"/>
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding ImageDetails}"
+                                           FontWeight="Normal"
+                                           HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding StatusText}"
+                               FontWeight="Normal"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                    <Button Grid.Column="1"
+                            Command="{Binding ConvertCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{x:Static theming:LucideIcons.file_down}"
+                                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Convert..." VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+        </Grid>
+    </ThemeVariantScope>
+</Window>
