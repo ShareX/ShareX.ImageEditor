@@ -1,11 +1,66 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-05-26
+Last updated: 2026-07-11
 
 ## Port Source
-- ShareX.ImageEditor commit: `abff8a8f8` (latest local ShareX commit touching ShareX.ImageEditor as of 2026-05-26)
-- XerahS submodule last synced to: `abff8a8f8`
-- XerahS submodule current HEAD before this session: `8ccc249`
+- ShareX.ImageEditor commit: `6b014fd9` (latest upstream ShareX commit touching ShareX.ImageEditor as of 2026-07-11)
+- XerahS submodule last synced to: `6b014fd9`
+- XerahS submodule current HEAD before this session: `0838f33`
+
+## Port Activity (2026-07-11)
+
+- Previous recorded ShareX sync: `abff8a8f8`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `6b014fd9` (Update Avalonia image encoding calls)
+- Result: caught up through `6b014fd9` in the working tree
+- Method: mapped final-state sync from a fresh `https://github.com/ShareX/ShareX` clone (cloud agent host; no local `ShareX Team` checkout available) into `src/ShareX.ImageEditor`, with manual merges for the 19 files carrying XerahS adaptations, followed by XerahS host integration fixes
+- Range size: 160 upstream commits, 149 files, ~16k insertions
+- Risk: high; the range spans the notification system, border styles, step types, text alignment/bold/italic (underline removed), shadow options, rotation for rect/ellipse/balloon/effect annotations, spotlight blur, Ctrl-move interaction, customizable toolbar with hotkeys, gradient editing, image comparer, background remover (ONNX/DirectML), screen color picker, icon/video converter, hash checker, QR window, Konami easter egg, async save/copy host events, and the AvaloniaIntegration threading rework
+
+### Feature groups reviewed and ported
+
+- Notifications: `4f2aa8c0`..`0459bb14`, `6ac23c24`, `95742510`, `e32843ed` (crop no-op guard; `EditorCore.Crop` now returns `bool`)
+- Border styles: `dea19971`, `3feea908`, `d20225a9`, `1b99b4fc`, `4446be1d`, `d046f0fa`, `fbec2122`, `602ca0d5`, `98a5432b`
+- Step types + tail toggles: `30679a40`, `bbc4cc34`, `fe370a4e` (merged with XerahS `StepTailStyle` Triangle/Arrow support)
+- Text alignment/bold/italic, underline removal: `d54026c2`, `55b56a9e`, `3eeca84d`, `210388ba`, `03c6c8af`
+- Shadow options: `f6a80ab3`, `4f05a52f`, `dfbc23a4`, `52ebe979`, `d52c7206`, `7813abd3`
+- Rotation for rect/ellipse/balloon/effects: `5f47631a`, `49e83c47`, `d8d01d78`, `d3e66b10`, `192494a5` (tail polygon tangent geometry)
+- Spotlight blur + fixes: `1f8e66a1`, `99903f79`, `444d8c88`, `7495917e`; speech balloon tail toggle: `6f47ef53`
+- Interaction: `d9c1f36c`, `65e9cff9`, `031f21bc`, `5dd5b96a`, `102c1f8e`, `9b0f21cf`, `7d62b546`, `cbddba46`, `40fa909d`, `08201b14`
+- Emoji rendering/replace picker: `ecd43c9b`, `142ae2d6`, `1c783636`, `2e583bd5`, `f400100c`, `99209446`
+- Toolbars: `dee41612`, `48717b09`, `1c06902a`, `b2a3c7cc`, `508737df`, `53625d76`; customization `3f4bd187`..`b60378e3`, `5eadfec4`
+- Gradient/background popup: `c7932c00`, `4ca7da49`, `ed2a864d`, `d6ea0c29`
+- Image comparer: `aaa0fd46`..`c55e919a`, `45c70f04`, `9d9a634e`
+- Background remover: `4f096643`..`0312a001`, `80f03a86` (adds `Microsoft.ML.OnnxRuntime.DirectML` + `Vortice.DXGI`; Windows-only at runtime, compiles cross-platform)
+- Screen color picker: `25e1e5c2`, `ec55d96e`, `1cad4b90`, `c38482a3`; easter egg: `e360787f`, `6c83fb3c`, `f07ad1d9`
+- Icon converter `68bd5edf`, `9794b2ad`; video converter `8e4593c7`..`bf32cc64`; hash checker `ed3551ed`, `c04824a5`; QR window `6037b920`, `4a6a6b3c`
+- Hosting/API rework: `703a722b`, `314f1df8`, `48463c98`, `34003c88`, `ea4d8291`, `ff6ccfb8`, `6fb82134` (async `CopyRequested`/`SaveRequested`/`SaveAsRequested`, SKBitmap-only `ShowEditorDialog`, new tool-window entry points)
+- Styling: `e2156a4d`, `0f147014`, `c6cdd3fd`, `77de3ec6` (Lucide regen), `6b014fd9` (Avalonia encode calls)
+- Small fixes: `c02d87fb` (dialog Yes focus), `dce86c1a` (caret brush), `e7a4cc4c`/`d67cdddc` (bitmap conversion), `13efb467` (`CustomCursorKind`)
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout and per-file license-header state.
+- Preserved `StepTailStyle` (Triangle/Arrow), `TryGetArrowTailOutline`, `TryGetCircleSegmentExitPoint`, and tail-style icon constants while adding upstream `StepType`, `IsBold`, `TailEnabled`, and the tangent-based triangle tail geometry.
+- Preserved `JsonPolymorphic`/`JsonIgnore` persistence attributes on `Annotation`, `BaseEffectAnnotation`, and `ImageAnnotation`, plus `EditorCore` snapshot/restore hooks and `MainViewModel`/`EditorView.CoreBridge` persistence bridges.
+- Preserved `MainViewModel.ApplicationName`/`EditorTitle` and `ShowFileMenu = !taskMode` in `AvaloniaIntegration`.
+- **Intentional skip**: upstream renamed `ImageEditorStyles.axaml`/`ImageEditorTheme.axaml` to `AppStyles.axaml`/`AppTheme.axaml`; XerahS keeps its file names because XerahS root (`XerahS.UI`, `XerahS.RegionCapture`) references those URIs and scopes styles at the `EditorView`/window level instead of app-wide. Upstream URI references were rewritten during sync.
+- Preserved the `EditorView.axaml` `StyleInclude` of `ImageEditorStyles.axaml` (upstream applies styles app-wide from `AvaloniaIntegration`, which does not cover XerahS embedded hosting) and the XerahS-only `EffectBrowserPanel.axaml` style include (`72ff989`).
+- Preserved the XerahS emoji search-index case-insensitivity fix (`0838f33`); upstream did not touch `EmojiCatalogEntry`.
+- New tool windows (`BackgroundRemoverWindow`, `ImageComparerWindow`, `IconConverterWindow`, `VideoConverterWindow`, `HashCheckerWindow`, `QrCodeWindow`, `ScreenColorPickerWindow`) rely on app-level styles when opened via `AvaloniaIntegration`; XerahS hosts must include `ImageEditorTheme`/`ImageEditorStyles` when wiring these windows into XerahS flows (not yet wired).
+
+### Root integration updated in the same session
+
+- `XerahS.RegionCapture/ViewModels/RegionCaptureAnnotationViewModel.cs`: implemented the ~30 new `IAnnotationToolbarAdapter` members (border style, step type, text alignment, shadow detail, spotlight blur, tail/ellipse toggles, file commands) and removed underline support.
+- `XerahS.UI/Services/MainViewModelHelper.cs`: migrated to async `Func<Task>`/`Func<Task<string?>>` editor events; save handlers now return the saved path so editor notifications display it.
+- `XerahS.RegionCapture/UI/OverlayWindow.Canvas.cs` and RegionCapture adapter tests: removed `TextUnderline`/`IsUnderline`.
+- Submodule `Directory.Packages.props`: Avalonia 12.1.0, SkiaSharp 3.119.4 (aligned with ShareX upstream), Tmds.DBus 0.94.2, added Microsoft.ML.OnnxRuntime.DirectML 1.24.4.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor/src/ShareX.ImageEditor/ShareX.ImageEditor.csproj -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-07-11 (Linux).
+- `dotnet build src/desktop/XerahS.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-07-11 (Linux).
+- `dotnet build ShareX.ImageEditor.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` (standalone submodule solution) passed with 0 warnings and 0 errors on 2026-07-11.
+- `dotnet test tests/XerahS.Tests/XerahS.Tests.csproj` passed 1148/1148 on 2026-07-11.
 
 ## Port Activity (2026-05-26)
 
