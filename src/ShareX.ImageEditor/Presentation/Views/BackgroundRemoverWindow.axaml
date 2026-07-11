@@ -1,0 +1,227 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
+        xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
+        xmlns:theming="using:ShareX.ImageEditor.Presentation.Theming"
+        mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
+        x:Class="ShareX.ImageEditor.Presentation.Views.BackgroundRemoverWindow"
+        x:DataType="vm:BackgroundRemoverViewModel"
+        Title="ShareX - Background Remover"
+        Width="1080"
+        Height="720"
+        MinWidth="760"
+        MinHeight="520"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <Style Selector="Border.remover-panel">
+            <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Background.Panel}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Style Selector="TextBlock.path-text">
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Text.Secondary}"/>
+        </Style>
+        <Style Selector="TextBlock.model-action-icon">
+            <Setter Property="FontSize" Value="17"/>
+        </Style>
+        <Style Selector="Button.guide-highlight">
+            <Setter Property="Foreground" Value="{DynamicResource ShareX.Brush.Accent.Foreground}"/>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ShareX.Brush.Accent}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ShareX.Brush.Accent}"/>
+            </Style>
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.4"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.4"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </Window.Styles>
+
+    <ThemeVariantScope RequestedThemeVariant="{x:Static theming:ThemeManager.ShareXDark}">
+        <Grid Background="{DynamicResource ShareX.Brush.Background.Main}">
+            <Grid RowDefinitions="Auto,*,Auto" Margin="16" RowSpacing="12">
+                <Border Grid.Row="0" Classes="remover-panel" Padding="12">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                        <Grid Grid.Row="0"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="12">
+                            <TextBlock Grid.Column="0"
+                                       Text="Image"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Classes="path-text"
+                                       Text="{Binding ImagePath, TargetNullValue='No image selected'}"
+                                       VerticalAlignment="Center"/>
+                            <Button Grid.Column="2"
+                                    Content="Browse..."
+                                    Command="{Binding BrowseImageCommand}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="12">
+                            <TextBlock Grid.Column="0"
+                                       Text="Models"
+                                       VerticalAlignment="Center"/>
+                            <Grid Grid.Column="1"
+                                  ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto"
+                                  ColumnSpacing="4">
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{Binding AvailableModels}"
+                                          SelectedItem="{Binding SelectedModel, Mode=TwoWay}"
+                                          IsEnabled="{Binding !IsProcessing}"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center"
+                                          ToolTip.Tip="Background removal model"/>
+                                <Button Grid.Column="1"
+                                        MinWidth="0"
+                                        Width="{Binding Bounds.Height, RelativeSource={RelativeSource Self}}"
+                                        Padding="0"
+                                        Command="{Binding RefreshModelsCommand}"
+                                        ToolTip.Tip="Refresh models">
+                                    <TextBlock Classes="model-action-icon"
+                                               Text="{x:Static theming:LucideIcons.refresh_cw}"
+                                               FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                               FontWeight="Normal"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                                <Button Grid.Column="2"
+                                        MinWidth="0"
+                                        Width="{Binding Bounds.Height, RelativeSource={RelativeSource Self}}"
+                                        Padding="0"
+                                        Command="{Binding OpenModelsFolderCommand}"
+                                        ToolTip.Tip="Open models folder">
+                                    <TextBlock Classes="model-action-icon"
+                                               Text="{x:Static theming:LucideIcons.folder_open}"
+                                               FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                               FontWeight="Normal"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                                <Button Grid.Column="3"
+                                        Classes.guide-highlight="{Binding IsGuideHighlighted}"
+                                        MinWidth="0"
+                                        Width="{Binding Bounds.Height, RelativeSource={RelativeSource Self}}"
+                                        Padding="0"
+                                        Command="{Binding OpenBackgroundRemoverGuideCommand}"
+                                        ToolTip.Tip="Open guide page...">
+                                    <TextBlock Classes="model-action-icon"
+                                               Text="{x:Static theming:LucideIcons.circle_help}"
+                                               FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                               FontWeight="Normal"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Button>
+                                <TextBlock Grid.Column="4"
+                                           Text="Device"
+                                           Margin="8,0,8,0"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="5"
+                                          ItemsSource="{Binding AvailableDevices}"
+                                          SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                                          IsEnabled="{Binding !IsProcessing}"
+                                          MinWidth="88"
+                                          VerticalAlignment="Center"
+                                          ToolTip.Tip="Processing device"/>
+                            </Grid>
+                            <Button Grid.Column="2"
+                                    Content="Remove Background"
+                                    Command="{Binding RemoveBackgroundCommand}"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Classes="remover-panel" ClipToBounds="True">
+                    <Grid Background="{DynamicResource ShareX.Brush.Background.Panel}">
+                        <TextBlock Text="Select an image to preview it here."
+                                   IsVisible="{Binding !HasImage}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"
+                                   FontWeight="Normal"/>
+
+                        <controls:ImageComparisonSlider LeftImage="{Binding SourcePreviewImage}"
+                                                        RightImage="{Binding ResultPreviewImage}"
+                                                        SliderPosition="{Binding ComparisonSliderPosition, Mode=TwoWay}"
+                                                        IsVisible="{Binding HasImage}"
+                                                        Margin="12"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Spacing="8">
+                    <Button
+                            Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{x:Static theming:EditorIcons.ActionSave}"
+                                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                       FontWeight="Normal"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Save" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button
+                            Command="{Binding SaveAsCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{x:Static theming:EditorIcons.ActionSaveAs}"
+                                       FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                                       FontWeight="Normal"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Save as..." VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Border Classes="popup-surface zoom-upward app-toast"
+                    Classes.open="{Binding IsNotificationOpen}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="16,16,16,68"
+                    MaxWidth="640"
+                    IsVisible="{Binding IsNotificationVisible}"
+                    Cursor="Hand"
+                    PointerEntered="OnNotificationPointerEntered"
+                    PointerExited="OnNotificationPointerExited"
+                    PointerPressed="OnNotificationPointerPressed"
+                    ZIndex="28">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding NotificationIcon}"
+                               FontFamily="{DynamicResource ShareX.FontFamily.Icon}"
+                               FontWeight="Normal"
+                               FontSize="18"
+                               VerticalAlignment="Center"
+                               IsVisible="{Binding HasNotificationIcon}"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding NotificationMessage}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource ShareX.Brush.Text}"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </ThemeVariantScope>
+</Window>
