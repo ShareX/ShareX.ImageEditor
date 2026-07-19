@@ -17,14 +17,18 @@
     </UserControl.Resources>
 
     <StackPanel Orientation="Vertical" Spacing="0">
+        <!-- Cap chrome to host width so Avalonia 12.1+ ScrollViewer gets a finite viewport and tools scroll instead of clipping. -->
         <Border Padding="4"
                 Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
                 BorderBrush="{DynamicResource ShareX.Brush.Border}"
                 BorderThickness="1"
                 CornerRadius="0,0,4,4"
-                HorizontalAlignment="Center">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Disabled">
+                HorizontalAlignment="Center"
+                MaxWidth="{Binding Bounds.Width, ElementName=AnnotationToolbarRoot}">
+            <ScrollViewer x:Name="PrimaryToolbarScrollViewer"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Disabled"
+                          AllowAutoHide="False">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <ItemsControl ItemsSource="{ReflectionBinding VisibleToolbarItems}">
                         <ItemsControl.ItemsPanel>
@@ -169,9 +173,11 @@
                 BorderThickness="1,0,1,1"
                 CornerRadius="0,0,4,4"
                 HorizontalAlignment="Center"
+                MaxWidth="{Binding Bounds.Width, ElementName=AnnotationToolbarRoot}"
                 IsVisible="{Binding ShowToolOptionsSeparator}">
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Disabled">
+                          VerticalScrollBarVisibility="Disabled"
+                          AllowAutoHide="False">
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <Border Background="Transparent"

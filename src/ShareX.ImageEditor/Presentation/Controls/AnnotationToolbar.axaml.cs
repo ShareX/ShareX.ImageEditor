@@ -281,10 +281,23 @@ public partial class AnnotationToolbar : UserControl
 
     private void OnToolbarItemClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button { Tag: ToolbarCustomizationItemViewModel item } &&
-            DataContext is EditorToolbarAdapter toolbar)
+        if (sender is not Button { Tag: ToolbarCustomizationItemViewModel item })
         {
-            toolbar.ExecuteToolbarItem(item);
+            return;
+        }
+
+        // Editor hosts use EditorToolbarAdapter (tools + File/Background/Effects).
+        // Other IAnnotationToolbarAdapter hosts (e.g. RegionCapture) only need tool selection.
+        if (DataContext is EditorToolbarAdapter editorToolbar)
+        {
+            editorToolbar.ExecuteToolbarItem(item);
+            e.Handled = true;
+            return;
+        }
+
+        if (DataContext is IAnnotationToolbarAdapter toolbar && item.Tool is EditorTool tool)
+        {
+            toolbar.SelectTool(tool);
             e.Handled = true;
         }
     }

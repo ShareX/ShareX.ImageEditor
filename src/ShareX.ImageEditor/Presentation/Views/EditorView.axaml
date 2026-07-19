@@ -12,6 +12,7 @@
              xmlns:easterEggs="using:ShareX.ImageEditor.Presentation.EasterEggs"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="ShareX.ImageEditor.Presentation.Views.EditorView"
+             x:Name="EditorViewRoot"
              x:DataType="vm:MainViewModel"
              Focusable="True">
 
@@ -630,12 +631,13 @@
             Classes.hidden="{Binding AreToolbarsHidden}"
             Margin="0,0,0,0"
             VerticalAlignment="Top"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Stretch"
             IsHitTestVisible="{Binding ShowToolbars}">
             <controls:AnnotationToolbar x:Name="AnnotationToolbarControl"
                                         DataContext="{Binding ToolbarAdapter}"
                                         ShowEditingActions="False"
-                                        MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                        HorizontalAlignment="Stretch"
+                                        MaxWidth="{Binding Bounds.Width, ElementName=EditorViewRoot}"/>
         </Border>
 
         <!-- Row 0: Export Actions Toolbar (Bottom Centered, Floating) -->
@@ -644,7 +646,7 @@
             Classes.hidden="{Binding AreToolbarsHidden}"
             VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,0"
                 Padding="4" Background="{DynamicResource ShareX.Brush.Background.Toolbar}" BorderBrush="{DynamicResource ShareX.Brush.Border}" BorderThickness="1" CornerRadius="4,4,0,0"
-                MaxWidth="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                MaxWidth="{Binding Bounds.Width, ElementName=EditorViewRoot}"
             ClipToBounds="False"
             IsHitTestVisible="{Binding ShowToolbars}">
             <StackPanel Orientation="Horizontal" Spacing="4" ClipToBounds="False">
