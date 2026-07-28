@@ -34,8 +34,13 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
+        <!-- Bind typography from the Button. A global TextBlock FontFamily/FontSize style
+             outranks inherited values, which blanks Lucide PUA glyphs in Content="{icon}". -->
         <Style Selector="^ TextBlock">
+            <Setter Property="FontFamily" Value="{Binding $parent[Button].FontFamily}"/>
+            <Setter Property="FontSize" Value="{Binding $parent[Button].FontSize}"/>
             <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
@@ -141,6 +146,12 @@
         <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Icon}"/>
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="FontSize" Value="18"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Icon}"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
     </Style>
 
     <Style Selector="Button.ratio-button">
