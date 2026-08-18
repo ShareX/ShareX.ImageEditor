@@ -53,7 +53,7 @@ public partial class EditorView
     {
         if (DataContext is MainViewModel vm)
         {
-            vm.ShowNotification("Achievement unlocked!", EditorIcons.Achievement);
+            vm.ShowNotification(ShareX.ImageEditor.Localization.Strings.EditorView_AchievementUnlocked, EditorIcons.Achievement);
         }
     }
 

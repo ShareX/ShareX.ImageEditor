@@ -1,0 +1,1500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfirmationDialogView_Title" xml:space="preserve">
+    <value>Afsluiten bevestigen</value>
+  </data>
+  <data name="ConfirmationDialogView_Message" xml:space="preserve">
+    <value>Er zijn niet-opgeslagen wijzigingen.
+
+Wilt u de wijzigingen opslaan voordat u de afbeeldingseditor sluit?</value>
+  </data>
+  <data name="ConfirmationDialogView_Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="ConfirmationDialogView_No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="ConfirmationDialogView_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="NewImageDialogView_Title" xml:space="preserve">
+    <value>Nieuwe afbeelding</value>
+  </data>
+  <data name="NewImageDialogView_Width" xml:space="preserve">
+    <value>Breedte:</value>
+  </data>
+  <data name="NewImageDialogView_Pixels" xml:space="preserve">
+    <value>pixels</value>
+  </data>
+  <data name="NewImageDialogView_Height" xml:space="preserve">
+    <value>Hoogte:</value>
+  </data>
+  <data name="NewImageDialogView_Background" xml:space="preserve">
+    <value>Achtergrond:</value>
+  </data>
+  <data name="NewImageDialogView_Transparent" xml:space="preserve">
+    <value>Transparant</value>
+  </data>
+  <data name="NewImageDialogView_SolidColor" xml:space="preserve">
+    <value>Effen kleur</value>
+  </data>
+  <data name="NewImageDialogView_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="NewImageDialogView_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="StartScreenDialogView_Title" xml:space="preserve">
+    <value>Startscherm</value>
+  </data>
+  <data name="StartScreenDialogView_CreateNewImage" xml:space="preserve">
+    <value>Nieuwe afbeelding maken...</value>
+  </data>
+  <data name="StartScreenDialogView_OpenImageFile" xml:space="preserve">
+    <value>Afbeeldingsbestand openen...</value>
+  </data>
+  <data name="StartScreenDialogView_LoadImageFromClipboard" xml:space="preserve">
+    <value>Afbeelding van klembord laden</value>
+  </data>
+  <data name="StartScreenDialogView_LoadImageFromURL" xml:space="preserve">
+    <value>Afbeelding van URL laden...</value>
+  </data>
+  <data name="StartScreenDialogView_Load" xml:space="preserve">
+    <value>Laden</value>
+  </data>
+  <data name="StartScreenDialogView_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="StartScreenDialogView_Exit" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="StartScreenDialogView_RecentFiles" xml:space="preserve">
+    <value>Recente bestanden</value>
+  </data>
+  <data name="StartScreenDialogView_NoRecentImageFiles" xml:space="preserve">
+    <value>Nog geen recente afbeeldingsbestanden.</value>
+  </data>
+  <data name="StartScreenDialogView_InvalidURL" xml:space="preserve">
+    <value>Voer een geldige HTTP- of HTTPS-URL in.</value>
+  </data>
+  <data name="EmojiPickerDialogView_LoadingEmojis" xml:space="preserve">
+    <value>Emoji's laden...</value>
+  </data>
+  <data name="EmojiPickerDialogView_SearchEmojisCount" xml:space="preserve">
+    <value>Emoji's zoeken... ({0})</value>
+  </data>
+  <data name="EmojiPickerDialogView_BrowseEmojis" xml:space="preserve">
+    <value>Door emoji's bladeren</value>
+  </data>
+  <data name="EmojiPickerDialogView_CategorySummary" xml:space="preserve">
+    <value>{0} • {1} emoji's</value>
+  </data>
+  <data name="EmojiPickerDialogView_SearchResults" xml:space="preserve">
+    <value>Zoekresultaten • {0} overeenkomsten</value>
+  </data>
+  <data name="EmojiPickerDialogView_NoMatches" xml:space="preserve">
+    <value>Geen emoji's komen overeen met deze zoekopdracht.</value>
+  </data>
+  <data name="EmojiPickerDialogView_TryDifferentKeyword" xml:space="preserve">
+    <value>Probeer een ander trefwoord.</value>
+  </data>
+  <data name="EmojiPickerDialogView_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="EmojiPickerDialogView_PreviewsLoading" xml:space="preserve">
+    <value>De kiezer is gereed. Emoji-voorbeelden worden op de achtergrond geladen.</value>
+  </data>
+  <data name="InsertImageDialogView_Title" xml:space="preserve">
+    <value>Afbeelding invoegen</value>
+  </data>
+  <data name="InsertImageDialogView_Description" xml:space="preserve">
+    <value>Kies hoe de inkomende afbeelding op het huidige canvas moet worden geplaatst.</value>
+  </data>
+  <data name="InsertImageDialogView_ImageSummary" xml:space="preserve">
+    <value>Inkomende afbeelding: {0} x {1}px</value>
+  </data>
+  <data name="InsertImageDialogView_Center" xml:space="preserve">
+    <value>Afbeelding in het midden invoegen</value>
+  </data>
+  <data name="InsertImageDialogView_CenterDescription" xml:space="preserve">
+    <value>Behoudt de huidige canvasgrootte.</value>
+  </data>
+  <data name="InsertImageDialogView_Below" xml:space="preserve">
+    <value>Afbeelding onderaan invoegen</value>
+  </data>
+  <data name="InsertImageDialogView_BelowDescription" xml:space="preserve">
+    <value>Vergroot het canvas naar beneden voordat de afbeelding wordt toegevoegd.</value>
+  </data>
+  <data name="InsertImageDialogView_Right" xml:space="preserve">
+    <value>Afbeelding rechts invoegen</value>
+  </data>
+  <data name="InsertImageDialogView_RightDescription" xml:space="preserve">
+    <value>Vergroot het canvas naar rechts voordat de afbeelding wordt toegevoegd.</value>
+  </data>
+  <data name="AnnotationToolbar_Exit" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="AnnotationToolbar_OpenEllipsis" xml:space="preserve">
+    <value>Openen...</value>
+  </data>
+  <data name="AnnotationToolbar_Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="EditorOptionsPanel_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="EditorView_Copy" xml:space="preserve">
+    <value>Kopieer</value>
+  </data>
+  <data name="EditorView_Duplicate" xml:space="preserve">
+    <value>Dupliceren</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_BrowseEllipsis" xml:space="preserve">
+    <value>Bladeren...</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Movedown" xml:space="preserve">
+    <value>Omlaag</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Moveup" xml:space="preserve">
+    <value>Omhoog</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AnnotationToolbar_Blur" xml:space="preserve">
+    <value>Blur</value>
+  </data>
+  <data name="AnnotationToolbar_Color" xml:space="preserve">
+    <value>Kleur</value>
+  </data>
+  <data name="AnnotationToolbar_Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="EditorOptionsPanel_Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="EditorView_Bringforward" xml:space="preserve">
+    <value>Naar voren brengen</value>
+  </data>
+  <data name="EditorView_Bringtofront" xml:space="preserve">
+    <value>Naar voren brengen</value>
+  </data>
+  <data name="EditorView_Cut" xml:space="preserve">
+    <value>Knip</value>
+  </data>
+  <data name="EditorView_Delete" xml:space="preserve">
+    <value>Verwijder</value>
+  </data>
+  <data name="EditorView_Deleteall" xml:space="preserve">
+    <value>Verwijder alles</value>
+  </data>
+  <data name="EditorView_Paste" xml:space="preserve">
+    <value>Plak</value>
+  </data>
+  <data name="EditorView_Redo" xml:space="preserve">
+    <value>Opnieuw</value>
+  </data>
+  <data name="EditorView_Sendbackward" xml:space="preserve">
+    <value>Naar achteren sturen</value>
+  </data>
+  <data name="EditorView_Sendtoback" xml:space="preserve">
+    <value>Send to back</value>
+  </data>
+  <data name="EditorView_Undo" xml:space="preserve">
+    <value>Ongedaan maken</value>
+  </data>
+  <data name="AnnotationToolbar_Arrowstyle" xml:space="preserve">
+    <value>Pijlstijl</value>
+  </data>
+  <data name="AnnotationToolbar_Bluramount" xml:space="preserve">
+    <value>Hoeveelheid vervaging</value>
+  </data>
+  <data name="AnnotationToolbar_Bordercolor" xml:space="preserve">
+    <value>Randkleur</value>
+  </data>
+  <data name="AnnotationToolbar_Borderstyle" xml:space="preserve">
+    <value>Randstijl</value>
+  </data>
+  <data name="AnnotationToolbar_Cornerradius" xml:space="preserve">
+    <value>Hoekstraal</value>
+  </data>
+  <data name="AnnotationToolbar_Cursortype" xml:space="preserve">
+    <value>Cursortype</value>
+  </data>
+  <data name="AnnotationToolbar_DeleteallShiftDelete" xml:space="preserve">
+    <value>Alles verwijderen (Shift+Delete)</value>
+  </data>
+  <data name="AnnotationToolbar_DeleteDelete" xml:space="preserve">
+    <value>Verwijderen (Delete)</value>
+  </data>
+  <data name="AnnotationToolbar_Effectstrength" xml:space="preserve">
+    <value>Effectsterkte</value>
+  </data>
+  <data name="AnnotationToolbar_Fillcolor" xml:space="preserve">
+    <value>Opvulkleur</value>
+  </data>
+  <data name="AnnotationToolbar_Fontfamily" xml:space="preserve">
+    <value>Lettertypefamilie</value>
+  </data>
+  <data name="AnnotationToolbar_Fontsize" xml:space="preserve">
+    <value>Lettergrootte</value>
+  </data>
+  <data name="AnnotationToolbar_Horizontalalignment" xml:space="preserve">
+    <value>Horizontale uitlijning</value>
+  </data>
+  <data name="AnnotationToolbar_NewEllipsis" xml:space="preserve">
+    <value>Nieuw...</value>
+  </data>
+  <data name="AnnotationToolbar_OffsetX" xml:space="preserve">
+    <value>Verschuiving X</value>
+  </data>
+  <data name="AnnotationToolbar_OffsetY" xml:space="preserve">
+    <value>Verschuiving Y</value>
+  </data>
+  <data name="AnnotationToolbar_Opacity" xml:space="preserve">
+    <value>Dekking</value>
+  </data>
+  <data name="AnnotationToolbar_Openrecent" xml:space="preserve">
+    <value>Recent openen</value>
+  </data>
+  <data name="AnnotationToolbar_RedoCtrlY" xml:space="preserve">
+    <value>Opnieuw (Ctrl+Y)</value>
+  </data>
+  <data name="AnnotationToolbar_SaveasEllipsis" xml:space="preserve">
+    <value>Opslaan als...</value>
+  </data>
+  <data name="AnnotationToolbar_Shadow" xml:space="preserve">
+    <value>Schaduw</value>
+  </data>
+  <data name="AnnotationToolbar_Shadowcolor" xml:space="preserve">
+    <value>Schaduwkleur</value>
+  </data>
+  <data name="AnnotationToolbar_Startingnumber" xml:space="preserve">
+    <value>Beginnummer</value>
+  </data>
+  <data name="AnnotationToolbar_Steptype" xml:space="preserve">
+    <value>Staptype</value>
+  </data>
+  <data name="AnnotationToolbar_Textcolor" xml:space="preserve">
+    <value>Tekstkleur</value>
+  </data>
+  <data name="AnnotationToolbar_Thickness" xml:space="preserve">
+    <value>Dikte</value>
+  </data>
+  <data name="AnnotationToolbar_Togglebold" xml:space="preserve">
+    <value>Vet omschakelen</value>
+  </data>
+  <data name="AnnotationToolbar_Toggleellipseshape" xml:space="preserve">
+    <value>Ellipsvorm omschakelen</value>
+  </data>
+  <data name="AnnotationToolbar_Toggleitalic" xml:space="preserve">
+    <value>Cursief omschakelen</value>
+  </data>
+  <data name="AnnotationToolbar_ToggleshadowShadowoptionsRightclick" xml:space="preserve">
+    <value>Schaduw omschakelen
+Schaduwopties (Rechtsklik)</value>
+  </data>
+  <data name="AnnotationToolbar_Toggletail" xml:space="preserve">
+    <value>Staart omschakelen</value>
+  </data>
+  <data name="AnnotationToolbar_UndoCtrlZ" xml:space="preserve">
+    <value>Ongedaan maken (Ctrl+Z)</value>
+  </data>
+  <data name="ColorPickerPanel_Pickcolorfromscreen" xml:space="preserve">
+    <value>Kleur van scherm kiezen</value>
+  </data>
+  <data name="EditorOptionsPanel_CustomizetoolbarEllipsis" xml:space="preserve">
+    <value>Werkbalk aanpassen...</value>
+  </data>
+  <data name="EditorView_Auto" xml:space="preserve">
+    <value>Automatisch</value>
+  </data>
+  <data name="EditorView_Background" xml:space="preserve">
+    <value>Achtergrond</value>
+  </data>
+  <data name="EditorView_Backgroundimage" xml:space="preserve">
+    <value>Achtergrondafbeelding</value>
+  </data>
+  <data name="EditorView_BrowsebackgroundimageEllipsis" xml:space="preserve">
+    <value>Bladeren naar achtergrondafbeelding...</value>
+  </data>
+  <data name="EditorView_CancelEsc" xml:space="preserve">
+    <value>Annuleren (Esc)</value>
+  </data>
+  <data name="EditorView_CopyimagetoclipboardCtrlC" xml:space="preserve">
+    <value>Afbeelding naar klembord kopiëren (Ctrl+C)</value>
+  </data>
+  <data name="EditorView_Editbackgroundcolor" xml:space="preserve">
+    <value>Achtergrondkleur bewerken</value>
+  </data>
+  <data name="EditorView_Editgradientcolor1" xml:space="preserve">
+    <value>Verloopkleur 1 bewerken</value>
+  </data>
+  <data name="EditorView_Editgradientcolor2" xml:space="preserve">
+    <value>Verloopkleur 2 bewerken</value>
+  </data>
+  <data name="EditorView_Flatten" xml:space="preserve">
+    <value>Samenvoegen</value>
+  </data>
+  <data name="EditorView_Margin" xml:space="preserve">
+    <value>Marge</value>
+  </data>
+  <data name="EditorView_Padding" xml:space="preserve">
+    <value>Opvulling</value>
+  </data>
+  <data name="EditorView_PinimagetoscreenCtrlP" xml:space="preserve">
+    <value>Afbeelding op scherm vastzetten (Ctrl+P)</value>
+  </data>
+  <data name="EditorView_PrintimageEllipsisCtrlShiftP" xml:space="preserve">
+    <value>Afbeelding afdrukken... (Ctrl+Shift+P)</value>
+  </data>
+  <data name="EditorView_Ratio" xml:space="preserve">
+    <value>Verhouding</value>
+  </data>
+  <data name="EditorView_RoundedCorner" xml:space="preserve">
+    <value>Afgeronde hoek</value>
+  </data>
+  <data name="EditorView_SaveimageasEllipsisCtrlShiftS" xml:space="preserve">
+    <value>Afbeelding opslaan als... (Ctrl+Shift+S)</value>
+  </data>
+  <data name="EditorView_SaveimageCtrlS" xml:space="preserve">
+    <value>Afbeelding opslaan (Ctrl+S)</value>
+  </data>
+  <data name="EditorView_ShadowRadius" xml:space="preserve">
+    <value>Schaduwstraal</value>
+  </data>
+  <data name="EditorView_UploadimageCtrlU" xml:space="preserve">
+    <value>Afbeelding uploaden (Ctrl+U)</value>
+  </data>
+  <data name="EditorView_ZoomCtrlWheel" xml:space="preserve">
+    <value>Zoomen (Ctrl + Wiel)</value>
+  </data>
+  <data name="EffectBrowserPanel_SearchimageeffectsEllipsis" xml:space="preserve">
+    <value>Afbeeldingseffecten zoeken...</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_Apply" xml:space="preserve">
+    <value>Toepassen</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Begingroup" xml:space="preserve">
+    <value>Groep beginnen</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_ClickandpressashortcutBackspaceorDeleteclearsit" xml:space="preserve">
+    <value>Klik en druk op een sneltoets. Backspace of Delete wist deze.</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_CustomizeToolbar" xml:space="preserve">
+    <value>Werkbalk aanpassen</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Resettoolbartodefault" xml:space="preserve">
+    <value>Werkbalk herstellen naar standaard</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_ShowHide" xml:space="preserve">
+    <value>Tonen / Verbergen</value>
+  </data>
+  <data name="ZoomPickerDropdown_ZoomtoFit" xml:space="preserve">
+    <value>Passend zoomen</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_InvalidHotkey" xml:space="preserve">
+    <value>Ongeldige sneltoets voor {0}. Gebruik indelingen zoals R, Ctrl+R of Ctrl+Shift+R.</value>
+  </data>
+  <data name="EffectBrowserPanel_RecentHint" xml:space="preserve">
+    <value>Klik met de rechtermuisknop op een effect om het uit Recent te verwijderen.</value>
+  </data>
+  <data name="EffectBrowserPanel_FavoritesHint" xml:space="preserve">
+    <value>Klik met de rechtermuisknop op een effect om het aan Favorieten toe te voegen of eruit te verwijderen.</value>
+  </data>
+  <data name="EffectBrowserPanel_SearchCount" xml:space="preserve">
+    <value>Afbeeldingseffecten zoeken... ({0})</value>
+  </data>
+  <data name="EffectBrowserPanel_Recent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="EffectBrowserPanel_Favorites" xml:space="preserve">
+    <value>Favorieten</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_File" xml:space="preserve">
+    <value>Bestand</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Select" xml:space="preserve">
+    <value>Selecteren</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Text" xml:space="preserve">
+    <value>Tekst</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Image" xml:space="preserve">
+    <value>Afbeelding</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_SmartEraser" xml:space="preserve">
+    <value>Slimme gum</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Magnify" xml:space="preserve">
+    <value>Vergroten</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Background" xml:space="preserve">
+    <value>Achtergrond</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_ImageEffects" xml:space="preserve">
+    <value>Afbeeldingseffecten</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Default" xml:space="preserve">
+    <value>Standaard</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Solid" xml:space="preserve">
+    <value>Doorgetrokken</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Dash" xml:space="preserve">
+    <value>Streep</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Dot" xml:space="preserve">
+    <value>Punt</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Left" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Center" xml:space="preserve">
+    <value>Midden</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Right" xml:space="preserve">
+    <value>Rechts</value>
+  </data>
+  <data name="EditorOptionsPanel_ZoomToFitOnOpen" xml:space="preserve">
+    <value>Bij openen passend zoomen</value>
+  </data>
+  <data name="EditorOptionsPanel_AutoCloseEditorOnTask" xml:space="preserve">
+    <value>Editor automatisch sluiten na taak</value>
+  </data>
+  <data name="EditorOptionsPanel_AutoCopyImageToClipboard" xml:space="preserve">
+    <value>Afbeelding automatisch naar klembord kopiëren</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeGradient" xml:space="preserve">
+    <value>Verloop</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeColor" xml:space="preserve">
+    <value>Kleur</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeTransparent" xml:space="preserve">
+    <value>Transparant</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeImage" xml:space="preserve">
+    <value>Afbeelding</value>
+  </data>
+  <data name="MainViewModel_WindowTitle" xml:space="preserve">
+    <value>ShareX - Afbeeldingseditor</value>
+  </data>
+  <data name="MainViewModel_RunAfterCaptureTasksEnter" xml:space="preserve">
+    <value>Taken na vastleggen uitvoeren (Enter)</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Rectangle" xml:space="preserve">
+    <value>Rechthoek</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Ellipse" xml:space="preserve">
+    <value>Ellips</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Line" xml:space="preserve">
+    <value>Lijn</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Arrow" xml:space="preserve">
+    <value>Pijl</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Freehand" xml:space="preserve">
+    <value>Vrije hand</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_SpeechBalloon" xml:space="preserve">
+    <value>Tekstballon</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Step" xml:space="preserve">
+    <value>Stap</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Emoji" xml:space="preserve">
+    <value>Emoji</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Cursor" xml:space="preserve">
+    <value>Cursor</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Highlight" xml:space="preserve">
+    <value>Markeren</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Blur" xml:space="preserve">
+    <value>Vervagen</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Pixelate" xml:space="preserve">
+    <value>Pixeliseren</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Spotlight" xml:space="preserve">
+    <value>Spotlight</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Crop" xml:space="preserve">
+    <value>Bijsnijden</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_CutOut" xml:space="preserve">
+    <value>Uitsnijden</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_FavoriteImageEffectsRightClick" xml:space="preserve">
+    <value>{0}\nFavoriete afbeeldingseffecten (Rechtsklik)</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_AppStarting" xml:space="preserve">
+    <value>Toepassing wordt gestart</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Arrow" xml:space="preserve">
+    <value>Pijl</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Cross" xml:space="preserve">
+    <value>Kruis</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Hand" xml:space="preserve">
+    <value>Hand</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_HSplit" xml:space="preserve">
+    <value>Horizontaal splitsen</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_IBeam" xml:space="preserve">
+    <value>Tekstcursor</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMove2D" xml:space="preserve">
+    <value>Geen beweging 2D</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMoveHoriz" xml:space="preserve">
+    <value>Geen horizontale beweging</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMoveVert" xml:space="preserve">
+    <value>Geen verticale beweging</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanEast" xml:space="preserve">
+    <value>Naar oosten schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNE" xml:space="preserve">
+    <value>Naar noordoosten schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNorth" xml:space="preserve">
+    <value>Naar noorden schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNW" xml:space="preserve">
+    <value>Naar noordwesten schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSE" xml:space="preserve">
+    <value>Naar zuidoosten schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSouth" xml:space="preserve">
+    <value>Naar zuiden schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSW" xml:space="preserve">
+    <value>Naar zuidwesten schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanWest" xml:space="preserve">
+    <value>Naar westen schuiven</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeAll" xml:space="preserve">
+    <value>Grootte in alle richtingen</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNESW" xml:space="preserve">
+    <value>Grootte NO-ZW</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNS" xml:space="preserve">
+    <value>Grootte N-Z</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNWSE" xml:space="preserve">
+    <value>Grootte NW-ZO</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeWE" xml:space="preserve">
+    <value>Grootte W-O</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_UpArrow" xml:space="preserve">
+    <value>Pijl omhoog</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_VSplit" xml:space="preserve">
+    <value>Verticaal splitsen</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_WaitCursor" xml:space="preserve">
+    <value>Wachtcursor</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_DashDot" xml:space="preserve">
+    <value>Streep-punt</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_DashDotDot" xml:space="preserve">
+    <value>Streep-punt-punt</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Classic" xml:space="preserve">
+    <value>Klassiek</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Modern" xml:space="preserve">
+    <value>Modern</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Double" xml:space="preserve">
+    <value>Dubbel</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Basic" xml:space="preserve">
+    <value>Basis</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Line" xml:space="preserve">
+    <value>Lijn</value>
+  </data>
+  <data name="EditorOptionsPanel_RememberWindowState" xml:space="preserve">
+    <value>Vensterstatus onthouden</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowExitConfirmation" xml:space="preserve">
+    <value>Afsluitbevestiging tonen</value>
+  </data>
+  <data name="EditorOptionsPanel_QuickCrop" xml:space="preserve">
+    <value>Snel bijsnijden</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowInsertImageDialog" xml:space="preserve">
+    <value>Dialoogvenster voor afbeelding invoegen tonen</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowNotifications" xml:space="preserve">
+    <value>Meldingen tonen</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeWallpaper" xml:space="preserve">
+    <value>Bureaubladachtergrond</value>
+  </data>
+  <data name="MainViewModel_ImageOpened" xml:space="preserve">
+    <value>Afbeelding geopend.</value>
+  </data>
+  <data name="MainViewModel_NewImageCreated" xml:space="preserve">
+    <value>Nieuwe afbeelding gemaakt.</value>
+  </data>
+  <data name="MainViewModel_ImageCropped" xml:space="preserve">
+    <value>Afbeelding bijgesneden.</value>
+  </data>
+  <data name="MainViewModel_ImageCutOut" xml:space="preserve">
+    <value>Afbeelding uitgesneden.</value>
+  </data>
+  <data name="MainViewModel_ImageInserted" xml:space="preserve">
+    <value>Afbeelding ingevoegd.</value>
+  </data>
+  <data name="MainViewModel_ImageAutoCropped" xml:space="preserve">
+    <value>Afbeelding automatisch bijgesneden.</value>
+  </data>
+  <data name="MainViewModel_ImageResized" xml:space="preserve">
+    <value>Afbeelding vergroot of verkleind.</value>
+  </data>
+  <data name="MainViewModel_CanvasResized" xml:space="preserve">
+    <value>Canvas vergroot of verkleind.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated90Clockwise" xml:space="preserve">
+    <value>Afbeelding 90 graden rechtsom gedraaid.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated90CounterClockwise" xml:space="preserve">
+    <value>Afbeelding 90 graden linksom gedraaid.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated180" xml:space="preserve">
+    <value>Afbeelding 180 graden gedraaid.</value>
+  </data>
+  <data name="MainViewModel_ImageRotatedByDegrees" xml:space="preserve">
+    <value>Afbeelding {0} graden gedraaid.</value>
+  </data>
+  <data name="MainViewModel_ImageFlippedHorizontally" xml:space="preserve">
+    <value>Afbeelding horizontaal gespiegeld.</value>
+  </data>
+  <data name="MainViewModel_ImageFlippedVertically" xml:space="preserve">
+    <value>Afbeelding verticaal gespiegeld.</value>
+  </data>
+  <data name="MainViewModel_ImageEffectApplied" xml:space="preserve">
+    <value>Afbeeldingseffect toegepast.</value>
+  </data>
+  <data name="MainViewModel_ImageSavedToFile" xml:space="preserve">
+    <value>Afbeelding in bestand opgeslagen.</value>
+  </data>
+  <data name="MainViewModel_FilePathFormat" xml:space="preserve">
+    <value>Bestandspad: {0}</value>
+  </data>
+  <data name="MainViewModel_SizeFormat" xml:space="preserve">
+    <value>Grootte: {0}x{1}</value>
+  </data>
+  <data name="MainViewModel_HideToolbars" xml:space="preserve">
+    <value>Werkbalken verbergen</value>
+  </data>
+  <data name="MainViewModel_ShowToolbars" xml:space="preserve">
+    <value>Werkbalken tonen</value>
+  </data>
+  <data name="MainViewModel_ContinueEnter" xml:space="preserve">
+    <value>Doorgaan (Enter)</value>
+  </data>
+  <data name="MainViewModel_NoImage" xml:space="preserve">
+    <value>Geen afbeelding</value>
+  </data>
+  <data name="MainViewModel_ImageCopiedToClipboard" xml:space="preserve">
+    <value>Afbeelding naar klembord gekopieerd.</value>
+  </data>
+  <data name="MainViewModel_ImagePrinted" xml:space="preserve">
+    <value>Afbeelding afgedrukt.</value>
+  </data>
+  <data name="MainViewModel_ImagePinnedToScreen" xml:space="preserve">
+    <value>Afbeelding op scherm vastgezet.</value>
+  </data>
+  <data name="MainViewModel_ImageIsUploading" xml:space="preserve">
+    <value>Afbeelding wordt geüpload.</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_DuplicateHotkey" xml:space="preserve">
+    <value>{0} en {1} gebruiken dezelfde sneltoets ({2}).</value>
+  </data>
+  <data name="EditorView_SelectBackgroundImage" xml:space="preserve">
+    <value>Achtergrondafbeelding selecteren</value>
+  </data>
+  <data name="EditorView_OpenImage" xml:space="preserve">
+    <value>Afbeelding openen</value>
+  </data>
+  <data name="EditorView_FailedToLoadImageFromClipboard" xml:space="preserve">
+    <value>Kan afbeelding niet laden vanaf het klembord.</value>
+  </data>
+  <data name="EditorView_ClipboardDoesNotContainImage" xml:space="preserve">
+    <value>Kan afbeelding niet laden vanaf het klembord.
+Het klembord bevat geen afbeelding.</value>
+  </data>
+  <data name="EditorView_UrlDoesNotPointToValidImage" xml:space="preserve">
+    <value>De URL verwijst niet naar een geldige afbeelding.</value>
+  </data>
+  <data name="EditorView_FailedToDownloadImageFormat" xml:space="preserve">
+    <value>Kan afbeelding niet downloaden: {0}</value>
+  </data>
+  <data name="EditorView_FileNoLongerExistsFormat" xml:space="preserve">
+    <value>Het bestand bestaat niet meer.
+{0}</value>
+  </data>
+  <data name="EditorView_FailedToLoadImageFileFormat" xml:space="preserve">
+    <value>Kan het afbeeldingsbestand niet laden.
+{0}</value>
+  </data>
+  <data name="EditorView_SaveImageAs" xml:space="preserve">
+    <value>Afbeelding opslaan als</value>
+  </data>
+  <data name="EditorView_SelectImage" xml:space="preserve">
+    <value>Afbeelding selecteren</value>
+  </data>
+  <data name="EditorView_AchievementUnlocked" xml:space="preserve">
+    <value>Prestatie ontgrendeld!</value>
+  </data>
+  <data name="EditorView_Crop" xml:space="preserve">
+    <value>Bijsnijden</value>
+  </data>
+  <data name="EditorView_SmartPadding" xml:space="preserve">
+    <value>Slimme opvulling</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Manipulations" xml:space="preserve">
+    <value>Manipulaties</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Adjustments" xml:space="preserve">
+    <value>Aanpassingen</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Filters" xml:space="preserve">
+    <value>Filters</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Drawings" xml:space="preserve">
+    <value>Tekeningen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_alpha" xml:space="preserve">
+    <value>Alfa</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_auto_contrast" xml:space="preserve">
+    <value>Automatisch contrast</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_black_and_white" xml:space="preserve">
+    <value>Zwart-wit</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_brightness" xml:space="preserve">
+    <value>Helderheid</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_channel_swap" xml:space="preserve">
+    <value>Kanalen omwisselen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_clarity" xml:space="preserve">
+    <value>Helderheid</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_balance" xml:space="preserve">
+    <value>Kleurbalans</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_colorize" xml:space="preserve">
+    <value>Inkleuren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_matrix" xml:space="preserve">
+    <value>Kleurmatrix</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_contrast" xml:space="preserve">
+    <value>Contrast</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cross_process" xml:space="preserve">
+    <value>Kruisontwikkeling</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dehaze" xml:space="preserve">
+    <value>Nevel verwijderen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_duotone_gradient_map" xml:space="preserve">
+    <value>Duotoon / Verloopkaart</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_exposure" xml:space="preserve">
+    <value>Belichting</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_emulation" xml:space="preserve">
+    <value>Filmemulatie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gamma" xml:space="preserve">
+    <value>Gamma</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_grayscale" xml:space="preserve">
+    <value>Grijswaarden</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hue" xml:space="preserve">
+    <value>Tint</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_invert" xml:space="preserve">
+    <value>Omkeren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_levels" xml:space="preserve">
+    <value>Niveaus</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lomo" xml:space="preserve">
+    <value>Lomo</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polaroid" xml:space="preserve">
+    <value>Polaroid</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_posterize" xml:space="preserve">
+    <value>Posteriseren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_replace_color" xml:space="preserve">
+    <value>Kleur vervangen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_saturation" xml:space="preserve">
+    <value>Verzadiging</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sepia" xml:space="preserve">
+    <value>Sepia</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_shadows_highlights" xml:space="preserve">
+    <value>Schaduwen / Hooglichten</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_solarize" xml:space="preserve">
+    <value>Solariseren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_split_toning" xml:space="preserve">
+    <value>Gesplitste kleurtinten</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_temperature_tint" xml:space="preserve">
+    <value>Temperatuur / Tint</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_threshold" xml:space="preserve">
+    <value>Drempelwaarde</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vibrance" xml:space="preserve">
+    <value>Levendigheid</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_confetti" xml:space="preserve">
+    <value>Confetti</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_background" xml:space="preserve">
+    <value>Achtergrond</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_background_image" xml:space="preserve">
+    <value>Achtergrondafbeelding</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_checkerboard" xml:space="preserve">
+    <value>Dambord</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_image" xml:space="preserve">
+    <value>Afbeelding</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_line" xml:space="preserve">
+    <value>Lijn</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_particles" xml:space="preserve">
+    <value>Deeltjes</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_shape" xml:space="preserve">
+    <value>Vorm</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_text" xml:space="preserve">
+    <value>Tekst</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fake_cursor" xml:space="preserve">
+    <value>Nepcursor</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gradient_overlay" xml:space="preserve">
+    <value>Verloopoverlay</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_snowflakes" xml:space="preserve">
+    <value>Sneeuwvlokken</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_text_watermark" xml:space="preserve">
+    <value>Tekstwatermerk</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_add_noise" xml:space="preserve">
+    <value>Ruis toevoegen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anaglyph_3d" xml:space="preserve">
+    <value>Anaglyf 3D</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anamorphic_lens_flare" xml:space="preserve">
+    <value>Anamorfe lensflare</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anime_speed_lines" xml:space="preserve">
+    <value>Anime-snelheidslijnen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_art_deco_border" xml:space="preserve">
+    <value>Art-decorand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ascii_art" xml:space="preserve">
+    <value>ASCII-kunst</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_bevel" xml:space="preserve">
+    <value>Afschuining</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_block_glitch" xml:space="preserve">
+    <value>Blokstoring / Databending</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blood_splash" xml:space="preserve">
+    <value>Bloedspatten</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_bloom" xml:space="preserve">
+    <value>Gloedwaas</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blueprint_drawing" xml:space="preserve">
+    <value>Blauwdruktekening</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blur" xml:space="preserve">
+    <value>Vervagen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_border" xml:space="preserve">
+    <value>Rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_brick_wall_border" xml:space="preserve">
+    <value>Bakstenen-muurrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_candy_cane_border" xml:space="preserve">
+    <value>Zuurstokrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cartoon_sticker_cutout" xml:space="preserve">
+    <value>Cartoonstickervorm</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_celtic_knot_border" xml:space="preserve">
+    <value>Keltische-knooprand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chain_link_border" xml:space="preserve">
+    <value>Kettingschakelrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chalk_drawing" xml:space="preserve">
+    <value>Krijttekening</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chromatic_aberration" xml:space="preserve">
+    <value>Chromatische aberratie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chrome_metallic_border" xml:space="preserve">
+    <value>Chromen metaalrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_circuit_board_border" xml:space="preserve">
+    <value>Printplaatrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_claymation_texture" xml:space="preserve">
+    <value>Kleianimatietextuur</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_clouds" xml:space="preserve">
+    <value>Wolken</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_depth" xml:space="preserve">
+    <value>Kleurdiepte</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_halftone" xml:space="preserve">
+    <value>Kleurhalftoon</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_splash" xml:space="preserve">
+    <value>Kleurspatten</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_convolution_matrix" xml:space="preserve">
+    <value>Convolutiematrix</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crimson_border" xml:space="preserve">
+    <value>Karmozijnrode rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crosshatch" xml:space="preserve">
+    <value>Kruisarcering</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crt" xml:space="preserve">
+    <value>CRT</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crystalize_shards" xml:space="preserve">
+    <value>Gekristalliseerde scherven</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crystal_prism" xml:space="preserve">
+    <value>Kristallen prisma</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cyanotype" xml:space="preserve">
+    <value>Cyanotypie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_datamosh_smear" xml:space="preserve">
+    <value>Datamosh-veeg</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_diamond_pixelate" xml:space="preserve">
+    <value>Ruitvormig verpixelen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_disposable_camera" xml:space="preserve">
+    <value>Wegwerpcamera</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dithering" xml:space="preserve">
+    <value>Rastering</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dot_matrix" xml:space="preserve">
+    <value>Puntenmatrix</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_double_exposure" xml:space="preserve">
+    <value>Dubbele belichting</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dream_glow" xml:space="preserve">
+    <value>Droomgloed</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_edge_detect" xml:space="preserve">
+    <value>Randdetectie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_edge_feather" xml:space="preserve">
+    <value>Randen verzachten</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_emboss" xml:space="preserve">
+    <value>Reliëf</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_embroidery" xml:space="preserve">
+    <value>Borduurwerk</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_engraving" xml:space="preserve">
+    <value>Gravure</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_etched_glass" xml:space="preserve">
+    <value>Geëtst glas</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fake_hair" xml:space="preserve">
+    <value>Nep haar</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_grain" xml:space="preserve">
+    <value>Filmkorrel</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_strip_frame" xml:space="preserve">
+    <value>Filmstrookframe</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frosted_glass_ice_edges" xml:space="preserve">
+    <value>Matglas + Ijsranden</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frosted_glass" xml:space="preserve">
+    <value>Matglas</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frost_ice_border" xml:space="preserve">
+    <value>Vorst- en ijsrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gaussian_blur" xml:space="preserve">
+    <value>Gaussiaans vervagen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ghost_trail" xml:space="preserve">
+    <value>Geestenspoor</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glare" xml:space="preserve">
+    <value>Schittering</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glitch_shift" xml:space="preserve">
+    <value>Storingsverschuiving</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glow" xml:space="preserve">
+    <value>Gloed</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_golden_border" xml:space="preserve">
+    <value>Gouden rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gradient_fade_border" xml:space="preserve">
+    <value>Vervagende verlooprand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_halation" xml:space="preserve">
+    <value>Lichtkrans</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_halftone" xml:space="preserve">
+    <value>Halftoon</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_heat_haze_refraction" xml:space="preserve">
+    <value>Breking door hittenevel</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_heat_map" xml:space="preserve">
+    <value>Warmtekaart</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hexagonal_pixelate" xml:space="preserve">
+    <value>Zeshoekig verpixelen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hologram_scan" xml:space="preserve">
+    <value>Hologramscan</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_holographic_foil_shimmer" xml:space="preserve">
+    <value>Holografische folieschittering</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_infrared_false_color" xml:space="preserve">
+    <value>Infrarood-valse kleuren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ink_splatter_drips" xml:space="preserve">
+    <value>Inktspatten + Druppels</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_inner_shadow" xml:space="preserve">
+    <value>Binnenschaduw</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_jpeg_artifact" xml:space="preserve">
+    <value>JPEG-artefact</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lava_molten_border" xml:space="preserve">
+    <value>Gesmolten lavarand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lens_blur" xml:space="preserve">
+    <value>Lensonscherpte (bokeh)</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_light_leak" xml:space="preserve">
+    <value>Lichtlek</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquid_glass" xml:space="preserve">
+    <value>Vloeibaar glas</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquid_mercury" xml:space="preserve">
+    <value>Vloeibaar kwik</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_luminance_contour_lines" xml:space="preserve">
+    <value>Luminantiecontourlijnen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_macos_window" xml:space="preserve">
+    <value>macOS</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_marble_border" xml:space="preserve">
+    <value>Marmeren rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_matrix_digital_rain" xml:space="preserve">
+    <value>Digitale Matrix-regen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mean_removal" xml:space="preserve">
+    <value>Gemiddelde verwijderen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_median_filter" xml:space="preserve">
+    <value>Mediaanfilter</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_minecraft_grass" xml:space="preserve">
+    <value>Minecraft-gras</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_miniature" xml:space="preserve">
+    <value>Miniatuur</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mosaic_polygon" xml:space="preserve">
+    <value>Mozaïekpolygoon</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mosaic_tile_border" xml:space="preserve">
+    <value>Mozaïektegelrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_motion_blur" xml:space="preserve">
+    <value>Bewegingsonscherpte</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_nebula_starfield" xml:space="preserve">
+    <value>Nevelsterrenveld</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_neon_edge_glow" xml:space="preserve">
+    <value>Neonrandgloed</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_neon_glow_border" xml:space="preserve">
+    <value>Gloeiende neonrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_night_vision" xml:space="preserve">
+    <value>Nachtzicht</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_oil_paint" xml:space="preserve">
+    <value>Olieverf</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_oil_slick_interference" xml:space="preserve">
+    <value>Interferentie van oliefilm</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_old_camera_flash_burn" xml:space="preserve">
+    <value>Flitsbrand van oude camera</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ornate_scroll_border" xml:space="preserve">
+    <value>Sierlijke krullenrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_outline" xml:space="preserve">
+    <value>Omtrek</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_palette_map" xml:space="preserve">
+    <value>Paletkaart</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_paper_stencil_mask" xml:space="preserve">
+    <value>Papieren sjabloonmasker</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pencil_sketch" xml:space="preserve">
+    <value>Potloodschets</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_perlin_noise" xml:space="preserve">
+    <value>Perlin-ruis</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pixelate" xml:space="preserve">
+    <value>Pixeliseren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pixel_sorting" xml:space="preserve">
+    <value>Pixels sorteren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_plasma_energy_arcs" xml:space="preserve">
+    <value>Plasma-energiebogen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pointillism" xml:space="preserve">
+    <value>Pointillisme</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polaroid_frame" xml:space="preserve">
+    <value>Polaroid-frame</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pop_art_grid" xml:space="preserve">
+    <value>Popart-raster</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_radial_rainbow" xml:space="preserve">
+    <value>Radiale regenboog</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rainbow_border" xml:space="preserve">
+    <value>Regenboogrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rainy_window" xml:space="preserve">
+    <value>Regenachtig venster</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_reflection" xml:space="preserve">
+    <value>Reflectie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_remove_background" xml:space="preserve">
+    <value>Achtergrond verwijderen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_retro_sunset" xml:space="preserve">
+    <value>Retrozonsondergang</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rgb_split" xml:space="preserve">
+    <value>RGB-splitsing</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_riso_print" xml:space="preserve">
+    <value>Riso-afdruk</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rope_border" xml:space="preserve">
+    <value>Touwrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rust_corrosion" xml:space="preserve">
+    <value>Roest / Corrosie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_scanline" xml:space="preserve">
+    <value>Scanlijnen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_shadow" xml:space="preserve">
+    <value>Schaduw</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sharpen" xml:space="preserve">
+    <value>Verscherpen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_slice" xml:space="preserve">
+    <value>Segmenteren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_smoke_overlay" xml:space="preserve">
+    <value>Rookoverlay</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_smooth" xml:space="preserve">
+    <value>Vloeiend maken</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_snowfall_depth_fog" xml:space="preserve">
+    <value>Sneeuwval + Dieptemist</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sobel_edge" xml:space="preserve">
+    <value>Sobel-rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_soft_diffusion" xml:space="preserve">
+    <value>Zachte diffusie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_spin_blur" xml:space="preserve">
+    <value>Rotatie-onscherpte</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stained_glass_border" xml:space="preserve">
+    <value>Glas-in-loodrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stained_glass" xml:space="preserve">
+    <value>Glas-in-lood</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_starfield_border" xml:space="preserve">
+    <value>Sterrenveldrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_star_filter" xml:space="preserve">
+    <value>Sterfilter</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stripe_overlay" xml:space="preserve">
+    <value>Strepenoverlay</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_surface_blur" xml:space="preserve">
+    <value>Oppervlakte-onscherpte</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_thermal_vision" xml:space="preserve">
+    <value>Warmtebeeld</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tilt_shift" xml:space="preserve">
+    <value>Miniatuureffect</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_torn_edge" xml:space="preserve">
+    <value>Gescheurde rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_triangle_pixelate" xml:space="preserve">
+    <value>Driehoekig verpixelen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tv_static" xml:space="preserve">
+    <value>TV-ruis</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_unsharp_mask" xml:space="preserve">
+    <value>Onscherp masker</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vhs_tape_damage" xml:space="preserve">
+    <value>VHS-bandschade</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vignette" xml:space="preserve">
+    <value>Vignet</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vintage_print_damage" xml:space="preserve">
+    <value>Oude afdrukschade</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_voronoi_mosaic" xml:space="preserve">
+    <value>Voronoi-mozaïek</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_watercolor_border" xml:space="preserve">
+    <value>Aquarelrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_watercolor_kuwahara" xml:space="preserve">
+    <value>Aquarel / Kuwahara</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wave_edge" xml:space="preserve">
+    <value>Golvende rand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wet_plate_collodion" xml:space="preserve">
+    <value>Natteplaatcollodium</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_windows11_window" xml:space="preserve">
+    <value>Windows 11</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wind_streaks" xml:space="preserve">
+    <value>Windstrepen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_woodcut_print" xml:space="preserve">
+    <value>Houtsnede</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wooden_frame" xml:space="preserve">
+    <value>Houten frame</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_x_ray_scan" xml:space="preserve">
+    <value>Röntgenscan</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_zigzag_border" xml:space="preserve">
+    <value>Zigzagrand</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_zoom_blur" xml:space="preserve">
+    <value>Zoomonscherpte</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_auto_crop_image" xml:space="preserve">
+    <value>Afbeelding automatisch bijsnijden</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crop_image" xml:space="preserve">
+    <value>Afbeelding bijsnijden</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cylinder_wrap" xml:space="preserve">
+    <value>Cilinderwikkeling</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_displacement_map" xml:space="preserve">
+    <value>Verplaatsingskaart</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fisheye_lens" xml:space="preserve">
+    <value>Visooglens</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_flip_horizontal" xml:space="preserve">
+    <value>Horizontaal spiegelen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_flip_vertical" xml:space="preserve">
+    <value>Verticaal spiegelen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fold_crease_warp" xml:space="preserve">
+    <value>Vouwplooi-vervorming</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glass_sphere" xml:space="preserve">
+    <value>Glazen bol</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_kaleidoscope" xml:space="preserve">
+    <value>Caleidoscoop</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquify_push_smudge" xml:space="preserve">
+    <value>Vloeibaar maken: duwen / Uitsmeren</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mirror_tiles" xml:space="preserve">
+    <value>Spiegeltegels</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_page_curl" xml:space="preserve">
+    <value>Pagina omkrullen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_perspective_warp" xml:space="preserve">
+    <value>Perspectiefvervorming</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pinch_bulge" xml:space="preserve">
+    <value>Knijpen / Uitstulpen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polar_warp" xml:space="preserve">
+    <value>Polaire vervorming</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_resize_canvas" xml:space="preserve">
+    <value>Canvasgrootte wijzigen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_resize_image" xml:space="preserve">
+    <value>Afbeeldingsgrootte wijzigen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ripple_refraction" xml:space="preserve">
+    <value>Golfbreking</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_180" xml:space="preserve">
+    <value>180° draaien</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_3d_box" xml:space="preserve">
+    <value>3D-doos / Extruderen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_3d" xml:space="preserve">
+    <value>In 3D draaien</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_90_counter_clockwise" xml:space="preserve">
+    <value>90° linksom draaien</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_90_clockwise" xml:space="preserve">
+    <value>90° rechtsom draaien</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_custom_angle" xml:space="preserve">
+    <value>Draaien</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rounded_corners" xml:space="preserve">
+    <value>Afgeronde hoeken</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_scale" xml:space="preserve">
+    <value>Schalen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_skew" xml:space="preserve">
+    <value>Scheeftrekking</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_symmetry" xml:space="preserve">
+    <value>Symmetrie</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tile_repeat" xml:space="preserve">
+    <value>Tegels herhalen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tile_shuffle" xml:space="preserve">
+    <value>Tegels mengen</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_twirl" xml:space="preserve">
+    <value>Draaikolk</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wave_distortion" xml:space="preserve">
+    <value>Golfvervorming</value>
+  </data>
+</root>

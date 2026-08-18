@@ -26,6 +26,7 @@
 using Avalonia.Layout;
 using Avalonia.Media;
 using ShareX.ImageEditor.Core.Annotations;
+using ShareX.ImageEditor.Localization;
 using ShareX.ImageEditor.Presentation.Theming;
 
 namespace ShareX.ImageEditor.Presentation.Helpers;
@@ -36,10 +37,10 @@ public static class TextHorizontalAlignmentHelper
     {
         return alignment switch
         {
-            TextHorizontalAlignment.Left => "Left",
-            TextHorizontalAlignment.Center => "Center",
-            TextHorizontalAlignment.Right => "Right",
-            _ => "Center"
+            TextHorizontalAlignment.Left => Strings.TextHorizontalAlignmentHelper_Left,
+            TextHorizontalAlignment.Center => Strings.TextHorizontalAlignmentHelper_Center,
+            TextHorizontalAlignment.Right => Strings.TextHorizontalAlignmentHelper_Right,
+            _ => Strings.TextHorizontalAlignmentHelper_Center
         };
     }
 

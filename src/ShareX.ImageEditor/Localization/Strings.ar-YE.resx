@@ -1,0 +1,1501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfirmationDialogView_Title" xml:space="preserve">
+    <value>تأكيد الخروج</value>
+  </data>
+  <data name="ConfirmationDialogView_Message" xml:space="preserve">
+    <value>توجد تغييرات غير محفوظة.
+
+هل تريد حفظ التغييرات قبل إغلاق محرر الصور؟</value>
+  </data>
+  <data name="ConfirmationDialogView_Yes" xml:space="preserve">
+    <value>نعم</value>
+  </data>
+  <data name="ConfirmationDialogView_No" xml:space="preserve">
+    <value>لا</value>
+  </data>
+  <data name="ConfirmationDialogView_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="NewImageDialogView_Title" xml:space="preserve">
+    <value>صورة جديدة</value>
+  </data>
+  <data name="NewImageDialogView_Width" xml:space="preserve">
+    <value>العرض:</value>
+  </data>
+  <data name="NewImageDialogView_Pixels" xml:space="preserve">
+    <value>بكسل</value>
+  </data>
+  <data name="NewImageDialogView_Height" xml:space="preserve">
+    <value>الارتفاع:</value>
+  </data>
+  <data name="NewImageDialogView_Background" xml:space="preserve">
+    <value>الخلفية:</value>
+  </data>
+  <data name="NewImageDialogView_Transparent" xml:space="preserve">
+    <value>شفافة</value>
+  </data>
+  <data name="NewImageDialogView_SolidColor" xml:space="preserve">
+    <value>لون خالص</value>
+  </data>
+  <data name="NewImageDialogView_OK" xml:space="preserve">
+    <value>موافق</value>
+  </data>
+  <data name="NewImageDialogView_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="StartScreenDialogView_Title" xml:space="preserve">
+    <value>شاشة البدء</value>
+  </data>
+  <data name="StartScreenDialogView_CreateNewImage" xml:space="preserve">
+    <value>إنشاء صورة جديدة...</value>
+  </data>
+  <data name="StartScreenDialogView_OpenImageFile" xml:space="preserve">
+    <value>فتح ملف صورة...</value>
+  </data>
+  <data name="StartScreenDialogView_LoadImageFromClipboard" xml:space="preserve">
+    <value>تحميل صورة من الحافظة</value>
+  </data>
+  <data name="StartScreenDialogView_LoadImageFromURL" xml:space="preserve">
+    <value>تحميل صورة من رابط...</value>
+  </data>
+  <data name="StartScreenDialogView_Load" xml:space="preserve">
+    <value>تحميل</value>
+  </data>
+  <data name="StartScreenDialogView_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="StartScreenDialogView_Exit" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="StartScreenDialogView_RecentFiles" xml:space="preserve">
+    <value>الملفات الأخيرة</value>
+  </data>
+  <data name="StartScreenDialogView_NoRecentImageFiles" xml:space="preserve">
+    <value>لا توجد ملفات صور حديثة بعد.</value>
+  </data>
+  <data name="StartScreenDialogView_InvalidURL" xml:space="preserve">
+    <value>أدخل رابط HTTP أو HTTPS صالحًا.</value>
+  </data>
+  <data name="EmojiPickerDialogView_LoadingEmojis" xml:space="preserve">
+    <value>جارٍ تحميل الرموز التعبيرية...</value>
+  </data>
+  <data name="EmojiPickerDialogView_SearchEmojisCount" xml:space="preserve">
+    <value>البحث عن رموز تعبيرية... ({0})</value>
+  </data>
+  <data name="EmojiPickerDialogView_BrowseEmojis" xml:space="preserve">
+    <value>استعراض الرموز التعبيرية</value>
+  </data>
+  <data name="EmojiPickerDialogView_CategorySummary" xml:space="preserve">
+    <value>{0} • {1} من الرموز التعبيرية</value>
+  </data>
+  <data name="EmojiPickerDialogView_SearchResults" xml:space="preserve">
+    <value>نتائج البحث • {0} من التطابقات</value>
+  </data>
+  <data name="EmojiPickerDialogView_NoMatches" xml:space="preserve">
+    <value>لا توجد رموز تعبيرية تطابق هذا البحث.</value>
+  </data>
+  <data name="EmojiPickerDialogView_TryDifferentKeyword" xml:space="preserve">
+    <value>جرّب كلمة مفتاحية مختلفة.</value>
+  </data>
+  <data name="EmojiPickerDialogView_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="EmojiPickerDialogView_PreviewsLoading" xml:space="preserve">
+    <value>أداة الاختيار جاهزة. يتم تحميل معاينات الرموز التعبيرية في الخلفية.</value>
+  </data>
+  <data name="InsertImageDialogView_Title" xml:space="preserve">
+    <value>إدراج صورة</value>
+  </data>
+  <data name="InsertImageDialogView_Description" xml:space="preserve">
+    <value>اختر كيفية وضع الصورة الواردة على اللوحة الحالية.</value>
+  </data>
+  <data name="InsertImageDialogView_ImageSummary" xml:space="preserve">
+    <value>الصورة الواردة: {0} x {1}px</value>
+  </data>
+  <data name="InsertImageDialogView_Center" xml:space="preserve">
+    <value>إدراج الصورة في المنتصف</value>
+  </data>
+  <data name="InsertImageDialogView_CenterDescription" xml:space="preserve">
+    <value>يحافظ على حجم اللوحة الحالي.</value>
+  </data>
+  <data name="InsertImageDialogView_Below" xml:space="preserve">
+    <value>إدراج الصورة في الأسفل</value>
+  </data>
+  <data name="InsertImageDialogView_BelowDescription" xml:space="preserve">
+    <value>يوسّع اللوحة إلى الأسفل قبل إضافة الصورة.</value>
+  </data>
+  <data name="InsertImageDialogView_Right" xml:space="preserve">
+    <value>إدراج الصورة في الجانب الأيمن</value>
+  </data>
+  <data name="InsertImageDialogView_RightDescription" xml:space="preserve">
+    <value>يوسّع اللوحة إلى اليمين قبل إضافة الصورة.</value>
+  </data>
+  <data name="AnnotationToolbar_Exit" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="AnnotationToolbar_OpenEllipsis" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="AnnotationToolbar_Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="EditorOptionsPanel_Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="EditorView_Copy" xml:space="preserve">
+    <value>نسخ</value>
+  </data>
+  <data name="EditorView_Duplicate" xml:space="preserve">
+    <value>تكرار</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_BrowseEllipsis" xml:space="preserve">
+    <value>استعراض...</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Movedown" xml:space="preserve">
+    <value>تحريك لأسفل</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Moveup" xml:space="preserve">
+    <value>تحريك لأعلى</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_OK" xml:space="preserve">
+    <value>موافق</value>
+  </data>
+  <data name="AnnotationToolbar_Blur" xml:space="preserve">
+    <value>تشويش</value>
+  </data>
+  <data name="AnnotationToolbar_Color" xml:space="preserve">
+    <value>اللون</value>
+  </data>
+  <data name="AnnotationToolbar_Options" xml:space="preserve">
+    <value>الخيارات</value>
+  </data>
+  <data name="EditorOptionsPanel_Options" xml:space="preserve">
+    <value>الخيارات</value>
+  </data>
+  <data name="EditorView_Bringforward" xml:space="preserve">
+    <value>تحريك إلى الأمام</value>
+  </data>
+  <data name="EditorView_Bringtofront" xml:space="preserve">
+    <value>إرسال إلى المقدمة</value>
+  </data>
+  <data name="EditorView_Cut" xml:space="preserve">
+    <value>قص</value>
+  </data>
+  <data name="EditorView_Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="EditorView_Deleteall" xml:space="preserve">
+    <value>حذف الكل</value>
+  </data>
+  <data name="EditorView_Paste" xml:space="preserve">
+    <value>لصق</value>
+  </data>
+  <data name="EditorView_Redo" xml:space="preserve">
+    <value>إعادة</value>
+  </data>
+  <data name="EditorView_Sendbackward" xml:space="preserve">
+    <value>تحريك إلى الخلف</value>
+  </data>
+  <data name="EditorView_Sendtoback" xml:space="preserve">
+    <value>إرسال إلى الخلف</value>
+  </data>
+  <data name="EditorView_Undo" xml:space="preserve">
+    <value>تراجع</value>
+  </data>
+  <data name="AnnotationToolbar_Arrowstyle" xml:space="preserve">
+    <value>نمط السهم</value>
+  </data>
+  <data name="AnnotationToolbar_Bluramount" xml:space="preserve">
+    <value>مقدار التمويه</value>
+  </data>
+  <data name="AnnotationToolbar_Bordercolor" xml:space="preserve">
+    <value>لون الحدود</value>
+  </data>
+  <data name="AnnotationToolbar_Borderstyle" xml:space="preserve">
+    <value>نمط الحدود</value>
+  </data>
+  <data name="AnnotationToolbar_Cornerradius" xml:space="preserve">
+    <value>نصف قطر الزاوية</value>
+  </data>
+  <data name="AnnotationToolbar_Cursortype" xml:space="preserve">
+    <value>نوع المؤشر</value>
+  </data>
+  <data name="AnnotationToolbar_DeleteallShiftDelete" xml:space="preserve">
+    <value>حذف الكل (Shift+Delete)</value>
+  </data>
+  <data name="AnnotationToolbar_DeleteDelete" xml:space="preserve">
+    <value>حذف (Delete)</value>
+  </data>
+  <data name="AnnotationToolbar_Effectstrength" xml:space="preserve">
+    <value>قوة التأثير</value>
+  </data>
+  <data name="AnnotationToolbar_Fillcolor" xml:space="preserve">
+    <value>لون التعبئة</value>
+  </data>
+  <data name="AnnotationToolbar_Fontfamily" xml:space="preserve">
+    <value>عائلة الخط</value>
+  </data>
+  <data name="AnnotationToolbar_Fontsize" xml:space="preserve">
+    <value>حجم الخط</value>
+  </data>
+  <data name="AnnotationToolbar_Horizontalalignment" xml:space="preserve">
+    <value>المحاذاة الأفقية</value>
+  </data>
+  <data name="AnnotationToolbar_NewEllipsis" xml:space="preserve">
+    <value>جديد...</value>
+  </data>
+  <data name="AnnotationToolbar_OffsetX" xml:space="preserve">
+    <value>إزاحة X</value>
+  </data>
+  <data name="AnnotationToolbar_OffsetY" xml:space="preserve">
+    <value>إزاحة Y</value>
+  </data>
+  <data name="AnnotationToolbar_Opacity" xml:space="preserve">
+    <value>التعتيم</value>
+  </data>
+  <data name="AnnotationToolbar_Openrecent" xml:space="preserve">
+    <value>فتح حديث</value>
+  </data>
+  <data name="AnnotationToolbar_RedoCtrlY" xml:space="preserve">
+    <value>إعادة (Ctrl+Y)</value>
+  </data>
+  <data name="AnnotationToolbar_SaveasEllipsis" xml:space="preserve">
+    <value>حفظ باسم...</value>
+  </data>
+  <data name="AnnotationToolbar_Shadow" xml:space="preserve">
+    <value>الظل</value>
+  </data>
+  <data name="AnnotationToolbar_Shadowcolor" xml:space="preserve">
+    <value>لون الظل</value>
+  </data>
+  <data name="AnnotationToolbar_Startingnumber" xml:space="preserve">
+    <value>رقم البداية</value>
+  </data>
+  <data name="AnnotationToolbar_Steptype" xml:space="preserve">
+    <value>نوع الخطوة</value>
+  </data>
+  <data name="AnnotationToolbar_Textcolor" xml:space="preserve">
+    <value>لون النص</value>
+  </data>
+  <data name="AnnotationToolbar_Thickness" xml:space="preserve">
+    <value>السُمك</value>
+  </data>
+  <data name="AnnotationToolbar_Togglebold" xml:space="preserve">
+    <value>تبديل الخط العريض</value>
+  </data>
+  <data name="AnnotationToolbar_Toggleellipseshape" xml:space="preserve">
+    <value>تبديل الشكل البيضاوي</value>
+  </data>
+  <data name="AnnotationToolbar_Toggleitalic" xml:space="preserve">
+    <value>تبديل الخط المائل</value>
+  </data>
+  <data name="AnnotationToolbar_ToggleshadowShadowoptionsRightclick" xml:space="preserve">
+    <value>تبديل الظل
+خيارات الظل (النقر بزر الماوس الأيمن)</value>
+  </data>
+  <data name="AnnotationToolbar_Toggletail" xml:space="preserve">
+    <value>تبديل الذيل</value>
+  </data>
+  <data name="AnnotationToolbar_UndoCtrlZ" xml:space="preserve">
+    <value>تراجع (Ctrl+Z)</value>
+  </data>
+  <data name="ColorPickerPanel_Pickcolorfromscreen" xml:space="preserve">
+    <value>اختيار لون من الشاشة</value>
+  </data>
+  <data name="EditorOptionsPanel_CustomizetoolbarEllipsis" xml:space="preserve">
+    <value>تخصيص شريط الأدوات...</value>
+  </data>
+  <data name="EditorView_Auto" xml:space="preserve">
+    <value>تلقائي</value>
+  </data>
+  <data name="EditorView_Background" xml:space="preserve">
+    <value>الخلفية</value>
+  </data>
+  <data name="EditorView_Backgroundimage" xml:space="preserve">
+    <value>صورة الخلفية</value>
+  </data>
+  <data name="EditorView_BrowsebackgroundimageEllipsis" xml:space="preserve">
+    <value>استعراض صورة الخلفية...</value>
+  </data>
+  <data name="EditorView_CancelEsc" xml:space="preserve">
+    <value>إلغاء (Esc)</value>
+  </data>
+  <data name="EditorView_CopyimagetoclipboardCtrlC" xml:space="preserve">
+    <value>نسخ الصورة إلى الحافظة (Ctrl+C)</value>
+  </data>
+  <data name="EditorView_Editbackgroundcolor" xml:space="preserve">
+    <value>تحرير لون الخلفية</value>
+  </data>
+  <data name="EditorView_Editgradientcolor1" xml:space="preserve">
+    <value>تحرير لون التدرج 1</value>
+  </data>
+  <data name="EditorView_Editgradientcolor2" xml:space="preserve">
+    <value>تحرير لون التدرج 2</value>
+  </data>
+  <data name="EditorView_Flatten" xml:space="preserve">
+    <value>تسطيح</value>
+  </data>
+  <data name="EditorView_Margin" xml:space="preserve">
+    <value>الهامش</value>
+  </data>
+  <data name="EditorView_Padding" xml:space="preserve">
+    <value>الحشو</value>
+  </data>
+  <data name="EditorView_PinimagetoscreenCtrlP" xml:space="preserve">
+    <value>تثبيت الصورة على الشاشة (Ctrl+P)</value>
+  </data>
+  <data name="EditorView_PrintimageEllipsisCtrlShiftP" xml:space="preserve">
+    <value>طباعة الصورة... (Ctrl+Shift+P)</value>
+  </data>
+  <data name="EditorView_Ratio" xml:space="preserve">
+    <value>النسبة</value>
+  </data>
+  <data name="EditorView_RoundedCorner" xml:space="preserve">
+    <value>زاوية مستديرة</value>
+  </data>
+  <data name="EditorView_SaveimageasEllipsisCtrlShiftS" xml:space="preserve">
+    <value>حفظ الصورة باسم... (Ctrl+Shift+S)</value>
+  </data>
+  <data name="EditorView_SaveimageCtrlS" xml:space="preserve">
+    <value>حفظ الصورة (Ctrl+S)</value>
+  </data>
+  <data name="EditorView_ShadowRadius" xml:space="preserve">
+    <value>نصف قطر الظل</value>
+  </data>
+  <data name="EditorView_UploadimageCtrlU" xml:space="preserve">
+    <value>رفع الصورة (Ctrl+U)</value>
+  </data>
+  <data name="EditorView_ZoomCtrlWheel" xml:space="preserve">
+    <value>التكبير/التصغير (Ctrl + عجلة الماوس)</value>
+  </data>
+  <data name="EffectBrowserPanel_SearchimageeffectsEllipsis" xml:space="preserve">
+    <value>البحث في تأثيرات الصور...</value>
+  </data>
+  <data name="SchemaDrivenEffectDialog_Apply" xml:space="preserve">
+    <value>تطبيق</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Begingroup" xml:space="preserve">
+    <value>بدء مجموعة</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_ClickandpressashortcutBackspaceorDeleteclearsit" xml:space="preserve">
+    <value>انقر واضغط اختصارًا. يمسحه Backspace أو Delete.</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_CustomizeToolbar" xml:space="preserve">
+    <value>تخصيص شريط الأدوات</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_Resettoolbartodefault" xml:space="preserve">
+    <value>إعادة تعيين شريط الأدوات إلى الافتراضي</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_ShowHide" xml:space="preserve">
+    <value>إظهار / إخفاء</value>
+  </data>
+  <data name="ZoomPickerDropdown_ZoomtoFit" xml:space="preserve">
+    <value>ملاءمة للنافذة</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_InvalidHotkey" xml:space="preserve">
+    <value>اختصار غير صالح لـ {0}. استخدم تنسيقات مثل R أو Ctrl+R أو Ctrl+Shift+R.</value>
+  </data>
+  <data name="EffectBrowserPanel_RecentHint" xml:space="preserve">
+    <value>انقر بزر الماوس الأيمن على تأثير لإزالته من العناصر الحديثة.</value>
+  </data>
+  <data name="EffectBrowserPanel_FavoritesHint" xml:space="preserve">
+    <value>انقر بزر الماوس الأيمن على تأثير لإضافته إلى المفضلة أو إزالته منها.</value>
+  </data>
+  <data name="EffectBrowserPanel_SearchCount" xml:space="preserve">
+    <value>البحث في تأثيرات الصور... ({0})</value>
+  </data>
+  <data name="EffectBrowserPanel_Recent" xml:space="preserve">
+    <value>الحديثة</value>
+  </data>
+  <data name="EffectBrowserPanel_Favorites" xml:space="preserve">
+    <value>المفضلة</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_File" xml:space="preserve">
+    <value>ملف</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Select" xml:space="preserve">
+    <value>تحديد</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Text" xml:space="preserve">
+    <value>نص</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Image" xml:space="preserve">
+    <value>صورة</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Cursor" xml:space="preserve">
+    <value>مؤشر</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Highlight" xml:space="preserve">
+    <value>تمييز</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_SmartEraser" xml:space="preserve">
+    <value>ممحاة ذكية</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Blur" xml:space="preserve">
+    <value>تمويه</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Pixelate" xml:space="preserve">
+    <value>بكسلة</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Magnify" xml:space="preserve">
+    <value>تكبير</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Spotlight" xml:space="preserve">
+    <value>تسليط الضوء</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Background" xml:space="preserve">
+    <value>الخلفية</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_ImageEffects" xml:space="preserve">
+    <value>تأثيرات الصور</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Default" xml:space="preserve">
+    <value>افتراضي</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_No" xml:space="preserve">
+    <value>ممنوع</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Solid" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Dash" xml:space="preserve">
+    <value>متقطع</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_Dot" xml:space="preserve">
+    <value>منقط</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Left" xml:space="preserve">
+    <value>يسار</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Center" xml:space="preserve">
+    <value>وسط</value>
+  </data>
+  <data name="TextHorizontalAlignmentHelper_Right" xml:space="preserve">
+    <value>يمين</value>
+  </data>
+  <data name="EditorOptionsPanel_ZoomToFitOnOpen" xml:space="preserve">
+    <value>الملاءمة للنافذة عند الفتح</value>
+  </data>
+  <data name="EditorOptionsPanel_AutoCloseEditorOnTask" xml:space="preserve">
+    <value>إغلاق المحرر تلقائيًا بعد المهمة</value>
+  </data>
+  <data name="EditorOptionsPanel_AutoCopyImageToClipboard" xml:space="preserve">
+    <value>نسخ الصورة تلقائيًا إلى الحافظة</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeGradient" xml:space="preserve">
+    <value>تدرج</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeColor" xml:space="preserve">
+    <value>لون</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeTransparent" xml:space="preserve">
+    <value>شفاف</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeImage" xml:space="preserve">
+    <value>صورة</value>
+  </data>
+  <data name="MainViewModel_WindowTitle" xml:space="preserve">
+    <value>ShareX - محرر الصور</value>
+  </data>
+  <data name="MainViewModel_RunAfterCaptureTasksEnter" xml:space="preserve">
+    <value>تشغيل مهام ما بعد الالتقاط (Enter)</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Rectangle" xml:space="preserve">
+    <value>مستطيل</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Ellipse" xml:space="preserve">
+    <value>قطع ناقص</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Line" xml:space="preserve">
+    <value>خط</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Arrow" xml:space="preserve">
+    <value>سهم</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Freehand" xml:space="preserve">
+    <value>رسم حر</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_SpeechBalloon" xml:space="preserve">
+    <value>فقاعة كلام</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Step" xml:space="preserve">
+    <value>خطوة</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Emoji" xml:space="preserve">
+    <value>رمز تعبيري</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_Crop" xml:space="preserve">
+    <value>اقتصاص</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_CutOut" xml:space="preserve">
+    <value>اقتطاع</value>
+  </data>
+  <data name="ToolbarCustomizationItemViewModel_FavoriteImageEffectsRightClick" xml:space="preserve">
+    <value>{0}
+تأثيرات الصور المفضلة (النقر بزر الماوس الأيمن)</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_AppStarting" xml:space="preserve">
+    <value>بدء تشغيل التطبيق</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Arrow" xml:space="preserve">
+    <value>سهم</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Cross" xml:space="preserve">
+    <value>تقاطع</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Hand" xml:space="preserve">
+    <value>يد</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_Help" xml:space="preserve">
+    <value>مساعدة</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_HSplit" xml:space="preserve">
+    <value>تقسيم أفقي</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_IBeam" xml:space="preserve">
+    <value>مؤشر نص</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMove2D" xml:space="preserve">
+    <value>بدون حركة ثنائية الأبعاد</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMoveHoriz" xml:space="preserve">
+    <value>بدون حركة أفقية</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_NoMoveVert" xml:space="preserve">
+    <value>بدون حركة عمودية</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanEast" xml:space="preserve">
+    <value>تحريك شرقًا</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNE" xml:space="preserve">
+    <value>تحريك شمال شرق</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNorth" xml:space="preserve">
+    <value>تحريك شمالًا</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanNW" xml:space="preserve">
+    <value>تحريك شمال غرب</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSE" xml:space="preserve">
+    <value>تحريك جنوب شرق</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSouth" xml:space="preserve">
+    <value>تحريك جنوبًا</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanSW" xml:space="preserve">
+    <value>تحريك جنوب غرب</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_PanWest" xml:space="preserve">
+    <value>تحريك غربًا</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeAll" xml:space="preserve">
+    <value>تغيير الحجم في كل الاتجاهات</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNESW" xml:space="preserve">
+    <value>تغيير الحجم شمال شرق-جنوب غرب</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNS" xml:space="preserve">
+    <value>تغيير الحجم شمال-جنوب</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeNWSE" xml:space="preserve">
+    <value>تغيير الحجم شمال غرب-جنوب شرق</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_SizeWE" xml:space="preserve">
+    <value>تغيير الحجم غرب-شرق</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_UpArrow" xml:space="preserve">
+    <value>سهم لأعلى</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_VSplit" xml:space="preserve">
+    <value>تقسيم عمودي</value>
+  </data>
+  <data name="CursorTypeDisplayNameConverter_WaitCursor" xml:space="preserve">
+    <value>مؤشر انتظار</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_DashDot" xml:space="preserve">
+    <value>شرطة ونقطة</value>
+  </data>
+  <data name="BorderStyleDisplayConverter_DashDotDot" xml:space="preserve">
+    <value>شرطة ونقطتان</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Classic" xml:space="preserve">
+    <value>كلاسيكي</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Modern" xml:space="preserve">
+    <value>حديث</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Double" xml:space="preserve">
+    <value>مزدوج</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Basic" xml:space="preserve">
+    <value>أساسي</value>
+  </data>
+  <data name="ArrowStyleDisplayNameConverter_Line" xml:space="preserve">
+    <value>خط</value>
+  </data>
+  <data name="EditorOptionsPanel_RememberWindowState" xml:space="preserve">
+    <value>تذكر حالة النافذة</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowExitConfirmation" xml:space="preserve">
+    <value>إظهار تأكيد الخروج</value>
+  </data>
+  <data name="EditorOptionsPanel_QuickCrop" xml:space="preserve">
+    <value>اقتصاص سريع</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowInsertImageDialog" xml:space="preserve">
+    <value>إظهار مربع حوار إدراج الصورة</value>
+  </data>
+  <data name="EditorOptionsPanel_ShowNotifications" xml:space="preserve">
+    <value>إظهار الإشعارات</value>
+  </data>
+  <data name="MainViewModel_BackgroundModeWallpaper" xml:space="preserve">
+    <value>خلفية سطح المكتب</value>
+  </data>
+  <data name="MainViewModel_ImageOpened" xml:space="preserve">
+    <value>تم فتح الصورة.</value>
+  </data>
+  <data name="MainViewModel_NewImageCreated" xml:space="preserve">
+    <value>تم إنشاء صورة جديدة.</value>
+  </data>
+  <data name="MainViewModel_ImageCropped" xml:space="preserve">
+    <value>تم اقتصاص الصورة.</value>
+  </data>
+  <data name="MainViewModel_ImageCutOut" xml:space="preserve">
+    <value>تم اقتطاع الصورة.</value>
+  </data>
+  <data name="MainViewModel_ImageInserted" xml:space="preserve">
+    <value>تم إدراج الصورة.</value>
+  </data>
+  <data name="MainViewModel_ImageAutoCropped" xml:space="preserve">
+    <value>تم اقتصاص الصورة تلقائيًا.</value>
+  </data>
+  <data name="MainViewModel_ImageResized" xml:space="preserve">
+    <value>تم تغيير حجم الصورة.</value>
+  </data>
+  <data name="MainViewModel_CanvasResized" xml:space="preserve">
+    <value>تم تغيير حجم اللوحة.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated90Clockwise" xml:space="preserve">
+    <value>تم تدوير الصورة 90 درجة باتجاه عقارب الساعة.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated90CounterClockwise" xml:space="preserve">
+    <value>تم تدوير الصورة 90 درجة عكس اتجاه عقارب الساعة.</value>
+  </data>
+  <data name="MainViewModel_ImageRotated180" xml:space="preserve">
+    <value>تم تدوير الصورة 180 درجة.</value>
+  </data>
+  <data name="MainViewModel_ImageRotatedByDegrees" xml:space="preserve">
+    <value>تم تدوير الصورة بمقدار {0} درجة.</value>
+  </data>
+  <data name="MainViewModel_ImageFlippedHorizontally" xml:space="preserve">
+    <value>تم قلب الصورة أفقيًا.</value>
+  </data>
+  <data name="MainViewModel_ImageFlippedVertically" xml:space="preserve">
+    <value>تم قلب الصورة عموديًا.</value>
+  </data>
+  <data name="MainViewModel_ImageEffectApplied" xml:space="preserve">
+    <value>تم تطبيق تأثير الصورة.</value>
+  </data>
+  <data name="MainViewModel_ImageSavedToFile" xml:space="preserve">
+    <value>تم حفظ الصورة في ملف.</value>
+  </data>
+  <data name="MainViewModel_FilePathFormat" xml:space="preserve">
+    <value>مسار الملف: {0}</value>
+  </data>
+  <data name="MainViewModel_SizeFormat" xml:space="preserve">
+    <value>الحجم: {0}x{1}</value>
+  </data>
+  <data name="MainViewModel_HideToolbars" xml:space="preserve">
+    <value>إخفاء أشرطة الأدوات</value>
+  </data>
+  <data name="MainViewModel_ShowToolbars" xml:space="preserve">
+    <value>إظهار أشرطة الأدوات</value>
+  </data>
+  <data name="MainViewModel_ContinueEnter" xml:space="preserve">
+    <value>متابعة (Enter)</value>
+  </data>
+  <data name="MainViewModel_NoImage" xml:space="preserve">
+    <value>لا توجد صورة</value>
+  </data>
+  <data name="MainViewModel_ImageCopiedToClipboard" xml:space="preserve">
+    <value>تم نسخ الصورة إلى الحافظة.</value>
+  </data>
+  <data name="MainViewModel_ImagePrinted" xml:space="preserve">
+    <value>تمت طباعة الصورة.</value>
+  </data>
+  <data name="MainViewModel_ImagePinnedToScreen" xml:space="preserve">
+    <value>تم تثبيت الصورة على الشاشة.</value>
+  </data>
+  <data name="MainViewModel_ImageIsUploading" xml:space="preserve">
+    <value>جارٍ رفع الصورة.</value>
+  </data>
+  <data name="ToolbarCustomizationDialogView_DuplicateHotkey" xml:space="preserve">
+    <value>يستخدم {0} و{1} الاختصار نفسه ({2}).</value>
+  </data>
+  <data name="EditorView_SelectBackgroundImage" xml:space="preserve">
+    <value>تحديد صورة الخلفية</value>
+  </data>
+  <data name="EditorView_OpenImage" xml:space="preserve">
+    <value>فتح صورة</value>
+  </data>
+  <data name="EditorView_FailedToLoadImageFromClipboard" xml:space="preserve">
+    <value>تعذر تحميل الصورة من الحافظة.</value>
+  </data>
+  <data name="EditorView_ClipboardDoesNotContainImage" xml:space="preserve">
+    <value>تعذر تحميل الصورة من الحافظة.
+لا تحتوي الحافظة على صورة.</value>
+  </data>
+  <data name="EditorView_UrlDoesNotPointToValidImage" xml:space="preserve">
+    <value>لا يشير عنوان URL إلى صورة صالحة.</value>
+  </data>
+  <data name="EditorView_FailedToDownloadImageFormat" xml:space="preserve">
+    <value>تعذر تنزيل الصورة: {0}</value>
+  </data>
+  <data name="EditorView_FileNoLongerExistsFormat" xml:space="preserve">
+    <value>لم يعد الملف موجودًا.
+{0}</value>
+  </data>
+  <data name="EditorView_FailedToLoadImageFileFormat" xml:space="preserve">
+    <value>تعذر تحميل ملف الصورة.
+{0}</value>
+  </data>
+  <data name="EditorView_SaveImageAs" xml:space="preserve">
+    <value>حفظ الصورة باسم</value>
+  </data>
+  <data name="EditorView_SelectImage" xml:space="preserve">
+    <value>تحديد صورة</value>
+  </data>
+  <data name="EditorView_AchievementUnlocked" xml:space="preserve">
+    <value>تم فتح الإنجاز!</value>
+  </data>
+  <data name="EditorView_Crop" xml:space="preserve">
+    <value>اقتصاص</value>
+  </data>
+  <data name="EditorView_SmartPadding" xml:space="preserve">
+    <value>حشو ذكي</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Manipulations" xml:space="preserve">
+    <value>التحويلات</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Adjustments" xml:space="preserve">
+    <value>التعديلات</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Filters" xml:space="preserve">
+    <value>عوامل التصفية</value>
+  </data>
+  <data name="EffectBrowserPanel_Category_Drawings" xml:space="preserve">
+    <value>الرسم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_alpha" xml:space="preserve">
+    <value>ألفا</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_auto_contrast" xml:space="preserve">
+    <value>تباين تلقائي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_black_and_white" xml:space="preserve">
+    <value>أبيض وأسود</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_brightness" xml:space="preserve">
+    <value>السطوع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_channel_swap" xml:space="preserve">
+    <value>تبديل القنوات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_clarity" xml:space="preserve">
+    <value>وضوح</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_balance" xml:space="preserve">
+    <value>توازن الألوان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_colorize" xml:space="preserve">
+    <value>تلوين</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_matrix" xml:space="preserve">
+    <value>مصفوفة الألوان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_contrast" xml:space="preserve">
+    <value>التباين</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cross_process" xml:space="preserve">
+    <value>معالجة متقاطعة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dehaze" xml:space="preserve">
+    <value>إزالة الضباب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_duotone_gradient_map" xml:space="preserve">
+    <value>لونان / خريطة تدرج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_exposure" xml:space="preserve">
+    <value>تعريض</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_emulation" xml:space="preserve">
+    <value>محاكاة الفيلم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gamma" xml:space="preserve">
+    <value>غاما</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_grayscale" xml:space="preserve">
+    <value>تدرج الرمادي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hue" xml:space="preserve">
+    <value>تدرج اللون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_invert" xml:space="preserve">
+    <value>عكس</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_levels" xml:space="preserve">
+    <value>مستويات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lomo" xml:space="preserve">
+    <value>لومو</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polaroid" xml:space="preserve">
+    <value>بولارويد</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_posterize" xml:space="preserve">
+    <value>فصل الدرجات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_replace_color" xml:space="preserve">
+    <value>استبدال اللون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_saturation" xml:space="preserve">
+    <value>التشبع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sepia" xml:space="preserve">
+    <value>بني داكن</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_shadows_highlights" xml:space="preserve">
+    <value>ظلال / إضاءات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_solarize" xml:space="preserve">
+    <value>تشميس</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_split_toning" xml:space="preserve">
+    <value>تقسيم الدرجات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_temperature_tint" xml:space="preserve">
+    <value>حرارة اللون / صبغة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_threshold" xml:space="preserve">
+    <value>العتبة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vibrance" xml:space="preserve">
+    <value>حيوية الألوان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_confetti" xml:space="preserve">
+    <value>قصاصات ورق ملونة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_background" xml:space="preserve">
+    <value>الخلفية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_background_image" xml:space="preserve">
+    <value>صورة الخلفية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_checkerboard" xml:space="preserve">
+    <value>رقعة شطرنج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_image" xml:space="preserve">
+    <value>الصورة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_line" xml:space="preserve">
+    <value>خط</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_particles" xml:space="preserve">
+    <value>جسيمات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_shape" xml:space="preserve">
+    <value>شكل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_draw_text" xml:space="preserve">
+    <value>النص</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fake_cursor" xml:space="preserve">
+    <value>مؤشر زائف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gradient_overlay" xml:space="preserve">
+    <value>تراكب تدرج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_snowflakes" xml:space="preserve">
+    <value>ندف ثلج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_text_watermark" xml:space="preserve">
+    <value>علامة مائية نصية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_add_noise" xml:space="preserve">
+    <value>إضافة ضوضاء</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anaglyph_3d" xml:space="preserve">
+    <value>صورة مجسمة 3D</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anamorphic_lens_flare" xml:space="preserve">
+    <value>وهج عدسة أنامورفية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_anime_speed_lines" xml:space="preserve">
+    <value>خطوط سرعة الأنمي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_art_deco_border" xml:space="preserve">
+    <value>إطار آرت ديكو</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ascii_art" xml:space="preserve">
+    <value>فن ASCII</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_bevel" xml:space="preserve">
+    <value>حافة مشطوفة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_block_glitch" xml:space="preserve">
+    <value>خلل كتلي / ثني البيانات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blood_splash" xml:space="preserve">
+    <value>رذاذ دم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_bloom" xml:space="preserve">
+    <value>توهج منتشر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blueprint_drawing" xml:space="preserve">
+    <value>رسم مخطط هندسي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_blur" xml:space="preserve">
+    <value>تشويش</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_border" xml:space="preserve">
+    <value>حد</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_brick_wall_border" xml:space="preserve">
+    <value>إطار جدار من الطوب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_candy_cane_border" xml:space="preserve">
+    <value>إطار عصا الحلوى</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cartoon_sticker_cutout" xml:space="preserve">
+    <value>قصاصة ملصق كرتوني</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_celtic_knot_border" xml:space="preserve">
+    <value>إطار عقدة سلتية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chain_link_border" xml:space="preserve">
+    <value>إطار حلقات سلسلة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chalk_drawing" xml:space="preserve">
+    <value>رسم بالطباشير</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chromatic_aberration" xml:space="preserve">
+    <value>انحراف لوني</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_chrome_metallic_border" xml:space="preserve">
+    <value>إطار معدني من الكروم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_circuit_board_border" xml:space="preserve">
+    <value>إطار لوحة دوائر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_claymation_texture" xml:space="preserve">
+    <value>نسيج رسوم الصلصال</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_clouds" xml:space="preserve">
+    <value>سحب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_depth" xml:space="preserve">
+    <value>عمق اللون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_halftone" xml:space="preserve">
+    <value>نصف درجة لوني</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_color_splash" xml:space="preserve">
+    <value>رذاذ ألوان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_convolution_matrix" xml:space="preserve">
+    <value>مصفوفة الالتفاف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crimson_border" xml:space="preserve">
+    <value>إطار قرمزي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crosshatch" xml:space="preserve">
+    <value>تهشير متقاطع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crt" xml:space="preserve">
+    <value>أنبوب أشعة مهبطية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crystalize_shards" xml:space="preserve">
+    <value>شظايا بلورية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crystal_prism" xml:space="preserve">
+    <value>منشور بلوري</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cyanotype" xml:space="preserve">
+    <value>طباعة زرقاء</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_datamosh_smear" xml:space="preserve">
+    <value>لطخة تشويه البيانات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_diamond_pixelate" xml:space="preserve">
+    <value>بكسلة معيّنة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_disposable_camera" xml:space="preserve">
+    <value>كاميرا للاستعمال مرة واحدة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dithering" xml:space="preserve">
+    <value>تمويه نقطي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dot_matrix" xml:space="preserve">
+    <value>مصفوفة نقطية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_double_exposure" xml:space="preserve">
+    <value>تعريض مزدوج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_dream_glow" xml:space="preserve">
+    <value>توهج حالم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_edge_detect" xml:space="preserve">
+    <value>كشف الحواف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_edge_feather" xml:space="preserve">
+    <value>تنعيم الحواف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_emboss" xml:space="preserve">
+    <value>نقش بارز</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_embroidery" xml:space="preserve">
+    <value>تطريز</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_engraving" xml:space="preserve">
+    <value>نقش</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_etched_glass" xml:space="preserve">
+    <value>زجاج محفور</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fake_hair" xml:space="preserve">
+    <value>شعر مستعار</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_grain" xml:space="preserve">
+    <value>حبيبات الفيلم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_film_strip_frame" xml:space="preserve">
+    <value>إطار شريط فيلم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frosted_glass_ice_edges" xml:space="preserve">
+    <value>زجاج مصنفر + حواف جليدية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frosted_glass" xml:space="preserve">
+    <value>زجاج مصنفر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_frost_ice_border" xml:space="preserve">
+    <value>إطار صقيع وجليد</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gaussian_blur" xml:space="preserve">
+    <value>تمويه غاوسي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ghost_trail" xml:space="preserve">
+    <value>أثر شبحي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glare" xml:space="preserve">
+    <value>وهج ساطع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glitch_shift" xml:space="preserve">
+    <value>إزاحة الخلل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glow" xml:space="preserve">
+    <value>توهج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_golden_border" xml:space="preserve">
+    <value>إطار ذهبي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_gradient_fade_border" xml:space="preserve">
+    <value>إطار بتدرج متلاشٍ</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_halation" xml:space="preserve">
+    <value>هالة ضوئية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_halftone" xml:space="preserve">
+    <value>نصف درجة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_heat_haze_refraction" xml:space="preserve">
+    <value>انكسار سراب الحرارة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_heat_map" xml:space="preserve">
+    <value>خريطة حرارية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hexagonal_pixelate" xml:space="preserve">
+    <value>بكسلة سداسية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_hologram_scan" xml:space="preserve">
+    <value>مسح ثلاثي الأبعاد</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_holographic_foil_shimmer" xml:space="preserve">
+    <value>بريق رقائق مجسمة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_infrared_false_color" xml:space="preserve">
+    <value>ألوان زائفة بالأشعة تحت الحمراء</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ink_splatter_drips" xml:space="preserve">
+    <value>رذاذ حبر + قطرات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_inner_shadow" xml:space="preserve">
+    <value>ظل داخلي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_jpeg_artifact" xml:space="preserve">
+    <value>تشوه JPEG</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lava_molten_border" xml:space="preserve">
+    <value>إطار حمم منصهرة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_lens_blur" xml:space="preserve">
+    <value>تمويه العدسة (بوكيه)</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_light_leak" xml:space="preserve">
+    <value>تسرب ضوئي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquid_glass" xml:space="preserve">
+    <value>زجاج سائل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquid_mercury" xml:space="preserve">
+    <value>زئبق سائل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_luminance_contour_lines" xml:space="preserve">
+    <value>خطوط تساوي السطوع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_macos_window" xml:space="preserve">
+    <value>macOS</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_marble_border" xml:space="preserve">
+    <value>إطار رخامي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_matrix_digital_rain" xml:space="preserve">
+    <value>مطر Matrix الرقمي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mean_removal" xml:space="preserve">
+    <value>إزالة المتوسط</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_median_filter" xml:space="preserve">
+    <value>مرشح متوسط</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_minecraft_grass" xml:space="preserve">
+    <value>عشب Minecraft</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_miniature" xml:space="preserve">
+    <value>مجسم مصغر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mosaic_polygon" xml:space="preserve">
+    <value>مضلع فسيفسائي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mosaic_tile_border" xml:space="preserve">
+    <value>إطار بلاطات فسيفساء</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_motion_blur" xml:space="preserve">
+    <value>تمويه الحركة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_nebula_starfield" xml:space="preserve">
+    <value>حقل نجوم سديمي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_neon_edge_glow" xml:space="preserve">
+    <value>توهج حواف نيون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_neon_glow_border" xml:space="preserve">
+    <value>إطار نيون متوهج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_night_vision" xml:space="preserve">
+    <value>رؤية ليلية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_oil_paint" xml:space="preserve">
+    <value>رسم زيتي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_oil_slick_interference" xml:space="preserve">
+    <value>تداخل غشاء الزيت</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_old_camera_flash_burn" xml:space="preserve">
+    <value>احتراق فلاش كاميرا قديمة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ornate_scroll_border" xml:space="preserve">
+    <value>إطار زخرفي ملتف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_outline" xml:space="preserve">
+    <value>المخطط التفصيلي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_palette_map" xml:space="preserve">
+    <value>خريطة لوحة الألوان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_paper_stencil_mask" xml:space="preserve">
+    <value>قناع استنسل ورقي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pencil_sketch" xml:space="preserve">
+    <value>رسم بقلم رصاص</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_perlin_noise" xml:space="preserve">
+    <value>ضوضاء بيرلين</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pixelate" xml:space="preserve">
+    <value>بكسلة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pixel_sorting" xml:space="preserve">
+    <value>فرز البكسلات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_plasma_energy_arcs" xml:space="preserve">
+    <value>أقواس طاقة البلازما</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pointillism" xml:space="preserve">
+    <value>تنقيطية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polaroid_frame" xml:space="preserve">
+    <value>إطار Polaroid</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pop_art_grid" xml:space="preserve">
+    <value>شبكة فن البوب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_radial_rainbow" xml:space="preserve">
+    <value>قوس قزح شعاعي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rainbow_border" xml:space="preserve">
+    <value>إطار قوس قزح</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rainy_window" xml:space="preserve">
+    <value>نافذة ممطرة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_reflection" xml:space="preserve">
+    <value>انعكاس</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_remove_background" xml:space="preserve">
+    <value>إزالة الخلفية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_retro_sunset" xml:space="preserve">
+    <value>غروب قديم الطراز</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rgb_split" xml:space="preserve">
+    <value>فصل RGB</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_riso_print" xml:space="preserve">
+    <value>طباعة ريزو</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rope_border" xml:space="preserve">
+    <value>إطار حبل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rust_corrosion" xml:space="preserve">
+    <value>صدأ / تآكل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_scanline" xml:space="preserve">
+    <value>خطوط مسح</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_shadow" xml:space="preserve">
+    <value>الظل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sharpen" xml:space="preserve">
+    <value>زيادة الحدة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_slice" xml:space="preserve">
+    <value>تقطيع</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_smoke_overlay" xml:space="preserve">
+    <value>تراكب دخان</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_smooth" xml:space="preserve">
+    <value>تنعيم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_snowfall_depth_fog" xml:space="preserve">
+    <value>تساقط ثلج + ضباب العمق</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_sobel_edge" xml:space="preserve">
+    <value>حافة سوبل</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_soft_diffusion" xml:space="preserve">
+    <value>انتشار ناعم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_spin_blur" xml:space="preserve">
+    <value>تمويه دوراني</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stained_glass_border" xml:space="preserve">
+    <value>إطار زجاج ملون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stained_glass" xml:space="preserve">
+    <value>زجاج ملون</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_starfield_border" xml:space="preserve">
+    <value>إطار حقل نجوم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_star_filter" xml:space="preserve">
+    <value>مرشح نجمي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_stripe_overlay" xml:space="preserve">
+    <value>تراكب خطوط</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_surface_blur" xml:space="preserve">
+    <value>تمويه السطح</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_thermal_vision" xml:space="preserve">
+    <value>رؤية حرارية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tilt_shift" xml:space="preserve">
+    <value>تأثير المجسم المصغر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_torn_edge" xml:space="preserve">
+    <value>حافة ممزقة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_triangle_pixelate" xml:space="preserve">
+    <value>بكسلة مثلثة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tv_static" xml:space="preserve">
+    <value>تشويش التلفاز</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_unsharp_mask" xml:space="preserve">
+    <value>قناع زيادة الحدة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vhs_tape_damage" xml:space="preserve">
+    <value>تلف شريط VHS</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vignette" xml:space="preserve">
+    <value>تعتيم الحواف</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_vintage_print_damage" xml:space="preserve">
+    <value>تلف طباعة قديمة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_voronoi_mosaic" xml:space="preserve">
+    <value>فسيفساء فورونوي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_watercolor_border" xml:space="preserve">
+    <value>إطار ألوان مائية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_watercolor_kuwahara" xml:space="preserve">
+    <value>ألوان مائية / Kuwahara</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wave_edge" xml:space="preserve">
+    <value>حافة متموجة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wet_plate_collodion" xml:space="preserve">
+    <value>كولوديون اللوح الرطب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_windows11_window" xml:space="preserve">
+    <value>Windows 11</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wind_streaks" xml:space="preserve">
+    <value>خطوط الرياح</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_woodcut_print" xml:space="preserve">
+    <value>طباعة محفورة على الخشب</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wooden_frame" xml:space="preserve">
+    <value>إطار خشبي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_x_ray_scan" xml:space="preserve">
+    <value>مسح بالأشعة السينية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_zigzag_border" xml:space="preserve">
+    <value>إطار متعرج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_zoom_blur" xml:space="preserve">
+    <value>تمويه التكبير</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_auto_crop_image" xml:space="preserve">
+    <value>اقتصاص الصورة تلقائياً</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_crop_image" xml:space="preserve">
+    <value>اقتصاص الصورة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_cylinder_wrap" xml:space="preserve">
+    <value>لف أسطواني</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_displacement_map" xml:space="preserve">
+    <value>خريطة الإزاحة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fisheye_lens" xml:space="preserve">
+    <value>عدسة عين السمكة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_flip_horizontal" xml:space="preserve">
+    <value>قلب أفقي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_flip_vertical" xml:space="preserve">
+    <value>قلب رأسي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_fold_crease_warp" xml:space="preserve">
+    <value>تشويه طية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_glass_sphere" xml:space="preserve">
+    <value>كرة زجاجية</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_kaleidoscope" xml:space="preserve">
+    <value>مشكال</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_liquify_push_smudge" xml:space="preserve">
+    <value>تسييل: دفع / تلطيخ</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_mirror_tiles" xml:space="preserve">
+    <value>بلاطات مرآة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_page_curl" xml:space="preserve">
+    <value>التفاف الصفحة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_perspective_warp" xml:space="preserve">
+    <value>تشويه المنظور</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_pinch_bulge" xml:space="preserve">
+    <value>قرص / انتفاخ</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_polar_warp" xml:space="preserve">
+    <value>تشويه قطبي</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_resize_canvas" xml:space="preserve">
+    <value>تغيير حجم اللوحة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_resize_image" xml:space="preserve">
+    <value>تغيير حجم الصورة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_ripple_refraction" xml:space="preserve">
+    <value>انكسار التموج</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_180" xml:space="preserve">
+    <value>تدوير 180°</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_3d_box" xml:space="preserve">
+    <value>صندوق 3D / بثق</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_3d" xml:space="preserve">
+    <value>تدوير ثلاثي الأبعاد</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_90_counter_clockwise" xml:space="preserve">
+    <value>تدوير 90° عكس عقارب الساعة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_90_clockwise" xml:space="preserve">
+    <value>تدوير 90° مع عقارب الساعة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rotate_custom_angle" xml:space="preserve">
+    <value>تدوير</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_rounded_corners" xml:space="preserve">
+    <value>زوايا مستديرة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_scale" xml:space="preserve">
+    <value>تحجيم</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_skew" xml:space="preserve">
+    <value>الإمالة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_symmetry" xml:space="preserve">
+    <value>تناظر</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tile_repeat" xml:space="preserve">
+    <value>تكرار البلاطات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_tile_shuffle" xml:space="preserve">
+    <value>خلط البلاطات</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_twirl" xml:space="preserve">
+    <value>دوامة</value>
+  </data>
+  <data name="EffectBrowserPanel_Effect_wave_distortion" xml:space="preserve">
+    <value>تشويه موجي</value>
+  </data>
+</root>
