@@ -1,11 +1,62 @@
 # ShareX.ImageEditor Port Status
 
-Last updated: 2026-07-11
+Last updated: 2026-08-18
 
 ## Port Source
-- ShareX.ImageEditor commit: `6b014fd9` (latest upstream ShareX commit touching ShareX.ImageEditor as of 2026-07-11)
-- XerahS submodule last synced to: `6b014fd9`
-- XerahS submodule current HEAD before this session: `0838f33`
+- ShareX.ImageEditor commit: `ebcee2a63` (latest upstream ShareX commit touching ShareX.ImageEditor as of 2026-08-18)
+- XerahS submodule last synced to: `ebcee2a63`
+- XerahS submodule current HEAD before this session: `1bcb66c`
+
+## Port Activity (2026-08-18)
+
+- Previous recorded ShareX sync: `6b014fd9`
+- Latest upstream ShareX commit touching ShareX.ImageEditor: `ebcee2a63` (Refactor capture toolbar layout and positioning)
+- Result: caught up through `ebcee2a63` in the working tree
+- Method: semantic port from the local `C:\Users\Public\source\repos\ShareX Team\ShareX` checkout (pulled to `ebcee2a63`) into `src/ShareX.ImageEditor`. ShareX ImageEditor now depends on `ShareX.Avalonia` and extracted tools; XerahS stays a standalone Avalonia/Skia library.
+- Range size: 46 upstream commits, 380 files
+- Risk: high; the range spans the ShareX.Avalonia split, localization, smart-eraser fills, toolbar host chrome, built-in toolbar extraction, and workspace-host APIs
+
+### Feature groups reviewed and ported
+
+- Localization: `33c0539ab`, `18764b330`, `cd3240f73`, `a961af7a8`, `dc2ce8d38`, `0622ab2b9`, `8a394cf97`, `6b82d289c`, `bc2e4f850`, `e726e6451`, `2b1b9c217`, `69efe9969`, `d020fdf60` (493 keys, 28 cultures; emoji names stay English)
+- Emoji catalog UTF-8 repair: `dc2ce8d38`
+- Smart eraser edge-matching fills: `cfc954c16`, `5459e3af2` (live `ConfigureFill` + stretch `ImageBrush`)
+- Toolbar host chrome: `ac70348fa`, `395603c38`, `e1a9ac904`, `ebcee2a63` (`ShowToolOptionsPanel`, border/corner styled props, leading-content slot, separator alignment)
+- Built-in toolbars + attach API: `9c81fb019`, `bb3806ef3`
+- Host APIs: `7d9e3f258` (`openBackgroundPanel`), `6aec27398` (`ToolSelectionRequested`, `SetHostToolbarFilter`/`SetHostToolbarToolsActive`), `0e2fc4715` (insert notification flag), `d2d4aa587` (modal `e.Handled`)
+
+### Intentional skips
+
+- Image combiner in ImageEditor (`3e9b82c0a`, `755cfb79a`): XerahS.UI already owns combiner.
+- ShareX.Avalonia split / Hosting→Integration / tool extraction (`0056e6f0f`, `da71d286e`, `85b341964`): keep XerahS `Hosting/`, Lucide, cursors, and tool windows so the standalone library and ThemeService keep working. Do not add a `ShareX.Avalonia` project reference.
+- ImageEffects `using ShareX.AvaloniaUI.Theming`: keep `ShareX.ImageEditor.Presentation.Theming`.
+- .NET 10 (`dc6fb2082`): already `net10.0`.
+- Avalonia lifetime (`f4a20cca2`): `AvaloniaIntegration` still self-boots for the standalone app.
+- Editor-local theme removal (`d4d0b42e3`, `010e7eca1`): XerahS.UI `ThemeService` already drives `ThemeManager`; standalone app still needs in-editor theme controls.
+- Magnified screen color picker (`e7394e7f9`): implementation lives in ShareX.Avalonia (`ScreenColorPickerWindow` + GDI magnifier). Deferred; XerahS picker remains hex-only in ImageEditor.
+- Cursor-screen modal/notification positioning (`39d376711`, `6536e7aec`, `8f4691c3e`): deferred; will use Avalonia `Screens` (no `user32`) in a follow-up.
+- Full embedded `EditorView` workspace (`ConfigureForFullscreenWorkspace`, `LoadWorkspaceImage`, `GetWorkspacePixel`, ShareX `RegionCaptureWindow`): XerahS RegionCapture stays Overlay + own `EditorCore`.
+- `EditorHostExample.cs` deletion (`d1f432ab2`): keep the standalone-host sample.
+- ShareX `Validate.ps1` / emoji-key experiment (`2618cc3be`, `cdb928d8a`, `0622ab2b9` add-then-delete).
+
+### Adaptations kept for XerahS
+
+- Preserved the submodule `src/ShareX.ImageEditor` layout, `Hosting/` namespace, and per-file license-header state.
+- Preserved `ApplicationName` / `EditorTitle` for window titles (do not use ShareX `MainViewModel_WindowTitle`).
+- Named the host options-strip override `ShowToolOptionsPanel` so it does not collide with `IAnnotationToolbarAdapter.ShowToolOptions`.
+- Defaulted `UseBuiltInToolbars` to `true` so existing XerahS embedded `new EditorView()` hosts keep chrome.
+- RegionCapture Overlay now calls `ConfigureFill` while drawing instead of a single sampled color.
+
+### Root integration updated in the same session
+
+- `XerahS.RegionCapture/UI/OverlayWindow.Canvas.cs`: live smart-eraser fill while drawing.
+
+### Verification
+
+- `dotnet build ShareX.ImageEditor/src/ShareX.ImageEditor/ShareX.ImageEditor.csproj -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-08-18 (Windows).
+- `dotnet build ShareX.ImageEditor.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 warnings and 0 errors on 2026-08-18.
+- `dotnet build src/desktop/XerahS.sln -m:1 /nodeReuse:false /p:UseSharedCompilation=false` passed with 0 errors on 2026-08-18 (3 pre-existing XerahS.UI warnings).
+- `dotnet test tests/XerahS.Tests/XerahS.Tests.csproj` passed 1291, skipped 40, failed 6 on 2026-08-18. Failures are pre-existing Windows-host Linux/macOS clipboard and `/bin/sh` notification tests, not ImageEditor.
 
 ## Port Activity (2026-07-11)
 
