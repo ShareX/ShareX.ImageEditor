@@ -49,10 +49,20 @@ public partial class AnnotationToolbar : UserControl
     public static readonly StyledProperty<bool> ShowEditingActionsProperty =
         AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowEditingActions), true);
 
+    public static readonly StyledProperty<bool> ShowToolOptionsPanelProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, bool>(nameof(ShowToolOptionsPanel), true);
+
+    public static readonly StyledProperty<Thickness> MainToolbarBorderThicknessProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, Thickness>(nameof(MainToolbarBorderThickness), new Thickness(1));
+
+    public static readonly StyledProperty<CornerRadius> MainToolbarCornerRadiusProperty =
+        AvaloniaProperty.Register<AnnotationToolbar, CornerRadius>(nameof(MainToolbarCornerRadius), new CornerRadius(0, 0, 4, 4));
+
     private readonly SolidColorBrush? _activeBrush;
     private readonly SolidColorBrush? _activeForegroundBrush;
     private IPlatformSettings? _platformSettings;
     private IAnnotationToolbarAdapter? _toolbarAdapter;
+    private ContentControl? _mainToolbarLeadingContentHost;
 
     public event EventHandler<IBrush>? ColorChanged;
     public event EventHandler<IBrush>? FillColorChanged;
@@ -77,6 +87,7 @@ public partial class AnnotationToolbar : UserControl
     public AnnotationToolbar()
     {
         InitializeComponent();
+        _mainToolbarLeadingContentHost = this.FindControl<ContentControl>("MainToolbarLeadingContentHost");
         _activeBrush = Resources["AnnotationToolbarActiveBrush"] as SolidColorBrush;
         _activeForegroundBrush = Resources["AnnotationToolbarActiveForegroundBrush"] as SolidColorBrush;
         WireCompatibilityEvents();
@@ -89,6 +100,39 @@ public partial class AnnotationToolbar : UserControl
     {
         get => GetValue(ShowEditingActionsProperty);
         set => SetValue(ShowEditingActionsProperty, value);
+    }
+
+    public bool ShowToolOptionsPanel
+    {
+        get => GetValue(ShowToolOptionsPanelProperty);
+        set => SetValue(ShowToolOptionsPanelProperty, value);
+    }
+
+    public Thickness MainToolbarBorderThickness
+    {
+        get => GetValue(MainToolbarBorderThicknessProperty);
+        set => SetValue(MainToolbarBorderThicknessProperty, value);
+    }
+
+    public CornerRadius MainToolbarCornerRadius
+    {
+        get => GetValue(MainToolbarCornerRadiusProperty);
+        set => SetValue(MainToolbarCornerRadiusProperty, value);
+    }
+
+    public Control? MainToolbarLeadingContent
+    {
+        get => _mainToolbarLeadingContentHost?.Content as Control;
+        set
+        {
+            if (_mainToolbarLeadingContentHost == null)
+            {
+                return;
+            }
+
+            _mainToolbarLeadingContentHost.Content = value;
+            _mainToolbarLeadingContentHost.IsVisible = value != null;
+        }
     }
 
     public void OpenFileMenu()

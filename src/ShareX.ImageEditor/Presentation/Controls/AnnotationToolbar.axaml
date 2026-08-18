@@ -6,6 +6,7 @@
              xmlns:controls="using:ShareX.ImageEditor.Presentation.Controls"
              xmlns:vm="using:ShareX.ImageEditor.Presentation.ViewModels"
              xmlns:theming="clr-namespace:ShareX.ImageEditor.Presentation.Theming;assembly=ShareX.ImageEditor"
+             xmlns:res="using:ShareX.ImageEditor.Localization"
              x:Class="ShareX.ImageEditor.Presentation.Controls.AnnotationToolbar"
              x:Name="AnnotationToolbarRoot"
              x:DataType="abstractions:IAnnotationToolbarAdapter">
@@ -21,8 +22,8 @@
         <Border Padding="4"
                 Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
                 BorderBrush="{DynamicResource ShareX.Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="0,0,4,4"
+                BorderThickness="{Binding MainToolbarBorderThickness, ElementName=AnnotationToolbarRoot}"
+                CornerRadius="{Binding MainToolbarCornerRadius, ElementName=AnnotationToolbarRoot}"
                 HorizontalAlignment="Center"
                 MaxWidth="{Binding Bounds.Width, ElementName=AnnotationToolbarRoot}">
             <ScrollViewer x:Name="PrimaryToolbarScrollViewer"
@@ -30,6 +31,8 @@
                           VerticalScrollBarVisibility="Disabled"
                           AllowAutoHide="False">
                 <StackPanel Orientation="Horizontal" Spacing="4">
+                    <ContentControl x:Name="MainToolbarLeadingContentHost"
+                                    IsVisible="False"/>
                     <ItemsControl ItemsSource="{ReflectionBinding VisibleToolbarItems}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -40,7 +43,6 @@
                             <DataTemplate x:DataType="vm:ToolbarCustomizationItemViewModel">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <Border Width="1"
-                                            Margin="4,0"
                                             Background="{DynamicResource ShareX.Brush.Separator}"
                                             IsVisible="{Binding IsGroupSeparatorVisible}"/>
                                     <Button Classes="toolbar-button"
@@ -69,14 +71,14 @@
                                         </Grid>
                                         <Button.Flyout>
                                             <MenuFlyout Placement="BottomEdgeAlignedLeft" VerticalOffset="4">
-                                                <MenuItem Header="New..."
+                                                <MenuItem Header="{x:Static res:Strings.AnnotationToolbar_NewEllipsis}"
                                                           Command="{Binding #AnnotationToolbarRoot.DataContext.NewImageCommand}"
                                                           InputGesture="Ctrl+N">
                                                     <MenuItem.Icon>
                                                         <TextBlock FontFamily="{DynamicResource ShareX.FontFamily.Icon}" FontWeight="Normal" Text="{x:Static theming:EditorIcons.FileNew}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Header="Open..."
+                                                <MenuItem Header="{x:Static res:Strings.AnnotationToolbar_OpenEllipsis}"
                                                           Command="{Binding #AnnotationToolbarRoot.DataContext.OpenImageCommand}"
                                                           InputGesture="Ctrl+O">
                                                     <MenuItem.Icon>
@@ -140,32 +142,33 @@
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4"
                                 IsVisible="{Binding ShowEditingActions, ElementName=AnnotationToolbarRoot}">
-                        <Border Width="1" Margin="4,0" Background="{DynamicResource ShareX.Brush.Separator}"/>
+                        <Border Width="1" Background="{DynamicResource ShareX.Brush.Separator}"/>
                         <Button Classes="toolbar-button"
                                 IsEnabled="{Binding CanUndo}"
                                 Click="OnUndoClick"
-                                ToolTip.Tip="Undo (Ctrl+Z)"
+                                ToolTip.Tip="{x:Static res:Strings.AnnotationToolbar_UndoCtrlZ}"
                                 Content="{x:Static theming:EditorIcons.ActionUndo}"/>
                         <Button Classes="toolbar-button"
                                 IsEnabled="{Binding CanRedo}"
                                 Click="OnRedoClick"
-                                ToolTip.Tip="Redo (Ctrl+Y)"
+                                ToolTip.Tip="{x:Static res:Strings.AnnotationToolbar_RedoCtrlY}"
                                 Content="{x:Static theming:EditorIcons.ActionRedo}"/>
                         <Button Classes="toolbar-button"
                                 IsEnabled="{Binding HasSelection}"
                                 Click="OnDeleteClick"
-                                ToolTip.Tip="Delete (Delete)"
+                                ToolTip.Tip="{x:Static res:Strings.AnnotationToolbar_DeleteDelete}"
                                 Content="{x:Static theming:EditorIcons.ActionDelete}"/>
                         <Button Classes="toolbar-button"
                                 IsEnabled="{Binding HasAnnotations}"
                                 Click="OnClearClick"
-                                ToolTip.Tip="Delete all (Shift+Delete)"
+                                ToolTip.Tip="{x:Static res:Strings.AnnotationToolbar_DeleteallShiftDelete}"
                                 Content="{x:Static theming:EditorIcons.ActionClearAll}"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </Border>
 
+        <Grid IsVisible="{Binding ShowToolOptionsPanel, ElementName=AnnotationToolbarRoot}">
         <Border Padding="4,0,4,4"
                 Margin="0,-1,0,0"
                 Background="{DynamicResource ShareX.Brush.Background.Toolbar}"
@@ -443,5 +446,6 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        </Grid>
     </StackPanel>
 </UserControl>

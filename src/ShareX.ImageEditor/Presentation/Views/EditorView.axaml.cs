@@ -39,6 +39,7 @@ using Avalonia.VisualTree;
 using ShareX.ImageEditor.Core.Annotations;
 using ShareX.ImageEditor.Core.Editor;
 using ShareX.ImageEditor.Hosting;
+using ShareX.ImageEditor.Localization;
 using ShareX.ImageEditor.Presentation.Controllers;
 using ShareX.ImageEditor.Presentation.Controls;
 using ShareX.ImageEditor.Presentation.Emoji;
@@ -52,6 +53,9 @@ namespace ShareX.ImageEditor.Presentation.Views
 {
     public partial class EditorView : UserControl
     {
+        public static readonly StyledProperty<bool> UseBuiltInToolbarsProperty =
+            AvaloniaProperty.Register<EditorView, bool>(nameof(UseBuiltInToolbars), defaultValue: true);
+
         private static readonly Cursor ArrowCursor = new(StandardCursorType.Arrow);
         internal const double OverlayCanvasBleed = 24;
 
@@ -81,6 +85,8 @@ namespace ShareX.ImageEditor.Presentation.Views
         private ImageEditorOptions? _effectBrowserPanelOptions;
         private Cursor? _interactionCursorOverride;
         private CursorAssetLoader.CustomCursorKind? _interactionCursorAsset;
+        private ContentControl _builtInToolbarsHost = null!;
+        private EditorBuiltInToolbars? _builtInToolbars;
 
         // Window-level key handler reference (so shortcuts work regardless of focus)
         private Window? _parentWindow;
@@ -94,6 +100,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             InitializeComponent();
             _editorThemeScope = this.FindControl<ThemeVariantScope>("EditorThemeScope");
+            _builtInToolbarsHost = this.FindControl<ContentControl>("BuiltInToolbarsHost")!;
 
             _editorCore = new EditorCore();
 
@@ -190,6 +197,50 @@ namespace ShareX.ImageEditor.Presentation.Views
             AddHandler(DragDrop.DragOverEvent, OnDragOver);
 
             DataContextChanged += OnEditorDataContextChanged;
+            UpdateBuiltInToolbars();
+        }
+
+        public bool UseBuiltInToolbars
+        {
+            get => GetValue(UseBuiltInToolbarsProperty);
+            set => SetValue(UseBuiltInToolbarsProperty, value);
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == UseBuiltInToolbarsProperty && _builtInToolbarsHost != null)
+            {
+                UpdateBuiltInToolbars();
+            }
+        }
+
+        private void UpdateBuiltInToolbars()
+        {
+            if (UseBuiltInToolbars)
+            {
+                if (_builtInToolbars == null)
+                {
+                    _builtInToolbars = new EditorBuiltInToolbars();
+                    _builtInToolbars.ZoomChanged += OnZoomChanged;
+                    _builtInToolbars.ZoomToFitRequested += OnZoomPickerZoomToFitRequested;
+                    _builtInToolbarsHost.Content = _builtInToolbars;
+
+                    if (IsLoaded)
+                    {
+                        HookAnnotationToolbarEvents();
+                    }
+                }
+            }
+            else if (_builtInToolbars != null)
+            {
+                UnhookAnnotationToolbarEvents();
+                _builtInToolbars.ZoomChanged -= OnZoomChanged;
+                _builtInToolbars.ZoomToFitRequested -= OnZoomPickerZoomToFitRequested;
+                _builtInToolbarsHost.Content = null;
+                _builtInToolbars = null;
+            }
         }
 
         private void OnLayoutUpdated(object? sender, EventArgs e)
@@ -624,7 +675,7 @@ namespace ShareX.ImageEditor.Presentation.Views
         {
             Dispatcher.UIThread.Post(() =>
             {
-                this.FindControl<AnnotationToolbar>("AnnotationToolbarControl")?.RefreshAccentBrushes();
+                _builtInToolbars?.AnnotationToolbar.RefreshAccentBrushes();
             }, DispatcherPriority.Render);
         }
 
@@ -1075,7 +1126,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void OnFileMenuRequested(object? sender, EventArgs e)
         {
-            this.FindControl<AnnotationToolbar>("AnnotationToolbarControl")?.OpenFileMenu();
+            _builtInToolbars?.OpenFileMenu();
         }
 
         private EffectBrowserPanel EnsureEffectBrowserPanel(MainViewModel vm)
@@ -2004,7 +2055,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Select background image",
+                Title = Strings.EditorView_SelectBackgroundImage,
                 AllowMultiple = false,
                 FileTypeFilter = [FilePickerFileTypes.ImageAll]
             });
@@ -2119,7 +2170,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Open image",
+                Title = Strings.EditorView_OpenImage,
                 AllowMultiple = false,
                 FileTypeFilter = [FilePickerFileTypes.ImageAll]
             });
@@ -2497,7 +2548,7 @@ namespace ShareX.ImageEditor.Presentation.Views
 
             IStorageFile? file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Save image as",
+                Title = Strings.EditorView_SaveImageAs,
                 SuggestedFileName = !string.IsNullOrEmpty(vm.ImageFilePath)
                     ? System.IO.Path.GetFileName(vm.ImageFilePath)
                     : "image.png",

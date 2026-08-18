@@ -39,12 +39,23 @@ namespace ShareX.ImageEditor.Presentation.Views
     {
         private void HookAnnotationToolbarEvents()
         {
-            var toolbar = this.FindControl<AnnotationToolbar>("AnnotationToolbarControl");
+            AnnotationToolbar? toolbar = _builtInToolbars?.AnnotationToolbar;
             if (toolbar == null)
             {
                 return;
             }
 
+            HookAnnotationToolbarEvents(toolbar);
+        }
+
+        public void AttachHostAnnotationToolbar(AnnotationToolbar toolbar)
+        {
+            ArgumentNullException.ThrowIfNull(toolbar);
+            HookAnnotationToolbarEvents(toolbar);
+        }
+
+        private void HookAnnotationToolbarEvents(AnnotationToolbar toolbar)
+        {
             toolbar.ColorChanged += OnColorChanged;
             toolbar.FillColorChanged += OnFillColorChanged;
             toolbar.TextColorChanged += OnTextColorChanged;
@@ -68,12 +79,23 @@ namespace ShareX.ImageEditor.Presentation.Views
 
         private void UnhookAnnotationToolbarEvents()
         {
-            var toolbar = this.FindControl<AnnotationToolbar>("AnnotationToolbarControl");
+            AnnotationToolbar? toolbar = _builtInToolbars?.AnnotationToolbar;
             if (toolbar == null)
             {
                 return;
             }
 
+            UnhookAnnotationToolbarEvents(toolbar);
+        }
+
+        public void DetachHostAnnotationToolbar(AnnotationToolbar toolbar)
+        {
+            ArgumentNullException.ThrowIfNull(toolbar);
+            UnhookAnnotationToolbarEvents(toolbar);
+        }
+
+        private void UnhookAnnotationToolbarEvents(AnnotationToolbar toolbar)
+        {
             toolbar.ColorChanged -= OnColorChanged;
             toolbar.FillColorChanged -= OnFillColorChanged;
             toolbar.TextColorChanged -= OnTextColorChanged;

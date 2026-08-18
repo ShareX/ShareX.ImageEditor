@@ -110,9 +110,9 @@ namespace ShareX.ImageEditor.Hosting
         }
 
         public static SKBitmap? ShowEditorDialog(ImageEditorOptions options, EditorEvents? events = null,
-            bool taskMode = false, string? imageFilePath = null)
+            bool taskMode = false, string? imageFilePath = null, bool openBackgroundPanel = false)
         {
-            return ShowEditorDialog(null, options, events, taskMode, imageFilePath);
+            return ShowEditorDialog(null, options, events, taskMode, imageFilePath, openBackgroundPanel);
         }
 
         public static void ShowImageComparerWindow()
@@ -194,13 +194,13 @@ namespace ShareX.ImageEditor.Hosting
         }
 
         public static SKBitmap? ShowEditorDialog(SKBitmap? imageBitmap, ImageEditorOptions options, EditorEvents? events = null,
-            bool taskMode = false, string? imageFilePath = null)
+            bool taskMode = false, string? imageFilePath = null, bool openBackgroundPanel = false)
         {
-            return ShowEditorDialogCore(imageBitmap, options, events, taskMode, imageFilePath);
+            return ShowEditorDialogCore(imageBitmap, options, events, taskMode, imageFilePath, openBackgroundPanel);
         }
 
         private static SKBitmap? ShowEditorDialogCore(SKBitmap? imageBitmap, ImageEditorOptions options, EditorEvents? events,
-            bool taskMode, string? imageFilePath)
+            bool taskMode, string? imageFilePath, bool openBackgroundPanel)
         {
             Initialize();
 
@@ -230,6 +230,11 @@ namespace ShareX.ImageEditor.Hosting
                     vm.UseContinueWorkflow = taskMode;
                     vm.ShowBottomToolbar = true;
                     vm.ShowStartScreen = !taskMode;
+
+                    if (openBackgroundPanel)
+                    {
+                        vm.IsSettingsPanelOpen = true;
+                    }
                 }
 
                 SetupEvents(window, events);
