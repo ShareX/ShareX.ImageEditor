@@ -69,6 +69,44 @@ public class EditorInputController
             Math.Clamp(point.X, 0, canvas.Bounds.Width),
             Math.Clamp(point.Y, 0, canvas.Bounds.Height));
 
+    private static void ClampSmartEraserBoundsToCanvas(
+        global::Avalonia.Controls.Shapes.Rectangle rectangle,
+        SmartEraserAnnotation annotation,
+        Canvas canvas)
+    {
+        double left = Canvas.GetLeft(rectangle);
+        double top = Canvas.GetTop(rectangle);
+        double right = left + rectangle.Width;
+        double bottom = top + rectangle.Height;
+
+        double clippedLeft = Math.Clamp(left, 0, canvas.Bounds.Width);
+        double clippedTop = Math.Clamp(top, 0, canvas.Bounds.Height);
+        double clippedRight = Math.Clamp(right, 0, canvas.Bounds.Width);
+        double clippedBottom = Math.Clamp(bottom, 0, canvas.Bounds.Height);
+
+        Canvas.SetLeft(rectangle, clippedLeft);
+        Canvas.SetTop(rectangle, clippedTop);
+        rectangle.Width = Math.Max(0, clippedRight - clippedLeft);
+        rectangle.Height = Math.Max(0, clippedBottom - clippedTop);
+        annotation.StartPoint = ToSKPoint(new Point(clippedLeft, clippedTop));
+        annotation.EndPoint = ToSKPoint(new Point(clippedRight, clippedBottom));
+    }
+
+    private void UpdateSmartEraserFill(
+        global::Avalonia.Controls.Shapes.Rectangle rectangle,
+        SmartEraserAnnotation annotation,
+        Canvas canvas)
+    {
+        ClampSmartEraserBoundsToCanvas(rectangle, annotation, canvas);
+
+        var sourceImage = _view.EditorCore.SourceImage;
+        if (sourceImage != null)
+        {
+            annotation.ConfigureFill(sourceImage);
+            annotation.ApplyFill(rectangle);
+        }
+    }
+
     // Track cut-out direction (null = not determined yet, true = vertical, false = horizontal)
     private bool? _cutOutDirection;
 
@@ -462,15 +500,17 @@ public class EditorInputController
                 // Legacy said: "Keep _isDrawing true so it goes through OnCanvasPointerReleased for auto-selection"
                 break;
             case EditorTool.SmartEraser:
-                var sampledColor = _view.EditorCore.SampleCanvasColor(ToSKPoint(_startPoint)) ?? "#80FF0000";
                 var smartEraser = new SmartEraserAnnotation
                 {
-                    StrokeColor = sampledColor,
-                    FillColor = sampledColor,
                     StrokeWidth = 0,
                     StartPoint = ToSKPoint(_startPoint),
                     EndPoint = ToSKPoint(_startPoint)
                 };
+                var sourceImage = _view.EditorCore.SourceImage;
+                if (sourceImage != null)
+                {
+                    smartEraser.ConfigureFill(sourceImage);
+                }
                 _currentShape = smartEraser.CreateVisual();
                 _currentShape.IsHitTestVisible = false;
                 break;
@@ -745,6 +785,12 @@ public class EditorInputController
             if (_currentShape.Tag is RectangleAnnotation rectAnn) { rectAnn.StartPoint = ToSKPoint(new Point(left, top)); rectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
             else if (_currentShape.Tag is EllipseAnnotation ellAnn) { ellAnn.StartPoint = ToSKPoint(new Point(left, top)); ellAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
             else if (_currentShape.Tag is BaseEffectAnnotation effectAnn) { effectAnn.StartPoint = ToSKPoint(new Point(left, top)); effectAnn.EndPoint = ToSKPoint(new Point(left + width, top + height)); }
+
+            if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle smartEraserRectangle &&
+                smartEraserRectangle.Tag is SmartEraserAnnotation smartEraserAnnotation)
+            {
+                UpdateSmartEraserFill(smartEraserRectangle, smartEraserAnnotation, canvas);
+            }
         }
         else if (_currentShape is global::Avalonia.Controls.Shapes.Path linePath && linePath.Tag is LineAnnotation lineAnn)
         {
@@ -887,6 +933,12 @@ public class EditorInputController
                 }
                 else if (_currentShape != null)
                 {
+                    if (_currentShape is global::Avalonia.Controls.Shapes.Rectangle smartEraserRectangle &&
+                        smartEraserRectangle.Tag is SmartEraserAnnotation smartEraserAnnotation)
+                    {
+                        UpdateSmartEraserFill(smartEraserRectangle, smartEraserAnnotation, canvas);
+                    }
+
                     // Check MinSize for shapes that support size validation
                     // Skip check for Number (single-click), Pen, and Text.
                     bool isSizeBased = vm.ActiveTool != EditorTool.Step

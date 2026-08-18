@@ -99,6 +99,13 @@ public static class AnnotationVisualFactory
 
         switch (annotation)
         {
+            case SmartEraserAnnotation smartEraser when control is Rectangle smartEraserControl:
+                smartEraser.ApplyFill(smartEraserControl);
+                ApplyBoundsControl(smartEraserControl, smartEraser.GetBounds(), ensureMinimumSize);
+                smartEraserControl.RadiusX = 0;
+                smartEraserControl.RadiusY = 0;
+                break;
+
             case RectangleAnnotation rectangle when control is Rectangle rectangleControl:
                 rectangleControl.StrokeDashArray = BorderStyleDashHelper.CreateStrokeDashArray(rectangle.BorderStyle);
                 rectangleControl.StrokeLineCap = BorderStyleDashHelper.CreateStrokeLineCap(rectangle.BorderStyle);
