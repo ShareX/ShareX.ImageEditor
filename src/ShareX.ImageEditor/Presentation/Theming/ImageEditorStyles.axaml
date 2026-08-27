@@ -34,9 +34,9 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
-        <!-- Bind typography from the Button. A global TextBlock FontFamily/FontSize style
-             outranks inherited values, which blanks Lucide PUA glyphs in Content="{icon}". -->
-        <Style Selector="^ TextBlock">
+        <!-- Bind only button content typography. A global TextBlock style outranks
+             inherited values, but descendant selectors also reach tooltip text. -->
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
             <Setter Property="FontFamily" Value="{Binding $parent[Button].FontFamily}"/>
             <Setter Property="FontSize" Value="{Binding $parent[Button].FontSize}"/>
             <Setter Property="FontWeight" Value="Normal"/>
@@ -147,7 +147,7 @@
         <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="FontSize" Value="18"/>
 
-        <Style Selector="^ TextBlock">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
             <Setter Property="FontFamily" Value="{DynamicResource ShareX.FontFamily.Icon}"/>
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Normal"/>
